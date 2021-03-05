@@ -4,16 +4,14 @@ check_android_task:
     API_LEVEL: 30
     TARGET: google_apis
     ARCH: x86
-    CC_TEST_REPORTER_ID: ENCRYPTED[ad3791bc4d0d406625f27e1bee52e6b20d926fa04bba35bdc0cf1bfc99f237ff82c01faed5c32c4e7f711bc3fc5de19a]
+    CC_TEST_REPORTER_ID: ENCRYPTED[b15049ff5402eb9236bc84355e1c8e6dc7cb8f9a5380c455cc1c9a645563c754a997471354711d782482e5c23aa3c95e]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
     cpu: 8
     memory: 10G
-  create_device_script:
-    echo no | avdmanager create avd --force --name test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH"
-  start_emulator_background_script:
-    $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -camera-back none
+  create_device_script: echo no | avdmanager create avd --force --name test --abi "$TARGET/$ARCH" --package "system-images;android-$API_LEVEL;$TARGET;$ARCH"
+  start_emulator_background_script: $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -camera-back none
   build_script: |
     chmod +x gradlew
     ./gradlew assembleDebugAndroidTest
@@ -28,14 +26,12 @@ check_android_task:
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
     ./cc-test-reporter before-build
-  check_script:
-    ./gradlew check connectedCheck
+  check_script: ./gradlew check connectedCheck
   report_codeclimate_script: |
     export JACOCO_SOURCE_PATH=app/src/main/java/
     ./cc-test-reporter format-coverage ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
     ./cc-test-reporter upload-coverage
-  lint_script:
-    ./gradlew lintDebug
+  lint_script: ./gradlew lintDebug
   always:
     android-lint_artifacts:
       path: ./app/build/reports/lint-results-debug.xml
