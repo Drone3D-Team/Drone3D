@@ -4,7 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 
-class MappingMission(val flightPath: List<LatLng>) {
+class MappingMission(val flightPath: List<LatLng>, val name:String) {
 
     companion object {
         /**
@@ -32,17 +32,18 @@ class MappingMission(val flightPath: List<LatLng>) {
     override fun equals(other: Any?): Boolean {
         return when (other) {
             is MappingMission -> {
-                this.flightPath == other.flightPath
+                this.flightPath == other.flightPath && this.name == other.name
             }
             else -> false
         }
     }
 
     override fun toString(): String {
-        return flightPath.toString()
+        return "Name: $name \n" +
+                "Flight path: $flightPath"
     }
 
     override fun hashCode(): Int {
-        return flightPath.hashCode()
+        return Integer.hashCode(flightPath.hashCode() + name.hashCode())
     }
 }
