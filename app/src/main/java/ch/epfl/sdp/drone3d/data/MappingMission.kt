@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d.mappingmission
+package ch.epfl.sdp.drone3d.data
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
