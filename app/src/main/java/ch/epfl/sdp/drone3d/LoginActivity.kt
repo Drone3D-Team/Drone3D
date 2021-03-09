@@ -8,6 +8,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
+/**
+ * The activity that allows the user to log in
+ */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var backButton: Button
