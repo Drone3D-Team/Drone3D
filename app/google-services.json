@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1068628131978",
+    "project_id": "drone3d-6819a",
+    "storage_bucket": "drone3d-6819a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068628131978:android:ef09d058cfd1b788bd2d73",
+        "android_client_info": {
+          "package_name": "ch.epfl.sdp.drone3d"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1068628131978-fvq0ghtb91afsj3jajp26hq9ciushct6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4-Z5ak-WbxyBX9r3AxjQItcBYdfB9Ly0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1068628131978-fvq0ghtb91afsj3jajp26hq9ciushct6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
