@@ -14,7 +14,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
 
-    private lateinit var usernameEditText: EditText
+    private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
 
     private lateinit var errorMessageText: TextView
@@ -28,8 +28,11 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
 
-        usernameEditText = findViewById(R.id.usernameEditText)
+        emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
+
+        emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
+        passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
 
         errorMessageText = findViewById(R.id.errorMessageText)
         progressBar = findViewById(R.id.progressBar)
@@ -37,17 +40,10 @@ class LoginActivity : AppCompatActivity() {
         errorMessageText.visibility = View.GONE
         progressBar.visibility = View.GONE
 
-        backButton.setOnClickListener {
-            //Goto menu activity
-        }
-
         loginButton.setOnClickListener {
             progressBar.visibility = View.VISIBLE
             //Process input
         }
 
-        registerButton.setOnClickListener {
-            //Goto register activity
-        }
     }
 }
