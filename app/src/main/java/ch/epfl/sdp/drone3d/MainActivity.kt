@@ -17,10 +17,9 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Go to LoginActivity when log_in_button is clicked
-     * TODO : replace TempTestActivity by the LoginActivity once it exists
      */
     fun goToLogin(view: View) {
-        val intent = Intent(this, TempTestActivity::class.java).apply {}
+        val intent = Intent(this, LoginActivity::class.java).apply {}
         startActivity(intent)
     }
 

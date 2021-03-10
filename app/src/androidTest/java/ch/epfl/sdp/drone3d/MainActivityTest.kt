@@ -31,13 +31,12 @@ class MainActivityTest {
     }
 
     /**
-     * TODO : replace TempTestActivity by LoginActivity once it exists
      */
     @Test
     fun goToLoginWorks() {
         Espresso.onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(LoginActivity::class.java.name))
         )
     }
 
