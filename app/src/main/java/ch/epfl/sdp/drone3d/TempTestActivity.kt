@@ -18,7 +18,7 @@ class TempTestActivity : AppCompatActivity() {
      * Go to MainMenuActivity when back_button is clicked
      */
     fun backToMenu(view: View) {
-        val intent = Intent(this, MainMenuActivity::class.java).apply{}
+        val intent = Intent(this, MainActivity::class.java).apply {}
         startActivity(intent)
     }
 }

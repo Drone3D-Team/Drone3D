@@ -10,7 +10,7 @@
         android:theme="@style/Theme.Drone3D"
         android:allowBackup="true"
         android:fullBackupContent="false">
-        <activity android:name=".MainMenuActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
