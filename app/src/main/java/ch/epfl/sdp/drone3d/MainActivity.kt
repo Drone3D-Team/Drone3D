@@ -1,9 +1,11 @@
 package ch.epfl.sdp.drone3d
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.reflect.KClass
 
 /**
  * The activity that creates the main menu
@@ -19,8 +21,7 @@ class MainActivity : AppCompatActivity() {
      * Go to LoginActivity when log_in_button is clicked
      */
     fun goToLogin(view: View) {
-        val intent = Intent(this, LoginActivity::class.java).apply {}
-        startActivity(intent)
+        open(LoginActivity::class)
     }
 
     /**
@@ -28,8 +29,7 @@ class MainActivity : AppCompatActivity() {
      * TODO : replace TempTestActivity by the ItineraryCreateActivity once it exists
      */
     fun goToItineraryCreate(view: View) {
-        val intent = Intent(this, TempTestActivity::class.java).apply {}
-        startActivity(intent)
+        open(TempTestActivity::class)
     }
 
     /**
@@ -37,8 +37,7 @@ class MainActivity : AppCompatActivity() {
      * TODO : replace TempTestActivity by the BrowseItineraryActivity once it exists
      */
     fun goToItineraryBrowse(view: View) {
-        val intent = Intent(this, TempTestActivity::class.java).apply {}
-        startActivity(intent)
+        open(TempTestActivity::class)
     }
 
     /**
@@ -46,7 +45,11 @@ class MainActivity : AppCompatActivity() {
      * TODO : replace TempTestActivity by DroneConnectActivity once it exists
      */
     fun goToDroneConnect(view: View) {
-        val intent = Intent(this, TempTestActivity::class.java).apply {}
+        open(TempTestActivity::class)
+    }
+
+    private fun <T> open(activity: KClass<T>) where T : Activity {
+        val intent = Intent(this, activity.java).apply {}
         startActivity(intent)
     }
 }
