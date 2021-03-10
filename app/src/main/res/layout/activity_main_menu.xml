@@ -36,9 +36,9 @@
 
     <Button
         android:id="@+id/log_in_button"
-        android:layout_width="111dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="284dp"
+        android:layout_width="176dp"
+        android:layout_height="71dp"
+        android:layout_marginStart="216dp"
         android:layout_marginTop="16dp"
         android:onClick="goToLogin"
         android:text="Log in"
