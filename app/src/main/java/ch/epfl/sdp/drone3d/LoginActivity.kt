@@ -24,6 +24,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var infoText: TextView
     private lateinit var progressBar: ProgressBar
 
+    private val loginMessage = "Enter your login information."
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -44,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
         infoText.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
 
-        infoText.text = "Enter your login information."
+        infoText.text = loginMessage
 
         loginButton.setOnClickListener {
             progressBar.visibility = View.VISIBLE

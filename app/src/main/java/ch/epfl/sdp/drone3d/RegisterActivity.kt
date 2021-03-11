@@ -25,6 +25,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var infoText: TextView
     private lateinit var progressBar: ProgressBar
 
+    private val registerMessage = "Enter your register information."
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
@@ -37,6 +39,7 @@ class RegisterActivity : AppCompatActivity() {
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
 
+        pseudoEditText.setAutofillHints(View.AUTOFILL_HINT_USERNAME)
         emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
         passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
 
@@ -46,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
         infoText.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
 
-        infoText.text = "Enter your register information."
+        infoText.text = registerMessage
 
         loginButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
