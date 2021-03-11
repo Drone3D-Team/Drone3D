@@ -39,5 +39,11 @@ class LoginActivityTest {
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
+    @Test
+    fun startsRegisterActivity() {
+        Espresso.onView(ViewMatchers.withId(R.id.registerButton)).perform(ViewActions.click())
+        //Check intent fired
+    }
+
 
 }
