@@ -13,16 +13,19 @@ import com.google.firebase.ktx.Firebase
 
 
 class FirebaseDatabase: Database {
-    private val TAG = "FirebaseDatabase"
     private val database =
         Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
 
     companion object {
+        private const val TAG = "FirebaseDatabase"
         private const val PSEUDO_PATH = "pseudo"
     }
     private val pseudo: MutableLiveData<String> = MutableLiveData()
 
 
+    /**
+     * Returns the reference in database of the user identified by the given [UID].
+     */
     private fun userRef(UID: String): DatabaseReference{
         return database.getReference("users/$UID")
     }
@@ -52,7 +55,5 @@ class FirebaseDatabase: Database {
 
     override fun removeUsePseudo(UID: String) {
         userRef(UID).child(PSEUDO_PATH).removeValue()
-
     }
-
 }
