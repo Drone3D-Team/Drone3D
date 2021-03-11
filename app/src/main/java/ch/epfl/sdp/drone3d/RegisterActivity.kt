@@ -1,23 +1,24 @@
 package ch.epfl.sdp.drone3d
 
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 
 /**
- * The activity that allows the user to log in
+ * The activity that allows the user to register
  */
-class LoginActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
 
     private lateinit var backButton: Button
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
 
+    private lateinit var pseudoEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
 
@@ -26,12 +27,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_register)
 
         backButton = findViewById(R.id.backButton)
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
 
+        pseudoEditText = findViewById(R.id.pseudoEditText)
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
 
@@ -44,17 +46,17 @@ class LoginActivity : AppCompatActivity() {
         infoText.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
 
-        infoText.text = "Enter your login information."
+        infoText.text = "Enter your register information."
 
         loginButton.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
-            infoText.visibility = View.GONE
-            //Process input
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
         }
 
         registerButton.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            progressBar.visibility = View.VISIBLE
+            infoText.visibility = View.GONE
+            //Process input
         }
 
         backButton.setOnClickListener {
