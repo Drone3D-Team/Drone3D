@@ -12,6 +12,16 @@ Next time, I will try to ask more advice from my teammates and the coaches about
 
 ## Gabriel (Scrum Master)
 
+I setup the project for kotlin, and then started working on the firebase authentication system.
+I spend a lot more time learning the library and Kotlin than expected.
+
+But then the code writing went smoothly.
+
+I estimated the correct amount of time for the test writting as I had to relearn how to use mockito.
+
+I also helped Jonas fix some CI errors at setup and Nicolas with android test not passing on Cirrus 
+as the screen size of the emulated device is very small.
+
 ## Loïc
 
 ## Jonas
