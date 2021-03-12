@@ -52,6 +52,10 @@ because the functions creating the added applications and the functions called o
 problem because cirrus uses a smaller screen than the one I used, and I didn't setup the buttons to adapt their positions and sizes to the 
 screen.
 
-## Hubert
-
 ## Overall team
+
+We did not implement all the tasks we had assigned to ourselves. They are still at a high priority and we will keep them on the next sprint.
+
+The estimated time was not very accurate. We think that it is normal as it was the first time our team worked together and it will improve for sure in the future.
+
+We created a discord server to communicate with the team and as of now, our team work is great.
