@@ -8,7 +8,7 @@ interface MappingMissionDao {
     fun getSharedMappingMission(ownerUid:String,mappingId:String): LiveData<MappingMission>
     fun getPrivateMappingMissions(ownerUid:String): LiveData<List<MappingMission>>
     fun getSharedMappingMissions(): LiveData<List<MappingMission>>
-    fun addPrivateMappingMission(mappingMission: MappingMission)
+    fun addPrivateMappingMission(ownerUid: String, mappingMission: MappingMission)
     fun addSharedMappingMission(mappingMission: MappingMission)
     fun removePrivateMappingMission(ownerUid:String,mappingId:String)
     fun removeSharedMappingMission(ownerUid:String,mappingId:String)
