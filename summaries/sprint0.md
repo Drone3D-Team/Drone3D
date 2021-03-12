@@ -24,6 +24,12 @@ as the screen size of the emulated device is very small.
 
 ## Loïc
 
+I first read documentations and watch tutorials about Google Map and Mapbox to understand how to add an interactive map to our project. Then, I tried to implement it by adding all the dependencies, creating an account on Mapbox to have a public token and create a basic UI which just create the map and displays it with a "home" button to go back to the main screen.
+
+I learnt quite a lot on maps and it doesn't seem extremly complicated to use, but I had quite a lot of problems with the dependencies. I spent much time on reading posts on stackoverflow for that. I had problems with the private/public token, which I didn't understand what it was used for and after some readings found that the private token was not really useful for the moment. I still have a problem with authorisation: everything works well on my computer, but when I push it on github, it can't compile. I have already spent some time finding a solution but didn't solve it yet.
+
+I underestimated the time needed for dependencies problems but had a good idea about the time needed to code it.
+
 ## Jonas
 
 I migrated the GitHub repo to an organisation one, meaning setting up (again) all the continuous integration.
