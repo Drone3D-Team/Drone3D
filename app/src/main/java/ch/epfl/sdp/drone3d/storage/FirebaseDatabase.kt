@@ -53,7 +53,7 @@ class FirebaseDatabase: Database {
         return pseudo
     }
 
-    override fun removeUsePseudo(UID: String) {
+    override fun removeUserPseudo(UID: String) {
         userRef(UID).child(PSEUDO_PATH).removeValue()
     }
 }

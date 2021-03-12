@@ -178,7 +178,7 @@ class FirebaseDatabaseTest {
         database.getReference("users/$UID").addChildEventListener(pseudoListener)
 
         db.storeUserPseudo(UID, expectedPseudo)
-        db.removeUsePseudo(UID)
+        db.removeUserPseudo(UID)
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
