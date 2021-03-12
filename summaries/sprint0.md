@@ -41,6 +41,10 @@ I underestimated the time needed for dealing with GitHub and continuous integrat
 I started implementing too many function for database. I had to reduce the scope to be able to test them correctly.
 
 ## José
+I created the login and register user interface.
+Overall it went well.
+I spent more time than expected on the login UI because I add to learn how the attributes and constraints worked.
+On the register UI, I spent less time than expected because I already knew how to do things and I could reuse what I've done in the login UI.
 
 ## Nicolas
 I created a figma to have a plan we can use to create the applications of the app in the future.
