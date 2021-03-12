@@ -15,13 +15,13 @@ import org.junit.*
 import org.junit.runner.RunWith
 
 /**
- * Test for the login activity
+ * Test for the register activity
  */
 @RunWith(AndroidJUnit4::class)
-class LoginActivityTest {
+class RegisterActivityTest {
 
     @get:Rule
-    var testRule = ActivityScenarioRule(LoginActivity::class.java)
+    var testRule = ActivityScenarioRule(RegisterActivity::class.java)
 
     @Before
     fun setUp() {
@@ -45,16 +45,16 @@ class LoginActivityTest {
 
     @Test
     fun progressBarVisibleWhenClickLoginButton() {
-        Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(R.id.registerButton)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.progressBar))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test
-    fun startsRegisterActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.registerButton)).perform(ViewActions.click())
+    fun startsLoginActivity() {
+        Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
         Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(RegisterActivity::class.java.name))
+            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(LoginActivity::class.java.name))
         )
     }
 
@@ -65,5 +65,4 @@ class LoginActivityTest {
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(MainActivity::class.java.name))
         )
     }
-
 }

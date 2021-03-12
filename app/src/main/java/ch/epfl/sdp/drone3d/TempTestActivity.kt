@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
  * A placeholder activity to test the other activities without having to create their dependencies
  */
 class TempTestActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_temp_test)

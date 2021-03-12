@@ -2,6 +2,7 @@
     <string name="app_name">Drone3D</string>
     <string name="email_text">Email</string>
     <string name="password_text">Password</string>
+    <string name="pseudo_text">Pseudo</string>
     <string name="login_button_text">Login</string>
     <string name="register_button_text">Create account</string>
     <string name="back_button_text">Back</string>

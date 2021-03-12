@@ -4,20 +4,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".RegisterActivity">
+
+    <TextView
+        android:id="@+id/pseudoText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:text="@string/pseudo_text"
+        android:labelFor="@id/pseudoEditText"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@id/passwordText"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/pseudoEditText"
+        android:layout_width="233dp"
+        android:layout_height="45dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:importantForAutofill="no"
+        app:layout_constraintBottom_toBottomOf="@id/pseudoText"
+        app:layout_constraintEnd_toEndOf="@id/passwordEditText"
+        app:layout_constraintStart_toStartOf="@id/passwordEditText"
+        app:layout_constraintTop_toTopOf="@id/pseudoText" />
 
     <TextView
         android:id="@+id/emailText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="40dp"
         android:text="@string/email_text"
         android:labelFor="@id/emailEditText"
         android:textAlignment="viewStart"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@id/passwordText"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/pseudoText" />
 
     <EditText
         android:id="@+id/emailEditText"
@@ -62,15 +87,15 @@
         app:layout_constraintTop_toTopOf="@id/passwordText" />
 
     <Button
-        android:id="@+id/loginButton"
+        android:id="@+id/registerButton"
         android:layout_width="120dp"
         android:layout_height="70dp"
-        android:text="@string/login_button_text"
-        app:layout_constraintBottom_toBottomOf="@id/registerButton"
+        android:text="@string/register_button_text"
+        app:layout_constraintBottom_toBottomOf="@id/loginButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/registerButton"
-        app:layout_constraintTop_toTopOf="@id/registerButton" />
+        app:layout_constraintStart_toEndOf="@id/loginButton"
+        app:layout_constraintTop_toTopOf="@id/loginButton" />
 
     <TextView
         android:id="@+id/infoText"
@@ -89,13 +114,13 @@
         app:layout_constraintTop_toBottomOf="@id/passwordEditText" />
 
     <Button
-        android:id="@+id/registerButton"
+        android:id="@+id/loginButton"
         android:layout_width="120dp"
         android:layout_height="70dp"
         android:layout_marginBottom="100dp"
-        android:text="@string/register_button_text"
+        android:text="@string/login_button_text"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/loginButton"
+        app:layout_constraintEnd_toStartOf="@id/registerButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
