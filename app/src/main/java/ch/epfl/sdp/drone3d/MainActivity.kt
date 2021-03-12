@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
      * TODO : replace TempTestActivity by the BrowseItineraryActivity once it exists
      */
     fun goToItineraryBrowse(view: View) {
-        open(TempTestActivity::class)
+        open(MappingMissionSelectionActivity::class)
     }
 
     /**

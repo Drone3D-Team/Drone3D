@@ -6,4 +6,5 @@
     <string name="login_button_text">Login</string>
     <string name="register_button_text">Create account</string>
     <string name="back_button_text">Back</string>
+    <string name="create_mapping_mission_button_text">Create new mapping mission</string>
 </resources>
