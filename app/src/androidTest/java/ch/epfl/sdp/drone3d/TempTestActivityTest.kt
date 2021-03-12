@@ -2,24 +2,21 @@ package ch.epfl.sdp.drone3d
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.*
 import org.junit.runner.RunWith
 
-/**
- * Test for the login activity
- */
 @RunWith(AndroidJUnit4::class)
-class LoginActivityTest {
+class TempTestActivityTest {
 
     @get:Rule
-    var testRule = ActivityScenarioRule(LoginActivity::class.java)
+    val intentsTestRule = ActivityScenarioRule(TempTestActivity::class.java)
 
     @Before
     fun setUp() {
@@ -42,11 +39,10 @@ class LoginActivityTest {
     }
 
     @Test
-    fun progressBarVisibleWhenClickLoginButton() {
-        Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.progressBar))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+    fun backToMenuWorks() {
+        Espresso.onView(ViewMatchers.withId(R.id.back_button)).perform(ViewActions.click())
+        Intents.intended(
+            hasComponent(hasClassName(MainActivity::class.java.name))
+        )
     }
-
-
 }
