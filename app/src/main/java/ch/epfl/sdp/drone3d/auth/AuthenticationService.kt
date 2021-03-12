@@ -9,7 +9,7 @@ import com.google.firebase.auth.AuthResult
 interface AuthenticationService {
 
     /**
-     * Returns true is a user is currently logged in
+     * Returns true if a user is currently logged in
      */
     fun hasActiveSession(): Boolean
 
