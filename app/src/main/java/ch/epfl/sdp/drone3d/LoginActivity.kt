@@ -30,6 +30,23 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        initializeWidgets()
+
+        emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
+        passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
+
+        infoText.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+
+        infoText.text = loginMessage
+
+        setUpLoginButton()
+        setUpRegisterButton()
+        setUpBackButton()
+
+    }
+
+    private fun initializeWidgets() {
         backButton = findViewById(R.id.backButton)
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
@@ -37,32 +54,30 @@ class LoginActivity : AppCompatActivity() {
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
 
-        emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
-        passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
-
         infoText = findViewById(R.id.infoText)
         progressBar = findViewById(R.id.progressBar)
+    }
 
-        infoText.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-
-        infoText.text = loginMessage
-
+    private fun setUpLoginButton() {
         loginButton.setOnClickListener {
             progressBar.visibility = View.VISIBLE
             infoText.visibility = View.GONE
             //Process input
         }
+    }
 
+    private fun setUpRegisterButton() {
         registerButton.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+    }
 
+    private fun setUpBackButton() {
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-
     }
+
 }

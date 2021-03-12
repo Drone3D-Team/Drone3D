@@ -31,6 +31,24 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        initializeWidgets()
+
+        pseudoEditText.setAutofillHints(View.AUTOFILL_HINT_USERNAME)
+        emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
+        passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
+
+        infoText.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+
+        infoText.text = registerMessage
+
+        setUpLoginButton()
+        setUpRegisterButton()
+        setUpBackButton()
+
+    }
+
+    private fun initializeWidgets() {
         backButton = findViewById(R.id.backButton)
         loginButton = findViewById(R.id.loginButton)
         registerButton = findViewById(R.id.registerButton)
@@ -39,33 +57,30 @@ class RegisterActivity : AppCompatActivity() {
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
 
-        pseudoEditText.setAutofillHints(View.AUTOFILL_HINT_USERNAME)
-        emailEditText.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS)
-        passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
-
         infoText = findViewById(R.id.infoText)
         progressBar = findViewById(R.id.progressBar)
+    }
 
-        infoText.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
-
-        infoText.text = registerMessage
-
+    private fun setUpLoginButton() {
         loginButton.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
+    }
 
+    private fun setUpRegisterButton() {
         registerButton.setOnClickListener {
             progressBar.visibility = View.VISIBLE
             infoText.visibility = View.GONE
             //Process input
         }
+    }
 
+    private fun setUpBackButton() {
         backButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-
     }
+
 }
