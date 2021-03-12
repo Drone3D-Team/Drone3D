@@ -5,18 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class FirebaseMappingMissionDao:MappingMissionDao {
+class FirebaseMappingMissionDao(private val database:FirebaseDatabase):MappingMissionDao {
 
-    private val database =
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+//    private val database =
+//            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
 
