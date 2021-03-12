@@ -1,4 +1,4 @@
-# Summary for week 0
+# Summary for week 1
 
 ## Antoine
 
@@ -47,12 +47,12 @@ I spent more time than expected on the login UI because I add to learn how the a
 On the register UI, I spent less time than expected because I already knew how to do things and I could reuse what I've done in the login UI.
 
 ## Nicolas
-I created a figma to have a plan we can use to create the applications of the app in the future.
+I created a figma to have a plan we can use to create the activities of the app in the future.
 I created the main menu of the app
 
 The creation of the figma went well, without any hitch.
 The creation of the main menu went well until I tried to merge it where I had two problems : first I had to change the setup of codeclimate
-because the functions creating the added applications and the functions called on button press where too close to each other. Then I had a
+because the functions creating the added activities and the functions called on button press where too close to each other. Then I had a
 problem because cirrus uses a smaller screen than the one I used, and I didn't setup the buttons to adapt their positions and sizes to the 
 screen.
 
