@@ -5,18 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
-class FirebaseMappingMissionDao:MappingMissionDao {
+class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingMissionDao {
 
-    private val database =
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
 
@@ -82,10 +77,10 @@ class FirebaseMappingMissionDao:MappingMissionDao {
     override fun getPrivateMappingMissions(ownerUid: String): LiveData<List<MappingMission>> {
         val missionsListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val missions = dataSnapshot.getValue<List<MappingMission>>()
-                if (missions != null) {
-                    privateMappingMissions.value = missions
+                val missions = dataSnapshot.children.map { c ->
+                    c.getValue(MappingMission::class.java)!!
                 }
+                privateMappingMissions.value = missions
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -100,10 +95,10 @@ class FirebaseMappingMissionDao:MappingMissionDao {
     override fun getSharedMappingMissions(): LiveData<List<MappingMission>> {
         val missionsListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val missions = dataSnapshot.getValue<List<MappingMission>>()
-                if (missions != null) {
-                    sharedMappingMissions.value = missions
+                val missions = dataSnapshot.children.map { c ->
+                    c.getValue(MappingMission::class.java)!!
                 }
+                sharedMappingMissions.value = missions
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -126,6 +121,7 @@ class FirebaseMappingMissionDao:MappingMissionDao {
                 sharedMappingMissionRef().child(mappingMission.sharedId+"/privateId").setValue(id)
                 sharedMappingMissionRef().child(mappingMission.sharedId+"/state").setValue(State.PRIVATE_AND_SHARED)
             }
+            else -> {}
         }
         privateMappingMissionRef(ownerUid).child(id!!).setValue(mappingMission)
     }
@@ -142,6 +138,7 @@ class FirebaseMappingMissionDao:MappingMissionDao {
                 privateMappingMissionRef(ownerUid).child(mappingMission.privateId+"/sharedId").setValue(sharedId)
                 privateMappingMissionRef(ownerUid).child(mappingMission.privateId+"/state").setValue(State.PRIVATE_AND_SHARED)
             }
+            else -> {}
         }
         sharedMappingMissionRef().child(sharedId!!).setValue(mappingMission)
     }
