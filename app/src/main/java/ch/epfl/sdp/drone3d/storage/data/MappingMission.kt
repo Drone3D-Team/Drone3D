@@ -3,10 +3,12 @@ import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDateTime
 
 data class MappingMission(
-    var uid:String,
-    var ownerUid:String,
-    val name:String,
+    val name: String,
     val flightPath: List<LatLng>,
-    val createdTime: LocalDateTime? = LocalDateTime.now(),
-    var isShared:Boolean
-    )
+    var isShared: Boolean = false
+) {
+    var id: String? = null
+    var sharedId: String? = null
+    var ownerUid: String? = null
+    val createdTime: LocalDateTime? = LocalDateTime.now()
+}
