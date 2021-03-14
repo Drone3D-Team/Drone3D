@@ -10,7 +10,7 @@ import com.google.firebase.ktx.Firebase
 class MappingMissionRepository {
     companion object {
         val DEFAULT_DAO = FirebaseMappingMissionDao(
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")//.setPersistenceEnabled(true)
         )
 
         var daoProvider: () -> MappingMissionDao = { DEFAULT_DAO }
@@ -59,7 +59,7 @@ class MappingMissionRepository {
      * Share the [mappingMission] of owner [ownerUid]
      */
     fun shareMappingMission(ownerUid: String, mappingMission: MappingMission) {
-        return dao.storeMappingMission(ownerUid,mappingMission)
+        return dao.shareMappingMission(ownerUid,mappingMission)
     }
 
     /**
@@ -84,10 +84,4 @@ class MappingMissionRepository {
     fun removeMappingMission(ownerUid: String, privateId: String?, sharedId: String?) {
         return dao.removeMappingMission(ownerUid,privateId,sharedId)
     }
-
-
-
-
-
-
 }
