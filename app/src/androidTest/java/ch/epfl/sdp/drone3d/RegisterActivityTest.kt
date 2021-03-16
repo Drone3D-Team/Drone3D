@@ -1,9 +1,11 @@
 package ch.epfl.sdp.drone3d
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions.matches
+
+import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
@@ -45,24 +47,16 @@ class RegisterActivityTest {
 
     @Test
     fun progressBarVisibleWhenClickLoginButton() {
-        Espresso.onView(ViewMatchers.withId(R.id.registerButton)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.progressBar))
+        onView(ViewMatchers.withId(R.id.registerButton)).perform(click())
+        onView(ViewMatchers.withId(R.id.progressBar))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test
     fun startsLoginActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
-        Intents.intended(
+        onView(ViewMatchers.withId(R.id.loginButton)).perform(click())
+        intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(LoginActivity::class.java.name))
-        )
-    }
-
-    @Test
-    fun startsMainActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.backButton)).perform(ViewActions.click())
-        Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(MainActivity::class.java.name))
         )
     }
 }

@@ -1,13 +1,15 @@
 package ch.epfl.sdp.drone3d
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -45,25 +47,16 @@ class LoginActivityTest {
 
     @Test
     fun progressBarVisibleWhenClickLoginButton() {
-        Espresso.onView(ViewMatchers.withId(R.id.loginButton)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(R.id.progressBar))
+        onView(withId(R.id.loginButton)).perform(click())
+        onView(withId(R.id.progressBar))
             .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test
     fun startsRegisterActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.registerButton)).perform(ViewActions.click())
-        Intents.intended(
+        onView(withId(R.id.registerButton)).perform(click())
+        intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(RegisterActivity::class.java.name))
         )
     }
-
-    @Test
-    fun startsMainActivity() {
-        Espresso.onView(ViewMatchers.withId(R.id.backButton)).perform(ViewActions.click())
-        Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(MainActivity::class.java.name))
-        )
-    }
-
 }

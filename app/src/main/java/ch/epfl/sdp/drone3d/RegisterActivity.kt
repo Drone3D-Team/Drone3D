@@ -3,20 +3,17 @@ package ch.epfl.sdp.drone3d
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
+const val REGISTER_MESSAGE = "Enter your register information."
+
 /**
  * The activity that allows the user to register
  */
 class RegisterActivity : AppCompatActivity() {
-
-    private lateinit var backButton: Button
-    private lateinit var loginButton: Button
-    private lateinit var registerButton: Button
 
     private lateinit var pseudoEditText: EditText
     private lateinit var emailEditText: EditText
@@ -25,7 +22,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var infoText: TextView
     private lateinit var progressBar: ProgressBar
 
-    private val registerMessage = "Enter your register information."
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,19 +36,13 @@ class RegisterActivity : AppCompatActivity() {
         infoText.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
 
-        infoText.text = registerMessage
+        infoText.text = REGISTER_MESSAGE
 
-        setUpLoginButton()
-        setUpRegisterButton()
-        setUpBackButton()
-
+        //Create a "back button" in the action bar up
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun initializeWidgets() {
-        backButton = findViewById(R.id.backButton)
-        loginButton = findViewById(R.id.loginButton)
-        registerButton = findViewById(R.id.registerButton)
-
         pseudoEditText = findViewById(R.id.pseudoEditText)
         emailEditText = findViewById(R.id.emailEditText)
         passwordEditText = findViewById(R.id.passwordEditText)
@@ -61,26 +51,14 @@ class RegisterActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    private fun setUpLoginButton() {
-        loginButton.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        }
+    fun register(view: View) {
+        progressBar.visibility = View.VISIBLE
+        infoText.visibility = View.GONE
+        //Process input
+
     }
 
-    private fun setUpRegisterButton() {
-        registerButton.setOnClickListener {
-            progressBar.visibility = View.VISIBLE
-            infoText.visibility = View.GONE
-            //Process input
-        }
+    fun login(view: View) {
+        startActivity(Intent(this, LoginActivity::class.java))
     }
-
-    private fun setUpBackButton() {
-        backButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
 }
