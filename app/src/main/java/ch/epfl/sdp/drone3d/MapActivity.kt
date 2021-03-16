@@ -16,6 +16,9 @@ class MapActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_map)
 
+        //Create a "back button" in the action bar up
+        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+
         mapView = findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
