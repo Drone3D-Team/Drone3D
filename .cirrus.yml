@@ -5,7 +5,7 @@ check_android_task:
     TARGET: default
     ARCH: x86
     CC_TEST_REPORTER_ID: ENCRYPTED[b15049ff5402eb9236bc84355e1c8e6dc7cb8f9a5380c455cc1c9a645563c754a997471354711d782482e5c23aa3c95e]
-    Keys: ${{ secrets.KEYS }}
+    Keys: ENCRYPTED[d5585cd12ff41b7267a3f8776f5a9a5ec1ebdaad5bc4d5df9842b701c2c9567642d9ae85978b30da950036dc2ed07201]
   container:
     image: reactivecircus/android-emulator-$API_LEVEL:latest
     kvm: true
