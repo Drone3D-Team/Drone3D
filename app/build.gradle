@@ -54,9 +54,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx'
 
     // Import Mapbox
-    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'){
-        exclude group: 'group_name', module: 'module_name'
-    }
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
