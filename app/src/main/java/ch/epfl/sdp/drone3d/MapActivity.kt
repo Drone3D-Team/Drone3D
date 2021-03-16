@@ -12,13 +12,9 @@ class MapActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
         setContentView(R.layout.activity_map)
-
-        //Create a "back button" in the action bar up
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
 
         mapView = findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
