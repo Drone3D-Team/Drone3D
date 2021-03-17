@@ -10,4 +10,10 @@
     <string name="connect_a_drone">Connect a drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
+    <string name="login_success">Login succeed</string>
+    <string name="login_fail">Login failed</string>
+    <string name="register_success">Registration successful</string>
+    <string name="register_fail">Registration failed</string>
+    <string name="register_info_default">Enter your register information</string>
+    <string name="login_info_default">Enter your login information</string>
 </resources>

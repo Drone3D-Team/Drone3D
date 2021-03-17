@@ -3,6 +3,7 @@
     package="ch.epfl.sdp.drone3d">
 
     <application
+        android:name=".Drone3D"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"

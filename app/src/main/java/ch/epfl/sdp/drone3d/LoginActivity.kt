@@ -1,19 +1,19 @@
 package ch.epfl.sdp.drone3d
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-
-const val LOGIN_MESSAGE = "Enter your login information."
+import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
  * The activity that allows the user to log in
  */
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var emailEditText: EditText
@@ -21,6 +21,8 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var infoText: TextView
     private lateinit var progressBar: ProgressBar
+
+    @Inject lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         infoText.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
 
-        infoText.text = LOGIN_MESSAGE
+        infoText.text = getString(R.string.login_info_default)
 
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -48,14 +50,32 @@ class LoginActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    fun login(view: View) {
+    fun login(@Suppress("UNUSED_PARAMETER") view: View) {
         progressBar.visibility = View.VISIBLE
         infoText.visibility = View.GONE
         //Process input
-
+        authService.login(emailEditText.text.toString(), passwordEditText.text.toString())
+            .addOnCompleteListener(this) { task ->
+                progressBar.visibility = View.GONE
+                if (task.isSuccessful) {
+                    // Sign in success, show Toast
+                    startActivity(Intent(this, MainActivity::class.java))
+                    Toast.makeText(baseContext, R.string.login_success,
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Toast.makeText(baseContext, R.string.login_fail,
+                        Toast.LENGTH_SHORT).show()
+                    if (task.exception?.message != null) {
+                        infoText.text = task.exception?.message
+                        infoText.setTextColor(Color.RED)
+                        infoText.visibility = View.VISIBLE
+                    }
+                }
+            }
     }
 
-    fun register(view: View) {
+    fun register(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, RegisterActivity::class.java))
     }
 }
