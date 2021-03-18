@@ -5,7 +5,6 @@
     <string name="pseudo_text">Pseudo</string>
     <string name="login_button_text">Login</string>
     <string name="register_button_text">Create account</string>
-    <string name="back_button_text">Back</string>
     <string name="log_in">Log in</string>
     <string name="connect_a_drone">Connect a drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
