@@ -1,6 +1,7 @@
 package ch.epfl.sdp.drone3d.storage.dao
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
@@ -52,7 +53,7 @@ class FirebaseMappingMissionDaoTest {
 
         db.storeMappingMission(OWNERID, mappingMission1)
         val live = db.getPrivateMappingMission(OWNERID, mappingMission1.privateId!!)
-        live.observeForever {
+        val observer = Observer<MappingMission> {
             if (it != null) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.PRIVATE))
@@ -64,11 +65,15 @@ class FirebaseMappingMissionDaoTest {
 
             }
         }
+        live.observeForever(observer)
+
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
         db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+        live.removeObserver(observer)
+
     }
 
     @Test
@@ -79,7 +84,8 @@ class FirebaseMappingMissionDaoTest {
 
         db.shareMappingMission(OWNERID, mappingMission1)
         val live = db.getSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
-        live.observeForever {
+
+        val observer = Observer<MappingMission> {
             if (it != null) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.SHARED))
@@ -90,11 +96,15 @@ class FirebaseMappingMissionDaoTest {
                 counter.countDown()
             }
         }
+        live.observeForever(observer)
+
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
         db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        live.removeObserver(observer)
+
     }
 
     @Test
@@ -108,7 +118,8 @@ class FirebaseMappingMissionDaoTest {
         db.storeMappingMission(OWNERID, mappingMission2)
 
         val live = db.getPrivateMappingMissions(OWNERID)
-        live.observeForever {
+
+        val observer = Observer<List<MappingMission>> {
             if (it != null && it.size > 1) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.PRIVATE))
@@ -122,6 +133,8 @@ class FirebaseMappingMissionDaoTest {
 
             }
         }
+        live.observeForever(observer)
+
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
@@ -129,6 +142,58 @@ class FirebaseMappingMissionDaoTest {
         db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
         db.removePrivateMappingMission(OWNERID, mappingMission2.privateId!!)
 
+        live.removeObserver(observer)
+    }
+
+    @Test
+    fun getPrivateMappingMissionsReturnEmptyList(){
+        val counter = CountDownLatch(1)
+
+        val live = db.getPrivateMappingMissions(OWNERID)
+
+
+        val observer = Observer<List<MappingMission>>{
+            assertThat(it, equalTo(listOf()))
+            counter.countDown()
+        }
+
+        live.observeForever(observer)
+
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+        live.removeObserver(observer)
+    }
+
+    @Test
+    fun getPrivateMappingMissionsIsUpdatedOnRemove(){
+        val counter1 = CountDownLatch(2)
+        val counter2 = CountDownLatch(1)
+
+        val observer = Observer<List<MappingMission>>{
+            if(it.isEmpty()){
+                counter1.countDown()
+            }else{
+                if(it.size == 1){
+                    counter2.countDown()
+                }
+            }
+        }
+        val live = db.getPrivateMappingMissions(OWNERID)
+        live.observeForever(observer)
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+        db.storeMappingMission(OWNERID, mappingMission1)
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+
+
+
+        counter1.await(timeout, TimeUnit.SECONDS)
+        counter2.await(timeout, TimeUnit.SECONDS)
+
+        assertThat(counter1.count, equalTo(0L))
+        assertThat(counter2.count, equalTo(0L))
+        live.removeObserver(observer)
     }
 
     @Test
@@ -142,7 +207,7 @@ class FirebaseMappingMissionDaoTest {
         db.shareMappingMission(OWNERID, mappingMission2)
 
         val live = db.getSharedMappingMissions()
-        live.observeForever {
+        val observer = Observer<List<MappingMission>>{
             if (it != null && it.size > 1) {
                 assertThat(mappingMission2.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission2.state, equalTo(State.SHARED))
@@ -156,12 +221,16 @@ class FirebaseMappingMissionDaoTest {
 
             }
         }
+        live.observeForever(observer)
+
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
         db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
         db.removeSharedMappingMission(OWNERID, mappingMission2.sharedId!!)
+        live.removeObserver(observer)
+
     }
 
     private fun checkStatePRIVATE_SHARED(counter: CountDownLatch, mappingMission1: MappingMission){
