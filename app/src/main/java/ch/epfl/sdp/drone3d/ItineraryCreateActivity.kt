@@ -6,7 +6,10 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 
-class MapActivity : AppCompatActivity() {
+/**
+ * The activity that allows the user to create itinerary using a map.
+ */
+class ItineraryCreateActivity : AppCompatActivity() {
     private var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +17,7 @@ class MapActivity : AppCompatActivity() {
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
-        setContentView(R.layout.activity_map)
+        setContentView(R.layout.activity_itinerary_create)
 
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true);

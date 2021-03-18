@@ -20,7 +20,7 @@ import org.hamcrest.Matchers
 class MapActivityTest {
 
     @get:Rule
-    var testRule = ActivityScenarioRule(MapActivity::class.java)
+    var testRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
 
     /**
      * Make sure the context of the app is the right one
