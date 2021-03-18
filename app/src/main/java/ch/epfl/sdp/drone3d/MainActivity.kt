@@ -26,10 +26,9 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Go to ItineraryCreateActivity when create_itinerary_button is clicked
-     * TODO : replace TempTestActivity by the ItineraryCreateActivity once it exists
      */
     fun goToItineraryCreate(view: View) {
-        open(TempTestActivity::class)
+        open(ItineraryCreateActivity::class)
     }
 
     /**
