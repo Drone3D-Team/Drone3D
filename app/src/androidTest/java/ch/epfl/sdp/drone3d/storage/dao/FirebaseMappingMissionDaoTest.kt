@@ -4,7 +4,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
+import com.google.android.gms.tasks.Tasks.await
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import junit.framework.Assert.assertNull
 import org.hamcrest.CoreMatchers.equalTo
@@ -12,6 +17,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.internal.matchers.Null
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -24,21 +30,25 @@ class FirebaseMappingMissionDaoTest {
 
     private val timeout = 5L
 
-    private val OWNERID: String = "Jean-Jean"
-    private var mappingMission1: MappingMission =  MappingMission("MyMission1", listOf(LatLong(10.2,42.69)))
-    private var mappingMission2: MappingMission = MappingMission("MyMission2", listOf(LatLong(0.2,2.9)))
+    companion object{
+        private const val OWNERID: String = "Jean-Jean"
+        private val MAPPING_MISSION_1 : MappingMission =  MappingMission()
+        private val MAPPING_MISSION_2 : MappingMission = MappingMission()
+    }
+
+
 
     @Before
     fun beforeTests() {
         database.goOffline()
         database.reference.removeValue()
-        mappingMission1 =  MappingMission("MyMission1", listOf(LatLong(10.2,42.69)))
-        mappingMission1 = MappingMission("MyMission2", listOf(LatLong(0.2,2.9)))
     }
 
     @Test
     fun getPrivateMappingMissionReturnStoreMappingMission(){
         val counter = CountDownLatch(1)
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
 
         db.storeMappingMission(OWNERID, mappingMission1)
         val live = db.getPrivateMappingMission(OWNERID, mappingMission1.privateId!!)
@@ -65,6 +75,8 @@ class FirebaseMappingMissionDaoTest {
     fun getSharedMappingMissionReturnShareMappingMission(){
         val counter = CountDownLatch(1)
 
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
         db.shareMappingMission(OWNERID, mappingMission1)
         val live = db.getSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
         live.observeForever {
@@ -88,6 +100,9 @@ class FirebaseMappingMissionDaoTest {
     @Test
     fun getPrivateMappingMissionsReturnMultipleStoreMappingMission(){
         val counter = CountDownLatch(1)
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+        val mappingMission2 = MAPPING_MISSION_2.copy()
 
         db.storeMappingMission(OWNERID, mappingMission1)
         db.storeMappingMission(OWNERID, mappingMission2)
@@ -120,6 +135,9 @@ class FirebaseMappingMissionDaoTest {
     fun getSharedMappingMissionsReturnMultipleShareMappingMission(){
         val counter = CountDownLatch(1)
 
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+        val mappingMission2 = MAPPING_MISSION_2.copy()
+
         db.shareMappingMission(OWNERID, mappingMission1)
         db.shareMappingMission(OWNERID, mappingMission2)
 
@@ -146,7 +164,8 @@ class FirebaseMappingMissionDaoTest {
         db.removeSharedMappingMission(OWNERID, mappingMission2.sharedId!!)
     }
 
-    private fun checkStatePRIVATE_SHARED(counter: CountDownLatch){
+    private fun checkStatePRIVATE_SHARED(counter: CountDownLatch, mappingMission1: MappingMission){
+
         val livePrivate = db.getPrivateMappingMission(OWNERID, mappingMission1.privateId!!)
 
         livePrivate.observeForever {
@@ -175,11 +194,13 @@ class FirebaseMappingMissionDaoTest {
     fun shareMappingMissionUpdateGetPrivateMappingMissionIfAlreadyStored(){
         val counter = CountDownLatch(2)
 
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
         assertThat(mappingMission1.state, equalTo(State.RAM))
         db.storeMappingMission(OWNERID, mappingMission1)
         db.shareMappingMission(OWNERID, mappingMission1)
 
-        checkStatePRIVATE_SHARED(counter)
+        checkStatePRIVATE_SHARED(counter, mappingMission1)
         assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
 
 
@@ -192,13 +213,16 @@ class FirebaseMappingMissionDaoTest {
 
     @Test
     fun storeMappingMissionUpdateGetSharedMappingMissionIfAlreadyShared(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
         val counter = CountDownLatch(2)
 
         assertThat(mappingMission1.state, equalTo(State.RAM))
         db.shareMappingMission(OWNERID, mappingMission1)
         db.storeMappingMission(OWNERID, mappingMission1)
 
-        checkStatePRIVATE_SHARED(counter)
+        checkStatePRIVATE_SHARED(counter, mappingMission1)
         assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
 
         counter.await(timeout, TimeUnit.SECONDS)
@@ -207,4 +231,444 @@ class FirebaseMappingMissionDaoTest {
         db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
         db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
     }
+
+    @Test
+    fun testRemovePrivate(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(2)
+
+        val listener = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+
+                assertThat(map.state, equalTo(State.PRIVATE))
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.privateId, equalTo(mappingMission1.privateId))
+                assertNull(map.sharedId)
+
+                counter.countDown()
+
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listener)
+
+        db.storeMappingMission(OWNERID, mappingMission1)
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listener)
+
+    }
+
+    @Test
+    fun testRemovePrivateWhenAlsoShared(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(4)
+
+        val listenerPrivate = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.state, equalTo(State.PRIVATE))
+
+                counter.countDown()
+
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+                assertThat(map.ownerUid, equalTo(OWNERID))
+
+                counter.countDown()
+            }
+        }
+
+        val listenerShared = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.state, equalTo(State.SHARED))
+                assertNull(map.privateId)
+
+                counter.countDown()
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").addChildEventListener(listenerShared)
+
+        db.storeMappingMission(OWNERID, mappingMission1)
+        db.shareMappingMission(OWNERID, mappingMission1)
+
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+        db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").removeEventListener(listenerShared)
+    }
+
+    @Test
+    fun testRemoveShared(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(2)
+
+        val listener = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
+                assertThat(mappingMission1.state, equalTo(State.SHARED))
+                assertThat(snapshot.getValue<MappingMission>(), equalTo(mappingMission1))
+
+                counter.countDown()
+            }
+        }
+
+        database.getReference("mappingMissions/").addChildEventListener(listener)
+
+        db.shareMappingMission(OWNERID, mappingMission1)
+        db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("mappingMissions/").removeEventListener(listener)
+    }
+
+    @Test
+    fun testRemoveSharedWhenAlsoPrivate(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(4)
+
+        val listenerPrivate = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+
+                counter.countDown()
+
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+                assertThat(map.state, equalTo(State.PRIVATE))
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertNull(map.sharedId)
+
+                counter.countDown()
+            }
+        }
+
+        val listenerShared = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.state, equalTo(State.SHARED))
+
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+
+                counter.countDown()
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").addChildEventListener(listenerShared)
+
+        db.shareMappingMission(OWNERID, mappingMission1)
+        db.storeMappingMission(OWNERID, mappingMission1)
+
+        db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").removeEventListener(listenerShared)
+    }
+
+    @Test
+    fun testRemoveMappingMissionWithBothPrivateAndShared(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(4)
+
+        val listenerPrivate = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                counter.countDown()
+
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+                assertThat(map.ownerUid, equalTo(OWNERID))
+
+                counter.countDown()
+            }
+        }
+
+        val listenerShared = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
+
+                counter.countDown()
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").addChildEventListener(listenerShared)
+
+        db.shareMappingMission(OWNERID, mappingMission1)
+        db.storeMappingMission(OWNERID, mappingMission1)
+
+        db.removeMappingMission(OWNERID, mappingMission1.privateId, mappingMission1.sharedId)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").removeEventListener(listenerShared)
+    }
+
+    @Test
+    fun testRemoveMappingMissionWithOnlyPrivate(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(2)
+
+        val listenerPrivate = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                counter.countDown()
+
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+                assertThat(map.state, equalTo(State.PRIVATE))
+                assertThat(map.ownerUid, equalTo(OWNERID))
+
+                counter.countDown()
+            }
+        }
+
+        val listenerShared = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").addChildEventListener(listenerShared)
+
+        db.storeMappingMission(OWNERID, mappingMission1)
+
+        db.removeMappingMission(OWNERID, mappingMission1.privateId, mappingMission1.sharedId)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").removeEventListener(listenerShared)
+    }
+
+    @Test
+    fun testRemoveMappingMissionWithOnlyShared(){
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+
+        val counter = CountDownLatch(2)
+
+        val listenerPrivate = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        val listenerShared = object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                counter.countDown()
+            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val map = snapshot.getValue<MappingMission>()!!;
+
+                assertThat(map.ownerUid, equalTo(OWNERID))
+                assertThat(map.state, equalTo(State.SHARED))
+
+                counter.countDown()
+            }
+        }
+
+        database.getReference("users/$OWNERID/mappingMissions/").addChildEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").addChildEventListener(listenerShared)
+
+        db.shareMappingMission(OWNERID, mappingMission1)
+
+        db.removeMappingMission(OWNERID, mappingMission1.privateId, mappingMission1.sharedId)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        database.getReference("users/$OWNERID/mappingMissions/").removeEventListener(listenerPrivate)
+        database.getReference("mappingMissions/").removeEventListener(listenerShared)
+    }
+
 }

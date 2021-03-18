@@ -37,9 +37,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         val missionListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val mission = dataSnapshot.getValue<MappingMission>()
-                if (mission != null) {
-                    privateMission.value = mission
-                }
+                privateMission.value = mission
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -60,9 +58,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         val missionListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val mission = dataSnapshot.getValue<MappingMission>()
-                if (mission != null) {
-                    sharedMission.value = mission
-                }
+                sharedMission.value = mission
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
