@@ -83,7 +83,7 @@ class FirebaseMappingMissionDaoTest {
         val mappingMission1 = MAPPING_MISSION_1.copy()
 
         db.shareMappingMission(OWNERID, mappingMission1)
-        val live = db.getSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        val live = db.getSharedMappingMission(mappingMission1.sharedId!!)
 
         val observer = Observer<MappingMission> {
             if (it != null) {
@@ -246,7 +246,7 @@ class FirebaseMappingMissionDaoTest {
                 counter.countDown()
             }
         }
-        val liveShared = db.getSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        val liveShared = db.getSharedMappingMission(mappingMission1.sharedId!!)
 
         liveShared.observeForever {
             if (it != null) {
@@ -265,7 +265,7 @@ class FirebaseMappingMissionDaoTest {
 
         val mappingMission1 = MAPPING_MISSION_1.copy()
 
-        assertThat(mappingMission1.state, equalTo(State.RAM))
+        assertThat(mappingMission1.state, equalTo(State.NOT_STORED))
         db.storeMappingMission(OWNERID, mappingMission1)
         db.shareMappingMission(OWNERID, mappingMission1)
 
@@ -287,7 +287,7 @@ class FirebaseMappingMissionDaoTest {
 
         val counter = CountDownLatch(2)
 
-        assertThat(mappingMission1.state, equalTo(State.RAM))
+        assertThat(mappingMission1.state, equalTo(State.NOT_STORED))
         db.shareMappingMission(OWNERID, mappingMission1)
         db.storeMappingMission(OWNERID, mappingMission1)
 

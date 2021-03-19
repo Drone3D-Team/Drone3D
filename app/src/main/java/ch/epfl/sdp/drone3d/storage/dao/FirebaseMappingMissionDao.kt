@@ -6,14 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 
 class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingMissionDao {
 
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
+    private var privateMappingMissionsIsInit: Boolean = false
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
+    private var sharedMappingMissionsIsInit: Boolean = false
 
     companion object {
         private const val TAG = "FirebaseMappingMissionDao"
@@ -31,19 +31,6 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         return database.getReference(MAPPING_MISSIONS_PATH)
     }
 
-    override fun getPrivateMappingMission(
-        ownerUid: String,
-        privateId: String
-    ): LiveData<MappingMission> {
-        return getMappingMission(ownerUid,privateId)
-    }
-
-    override fun getSharedMappingMission(
-            sharedId: String,
-    ): LiveData<MappingMission> {
-        return getMappingMission(null,sharedId);
-    }
-
     private fun getMappingMission(ownerUid: String?, id: String):LiveData<MappingMission>{
         val mission: MutableLiveData<MappingMission> = MutableLiveData()
 
@@ -58,67 +45,74 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
             }
         }
 
-        val rootRef = if(ownerUid!=null) privateMappingMissionRef(ownerUid) else  sharedMappingMissionRef()
+        val rootRef = if(ownerUid!=null) privateMappingMissionRef(ownerUid) else sharedMappingMissionRef()
         rootRef.child(id).addListenerForSingleValueEvent(missionListener)
         return mission
     }
 
+    override fun getPrivateMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission> {
+        return getMappingMission(ownerUid,privateId)
+    }
 
-    override fun getPrivateMappingMissions(ownerUid: String): LiveData<List<MappingMission>> {
-        val missionsListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val missions = dataSnapshot.children.map { c ->
-                    c.getValue(MappingMission::class.java)!!
+    override fun getSharedMappingMission(sharedId: String, ): LiveData<MappingMission> {
+        return getMappingMission(null,sharedId);
+    }
+
+    private fun getMappingMission(ownerUid: String?): LiveData<List<MappingMission>>{
+        var mappingMissionIsInit = if(ownerUid!=null) privateMappingMissionsIsInit else sharedMappingMissionsIsInit
+        val rootRef = if(ownerUid!=null) privateMappingMissionRef(ownerUid) else sharedMappingMissionRef()
+        val mappingMissions = if(ownerUid!=null) privateMappingMissions else sharedMappingMissions
+
+        if(!mappingMissionIsInit){
+            val missionsListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val missionsSnapshot = dataSnapshot.children.map { c ->
+                        c.getValue(MappingMission::class.java)!!
+                    }
+                    mappingMissions.value = missionsSnapshot
                 }
-                privateMappingMissions.value = missions
-            }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "getPrivateMappingMissions:onCancelled", databaseError.toException())
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Log.w(TAG, "getMappingMissions:onCancelled", databaseError.toException())
+                }
+            }
+            rootRef.addValueEventListener(missionsListener)
+            if(ownerUid!=null){
+                privateMappingMissionsIsInit=true
+            } else{
+                sharedMappingMissionsIsInit=true
             }
         }
-        privateMappingMissionRef(ownerUid).addValueEventListener(missionsListener)
+        return mappingMissions
+    }
 
-        return privateMappingMissions
+    override fun getPrivateMappingMissions(ownerUid: String): LiveData<List<MappingMission>> {
+        return getMappingMission(ownerUid)
     }
 
     override fun getSharedMappingMissions(): LiveData<List<MappingMission>> {
-        val missionsListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val missions = dataSnapshot.children.map { c ->
-                    c.getValue(MappingMission::class.java)!!
-                }
-                sharedMappingMissions.value = missions
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "getSharedMappingMissions:onCancelled", databaseError.toException())
-            }
-        }
-        sharedMappingMissionRef().addValueEventListener(missionsListener)
-
-        return sharedMappingMissions
+        return getMappingMission(null)
     }
 
     override fun storeMappingMission(ownerUid: String, mappingMission: MappingMission) {
-        val id = privateMappingMissionRef(ownerUid).push().key
-        mappingMission.privateId = id;
+        val privateId = privateMappingMissionRef(ownerUid).push().key
+        mappingMission.privateId = privateId;
         mappingMission.ownerUid = ownerUid;
         when(mappingMission.state){
             // Not already stored => only in private repo
-            State.RAM -> mappingMission.state = State.PRIVATE
+            State.NOT_STORED -> mappingMission.state = State.PRIVATE
             // Already stored in shared repo => private and shared
             State.SHARED -> {
                 mappingMission.state = State.PRIVATE_AND_SHARED
 
                 // Update state and privateId in shared repo
                 val refSharedMission =  sharedMappingMissionRef().child(mappingMission.sharedId!!);
-                refSharedMission.child(PRIVATE_ID_PATH).setValue(id)
+                refSharedMission.child(PRIVATE_ID_PATH).setValue(privateId)
                 refSharedMission.child(STATE_PATH).setValue(State.PRIVATE_AND_SHARED)
             }
             else -> {}
         }
-        privateMappingMissionRef(ownerUid).child(id!!).setValue(mappingMission)
+        privateMappingMissionRef(ownerUid).child(privateId!!).setValue(mappingMission)
     }
 
 
@@ -128,7 +122,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         mappingMission.ownerUid = ownerUid;
         when(mappingMission.state){
             // Not already stored => only in shared repo
-            State.RAM -> mappingMission.state = State.SHARED
+            State.NOT_STORED -> mappingMission.state = State.SHARED
             // Already stored in private repo => private and shared
             State.PRIVATE -> {
                 mappingMission.state = State.PRIVATE_AND_SHARED
@@ -150,7 +144,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
                 if (mission != null) {
 
                     // We need to update the shared copy in case there is one
-                    if(mission.state == State.PRIVATE_AND_SHARED && mission.sharedId != null){
+                    if(mission.state == State.PRIVATE_AND_SHARED){
 
                         // Remove privateId and change state
                         val refSharedMission =  sharedMappingMissionRef().child(mission.sharedId!!);
@@ -160,7 +154,6 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
                     // Remove mission from the private repo
                     privateMappingMissionRef(ownerUid).child(privateId).removeValue()
                 }
-
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -178,7 +171,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
                 if (mission != null) {
 
                     // We need to update the private copy in case there is one
-                    if(mission.state == State.PRIVATE_AND_SHARED && mission.privateId != null){
+                    if(mission.state == State.PRIVATE_AND_SHARED){
 
                         // Remove sharedId and change state in private copy
                         val refPrivateMission = privateMappingMissionRef(ownerUid).child(mission.privateId!!)
@@ -188,7 +181,6 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
                     // Remove mission from the shared repo
                     sharedMappingMissionRef().child(sharedId).removeValue()
                 }
-
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -207,6 +199,5 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         if(sharedId != null){
             sharedMappingMissionRef().child(sharedId).removeValue()
         }
-
     }
 }

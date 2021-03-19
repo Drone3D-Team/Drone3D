@@ -57,14 +57,14 @@ class MappingMissionRepositoryTest {
 
         val expectedData = MutableLiveData<MappingMission>()
         expectedData.value = testMission
-        Mockito.`when`(dao.getSharedMappingMission(testOwnerUid, testSharedId))
+        Mockito.`when`(dao.getSharedMappingMission(testSharedId))
             .thenReturn(expectedData)
 
         assertThat(
-            repo.getSharedMappingMission(testOwnerUid, testSharedId),
+            repo.getSharedMappingMission(testSharedId),
             equalTo(expectedData as LiveData<MappingMission>)
         )
-        Mockito.verify(dao, Mockito.times(1)).getSharedMappingMission(testOwnerUid, testSharedId)
+        Mockito.verify(dao, Mockito.times(1)).getSharedMappingMission(testSharedId)
     }
 
     @Test

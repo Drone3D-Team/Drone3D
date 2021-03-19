@@ -23,7 +23,7 @@ class MappingMissionRepository {
     private val dao: MappingMissionDao = daoProvider()
 
     /**
-     * Returns the once updated private mapping mission with id [mappingId] and owned by [privateId]
+     * Returns the once updated private mapping mission with id [mappingId] and owned by [ownerUid]
      */
     fun getPrivateMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission> {
         return dao.getPrivateMappingMission(ownerUid,privateId)
@@ -32,8 +32,8 @@ class MappingMissionRepository {
     /**
      * Returns the once updated shared mapping mission with id [mappingId] and owned by [privateId]
      */
-    fun getSharedMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission> {
-        return dao.getSharedMappingMission(ownerUid,privateId)
+    fun getSharedMappingMission(ownerUid: String): LiveData<MappingMission> {
+        return dao.getSharedMappingMission(ownerUid)
     }
 
     /**
