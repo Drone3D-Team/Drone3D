@@ -68,7 +68,7 @@ class MainActivityTest {
         Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 

@@ -1,10 +1,10 @@
 package ch.epfl.sdp.drone3d
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.data.MappingMission
 
 /**
@@ -29,7 +29,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapping_mission_selection)
 
-        selectedStorageTypeToggleButton = findViewById(R.id.toggleButton)
+        selectedStorageTypeToggleButton = findViewById(R.id.mappingMissionToggleButton)
         mappingMissionListView = findViewById(R.id.mappingMissionList)
         createNewMappingMissionButton = findViewById(R.id.createMappingMissionButton)
 
