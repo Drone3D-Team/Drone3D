@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import ch.epfl.sdp.drone3d.data.MappingMission
+import ch.epfl.sdp.drone3d.storage.data.MappingMission
 
 /**
  * The activity that allows the user to browse his mapping missions.
@@ -55,10 +55,10 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private fun populateMappingMissionsList() {
         for (i in 0..10) {
-            mappingMissionPrivateList.add(MappingMission(emptyList(), "Mission $i"))
+            mappingMissionPrivateList.add(MappingMission("Mission $i",emptyList()))
         }
         for (i in 10..20) {
-            mappingMissionSharedList.add(MappingMission(emptyList(), "Mission $i"))
+            mappingMissionSharedList.add(MappingMission("Mission $i",emptyList()))
         }
     }
 
