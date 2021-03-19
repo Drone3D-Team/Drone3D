@@ -5,7 +5,6 @@
     <string name="pseudo_text">Pseudo</string>
     <string name="login_button_text">Login</string>
     <string name="register_button_text">Create account</string>
-    <string name="back_button_text">Back</string>
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
