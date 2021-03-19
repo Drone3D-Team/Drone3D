@@ -1,6 +1,5 @@
 package ch.epfl.sdp.drone3d.auth
 
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,7 +18,7 @@ class AuthenticationServiceTest {
     @Test
     fun testCurrentUser() {
         val auth = mock(FirebaseAuth::class.java)
-        val service = AuthenticationServiceImpl(auth)
+        val service = FirebaseAuthenticationService(auth)
 
         val user = mock(FirebaseUser::class.java)
         `when`(auth.currentUser).thenReturn(user)
@@ -32,7 +31,7 @@ class AuthenticationServiceTest {
     @Test
     fun testFunctionCalls() {
         val auth = mock(FirebaseAuth::class.java)
-        val service = AuthenticationServiceImpl(auth)
+        val service = FirebaseAuthenticationService(auth)
 
         `when`(auth.createUserWithEmailAndPassword(anyString(), anyString())).thenReturn(Tasks.forResult(null))
         `when`(auth.signInWithEmailAndPassword(anyString(), anyString())).thenReturn(Tasks.forResult(null))

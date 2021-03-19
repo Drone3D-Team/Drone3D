@@ -9,5 +9,16 @@
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
+    <string name="log_in">Log in</string>
+    <string name="connect_a_drone">Connect a drone</string>
+    <string name="create_a_new_itinerary">Create a new itinerary</string>
+    <string name="browse_itineraries">Browse itineraries</string>
+    <string name="login_success">Login succeed</string>
+    <string name="login_fail">Login failed</string>
+    <string name="register_success">Registration successful</string>
+    <string name="register_fail">Registration failed</string>
+    <string name="register_info_default">Enter your register information</string>
+    <string name="login_info_default">Enter your login information</string>
+>>>>>>> main
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
 </resources>

@@ -20,22 +20,21 @@ class MainActivity : AppCompatActivity() {
     /**
      * Go to LoginActivity when log_in_button is clicked
      */
-    fun goToLogin(view: View) {
+    fun goToLogin(@Suppress("UNUSED_PARAMETER") view: View) {
         open(LoginActivity::class)
     }
 
     /**
      * Go to ItineraryCreateActivity when create_itinerary_button is clicked
      */
-    fun goToItineraryCreate(view: View) {
+    fun goToItineraryCreate(@Suppress("UNUSED_PARAMETER") view: View) {
         open(ItineraryCreateActivity::class)
     }
 
     /**
      * Go to BrowseItineraryActivity when browse_itinerary_button is clicked
-     * TODO : replace TempTestActivity by the BrowseItineraryActivity once it exists
      */
-    fun goToItineraryBrowse(view: View) {
+    fun goToItineraryBrowse(@Suppress("UNUSED_PARAMETER") view: View) {
         open(MappingMissionSelectionActivity::class)
     }
 
@@ -43,7 +42,7 @@ class MainActivity : AppCompatActivity() {
      * Go to DroneConnectActivity when connect_drone_button is clicked
      * TODO : replace TempTestActivity by DroneConnectActivity once it exists
      */
-    fun goToDroneConnect(view: View) {
+    fun goToDroneConnect(@Suppress("UNUSED_PARAMETER") view: View) {
         open(TempTestActivity::class)
     }
 
