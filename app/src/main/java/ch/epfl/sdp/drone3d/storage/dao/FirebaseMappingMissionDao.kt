@@ -5,12 +5,39 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.storage.data.State
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import javax.inject.Inject
 
-class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingMissionDao {
+class FirebaseMappingMissionDao :MappingMissionDao {
+
+    private lateinit var database: FirebaseDatabase
+
+    /**
+     * Default constructor, injected through hilt
+     */
+    @Inject
+    constructor()
+
+    /**
+     * Constructor to specify the firebase database to use.
+     *
+     * This is mostly for testing purpose
+     */
+    constructor(database: FirebaseDatabase) : this() {
+        this.database = database
+    }
+
+    private fun getDatabase(): FirebaseDatabase {
+        // Query the database if it is not initialized yet
+        if (!this::database.isInitialized)
+            database = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")//.setPersistenceEnabled(true)
+        return database
+    }
 
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
@@ -25,11 +52,11 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
     }
 
     private fun privateMappingMissionRef(UID: String): DatabaseReference {
-        return database.getReference("users/$UID/$MAPPING_MISSIONS_PATH")
+        return getDatabase().getReference("users/$UID/$MAPPING_MISSIONS_PATH")
     }
 
     private fun sharedMappingMissionRef(): DatabaseReference {
-        return database.getReference(MAPPING_MISSIONS_PATH)
+        return getDatabase().getReference(MAPPING_MISSIONS_PATH)
     }
 
     override fun getPrivateMappingMission(
