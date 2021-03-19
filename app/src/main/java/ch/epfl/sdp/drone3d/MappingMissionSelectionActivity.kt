@@ -15,6 +15,7 @@ import ch.epfl.sdp.drone3d.storage.data.State
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 /**
  * The activity that allows the user to browse his mapping missions.
  */
@@ -107,6 +108,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         }
         for (i in 10..20) {
             mappingMissionDao.shareMappingMission(authService.getCurrentSession()!!.user.uid, MappingMission( "Mission $i", emptyList()))
+
         }
     }
 

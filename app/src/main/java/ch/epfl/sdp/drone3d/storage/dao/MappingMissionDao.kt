@@ -7,20 +7,20 @@ import com.google.android.gms.tasks.Task
 interface MappingMissionDao {
 
     /**
-     * Returns the once updated private mapping mission with id [mappingId] and owned by [privateId]
+     * Returns the once updated private mapping mission with id [privateId] and owned by [ownerUid]
      */
     fun getPrivateMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission>
     /**
-     * Returns the once updated shared mapping mission with id [mappingId] and owned by [privateId]
+     * Returns the once updated shared mapping mission with id [sharedId]
      */
-    fun getSharedMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission>
+    fun getSharedMappingMission(sharedId: String): LiveData<MappingMission>
     /**
-     * Returns the list of private mapping missions owned by [ownerUid], this live data list might
-     * get modified afterwards if a change occurs in the database
+     * Returns the list of private mapping missions owned by [ownerUid], this liveData is
+     * updated in continuous time if it is modified on another device
      */
     fun getPrivateMappingMissions(ownerUid: String): LiveData<List<MappingMission>>
     /**
-     * Returns the list of all shared mapping missions, this live data is updated in continuous
+     * Returns the list of all shared mapping missions, this liveData is updated in continuous
      * time by other users modifications
      */
     fun getSharedMappingMissions(): LiveData<List<MappingMission>>
@@ -33,13 +33,13 @@ interface MappingMissionDao {
      */
     fun shareMappingMission(ownerUid: String, mappingMission: MappingMission)
     /**
-     * Remove the private mappingMission of owner [ownerUid], if was private amd shared,
-     * it will remain shared
+     * Remove the private mapping mission of owner [ownerUid], if it was private and shared,
+     * it will remain in the shared repository
      */
     fun removePrivateMappingMission(ownerUid: String, privateId: String)
     /**
-     * Remove the shared [mappingMission] of owner [ownerUid], if it was private and shared,
-     * it will remain in the shared repository
+     * Remove the shared mapping mission of owner [ownerUid], if it was private and shared,
+     * it will remain in the private repository
      */
     fun removeSharedMappingMission(ownerUid: String, sharedId: String)
     /**
