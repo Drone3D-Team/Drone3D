@@ -13,11 +13,14 @@ import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * Authentication UI, abstract [LoginActivity] and [RegisterActivity] common behavior
+ */
 @AndroidEntryPoint
 abstract class AuthActivity : AppCompatActivity()  {
 
     protected lateinit var infoText: TextView
-    protected lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: ProgressBar
 
     @Inject lateinit var authService: AuthenticationService
 
@@ -36,6 +39,10 @@ abstract class AuthActivity : AppCompatActivity()  {
         progressBar.visibility = View.GONE
     }
 
+    /**
+     * Start the authentication process given the [authTask] that is being complete and
+     * the id [failMessage] of a String the show ehn the task fails
+     */
     protected fun startProcess(authTask: Task<AuthResult>, failMessage: Int) {
         progressBar.visibility = View.VISIBLE
         infoText.visibility = View.GONE
@@ -58,5 +65,8 @@ abstract class AuthActivity : AppCompatActivity()  {
             }
     }
 
+    /**
+     * Called when the authentication task is a success
+     */
     protected abstract fun success()
 }

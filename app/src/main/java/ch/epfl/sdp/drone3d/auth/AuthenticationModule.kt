@@ -6,6 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/**
+ * Hilt module that provide the [AuthenticationService]
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AuthenticationModule {
