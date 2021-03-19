@@ -167,7 +167,7 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
                 val mission = dataSnapshot.getValue<MappingMission>()
                 if (mission != null) {
                     if(mission.state == State.PRIVATE_AND_SHARED && mission.privateId != null){
-                        privateMappingMissionRef(ownerUid).child(mission.privateId!!).child("privateId").removeValue()
+                        privateMappingMissionRef(ownerUid).child(mission.privateId!!).child("sharedId").removeValue()
                         privateMappingMissionRef(ownerUid).child(mission.privateId!!).child("state").setValue(State.PRIVATE)
                     }
                     sharedMappingMissionRef().child(sharedId).removeValue()
