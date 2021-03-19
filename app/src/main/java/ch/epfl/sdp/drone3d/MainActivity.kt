@@ -32,11 +32,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Go to BrowseItineraryActivity when browse_itinerary_button is clicked
-     * TODO : replace TempTestActivity by the BrowseItineraryActivity once it exists
+     * Go to MappingMissionSelectionActivity when browse_itinerary_button is clicked
      */
-    fun goToItineraryBrowse(@Suppress("UNUSED_PARAMETER") view: View) {
-        open(TempTestActivity::class)
+    fun goToMappingMissionSelection(@Suppress("UNUSED_PARAMETER") view: View) {
+        open(MappingMissionSelectionActivity::class)
     }
 
     /**

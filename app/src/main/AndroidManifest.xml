@@ -13,6 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D">
+        <activity android:name=".MappingMissionSelectionActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".ItineraryCreateActivity"
             android:parentActivityName=".MainActivity"/>
         <activity

@@ -62,15 +62,12 @@ class MainActivityTest {
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by ItineraryBrowseActivity once it exists
-     */
     @Test
-    fun goToItineraryBrowseWorks() {
+    fun goToMappingMissionSelectionWorks() {
         Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 
