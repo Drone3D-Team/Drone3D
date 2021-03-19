@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ch.epfl.sdp.drone3d">
+    <!-- Permission used by mapbox -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".Drone3D"
@@ -11,6 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D">
+        <activity android:name=".ItineraryCreateActivity"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".MainActivity" >
