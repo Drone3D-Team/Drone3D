@@ -15,7 +15,6 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
 
-
     companion object {
         private const val TAG = "FirebaseMappingMissionDao"
     }
@@ -32,43 +31,34 @@ class FirebaseMappingMissionDao(private val database: FirebaseDatabase):MappingM
         ownerUid: String,
         privateId: String
     ): LiveData<MappingMission> {
-        val privateMission: MutableLiveData<MappingMission> = MutableLiveData()
-
-        val missionListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val mission = dataSnapshot.getValue<MappingMission>()
-                privateMission.value = mission
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "getPrivateMappingMission:onCancelled", databaseError.toException())
-            }
-        }
-        privateMappingMissionRef(ownerUid).child(privateId).addListenerForSingleValueEvent(missionListener)
-
-        return privateMission;
+        return getMappingMission(ownerUid,privateId)
     }
 
     override fun getSharedMappingMission(
-            ownerUid: String,
-            privateId: String
+            sharedId: String,
     ): LiveData<MappingMission> {
-        val sharedMission: MutableLiveData<MappingMission> = MutableLiveData()
+        return getMappingMission(null,sharedId);
+    }
+
+    private fun getMappingMission(ownerUid: String?, id: String):LiveData<MappingMission>{
+        val mission: MutableLiveData<MappingMission> = MutableLiveData()
 
         val missionListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val mission = dataSnapshot.getValue<MappingMission>()
-                sharedMission.value = mission
+                val missionSnapshot = dataSnapshot.getValue<MappingMission>()
+                mission.value = missionSnapshot
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "getSharedMappingMission:onCancelled", databaseError.toException())
+                Log.w(TAG, "getMappingMission:onCancelled", databaseError.toException())
             }
         }
-        sharedMappingMissionRef().child(privateId).addListenerForSingleValueEvent(missionListener)
 
-        return sharedMission;
+        val rootRef = if(ownerUid!=null) privateMappingMissionRef(ownerUid) else  sharedMappingMissionRef()
+        rootRef.child(id).addListenerForSingleValueEvent(missionListener)
+        return mission
     }
+
 
     override fun getPrivateMappingMissions(ownerUid: String): LiveData<List<MappingMission>> {
         val missionsListener = object : ValueEventListener {

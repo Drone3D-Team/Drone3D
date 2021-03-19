@@ -9,9 +9,13 @@ import com.google.firebase.ktx.Firebase
 
 class MappingMissionRepository {
     companion object {
-        val DEFAULT_DAO = FirebaseMappingMissionDao(
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")//.setPersistenceEnabled(true)
-        )
+        private var DEFAULT_DAO: MappingMissionDao
+
+        init {
+            val database = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+            database.setPersistenceEnabled(true)
+            DEFAULT_DAO = FirebaseMappingMissionDao(database)
+        }
 
         var daoProvider: () -> MappingMissionDao = { DEFAULT_DAO }
     }

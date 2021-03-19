@@ -7,13 +7,13 @@ import com.google.android.gms.tasks.Task
 interface MappingMissionDao {
 
     /**
-     * Returns the once updated private mapping mission with id [mappingId] and owned by [privateId]
+     * Returns the once updated private mapping mission with id [privateId] and owned by [ownerUid]
      */
     fun getPrivateMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission>
     /**
-     * Returns the once updated shared mapping mission with id [mappingId] and owned by [privateId]
+     * Returns the once updated shared mapping mission with id [sharedId]
      */
-    fun getSharedMappingMission(ownerUid: String, privateId: String): LiveData<MappingMission>
+    fun getSharedMappingMission(sharedId: String): LiveData<MappingMission>
     /**
      * Returns the list of private mapping missions owned by [ownerUid], this live data list might
      * get modified afterwards if a change occurs in the database
