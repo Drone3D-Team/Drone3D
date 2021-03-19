@@ -497,7 +497,6 @@ class FirebaseMappingMissionDaoTest {
                 val map = snapshot.getValue<MappingMission>()!!;
                 assertThat(map.state, equalTo(State.PRIVATE))
                 assertThat(map.ownerUid, equalTo(OWNERID))
-                assertNull(map.sharedId)
 
                 counter.countDown()
             }
@@ -517,6 +516,7 @@ class FirebaseMappingMissionDaoTest {
                 val map = snapshot.getValue<MappingMission>()!!;
 
                 assertThat(map.state, equalTo(State.SHARED))
+                assertThat(map.name, equalTo(mappingMission1.name))
 
                 counter.countDown()
             }
