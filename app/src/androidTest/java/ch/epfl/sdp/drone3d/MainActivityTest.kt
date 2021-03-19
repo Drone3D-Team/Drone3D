@@ -48,15 +48,13 @@ class MainActivityTest {
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by ItineraryCreateActivity once it exists
-     */
+
     @Test
     fun goToItineraryCreateWorks() {
         Espresso.onView(ViewMatchers.withId(R.id.create_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
         )
     }
 
