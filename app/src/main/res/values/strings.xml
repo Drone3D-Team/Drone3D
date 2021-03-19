@@ -5,6 +5,15 @@
     <string name="pseudo_text">Pseudo</string>
     <string name="login_button_text">Login</string>
     <string name="register_button_text">Create account</string>
-    <string name="back_button_text">Back</string>
+    <string name="log_in">Log in</string>
+    <string name="connect_a_drone">Connect a drone</string>
+    <string name="create_a_new_itinerary">Create a new itinerary</string>
+    <string name="browse_itineraries">Browse itineraries</string>
+    <string name="login_success">Login succeed</string>
+    <string name="login_fail">Login failed</string>
+    <string name="register_success">Registration successful</string>
+    <string name="register_fail">Registration failed</string>
+    <string name="register_info_default">Enter your register information</string>
+    <string name="login_info_default">Enter your login information</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
 </resources>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/register_activity"
     tools:context=".RegisterActivity">
 
     <TextView
@@ -90,6 +91,7 @@
         android:id="@+id/registerButton"
         android:layout_width="120dp"
         android:layout_height="70dp"
+        android:onClick="register"
         android:text="@string/register_button_text"
         app:layout_constraintBottom_toBottomOf="@id/loginButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +120,7 @@
         android:layout_width="120dp"
         android:layout_height="70dp"
         android:layout_marginBottom="100dp"
+        android:onClick="login"
         android:text="@string/login_button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/registerButton"
@@ -134,15 +137,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/infoText" />
-
-    <Button
-        android:id="@+id/backButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/back_button_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
