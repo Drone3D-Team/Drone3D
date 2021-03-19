@@ -1,10 +1,14 @@
 package ch.epfl.sdp.drone3d
 
 import android.widget.ToggleButton
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -59,6 +63,15 @@ class MappingMissionSelectionActivityTest {
             .perform(ViewActions.click())
         onView(withId(R.id.mappingMissionToggleButton))
             .check(matches(if (initialState) isChecked() else isNotChecked()))
+    }
+
+    @Test
+    fun goToItineraryCreateWorks() {
+        onView(withId(R.id.createMappingMissionButton))
+            .perform(ViewActions.click())
+        Intents.intended(
+            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryCreateActivity::class.java.name))
+        )
     }
 
 }

@@ -48,7 +48,7 @@
         android:id="@+id/browse_itinerary_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:onClick="goToItineraryBrowse"
+        android:onClick="goToMappingMissionSelection"
         android:text="@string/browse_itineraries"
         app:layout_constraintBottom_toTopOf="@+id/connect_drone_button"
         app:layout_constraintEnd_toEndOf="parent"

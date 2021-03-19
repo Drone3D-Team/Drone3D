@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Go to BrowseItineraryActivity when browse_itinerary_button is clicked
+     * Go to MappingMissionSelectionActivity when browse_itinerary_button is clicked
      */
-    fun goToItineraryBrowse(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun goToMappingMissionSelection(@Suppress("UNUSED_PARAMETER") view: View) {
         open(MappingMissionSelectionActivity::class)
     }
 

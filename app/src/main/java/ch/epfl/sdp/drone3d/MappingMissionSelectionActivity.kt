@@ -1,5 +1,6 @@
 package ch.epfl.sdp.drone3d
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
@@ -46,7 +47,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         updateList()
 
         createNewMappingMissionButton.setOnClickListener {
-            //TODO: go to mapping mission creation
+            val intent = Intent(this, ItineraryCreateActivity::class.java).apply {}
+            startActivity(intent)
         }
 
     }
