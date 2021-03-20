@@ -13,41 +13,61 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.auth.AuthenticationModule
+import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 /**
  * Test for the mapping mission selection activity
  */
 @HiltAndroidTest
-@UninstallModules(MappingMissionDaoModule::class)
+@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
 class MappingMissionSelectionActivityTest {
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
         .around(ActivityScenarioRule(MappingMissionSelectionActivity::class.java))
 
-    private fun createMock(): MappingMissionDao {
-        val mock = Mockito.mock(MappingMissionDao::class.java)
-        val liveData = MutableLiveData<List<MappingMission>>(listOf(MappingMission("name", listOf<LatLong>())))
-        Mockito.`when`(mock.getPrivateMappingMissions(Mockito.anyString())).thenReturn(liveData)
-        Mockito.`when`(mock.getSharedMappingMissions()).thenReturn(liveData)
+    private fun mappingMissionDaoMock(): MappingMissionDao {
+        val mappingMission = Mockito.mock(MappingMissionDao::class.java)
+        val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
+        Mockito.`when`(mappingMission.getPrivateMappingMissions(Mockito.anyString())).thenReturn(liveData)
+        Mockito.`when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
-        return mock
+        return mappingMission
+    }
+
+    companion object{
+        private const val USER_UID = "asdfg"
+    }
+
+    private fun authenticationServiceMock(): AuthenticationService {
+        val authService = Mockito.mock(AuthenticationService::class.java)
+
+        val user = Mockito.mock(FirebaseUser::class.java)
+        Mockito.`when`(user.uid).thenReturn(USER_UID)
+        val userSession = UserSession(user)
+        Mockito.`when`(authService.getCurrentSession()).thenReturn(userSession)
+
+        return authService
     }
 
     @BindValue
-    val mappingMissionDao : MappingMissionDao = createMock()
+    val authService: AuthenticationService = authenticationServiceMock()
+    @BindValue
+    val mappingMissionDao : MappingMissionDao = mappingMissionDaoMock()
 
     @Before
     fun setUp() {
@@ -72,8 +92,6 @@ class MappingMissionSelectionActivityTest {
     @Test
     fun clickOnSwitchChangesPrivateOrSharedMode() {
         var initialState = false
-
-        Log.i("TAG","--1" +mappingMissionDao)
 
         //Sets initial state to the current value of the toggle button
         onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->

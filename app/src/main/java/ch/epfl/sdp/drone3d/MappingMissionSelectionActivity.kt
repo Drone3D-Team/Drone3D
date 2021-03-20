@@ -66,33 +66,23 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
 
     private fun setListenerMappingMissions(){
-        if(authService.hasActiveSession()){
-            val ownerId = authService.getCurrentSession()!!.user.uid
+        val ownerId = authService.getCurrentSession()!!.user.uid
 
-            //println("--2" + mappingMissionDao)
-            Log.i("TAG","--2" +mappingMissionDao)
+        val liveSharedMappingMissions = mappingMissionDao.getSharedMappingMissions()
+        liveSharedMappingMissions.observe(this, Observer {
+            mappingMissionSharedList = it.toMutableList()
+            if(currentType == StorageType.SHARED){
+                updateList()
+            }
+        })
 
-
-            val liveSharedMappingMissions = mappingMissionDao.getSharedMappingMissions()
-            liveSharedMappingMissions.observe(this, Observer {
-                mappingMissionSharedList = it.toMutableList()
-                if(currentType == StorageType.SHARED){
-                    updateList()
-                }
-            })
-
-            val livePrivateMappingMissions = mappingMissionDao.getPrivateMappingMissions(ownerId)
-            livePrivateMappingMissions.observe(this, Observer {
-                mappingMissionPrivateList = it.toMutableList()
-                if(currentType == StorageType.PRIVATE){
-                    updateList()
-                }
-            })
-
-        }else{
-            TODO("Need to handle case where user is not log in")
-        }
-
+        val livePrivateMappingMissions = mappingMissionDao.getPrivateMappingMissions(ownerId)
+        livePrivateMappingMissions.observe(this, Observer {
+            mappingMissionPrivateList = it.toMutableList()
+            if(currentType == StorageType.PRIVATE){
+                updateList()
+            }
+        })
     }
 
 
