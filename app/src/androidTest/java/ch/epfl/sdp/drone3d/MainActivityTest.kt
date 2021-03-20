@@ -1,5 +1,6 @@
 package ch.epfl.sdp.drone3d
 
+import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
@@ -9,18 +10,43 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.auth.AuthenticationModule
+import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
+import ch.epfl.sdp.drone3d.storage.data.LatLong
+import ch.epfl.sdp.drone3d.storage.data.MappingMission
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 
 @HiltAndroidTest
+@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
 class MainActivityTest {
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-        .around(ActivityScenarioRule(MainActivity::class.java))
+            .around(ActivityScenarioRule(MainActivity::class.java))
+
+
+    private fun mappingMissionDaoMock(): MappingMissionDao {
+        val mappingMission = Mockito.mock(MappingMissionDao::class.java)
+        val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
+        Mockito.`when`(mappingMission.getPrivateMappingMissions(Mockito.anyString())).thenReturn(liveData)
+        Mockito.`when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
+
+        return mappingMission
+    }
+
+    @BindValue
+    val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
+    @BindValue
+    val mappingMissionDao : MappingMissionDao = mappingMissionDaoMock()
 
     @Before
     fun setUp() {
@@ -63,11 +89,22 @@ class MainActivityTest {
     }
 
     @Test
-    fun goToMappingMissionSelectionWorks() {
+    fun goToMappingMissionSelectionWorksWhenActiveSession() {
+        Mockito.`when`(authService.hasActiveSession()).thenReturn(true)
         Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
             hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun goToMappingMissionSelectionWorksWithoutActiveSession() {
+        Mockito.`when`(authService.hasActiveSession()).thenReturn(false)
+        Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
+                .perform(ViewActions.click())
+        Intents.intended(
+                hasComponent(hasClassName(LoginActivity::class.java.name))
         )
     }
 
