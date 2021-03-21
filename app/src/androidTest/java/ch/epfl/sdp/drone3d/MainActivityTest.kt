@@ -9,14 +9,18 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.*
+import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class MainActivityTest {
 
     @get:Rule
-    val intentsTestRule = ActivityScenarioRule(MainActivity::class.java)
+    var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+        .around(ActivityScenarioRule(MainActivity::class.java))
 
     @Before
     fun setUp() {
@@ -48,27 +52,22 @@ class MainActivityTest {
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by ItineraryCreateActivity once it exists
-     */
+
     @Test
     fun goToItineraryCreateWorks() {
         Espresso.onView(ViewMatchers.withId(R.id.create_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by ItineraryBrowseActivity once it exists
-     */
     @Test
-    fun goToItineraryBrowseWorks() {
+    fun goToMappingMissionSelectionWorks() {
         Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 
