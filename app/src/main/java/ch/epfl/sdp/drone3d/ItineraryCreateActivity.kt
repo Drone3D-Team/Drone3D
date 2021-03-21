@@ -2,6 +2,7 @@ package ch.epfl.sdp.drone3d
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
@@ -11,6 +12,7 @@ import com.mapbox.mapboxsdk.maps.Style
  */
 class ItineraryCreateActivity : AppCompatActivity() {
     private var mapView: MapView? = null
+    private var locationComponentManager: LocationComponentManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,9 +28,11 @@ class ItineraryCreateActivity : AppCompatActivity() {
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
 
+            locationComponentManager = LocationComponentManager(this, mapboxMap)
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
-
+                locationComponentManager!!.setCustomAccuracyColor(R.color.purple_700)
+                locationComponentManager!!.enableLocationComponent(it)
 
             }
 
@@ -64,4 +68,5 @@ class ItineraryCreateActivity : AppCompatActivity() {
         super.onDestroy()
         mapView?.onDestroy()
     }
+
 }
