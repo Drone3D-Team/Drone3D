@@ -8,7 +8,7 @@
 
 [GNU Affero General Public License version 3](/LICENSE)
 
-Drone3D a mobile application that helps you plan drone flights to build 3D model of a scene.
+Drone3D a mobile application that helps you plan drone flights to build 3D model of a scene.  
 Copyright (C) 2021  Drone3D-Team
 
 This program is free software: you can redistribute it and/or modify
