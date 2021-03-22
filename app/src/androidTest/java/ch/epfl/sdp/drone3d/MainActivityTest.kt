@@ -8,21 +8,21 @@ import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.junit.runner.RunWith
 import org.mockito.Mockito
 
 @HiltAndroidTest
@@ -90,7 +90,12 @@ class MainActivityTest {
 
     @Test
     fun goToMappingMissionSelectionWorksWhenActiveSession() {
+        val user = Mockito.mock(FirebaseUser::class.java)
+
+        Mockito.`when`(user.uid).thenReturn("id")
         Mockito.`when`(authService.hasActiveSession()).thenReturn(true)
+        Mockito.`when`(authService.getCurrentSession()).thenReturn(UserSession(user))
+
         Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
             .perform(ViewActions.click())
         Intents.intended(
