@@ -41,7 +41,7 @@ class MappingMissionSelectionActivityTest {
     private fun mappingMissionDaoMock(): MappingMissionDao {
         val mappingMission = mock(MappingMissionDao::class.java)
         val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
-        `when`(mappingMission.getPrivateMappingMissions(anyString()))
+        `when`(mappingMission.getPrivateMappingMissions(anyString())).thenReturn(liveData)
         `when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
         return mappingMission
