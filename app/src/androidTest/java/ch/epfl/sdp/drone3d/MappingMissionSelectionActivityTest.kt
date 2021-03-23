@@ -1,6 +1,5 @@
 package ch.epfl.sdp.drone3d
 
-import android.util.Log
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
@@ -11,7 +10,6 @@ import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
@@ -27,7 +25,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 
 /**
  * Test for the mapping mission selection activity
@@ -41,33 +39,34 @@ class MappingMissionSelectionActivityTest {
         .around(ActivityScenarioRule(MappingMissionSelectionActivity::class.java))
 
     private fun mappingMissionDaoMock(): MappingMissionDao {
-        val mappingMission = Mockito.mock(MappingMissionDao::class.java)
+        val mappingMission = mock(MappingMissionDao::class.java)
         val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
-        Mockito.`when`(mappingMission.getPrivateMappingMissions(Mockito.anyString())).thenReturn(liveData)
-        Mockito.`when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
+        `when`(mappingMission.getPrivateMappingMissions(anyString()))
+        `when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
         return mappingMission
     }
 
-    companion object{
+    companion object {
         private const val USER_UID = "asdfg"
     }
 
     private fun authenticationServiceMock(): AuthenticationService {
-        val authService = Mockito.mock(AuthenticationService::class.java)
+        val authService = mock(AuthenticationService::class.java)
 
-        val user = Mockito.mock(FirebaseUser::class.java)
-        Mockito.`when`(user.uid).thenReturn(USER_UID)
+        val user = mock(FirebaseUser::class.java)
+        `when`(user.uid).thenReturn(USER_UID)
         val userSession = UserSession(user)
-        Mockito.`when`(authService.getCurrentSession()).thenReturn(userSession)
+        `when`(authService.getCurrentSession()).thenReturn(userSession)
 
         return authService
     }
 
     @BindValue
     val authService: AuthenticationService = authenticationServiceMock()
+
     @BindValue
-    val mappingMissionDao : MappingMissionDao = mappingMissionDaoMock()
+    val mappingMissionDao: MappingMissionDao = mappingMissionDaoMock()
 
     @Before
     fun setUp() {

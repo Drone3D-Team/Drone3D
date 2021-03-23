@@ -2,7 +2,6 @@ package ch.epfl.sdp.drone3d
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ToggleButton
@@ -22,8 +21,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MappingMissionSelectionActivity : AppCompatActivity() {
 
-    @Inject lateinit var mappingMissionDao: MappingMissionDao
-    @Inject lateinit var authService: AuthenticationService
+    @Inject
+    lateinit var mappingMissionDao: MappingMissionDao
+
+    @Inject
+    lateinit var authService: AuthenticationService
 
     private lateinit var selectedStorageTypeToggleButton: ToggleButton
     private lateinit var mappingMissionListView: LinearLayout
@@ -65,13 +67,13 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     }
 
 
-    private fun setListenerMappingMissions(){
+    private fun setListenerMappingMissions() {
         val ownerId = authService.getCurrentSession()!!.user.uid
 
         val liveSharedMappingMissions = mappingMissionDao.getSharedMappingMissions()
         liveSharedMappingMissions.observe(this, Observer {
             mappingMissionSharedList = it.toMutableList()
-            if(currentType == StorageType.SHARED){
+            if (currentType == StorageType.SHARED) {
                 updateList()
             }
         })
@@ -79,7 +81,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val livePrivateMappingMissions = mappingMissionDao.getPrivateMappingMissions(ownerId)
         livePrivateMappingMissions.observe(this, Observer {
             mappingMissionPrivateList = it.toMutableList()
-            if(currentType == StorageType.PRIVATE){
+            if (currentType == StorageType.PRIVATE) {
                 updateList()
             }
         })
@@ -89,15 +91,21 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     private fun populateMappingMissionsList() {
 
         for (i in 0..10) {
-            val mm = MappingMission( "Mission $i", emptyList())
+            val mm = MappingMission("Mission $i", emptyList())
             mappingMissionDao.storeMappingMission(authService.getCurrentSession()!!.user.uid, mm)
-            if(i > 4){
-                mappingMissionDao.shareMappingMission(authService.getCurrentSession()!!.user.uid, mm)
+            if (i > 4) {
+                mappingMissionDao.shareMappingMission(
+                    authService.getCurrentSession()!!.user.uid,
+                    mm
+                )
             }
 
         }
         for (i in 10..20) {
-            mappingMissionDao.shareMappingMission(authService.getCurrentSession()!!.user.uid, MappingMission( "Mission $i", emptyList()))
+            mappingMissionDao.shareMappingMission(
+                authService.getCurrentSession()!!.user.uid,
+                MappingMission("Mission $i", emptyList())
+            )
 
         }
     }
@@ -118,7 +126,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             button.height = 50
             button.width = 100
             button.text = mission.name
-            if(currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED){
+            if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED) {
                 button.text = mission.name + "- S"
             }
             button.setOnClickListener {

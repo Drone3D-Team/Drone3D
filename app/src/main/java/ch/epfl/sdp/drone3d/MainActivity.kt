@@ -42,9 +42,9 @@ class MainActivity : AppCompatActivity() {
      * Go to MappingMissionSelectionActivity when browse_itinerary_button is clicked
      */
     fun goToMappingMissionSelection(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(authService.hasActiveSession()){
+        if (authService.hasActiveSession()) {
             open(MappingMissionSelectionActivity::class)
-        }else{
+        } else {
             goToLogin(view)
         }
     }

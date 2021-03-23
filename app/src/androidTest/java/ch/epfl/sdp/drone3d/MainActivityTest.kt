@@ -1,7 +1,7 @@
 package ch.epfl.sdp.drone3d
 
 import androidx.lifecycle.MutableLiveData
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
@@ -23,7 +23,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
@@ -35,18 +35,19 @@ class MainActivityTest {
 
 
     private fun mappingMissionDaoMock(): MappingMissionDao {
-        val mappingMission = Mockito.mock(MappingMissionDao::class.java)
+        val mappingMission = mock(MappingMissionDao::class.java)
         val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
-        Mockito.`when`(mappingMission.getPrivateMappingMissions(Mockito.anyString())).thenReturn(liveData)
-        Mockito.`when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
+        `when`(mappingMission.getPrivateMappingMissions(anyString())).thenReturn(liveData)
+        `when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
         return mappingMission
     }
 
     @BindValue
-    val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
+    val authService: AuthenticationService = mock(AuthenticationService::class.java)
+
     @BindValue
-    val mappingMissionDao : MappingMissionDao = mappingMissionDaoMock()
+    val mappingMissionDao: MappingMissionDao = mappingMissionDaoMock()
 
     @Before
     fun setUp() {
@@ -72,41 +73,41 @@ class MainActivityTest {
      */
     @Test
     fun goToLoginWorks() {
-        Espresso.onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(LoginActivity::class.java.name))
+                hasComponent(hasClassName(LoginActivity::class.java.name))
         )
     }
 
 
     @Test
     fun goToItineraryCreateWorks() {
-        Espresso.onView(ViewMatchers.withId(R.id.create_itinerary_button))
-            .perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.create_itinerary_button))
+                .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
+                hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
         )
     }
 
     @Test
     fun goToMappingMissionSelectionWorksWhenActiveSession() {
-        val user = Mockito.mock(FirebaseUser::class.java)
+        val user = mock(FirebaseUser::class.java)
 
-        Mockito.`when`(user.uid).thenReturn("id")
-        Mockito.`when`(authService.hasActiveSession()).thenReturn(true)
-        Mockito.`when`(authService.getCurrentSession()).thenReturn(UserSession(user))
+        `when`(user.uid).thenReturn("id")
+        `when`(authService.hasActiveSession()).thenReturn(true)
+        `when`(authService.getCurrentSession()).thenReturn(UserSession(user))
 
-        Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
-            .perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.browse_itinerary_button))
+                .perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+                hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 
     @Test
     fun goToMappingMissionSelectionWorksWithoutActiveSession() {
-        Mockito.`when`(authService.hasActiveSession()).thenReturn(false)
-        Espresso.onView(ViewMatchers.withId(R.id.browse_itinerary_button))
+        `when`(authService.hasActiveSession()).thenReturn(false)
+        onView(ViewMatchers.withId(R.id.browse_itinerary_button))
                 .perform(ViewActions.click())
         Intents.intended(
                 hasComponent(hasClassName(LoginActivity::class.java.name))
@@ -118,9 +119,9 @@ class MainActivityTest {
      */
     @Test
     fun goToDroneConnectWorks() {
-        Espresso.onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
         Intents.intended(
-            hasComponent(hasClassName(TempTestActivity::class.java.name))
+                hasComponent(hasClassName(TempTestActivity::class.java.name))
         )
     }
 }
