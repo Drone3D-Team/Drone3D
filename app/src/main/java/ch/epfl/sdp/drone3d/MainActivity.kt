@@ -5,12 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.reflect.KClass
 
 /**
  * The activity that creates the main menu
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +42,11 @@ class MainActivity : AppCompatActivity() {
      * Go to MappingMissionSelectionActivity when browse_itinerary_button is clicked
      */
     fun goToMappingMissionSelection(@Suppress("UNUSED_PARAMETER") view: View) {
-        open(MappingMissionSelectionActivity::class)
+        if (authService.hasActiveSession()) {
+            open(MappingMissionSelectionActivity::class)
+        } else {
+            goToLogin(view)
+        }
     }
 
     /**
