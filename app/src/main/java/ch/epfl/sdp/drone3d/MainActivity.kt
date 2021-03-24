@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main_menu)
     }
 
-    fun refresh() {
+    private fun refresh() {
         val loginButton: Button = findViewById(R.id.log_in_button)
         val logoutButton: Button = findViewById(R.id.log_out_button)
 

@@ -38,11 +38,9 @@ class MainActivityTest {
     @BindValue val authService: AuthenticationService = mockAuthenticationService()
     @BindValue val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
 
-    private var authenticated: Boolean = false
-
     private fun mockAuthenticationService(): AuthenticationService {
         val service = mock(AuthenticationService::class.java)
-        `when`(service.hasActiveSession()).thenReturn(authenticated)
+        `when`(service.hasActiveSession()).thenReturn(false)
 
         return service
     }
@@ -78,35 +76,35 @@ class MainActivityTest {
 
     @Test
     fun goToLoginWorks() {
-        authenticated = false
-        activityRule.scenario.onActivity {
-            it.refresh()
-            onView(ViewMatchers.withId(R.id.log_in_button))
-                    .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
-            Intents.intended(
-                    hasComponent(hasClassName(LoginActivity::class.java.name))
-            )
-        }
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
+        Intents.intended(
+                hasComponent(hasClassName(LoginActivity::class.java.name))
+        )
     }
 
     @Test
     fun logoutWorks() {
-        authenticated = true
+        `when`(authService.hasActiveSession()).thenReturn(true)
         `when`(authService.signOut()).thenAnswer{
-            authenticated = false
-            null
+            `when`(authService.hasActiveSession()).thenReturn(false)
         }
 
-        activityRule.scenario.onActivity {
-            it.refresh()
-            onView(ViewMatchers.withId(R.id.log_out_button))
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_out_button))
                     .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            onView(ViewMatchers.withId(R.id.log_out_button)).perform(ViewActions.click())
-            onView(ViewMatchers.withId(R.id.log_in_button))
-                    .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            verify(authService).signOut()
-        }
+        onView(ViewMatchers.withId(R.id.log_out_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        verify(authService).signOut()
     }
 
     @Test
@@ -136,6 +134,7 @@ class MainActivityTest {
     @Test
     fun goToMappingMissionSelectionWorksWithoutActiveSession() {
         `when`(authService.hasActiveSession()).thenReturn(false)
+
         onView(ViewMatchers.withId(R.id.browse_itinerary_button))
                 .perform(ViewActions.click())
         Intents.intended(
