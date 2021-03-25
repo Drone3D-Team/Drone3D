@@ -51,6 +51,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'androidx.wear:wear:1.1.0'
+    compileOnly 'com.google.android.wearable:wearable:2.8.1'
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Import the Firebase BoM
@@ -60,8 +62,14 @@ dependencies {
 
     // Import Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.7.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
 
+    // Import mavsdk to control the drone
+    implementation 'io.mavsdk:mavsdk:0.3.1'
+    implementation 'io.mavsdk:mavsdk-server:0.3.1'
+    
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:3.8.0'

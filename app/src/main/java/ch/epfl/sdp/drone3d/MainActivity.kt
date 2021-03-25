@@ -1,5 +1,6 @@
 package ch.epfl.sdp.drone3d
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -20,9 +22,19 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var authService: AuthenticationService
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
+        if(isConnected()) {
+            val connectDroneButtonText = findViewById<Button>(R.id.connect_drone_button).apply {
+                text = "See connected drone"
+            }
+        } else {
+            val connectDroneButtonText = findViewById<Button>(R.id.connect_drone_button).apply {
+                text = "Connect a drone"
+            }
+        }
     }
 
     private fun refresh() {
@@ -78,10 +90,13 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Go to DroneConnectActivity when connect_drone_button is clicked
-     * TODO : replace TempTestActivity by DroneConnectActivity once it exists
      */
     fun goToDroneConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        open(TempTestActivity::class)
+        if(isConnected()) {
+            open(ConnectedDroneActivity::class)
+        } else {
+            open(DroneConnectActivity::class)
+        }
     }
 
     private fun <T> open(activity: KClass<T>) where T : Activity {

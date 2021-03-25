@@ -19,5 +19,17 @@
     <string name="register_fail">Registration failed</string>
     <string name="register_info_default">Enter your register information</string>
     <string name="login_info_default">Enter your login information</string>
+    <string name="drone_connect_button">Connect</string>
+    <string name="drone_connect_ip_default">IP address</string>
+    <string name="drone_connect_port_default">Port</string>
+    <string name="drone_disconnect_button">Disconnect</string>
+    <string name="drone_simulated_ip">IP : 0.0.0.0</string>
+    <string name="drone_simulated_port">Port : 0</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
+    <string name="title_activity_connected_drone">ConnectedDroneActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
 </resources>

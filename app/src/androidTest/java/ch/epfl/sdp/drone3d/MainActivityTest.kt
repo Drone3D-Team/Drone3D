@@ -142,14 +142,11 @@ class MainActivityTest {
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by DroneConnectActivity once it exists
-     */
     @Test
     fun goToDroneConnectWorks() {
         onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
         Intents.intended(
-                hasComponent(hasClassName(TempTestActivity::class.java.name))
+                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
     }
 }
