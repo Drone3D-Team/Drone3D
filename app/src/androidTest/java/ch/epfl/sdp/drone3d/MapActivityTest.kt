@@ -1,4 +1,5 @@
 package ch.epfl.sdp.drone3d
+import android.Manifest
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
@@ -12,6 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.Matchers
 /**
  * Test for the map activity
@@ -21,6 +23,9 @@ class MapActivityTest {
 
     @get:Rule
     var testRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
+
+    @get:Rule
+    var grantPermissionRule = GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION)
 
     /**
      * Make sure the context of the app is the right one
