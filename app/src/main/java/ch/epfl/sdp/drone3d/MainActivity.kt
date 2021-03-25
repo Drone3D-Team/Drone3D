@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Go to LoginActivity when log_in_button is clicked
+     * Logs the user out and refresh the activity
      */
     fun logout(@Suppress("UNUSED_PARAMETER") view: View) {
         authService.signOut()
