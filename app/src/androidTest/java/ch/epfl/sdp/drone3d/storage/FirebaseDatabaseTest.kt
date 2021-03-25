@@ -1,15 +1,12 @@
 package ch.epfl.sdp.drone3d.storage
 
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
@@ -37,42 +34,38 @@ class FirebaseDatabaseTest {
     fun loadUserPseudoReturnsExpectedValues() {
         val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
-        val UID = "123456"
+        val uid = "123456"
         val counter = CountDownLatch(1)
 
-        database.getReference("users/$UID/pseudo")
+        database.getReference("users/$uid/pseudo")
             .setValue(expectedPseudo)
 
-        val data = db.loadUserPseudo(UID)
+        val data = db.loadUserPseudo(uid)
         data.observeForever { pseudo ->
-            assertThat(pseudo, CoreMatchers.equalTo(expectedPseudo))
+            assertThat(pseudo, equalTo(expectedPseudo))
             counter.countDown()
         }
 
 
         counter.await(timeout, TimeUnit.SECONDS)
-        assertThat(counter.count, CoreMatchers.equalTo(0L))
+        assertThat(counter.count, equalTo(0L))
     }
 
     @Test
     fun storeUserPseudoCreateExpectedValueWhenNoPreviousPseudo() {
         val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
-        val UID = "123456"
+        val uid = "123456"
         lateinit var pseudo: String
         val counter = CountDownLatch(1)
 
-
         val pseudoListener = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val fetchedPseudo = snapshot.getValue<String>()
 
@@ -81,38 +74,35 @@ class FirebaseDatabaseTest {
                     counter.countDown()
                 }
             }
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
 
-        database.getReference("users/$UID").addChildEventListener(pseudoListener)
+        database.getReference("users/$uid").addChildEventListener(pseudoListener)
 
-        db.storeUserPseudo(UID, expectedPseudo)
+        db.storeUserPseudo(uid, expectedPseudo)
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
         assertThat(pseudo, equalTo(expectedPseudo))
 
-        database.getReference("users/$UID").removeEventListener(pseudoListener)
+        database.getReference("users/$uid").removeEventListener(pseudoListener)
     }
 
     @Test
     fun storeUserPseudoWriteExpectedValueWhenPreviousPseudo() {
         val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
-        val UID = "123456"
+        val uid = "123456"
         lateinit var pseudo: String
         val counter = CountDownLatch(2)
 
         val pseudoListener = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 val fetchedPseudo = snapshot.getValue<String>()
 
@@ -121,47 +111,41 @@ class FirebaseDatabaseTest {
                     counter.countDown()
                 }
             }
+
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 counter.countDown()
             }
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
 
-        database.getReference("users/$UID").addChildEventListener(pseudoListener)
+        database.getReference("users/$uid").addChildEventListener(pseudoListener)
 
-        db.storeUserPseudo(UID, "previousPseudo")
-        db.storeUserPseudo(UID, expectedPseudo)
+        db.storeUserPseudo(uid, "previousPseudo")
+        db.storeUserPseudo(uid, expectedPseudo)
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
         assertThat(pseudo, equalTo(expectedPseudo))
 
-        database.getReference("users/$UID").removeEventListener(pseudoListener)
+        database.getReference("users/$uid").removeEventListener(pseudoListener)
     }
 
     @Test
     fun removeUserPseudoDoesRemoveThePseudo() {
         val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
-        val UID = "123456"
+        val uid = "123456"
         val counter = CountDownLatch(2)
 
 
         val pseudoListener = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 counter.countDown()
@@ -175,15 +159,15 @@ class FirebaseDatabaseTest {
                 }
             }
         }
-        database.getReference("users/$UID").addChildEventListener(pseudoListener)
+        database.getReference("users/$uid").addChildEventListener(pseudoListener)
 
-        db.storeUserPseudo(UID, expectedPseudo)
-        db.removeUserPseudo(UID)
+        db.storeUserPseudo(uid, expectedPseudo)
+        db.removeUserPseudo(uid)
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
 
-        database.getReference("users/$UID").removeEventListener(pseudoListener)
+        database.getReference("users/$uid").removeEventListener(pseudoListener)
     }
 
 }

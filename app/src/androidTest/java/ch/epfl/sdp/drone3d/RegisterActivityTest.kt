@@ -5,11 +5,9 @@ import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
@@ -65,14 +63,14 @@ class RegisterActivityTest {
     fun registerButtonWorksWithSuccess() {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.register(anyString(), anyString())).thenReturn(taskSource.task)
-        onView(ViewMatchers.withId(R.id.registerButton)).perform(click())
+        onView(withId(R.id.registerButton)).perform(click())
         // Progress bar visible until success
-        onView(ViewMatchers.withId(R.id.progressBar))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        onView(withId(R.id.progressBar))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         val result = mock(AuthResult::class.java)
         taskSource.setResult(result)
-        intended(
+        Intents.intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(MainActivity::class.java.name))
         )
     }
@@ -82,25 +80,25 @@ class RegisterActivityTest {
     fun registerButtonWorksWithFailure() {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.register(anyString(), anyString())).thenReturn(taskSource.task)
-        onView(ViewMatchers.withId(R.id.registerButton)).perform(click())
+        onView(withId(R.id.registerButton)).perform(click())
         // Progress bar visible until success
-        onView(ViewMatchers.withId(R.id.progressBar))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        onView(withId(R.id.progressBar))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         val message = "Error message"
         taskSource.setException(Exception(message))
 
-        onView(ViewMatchers.withId(R.id.infoText))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            .check(matches(ViewMatchers.withText(message)))
-        onView(ViewMatchers.withId(R.id.progressBar))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+        onView(withId(R.id.infoText))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            .check(matches(withText(message)))
+        onView(withId(R.id.progressBar))
+            .check(matches(withEffectiveVisibility(Visibility.GONE)))
     }
 
     @Test
     fun startsLoginActivity() {
-        onView(ViewMatchers.withId(R.id.loginButton)).perform(click())
-        intended(
+        onView(withId(R.id.loginButton)).perform(click())
+        Intents.intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(LoginActivity::class.java.name))
         )
     }

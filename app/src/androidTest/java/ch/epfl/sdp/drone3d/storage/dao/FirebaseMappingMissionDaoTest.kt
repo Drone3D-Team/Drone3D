@@ -10,9 +10,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import junit.framework.Assert.assertNull
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -54,7 +54,7 @@ class FirebaseMappingMissionDaoTest {
             if (it != null) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.PRIVATE))
-                assertNull(mappingMission1.sharedId)
+                assertThat(mappingMission1.sharedId, nullValue())
 
                 assertThat(it, equalTo(mappingMission1))
 
@@ -86,7 +86,7 @@ class FirebaseMappingMissionDaoTest {
             if (it != null) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.SHARED))
-                assertNull(mappingMission1.privateId)
+                assertThat(mappingMission1.privateId, nullValue())
 
                 assertThat(it, equalTo(mappingMission1))
 
@@ -120,10 +120,10 @@ class FirebaseMappingMissionDaoTest {
             if (it != null && it.size > 1) {
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.PRIVATE))
-                assertNull(mappingMission1.sharedId)
+                assertThat(mappingMission1.sharedId, nullValue())
                 assertThat(mappingMission2.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission2.state, equalTo(State.PRIVATE))
-                assertNull(mappingMission2.sharedId)
+                assertThat(mappingMission2.sharedId, nullValue())
 
                 assertThat(it.toSet(), equalTo(setOf(mappingMission1, mappingMission2)))
                 counter.countDown()
@@ -208,10 +208,10 @@ class FirebaseMappingMissionDaoTest {
             if (it != null && it.size > 1) {
                 assertThat(mappingMission2.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission2.state, equalTo(State.SHARED))
-                assertNull(mappingMission2.privateId)
+                assertThat(mappingMission2.privateId, nullValue())
                 assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
                 assertThat(mappingMission1.state, equalTo(State.SHARED))
-                assertNull(mappingMission1.privateId)
+                assertThat(mappingMission1.privateId, nullValue())
 
                 assertThat(it.toSet(), equalTo(setOf(mappingMission1, mappingMission2)))
                 counter.countDown()
@@ -306,30 +306,24 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(2)
 
         val listener = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 counter.countDown()
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
 
                 assertThat(map.state, equalTo(State.PRIVATE))
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.privateId, equalTo(mappingMission1.privateId))
-                assertNull(map.sharedId)
+                assertThat(map.sharedId, nullValue())
 
                 counter.countDown()
 
@@ -356,13 +350,9 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(4)
 
         val listenerPrivate = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
@@ -370,7 +360,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.state, equalTo(State.PRIVATE))
 
@@ -379,7 +369,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
                 assertThat(map.ownerUid, equalTo(OWNERID))
 
@@ -388,20 +378,16 @@ class FirebaseMappingMissionDaoTest {
         }
 
         val listenerShared = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
@@ -410,11 +396,11 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.state, equalTo(State.SHARED))
-                assertNull(map.privateId)
+                assertThat(map.privateId, nullValue())
 
                 counter.countDown()
             }
@@ -447,17 +433,11 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(2)
 
         val listener = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 counter.countDown()
@@ -491,20 +471,16 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(4)
 
         val listenerPrivate = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
 
@@ -513,7 +489,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
                 assertThat(map.state, equalTo(State.PRIVATE))
                 assertThat(map.ownerUid, equalTo(OWNERID))
 
@@ -522,20 +498,16 @@ class FirebaseMappingMissionDaoTest {
         }
 
         val listenerShared = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.state, equalTo(State.SHARED))
                 assertThat(map.name, equalTo(mappingMission1.name))
@@ -544,7 +516,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
@@ -580,13 +552,9 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(4)
 
         val listenerPrivate = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             }
@@ -597,7 +565,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
                 assertThat(map.ownerUid, equalTo(OWNERID))
 
@@ -606,13 +574,9 @@ class FirebaseMappingMissionDaoTest {
         }
 
         val listenerShared = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
@@ -623,7 +587,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.state, equalTo(State.PRIVATE_AND_SHARED))
@@ -657,13 +621,9 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(2)
 
         val listenerPrivate = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
 
@@ -671,14 +631,11 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val map = snapshot.getValue<MappingMission>()!!;
-
                 counter.countDown()
-
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
                 assertThat(map.state, equalTo(State.PRIVATE))
                 assertThat(map.ownerUid, equalTo(OWNERID))
 
@@ -687,25 +644,15 @@ class FirebaseMappingMissionDaoTest {
         }
 
         val listenerShared = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
 
         database.getReference("users/$OWNERID/mappingMissions/")
@@ -732,35 +679,21 @@ class FirebaseMappingMissionDaoTest {
         val counter = CountDownLatch(2)
 
         val listenerPrivate = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {}
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
         }
 
         val listenerShared = object : ChildEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+            override fun onCancelled(error: DatabaseError) {}
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             }
@@ -770,7 +703,7 @@ class FirebaseMappingMissionDaoTest {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                val map = snapshot.getValue<MappingMission>()!!;
+                val map = snapshot.getValue<MappingMission>()!!
 
                 assertThat(map.ownerUid, equalTo(OWNERID))
                 assertThat(map.state, equalTo(State.SHARED))

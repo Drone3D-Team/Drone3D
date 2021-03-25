@@ -1,17 +1,15 @@
 package ch.epfl.sdp.drone3d
+
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import org.junit.runner.RunWith
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -19,7 +17,7 @@ import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 
 /**
  * Test for the map activity
@@ -42,8 +40,7 @@ class MapActivityTest {
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
-    @BindValue
-    val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
+    @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
 
     @Before
     fun setUp() {
@@ -57,7 +54,7 @@ class MapActivityTest {
 
     @Test
     fun supportActionBarGoesBackToMainActivity() {
-        Mockito.`when`(authService.hasActiveSession()).thenReturn(true)
+        `when`(authService.hasActiveSession()).thenReturn(true)
 
         val imageButton = onView(
             Matchers.allOf(

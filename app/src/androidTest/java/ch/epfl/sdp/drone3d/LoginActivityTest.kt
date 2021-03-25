@@ -1,7 +1,7 @@
 package ch.epfl.sdp.drone3d
 
 import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.*
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
@@ -35,8 +35,7 @@ class LoginActivityTest {
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
                         .around(ActivityScenarioRule(LoginActivity::class.java))
 
-    @BindValue
-    val authService: AuthenticationService = mock(AuthenticationService::class.java)
+    @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
 
     @Before
     fun setUp() {
