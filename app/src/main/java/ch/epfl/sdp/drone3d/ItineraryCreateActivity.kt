@@ -5,18 +5,22 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.plugins.annotation.*
 
 /**
  * The activity that allows the user to create itinerary using a map.
  */
 class ItineraryCreateActivity : AppCompatActivity() {
+    private val ZOOM_VALUE = 14.0
+
     private var mapView: MapView? = null
+    private var symbols: List<Symbol> = mutableListOf()
+    private var lines: List<Line> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +35,8 @@ class ItineraryCreateActivity : AppCompatActivity() {
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-                val style = mapboxMap.style!!
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
-                showMission(MappingMission("EPFL", listOf(LatLong(46.52061, 6.56794), LatLong(46.52304, 6.56358))), mapboxMap, mapView!!, style)
+                showMission(MappingMission("EPFL", listOf(LatLong(), LatLong(46.52061, 6.56794), LatLong(), LatLong(46.52304, 6.56358), LatLong(46.53304, 6.56958), LatLong(46.52061, 6.56794))), mapboxMap, mapView!!)
 
             }
 
@@ -70,36 +73,57 @@ class ItineraryCreateActivity : AppCompatActivity() {
         mapView?.onDestroy()
     }
 
-    private fun showMission(mission: MappingMission, mapboxMap: MapboxMap, mapView: MapView, style:Style) {
+    /**
+     * Show a MappingMission [mission] on the map [mapboxMap] with view [mapView].
+     */
+    private fun showMission(mission: MappingMission, mapboxMap: MapboxMap, mapView: MapView) {
+        val style = mapboxMap.style!!
 
         val symbolManager = SymbolManager(mapView, mapboxMap, style)
+        val lineManager = LineManager(mapView, mapboxMap, style)
 
-        if(mission.flightPath.isNotEmpty()){
-            val coordinates: List<LatLng?> = mission.flightPath.map { pos: LatLong ->
-                if(pos.latitude != null && pos.longitude != null){
-                    LatLng(pos.latitude, pos.longitude)
-                }
-                else{
-                    null
-                }
+        val flightPathNotNull = mission.flightPath.filter { latLong -> latLong.latitude!=null && latLong.longitude!=null }
+
+        if(flightPathNotNull.isNotEmpty()){
+            val coordinates: List<LatLng> = flightPathNotNull.map { pos: LatLong ->
+                LatLng(pos.latitude!!, pos.longitude!!)
             }
 
-            val coordinatesNotNull: List<LatLng> = coordinates.filterNotNull()
-
-            coordinatesNotNull.forEachIndexed{index: Int, latlng: LatLng ->
+            val mapOptions = coordinates.mapIndexed(){index: Int, latlng: LatLng ->
                 symbolManager.create(SymbolOptions()
                         .withLatLng(LatLng(latlng))
-                        .withTextField(index.toString()
-                                ))
+                        .withTextField(index.toString()))
             }
 
-            /*
-            val symbols = coordinatesNotNull.mapIndexed{index: Int, latlng: LatLng ->
-                 symbolManager.create(SymbolOptions()
-                         .withLatLng(LatLng(latlng))
-                         .withTextField(index.toString()))
-            }
-            */
+            this.symbols = this.symbols + mapOptions
+
+            val lineOptions = LineOptions()
+                    .withLatLngs(coordinates)
+
+            val mapLines = lineManager.create(lineOptions)
+
+            this.lines = this.lines + mapLines
+
+            zoomOnMission(mission, mapboxMap)
         }
     }
+
+    /**
+     * Zoom on the first step of a mission [mission] on the map [mapboxMap].
+     */
+    private fun zoomOnMission(mission: MappingMission, mapboxMap: MapboxMap){
+
+        val flightPathNotNull = mission.flightPath.filter { latLong -> latLong.latitude!=null && latLong.longitude!=null }
+
+        if(flightPathNotNull.isNotEmpty()){
+
+            val firstCoordinates = LatLng(flightPathNotNull[0].latitude!!, flightPathNotNull[0].longitude!!)
+
+            mapboxMap.cameraPosition =  CameraPosition.Builder()
+                    .target(firstCoordinates)
+                    .zoom(ZOOM_VALUE)
+                    .build()
+        }
+    }
+
 }
