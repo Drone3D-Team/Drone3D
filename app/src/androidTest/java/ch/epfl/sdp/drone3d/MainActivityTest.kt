@@ -13,6 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
+import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
@@ -145,8 +146,14 @@ class MainActivityTest {
     @Test
     fun goToDroneConnectWorks() {
         onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
-        Intents.intended(
+        if(isConnected()) {
+            Intents.intended(
+                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+            )
+        } else {
+            Intents.intended(
                 hasComponent(hasClassName(DroneConnectActivity::class.java.name))
-        )
+            )
+        }
     }
 }

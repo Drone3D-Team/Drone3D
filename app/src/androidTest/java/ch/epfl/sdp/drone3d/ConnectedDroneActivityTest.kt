@@ -3,8 +3,8 @@ package ch.epfl.sdp.drone3d
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.ComponentNameMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -47,7 +47,7 @@ class ConnectedDroneActivityTest {
             .perform(ViewActions.click())
         assertEquals(false, isConnected())
         Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(DroneConnectActivity::class.java.name))
+            hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
     }
 }
