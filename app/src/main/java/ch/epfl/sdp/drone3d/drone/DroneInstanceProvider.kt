@@ -12,7 +12,7 @@ object DroneInstanceProvider {
     /**
      * Provide the information of a drone or a simulation to the application depending on the value of [isSimulation]
      */
-    var provide = {
+    var provide: () -> System = {
         if (isSimulation) {
             // Works for armeabi-v7a and arm64-v8a (not x86 or x86_64)
             val mavsdkServer = MavsdkServer()
@@ -21,6 +21,7 @@ object DroneInstanceProvider {
             System("localhost", mavsdkServerPort)
         } else {
             // TODO : write the program needed to connect a drone to the program
+            throw NotImplementedError()
         }
     }
 
