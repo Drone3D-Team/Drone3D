@@ -89,7 +89,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Go to DroneConnectActivity when connect_drone_button is clicked
+     * Go to DroneConnectActivity or ConnectedDroneActivity when connect_drone_button is clicked
+     * depending of if a drone is connected or not
      */
     fun goToDroneConnect(@Suppress("UNUSED_PARAMETER") view: View) {
         if(isConnected()) {

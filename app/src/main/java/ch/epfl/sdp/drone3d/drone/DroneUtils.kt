@@ -6,12 +6,20 @@ import io.mavsdk.mission.Mission.MissionPlan
 
 object DroneUtils {
 
+    /**
+     * Create a MissionPlan by using a [path] represented by a list of coordinates and the [altitude] wanted
+     * for the drone
+     */
     fun makeDroneMission(path: List<LatLng>, altitude: Float): MissionPlan {
         return MissionPlan(path.map { point ->
             generateMissionItem(point.latitude, point.longitude, altitude)
         })
     }
 
+    /**
+     * Create a MissionItem by using the coordinates [latitudeDeg] and [longitudeDeg], and the [altitude] wanted
+     * for the drone
+     */
     fun generateMissionItem(latitudeDeg: Double, longitudeDeg: Double, altitude: Float): MissionItem {
         return MissionItem(
             latitudeDeg,

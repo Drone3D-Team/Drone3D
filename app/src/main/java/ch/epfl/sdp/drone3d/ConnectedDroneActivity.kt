@@ -25,6 +25,9 @@ class ConnectedDroneActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Disconnect a connected drone or simulation from the app
+     */
     fun disconnectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         DroneInstanceProvider.disconnect()
         val intent = Intent(this, DroneConnectActivity::class.java).apply {}

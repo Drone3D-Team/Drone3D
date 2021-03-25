@@ -14,7 +14,10 @@ class DroneConnectActivity : AppCompatActivity() {
         setContentView(R.layout.activity_drone_connect)
     }
 
-    fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    /**
+     * Connect a simulation to the application using an ip address and a port
+     */
+    fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
         val port = findViewById<EditText>(R.id.text_port).text.toString()
         DroneInstanceProvider.setSimIPAndPort(ip, port)
