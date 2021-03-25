@@ -3,7 +3,6 @@ package ch.epfl.sdp.drone3d.gps
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import ch.epfl.sdp.drone3d.R
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -15,6 +14,9 @@ import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 
+/**
+ * The manager for map phone location
+ */
 class LocationComponentManager(private val activity: Activity, private val mapboxMap: MapboxMap) :
     PermissionsListener {
 
@@ -22,6 +24,9 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
 
     private var style: Style? = null
 
+    /**
+     * Enables the location on the map given the loadedMapStyle
+     */
     fun enableLocationComponent(loadedMapStyle: Style) {
         style = loadedMapStyle
         // Check if permissions are enabled and if not request
@@ -56,6 +61,9 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
         }
     }
 
+    /**
+     * Sends the permissions results to the permission manager
+     */
     fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
