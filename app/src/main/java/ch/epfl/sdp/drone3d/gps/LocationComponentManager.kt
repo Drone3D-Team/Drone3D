@@ -1,13 +1,9 @@
 package ch.epfl.sdp.drone3d.gps
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.ColorRes
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import ch.epfl.sdp.drone3d.R
 import com.mapbox.android.core.permissions.PermissionsListener
@@ -24,13 +20,7 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
-    @ColorRes
-    private var accuracyColor = R.color.blue
     private var style: Style? = null
-
-    fun setCustomAccuracyColor(@ColorRes color: Int) {
-        accuracyColor = color
-    }
 
     fun enableLocationComponent(loadedMapStyle: Style) {
         style = loadedMapStyle
@@ -40,7 +30,7 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
             // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(activity)
                 .trackingGesturesManagement(true)
-                .accuracyColor(ContextCompat.getColor(activity, accuracyColor))
+                .accuracyColor(ContextCompat.getColor(activity, R.color.blue))
                 .build()
 
             val locationComponentActivationOptions =
@@ -66,6 +56,14 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
         }
     }
 
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     private fun checkAndRequestLocationPermission(): Boolean {
         if (PermissionsManager.areLocationPermissionsGranted(activity)) {
             Log.d(null, "permission granted")
@@ -82,7 +80,6 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
             .show()
     }
 
-    //TODO: Bug never called. Check if works in activity class
     override fun onPermissionResult(granted: Boolean) {
         Log.d(null, "results coming")
         if (granted) {
