@@ -1,0 +1,27 @@
+package ch.epfl.sdp.drone3d.storage.data
+
+/**
+ * The State is used to specify where the MappingMission is stored
+ * It's either:
+ * - NOT_STORED: currently the data is only in the ram and may be lost when closing the app
+ * - PRIVATE: stored in the private repo of the user
+ * - SHARED: stored only in the shared repo (the owner has no private copy)
+ * - PRIVATE_AND_SHARED: stored in the private repo of the owner as well as in the shared repo
+ */
+enum class State {
+    NOT_STORED, PRIVATE, SHARED, PRIVATE_AND_SHARED
+}
+
+/**
+ * A MappingMission is instantiated with a [name] and a [flightPath].
+ * The [privateId], [sharedId] and [state] are updated according to where the MappingMission are stored.
+ * The [ownerUid] is set the first time the mission is either stored or shared.
+ */
+data class MappingMission(
+    val name: String = "",
+    val flightPath: List<LatLong> = listOf(),
+    var privateId: String? = null,
+    var sharedId: String? = null,
+    var state: State = State.NOT_STORED,
+    var ownerUid: String? = null,
+)
