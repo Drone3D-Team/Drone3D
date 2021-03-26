@@ -33,6 +33,7 @@ object ToastMatcher {
     fun onToast(activity: Activity, textId: Int): ViewInteraction = onView(withText(textId)).inRoot(isToast(activity))!!
 
     private fun isToast(activity: Activity): Matcher<Root> {
-        return RootMatchers.withDecorView(CoreMatchers.not(activity.window.decorView))
+        Thread.sleep(1000)
+        return RootMatchers.withDecorView(CoreMatchers.not(CoreMatchers.`is`(activity.window.decorView)))
     }
 }
