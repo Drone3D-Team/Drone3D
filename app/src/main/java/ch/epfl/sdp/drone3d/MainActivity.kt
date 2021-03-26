@@ -26,20 +26,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
-        if(isConnected()) {
-            val connectDroneButtonText = findViewById<Button>(R.id.connect_drone_button).apply {
-                text = "See connected drone"
-            }
-        } else {
-            val connectDroneButtonText = findViewById<Button>(R.id.connect_drone_button).apply {
-                text = "Connect a drone"
-            }
-        }
     }
 
     private fun refresh() {
         val loginButton: Button = findViewById(R.id.log_in_button)
         val logoutButton: Button = findViewById(R.id.log_out_button)
+
+        val connectDroneButton: Button = findViewById(R.id.connect_drone_button)
+        val disconnectDroneButton: Button = findViewById(R.id.disconnect_drone_button)
 
         if (authService.hasActiveSession()) {
             logoutButton.visibility = View.VISIBLE
@@ -47,6 +41,14 @@ class MainActivity : AppCompatActivity() {
         } else {
             logoutButton.visibility = View.GONE
             loginButton.visibility = View.VISIBLE
+        }
+
+        if (isConnected()) {
+            disconnectDroneButton.visibility = View.VISIBLE
+            connectDroneButton.visibility = View.GONE
+        } else {
+            disconnectDroneButton.visibility = View.GONE
+            connectDroneButton.visibility = View.VISIBLE
         }
     }
 

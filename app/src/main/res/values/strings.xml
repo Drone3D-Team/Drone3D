@@ -11,6 +11,7 @@
     <string name="log_in">Log in</string>
     <string name="log_out">Logout</string>
     <string name="connect_a_drone">Connect a drone</string>
+    <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
     <string name="login_success">Login succeed</string>
@@ -26,9 +27,4 @@
     <string name="drone_simulated_ip">IP : 0.0.0.0</string>
     <string name="drone_simulated_port">Port : 0</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
 </resources>

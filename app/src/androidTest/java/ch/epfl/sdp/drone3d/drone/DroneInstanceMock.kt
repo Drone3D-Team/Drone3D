@@ -1,3 +1,7 @@
+/**
+ * This class was taken from the project Fly2Find and adapted for our project
+ */
+
 package ch.epfl.sdp.drone3d.drone
 
 import io.mavsdk.System
@@ -8,15 +12,14 @@ import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 
 object DroneInstanceMock {
-    val droneSystem: System = Mockito.mock(System::class.java)
-    val droneTelemetry: Telemetry = Mockito.mock(Telemetry::class.java)
-    val droneCore: Core = Mockito.mock(Core::class.java)
-    val droneMission: Mission = Mockito.mock(Mission::class.java)
-    val droneAction: Action = Mockito.mock(Action::class.java)
+    val droneSystem: System = mock(System::class.java)
+    val droneTelemetry: Telemetry = mock(Telemetry::class.java)
+    val droneCore: Core = mock(Core::class.java)
+    val droneMission: Mission = mock(Mission::class.java)
+    val droneAction: Action = mock(Action::class.java)
 
     init {
         DroneInstanceProvider.provide = {
@@ -118,6 +121,6 @@ object DroneInstanceMock {
     }
 
     fun resetMocks() {
-        Mockito.reset(droneAction, droneCore, droneMission, droneTelemetry)
+        reset(droneAction, droneCore, droneMission, droneTelemetry)
     }
 }

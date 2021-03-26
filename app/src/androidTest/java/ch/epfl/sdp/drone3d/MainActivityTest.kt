@@ -145,7 +145,7 @@ class MainActivityTest {
 
     @Test
     fun goToDroneConnectWorks() {
-        onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.disconnect_drone_button)).perform(ViewActions.click())
         if(isConnected()) {
             Intents.intended(
                 hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))

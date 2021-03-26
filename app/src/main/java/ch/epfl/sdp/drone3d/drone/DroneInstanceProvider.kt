@@ -1,3 +1,7 @@
+/**
+ * This class was taken from the project Fly2Find and adapted for our project
+ */
+
 package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
