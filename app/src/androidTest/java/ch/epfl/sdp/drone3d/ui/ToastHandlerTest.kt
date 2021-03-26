@@ -29,7 +29,7 @@ class ToastHandlerTest {
     fun simpleToastWorks() {
         val text = "Toast text"
         intentsTestRule.scenario.onActivity { activity ->
-            ToastHandler.showToast(activity, text)
+            ToastHandler.showToast(activity, text, Toast.LENGTH_LONG)
         }
         onToast(text).check(matches(isDisplayed()))
     }
@@ -37,7 +37,7 @@ class ToastHandlerTest {
     @Test
     fun simpleToastWithResWorks() {
         intentsTestRule.scenario.onActivity { activity ->
-            ToastHandler.showToast(activity, R.string.connect_a_drone)
+            ToastHandler.showToast(activity, R.string.connect_a_drone, Toast.LENGTH_LONG)
         }
         onToast(R.string.connect_a_drone).check(matches(isDisplayed()))
     }
@@ -47,7 +47,7 @@ class ToastHandlerTest {
         val text = "Toast text"
         intentsTestRule.scenario.onActivity { activity ->
             Thread {
-                ToastHandler.showToastAsync(activity, text)
+                ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
             }.start()
         }
         onToast(text).check(matches(isDisplayed()))
@@ -57,7 +57,7 @@ class ToastHandlerTest {
     fun asyncToastWithResWorks() {
         intentsTestRule.scenario.onActivity { activity ->
             Thread {
-                ToastHandler.showToastAsync(activity, R.string.connect_a_drone)
+                ToastHandler.showToastAsync(activity, R.string.connect_a_drone, Toast.LENGTH_LONG)
             }.start()
         }
         onToast(R.string.connect_a_drone).check(matches(isDisplayed()))
@@ -68,7 +68,7 @@ class ToastHandlerTest {
         val format = "Text with %d %s"
         val args = arrayOf(2, "formatting")
         intentsTestRule.scenario.onActivity { activity ->
-            ToastHandler.showToastF(activity, format, Toast.LENGTH_SHORT, *args)
+            ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args)
         }
         onToast(format.format(*args)).check(matches(isDisplayed()))
     }
@@ -79,7 +79,7 @@ class ToastHandlerTest {
         val args = arrayOf(2, "formatting")
         intentsTestRule.scenario.onActivity { activity ->
             Thread {
-                ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_SHORT, *args)
+                ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
             }.start()
         }
         onToast(format.format(*args)).check(matches(isDisplayed()))
