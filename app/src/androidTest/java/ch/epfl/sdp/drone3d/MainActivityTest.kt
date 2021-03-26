@@ -13,6 +13,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
+import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
@@ -38,11 +39,9 @@ class MainActivityTest {
     @BindValue val authService: AuthenticationService = mockAuthenticationService()
     @BindValue val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
 
-    private var authenticated: Boolean = false
-
     private fun mockAuthenticationService(): AuthenticationService {
         val service = mock(AuthenticationService::class.java)
-        `when`(service.hasActiveSession()).thenReturn(authenticated)
+        `when`(service.hasActiveSession()).thenReturn(false)
 
         return service
     }
@@ -78,35 +77,35 @@ class MainActivityTest {
 
     @Test
     fun goToLoginWorks() {
-        authenticated = false
-        activityRule.scenario.onActivity {
-            it.refresh()
-            onView(ViewMatchers.withId(R.id.log_in_button))
-                    .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
-            Intents.intended(
-                    hasComponent(hasClassName(LoginActivity::class.java.name))
-            )
-        }
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
+        Intents.intended(
+                hasComponent(hasClassName(LoginActivity::class.java.name))
+        )
     }
 
     @Test
     fun logoutWorks() {
-        authenticated = true
+        `when`(authService.hasActiveSession()).thenReturn(true)
         `when`(authService.signOut()).thenAnswer{
-            authenticated = false
-            null
+            `when`(authService.hasActiveSession()).thenReturn(false)
         }
 
-        activityRule.scenario.onActivity {
-            it.refresh()
-            onView(ViewMatchers.withId(R.id.log_out_button))
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_out_button))
                     .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            onView(ViewMatchers.withId(R.id.log_out_button)).perform(ViewActions.click())
-            onView(ViewMatchers.withId(R.id.log_in_button))
-                    .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-            verify(authService).signOut()
-        }
+        onView(ViewMatchers.withId(R.id.log_out_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        verify(authService).signOut()
     }
 
     @Test
@@ -136,6 +135,7 @@ class MainActivityTest {
     @Test
     fun goToMappingMissionSelectionWorksWithoutActiveSession() {
         `when`(authService.hasActiveSession()).thenReturn(false)
+
         onView(ViewMatchers.withId(R.id.browse_itinerary_button))
                 .perform(ViewActions.click())
         Intents.intended(
@@ -143,14 +143,17 @@ class MainActivityTest {
         )
     }
 
-    /**
-     * TODO : replace TempTestActivity by DroneConnectActivity once it exists
-     */
     @Test
     fun goToDroneConnectWorks() {
-        onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
-        Intents.intended(
-                hasComponent(hasClassName(TempTestActivity::class.java.name))
-        )
+        onView(ViewMatchers.withId(R.id.disconnect_drone_button)).perform(ViewActions.click())
+        if(isConnected()) {
+            Intents.intended(
+                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+            )
+        } else {
+            Intents.intended(
+                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+            )
+        }
     }
 }
