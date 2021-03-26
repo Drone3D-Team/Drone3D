@@ -112,45 +112,18 @@ class ToastHandlerTest {
         val args = arrayOf(2, "formatting")
 
         testToast(
-                { activity -> ToastHandler.showToast(activity, text, Toast.LENGTH_LONG) },
-                { activity -> ToastMatcher.onToast(activity, text) }
-        )
-
-        testToast(
-                { activity -> ToastHandler.showToast(activity, id, Toast.LENGTH_LONG) },
-                { activity -> ToastMatcher.onToast(activity, id) }
-        )
-
-        testToast(
                 { activity ->
+                    ToastHandler.showToast(activity, text, Toast.LENGTH_LONG)
+                    ToastHandler.showToast(activity, id, Toast.LENGTH_LONG)
+                    ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args)
+
                     Thread {
                         ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, text) }
-        )
-
-        testToast(
-                { activity ->
-                    Thread {
                         ToastHandler.showToastAsync(activity, id, Toast.LENGTH_LONG)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, id) }
-        )
-
-        testToast(
-                { activity -> ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args) },
-                { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
-        )
-
-        testToast(
-                { activity ->
-                    Thread {
                         ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
                     }.start()
                 },
-                { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
+                { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
