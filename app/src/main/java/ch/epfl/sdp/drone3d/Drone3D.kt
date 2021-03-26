@@ -7,16 +7,16 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class Drone3D : Application() {
 
+    init {
+        instance = this
+    }
+
     // Singleton pattern
     companion object {
         private var instance: Drone3D? = null
 
-        fun applicationContext(): Context {
-            return instance!!.applicationContext
+        fun getInstance(): Drone3D {
+            return instance!!
         }
-    }
-
-    init {
-        instance = this
     }
 }

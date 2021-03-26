@@ -86,6 +86,7 @@ class ToastHandlerTest {
         )
     }
 
+    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun asyncToastFormatWorks() {
         val format = "Text with %d %s"
@@ -98,6 +99,57 @@ class ToastHandlerTest {
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
+        )
+    }
+
+    @Test
+    fun testAllToasts() {
+
+        val text = "Toast text"
+        val id = R.string.email_text
+        val format = "Text with %d %s"
+        val args = arrayOf(2, "formatting")
+
+        testToast(
+                { activity -> ToastHandler.showToast(activity, text, Toast.LENGTH_LONG) },
+                { activity -> ToastMatcher.onToast(activity, text) }
+        )
+
+        testToast(
+                { activity -> ToastHandler.showToast(activity, id, Toast.LENGTH_LONG) },
+                { activity -> ToastMatcher.onToast(activity, id) }
+        )
+
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, text) }
+        )
+
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsync(activity, id, Toast.LENGTH_LONG)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, id) }
+        )
+
+        testToast(
+                { activity -> ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args) },
+                { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
+        )
+
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
         )
     }
 

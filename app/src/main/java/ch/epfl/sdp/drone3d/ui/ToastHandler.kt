@@ -21,7 +21,7 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToast(context: Context = Drone3D.applicationContext(),
+    fun showToast(context: Context = Drone3D.getInstance(),
                   text: String,
                   duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, text, duration).show()
@@ -34,7 +34,7 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToast(context: Context = Drone3D.applicationContext(),
+    fun showToast(context: Context = Drone3D.getInstance(),
                   resId: Int,
                   duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, resId, duration).show()
@@ -48,7 +48,7 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToastF(context: Context = Drone3D.applicationContext(),
+    fun showToastF(context: Context = Drone3D.getInstance(),
                    format: String,
                    duration: Int,
                    vararg args: Any) {
@@ -63,7 +63,7 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToastAsync(context: Context = Drone3D.applicationContext(),
+    fun showToastAsync(context: Context = Drone3D.getInstance(),
                        text: String,
                        duration: Int = Toast.LENGTH_SHORT) {
         handler.post{ showToast(context, text, duration) }
@@ -76,7 +76,7 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToastAsync(context: Context = Drone3D.applicationContext(),
+    fun showToastAsync(context: Context = Drone3D.getInstance(),
                        resId: Int,
                        duration: Int = Toast.LENGTH_SHORT) {
         handler.post{ showToast(context, resId, duration) }
@@ -90,7 +90,7 @@ object ToastHandler {
      *
      * This function can be called from any thread
      */
-    fun showToastAsyncF(context: Context = Drone3D.applicationContext(),
+    fun showToastAsyncF(context: Context = Drone3D.getInstance(),
                         format: String,
                         duration: Int,
                         vararg args: Any) {
