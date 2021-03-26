@@ -3,6 +3,7 @@ package ch.epfl.sdp.drone3d
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
@@ -14,7 +15,6 @@ import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
-import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
@@ -29,25 +29,30 @@ import org.mockito.Mockito.*
 @UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
 class MainActivityTest {
 
+    private val activityRule = ActivityScenarioRule(MainActivity::class.java)
+
     @get:Rule
-    var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(ActivityScenarioRule(MainActivity::class.java))
+    val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+            .around(activityRule)
 
+    @BindValue val authService: AuthenticationService = mockAuthenticationService()
+    @BindValue val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
 
-    private fun mappingMissionDaoMock(): MappingMissionDao {
+    private fun mockAuthenticationService(): AuthenticationService {
+        val service = mock(AuthenticationService::class.java)
+        `when`(service.hasActiveSession()).thenReturn(false)
+
+        return service
+    }
+
+    private fun mockMappingMissionDao(): MappingMissionDao {
         val mappingMission = mock(MappingMissionDao::class.java)
-        val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
+        val liveData = MutableLiveData(listOf(MappingMission("name", listOf())))
         `when`(mappingMission.getPrivateMappingMissions(anyString())).thenReturn(liveData)
         `when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
         return mappingMission
     }
-
-    @BindValue
-    val authService: AuthenticationService = mock(AuthenticationService::class.java)
-
-    @BindValue
-    val mappingMissionDao: MappingMissionDao = mappingMissionDaoMock()
 
     @Before
     fun setUp() {
@@ -69,16 +74,38 @@ class MainActivityTest {
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
-    /**
-     */
     @Test
     fun goToLoginWorks() {
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
         onView(ViewMatchers.withId(R.id.log_in_button)).perform(ViewActions.click())
         Intents.intended(
                 hasComponent(hasClassName(LoginActivity::class.java.name))
         )
     }
 
+    @Test
+    fun logoutWorks() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+        `when`(authService.signOut()).thenAnswer{
+            `when`(authService.hasActiveSession()).thenReturn(false)
+        }
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.log_out_button))
+                    .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        onView(ViewMatchers.withId(R.id.log_out_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.log_in_button))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        verify(authService).signOut()
+    }
 
     @Test
     fun goToItineraryCreateWorks() {
@@ -107,6 +134,7 @@ class MainActivityTest {
     @Test
     fun goToMappingMissionSelectionWorksWithoutActiveSession() {
         `when`(authService.hasActiveSession()).thenReturn(false)
+
         onView(ViewMatchers.withId(R.id.browse_itinerary_button))
                 .perform(ViewActions.click())
         Intents.intended(
