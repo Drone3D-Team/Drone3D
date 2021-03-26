@@ -62,7 +62,6 @@ class ToastHandlerTest {
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun asyncToastWithResWorks() {
         testToast(
