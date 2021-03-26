@@ -54,7 +54,7 @@ abstract class AuthActivity : AppCompatActivity()  {
                     success()
                 } else {
                     // If sign in fails, display a message to the user.
-                    ToastHandler.showToast(failMessage)
+                    ToastHandler.showToast(baseContext, failMessage)
                     if (task.exception?.message != null) {
                         infoText.text = task.exception?.message
                         infoText.setTextColor(Color.RED)

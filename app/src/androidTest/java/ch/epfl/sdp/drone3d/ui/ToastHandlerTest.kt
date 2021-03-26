@@ -32,7 +32,7 @@ class ToastHandlerTest {
     fun simpleToastWorks() {
         val text = "Toast text"
         testToast(
-            { activity -> ToastHandler.showToast(text, Toast.LENGTH_LONG, activity) },
+            { activity -> ToastHandler.showToast(activity, text, Toast.LENGTH_LONG) },
             { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
@@ -40,7 +40,7 @@ class ToastHandlerTest {
     @Test
     fun simpleToastWithResWorks() {
         testToast(
-            { activity -> ToastHandler.showToast(R.string.connect_a_drone, Toast.LENGTH_LONG, activity) },
+            { activity -> ToastHandler.showToast(activity, R.string.connect_a_drone, Toast.LENGTH_LONG) },
             { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
         )
     }
@@ -52,7 +52,7 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsync(text, Toast.LENGTH_LONG, activity)
+                    ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, text) }
@@ -77,7 +77,7 @@ class ToastHandlerTest {
         val args = arrayOf(2, "formatting")
 
         testToast(
-            { activity -> ToastHandler.showToastF(format, Toast.LENGTH_LONG, activity, *args) },
+            { activity -> ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args) },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
         )
     }
@@ -90,7 +90,7 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsyncF(format, Toast.LENGTH_LONG, activity, *args)
+                    ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }

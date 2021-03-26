@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 
 /**
@@ -36,7 +35,7 @@ class RegisterActivity : AuthActivity() {
     override fun success() {
         // Registration is a success, show Toast and main activity
         startActivity(Intent(this, MainActivity::class.java))
-        ToastHandler.showToast(R.string.register_success)
+        ToastHandler.showToast(baseContext, R.string.register_success)
         //TODO Set pseudo
     }
 
