@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import android.widget.Toast.makeText
 import ch.epfl.sdp.drone3d.Drone3D
 
 /**
@@ -12,7 +13,20 @@ import ch.epfl.sdp.drone3d.Drone3D
  */
 object ToastHandler {
 
+    private val lock: Any = Any()
+
     private val handler: Handler = Handler(Looper.getMainLooper())
+    private var lastToast: Toast? = null
+
+    private fun update(toast: Toast): Toast {
+        // cancel last toast and update it
+        synchronized(lock) {
+            lastToast?.cancel()
+            lastToast = toast
+        }
+
+        return toast
+    }
 
     /**
      * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
@@ -21,11 +35,12 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToast(context: Context = Drone3D.getInstance(),
-                  text: String,
-                  duration: Int = Toast.LENGTH_SHORT) {
-        Toast.makeText(context, text, duration).show()
+    fun showToast(text: String,
+                  duration: Int = Toast.LENGTH_SHORT,
+                  context: Context = Drone3D.getInstance()) {
+        update(makeText(context, text, duration)).show()
     }
+
 
     /**
      * Show a toast with given the test [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
@@ -34,10 +49,10 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToast(context: Context = Drone3D.getInstance(),
-                  resId: Int,
-                  duration: Int = Toast.LENGTH_SHORT) {
-        Toast.makeText(context, resId, duration).show()
+    fun showToast(resId: Int,
+                  duration: Int = Toast.LENGTH_SHORT,
+                  context: Context = Drone3D.getInstance()) {
+        update(makeText(context, resId, duration)).show()
     }
 
     /**
@@ -48,12 +63,12 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToastF(context: Context = Drone3D.getInstance(),
-                   format: String,
+    fun showToastF(format: String,
                    duration: Int,
+                   context: Context = Drone3D.getInstance(),
                    vararg args: Any) {
         val text = format.format(*args)
-        showToast(context, text, duration)
+        showToast(text, duration, context)
     }
 
     /**
@@ -63,10 +78,10 @@ object ToastHandler {
      *
      * This function must be called from the UI thread
      */
-    fun showToastAsync(context: Context = Drone3D.getInstance(),
-                       text: String,
-                       duration: Int = Toast.LENGTH_SHORT) {
-        handler.post{ showToast(context, text, duration) }
+    fun showToastAsync(text: String,
+                       duration: Int = Toast.LENGTH_SHORT,
+                       context: Context = Drone3D.getInstance()) {
+        handler.post{ showToast(text, duration, context) }
     }
 
     /**
@@ -79,7 +94,7 @@ object ToastHandler {
     fun showToastAsync(context: Context = Drone3D.getInstance(),
                        resId: Int,
                        duration: Int = Toast.LENGTH_SHORT) {
-        handler.post{ showToast(context, resId, duration) }
+        handler.post{ showToast(resId, duration, context) }
     }
 
     /**
@@ -90,10 +105,10 @@ object ToastHandler {
      *
      * This function can be called from any thread
      */
-    fun showToastAsyncF(context: Context = Drone3D.getInstance(),
-                        format: String,
+    fun showToastAsyncF(format: String,
                         duration: Int,
+                        context: Context = Drone3D.getInstance(),
                         vararg args: Any) {
-        handler.post{ showToastF(context, format, duration, *args) }
+        handler.post{ showToastF(format, duration, context, *args) }
     }
 }

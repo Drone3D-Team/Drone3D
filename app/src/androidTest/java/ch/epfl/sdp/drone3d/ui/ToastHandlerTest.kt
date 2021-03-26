@@ -28,26 +28,23 @@ class ToastHandlerTest {
         Intents.release()
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun simpleToastWorks() {
         val text = "Toast text"
         testToast(
-            { activity -> ToastHandler.showToast(activity, text, Toast.LENGTH_LONG) },
+            { activity -> ToastHandler.showToast(text, Toast.LENGTH_LONG, activity) },
             { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun simpleToastWithResWorks() {
         testToast(
-            { activity -> ToastHandler.showToast(activity, R.string.connect_a_drone, Toast.LENGTH_LONG) },
+            { activity -> ToastHandler.showToast(R.string.connect_a_drone, Toast.LENGTH_LONG, activity) },
             { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun asyncToastWorks() {
         val text = "Toast text"
@@ -55,14 +52,13 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
+                    ToastHandler.showToastAsync(text, Toast.LENGTH_LONG, activity)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun asyncToastWithResWorks() {
         testToast(
@@ -75,19 +71,17 @@ class ToastHandlerTest {
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun toastFormatWorks() {
         val format = "Text with %d %s"
         val args = arrayOf(2, "formatting")
 
         testToast(
-            { activity -> ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args) },
+            { activity -> ToastHandler.showToastF(format, Toast.LENGTH_LONG, activity, *args) },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
         )
     }
 
-    @Ignore("Apparently, having multiple toast tests breaks the continuous integration. This test works locally")
     @Test
     fun asyncToastFormatWorks() {
         val format = "Text with %d %s"
@@ -96,34 +90,10 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
+                    ToastHandler.showToastAsyncF(format, Toast.LENGTH_LONG, activity, *args)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
-        )
-    }
-
-    @Test
-    fun testAllToasts() {
-
-        val text = "Toast text"
-        val id = R.string.email_text
-        val format = "Text with %d %s"
-        val args = arrayOf(2, "formatting")
-
-        testToast(
-                { activity ->
-                    ToastHandler.showToast(activity, text, Toast.LENGTH_LONG)
-                    ToastHandler.showToast(activity, id, Toast.LENGTH_LONG)
-                    ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args)
-
-                    Thread {
-                        ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
-                        ToastHandler.showToastAsync(activity, id, Toast.LENGTH_LONG)
-                        ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
