@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.TempTestActivity
-import ch.epfl.sdp.drone3d.matcher.ToastMatcher.Companion.onToast
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher.onToast
 import org.junit.*
 
 class ToastHandlerTest {
@@ -30,16 +30,16 @@ class ToastHandlerTest {
         val text = "Toast text"
         intentsTestRule.scenario.onActivity { activity ->
             ToastHandler.showToast(activity, text)
+            onToast(activity, text).check(matches(isDisplayed()))
         }
-        onToast(text).check(matches(isDisplayed()))
     }
 
     @Test
     fun simpleToastWithResWorks() {
         intentsTestRule.scenario.onActivity { activity ->
             ToastHandler.showToast(activity, R.string.connect_a_drone)
+            onToast(activity, R.string.connect_a_drone).check(matches(isDisplayed()))
         }
-        onToast(R.string.connect_a_drone).check(matches(isDisplayed()))
     }
 
     @Test
@@ -49,8 +49,9 @@ class ToastHandlerTest {
             Thread {
                 ToastHandler.showToastAsync(activity, text)
             }.start()
+
+            onToast(activity, text).check(matches(isDisplayed()))
         }
-        onToast(text).check(matches(isDisplayed()))
     }
 
     @Test
@@ -59,8 +60,9 @@ class ToastHandlerTest {
             Thread {
                 ToastHandler.showToastAsync(activity, R.string.connect_a_drone)
             }.start()
+
+            onToast(activity, R.string.connect_a_drone).check(matches(isDisplayed()))
         }
-        onToast(R.string.connect_a_drone).check(matches(isDisplayed()))
     }
 
     @Test
@@ -69,8 +71,8 @@ class ToastHandlerTest {
         val args = arrayOf(2, "formatting")
         intentsTestRule.scenario.onActivity { activity ->
             ToastHandler.showToastF(activity, format, Toast.LENGTH_SHORT, *args)
+            onToast(activity, format.format(*args)).check(matches(isDisplayed()))
         }
-        onToast(format.format(*args)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -81,7 +83,8 @@ class ToastHandlerTest {
             Thread {
                 ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_SHORT, *args)
             }.start()
+
+            onToast(activity, format.format(*args)).check(matches(isDisplayed()))
         }
-        onToast(format.format(*args)).check(matches(isDisplayed()))
     }
 }
