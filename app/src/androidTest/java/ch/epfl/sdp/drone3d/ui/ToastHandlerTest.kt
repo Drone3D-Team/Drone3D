@@ -9,7 +9,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.TempTestActivity
-import ch.epfl.sdp.drone3d.matcher.ToastMatcher.onToast
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import org.junit.*
 import java.util.concurrent.CompletableFuture
 
@@ -33,7 +33,7 @@ class ToastHandlerTest {
         val text = "Toast text"
         testToast(
             { activity -> ToastHandler.showToast(activity, text, Toast.LENGTH_LONG) },
-            { activity -> onToast(activity, text) }
+            { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
@@ -41,7 +41,7 @@ class ToastHandlerTest {
     fun simpleToastWithResWorks() {
         testToast(
             { activity -> ToastHandler.showToast(activity, R.string.connect_a_drone, Toast.LENGTH_LONG) },
-            { activity -> onToast(activity, R.string.connect_a_drone) }
+            { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
         )
     }
 
@@ -55,7 +55,7 @@ class ToastHandlerTest {
                     ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
                 }.start()
             },
-            { activity -> onToast(activity, text) }
+            { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
@@ -67,7 +67,7 @@ class ToastHandlerTest {
                     ToastHandler.showToastAsync(activity, R.string.connect_a_drone, Toast.LENGTH_LONG)
                 }.start()
             },
-            { activity -> onToast(activity, R.string.connect_a_drone) }
+            { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
         )
     }
 
@@ -78,7 +78,7 @@ class ToastHandlerTest {
 
         testToast(
             { activity -> ToastHandler.showToastF(activity, format, Toast.LENGTH_LONG, *args) },
-            { activity -> onToast(activity, format.format(*args)) }
+            { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
         )
     }
 
@@ -93,7 +93,7 @@ class ToastHandlerTest {
                     ToastHandler.showToastAsyncF(activity, format, Toast.LENGTH_LONG, *args)
                 }.start()
             },
-            { activity -> onToast(activity, format.format(*args)) }
+            { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
         )
     }
 
