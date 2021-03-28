@@ -1,7 +1,8 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.mission
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ch.epfl.sdp.drone3d.R
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style

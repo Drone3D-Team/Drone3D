@@ -1,9 +1,11 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import ch.epfl.sdp.drone3d.ui.MainActivity
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 
 /**

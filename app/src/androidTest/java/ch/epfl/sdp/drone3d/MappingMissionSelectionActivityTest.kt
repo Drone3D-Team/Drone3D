@@ -17,6 +17,8 @@ import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
+import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule

@@ -14,6 +14,8 @@ import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getIP
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getPort
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isSimulation
+import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
+import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import junit.framework.Assert.assertEquals
 import org.junit.*
 import org.junit.runner.RunWith

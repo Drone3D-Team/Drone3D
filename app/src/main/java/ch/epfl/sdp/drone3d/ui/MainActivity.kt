@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -7,8 +7,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
+import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
+import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
+import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
+import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass

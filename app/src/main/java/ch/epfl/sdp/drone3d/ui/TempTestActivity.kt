@@ -1,7 +1,8 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.sdp.drone3d.R
 
 /**
  * A placeholder activity to test the other activities without having to create their dependencies

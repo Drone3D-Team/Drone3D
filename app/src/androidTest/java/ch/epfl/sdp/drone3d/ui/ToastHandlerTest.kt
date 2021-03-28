@@ -8,7 +8,6 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.TempTestActivity
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import org.junit.*
 import java.util.concurrent.CompletableFuture

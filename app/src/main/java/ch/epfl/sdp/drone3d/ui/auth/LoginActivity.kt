@@ -1,10 +1,11 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.auth
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import ch.epfl.sdp.drone3d.ui.MainActivity
+import ch.epfl.sdp.drone3d.R
 
 /**
  * The activity that allows the user to log in

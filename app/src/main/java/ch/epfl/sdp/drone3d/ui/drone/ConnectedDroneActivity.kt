@@ -1,10 +1,11 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.drone
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider
 
 class ConnectedDroneActivity : AppCompatActivity() {
