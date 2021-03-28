@@ -51,6 +51,15 @@
             android:text="@string/create_a_new_itinerary" />
 
         <Button
+            android:id="@+id/disconnect_drone_button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="7dp"
+            android:layout_weight="1"
+            android:onClick="goToDroneConnect"
+            android:text="@string/disconnect_drone" />
+
+        <Button
             android:id="@+id/connect_drone_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
