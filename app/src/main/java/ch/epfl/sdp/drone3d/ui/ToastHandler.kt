@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import android.widget.Toast.makeText
+import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 
 /**
  * This class centralize [Toast] creation. It allows lazy developers to show meaningful information
@@ -12,14 +14,12 @@ import android.widget.Toast.makeText
  */
 object ToastHandler {
 
-    private val lock: Any = Any()
-
     private val handler: Handler = Handler(Looper.getMainLooper())
     private var lastToast: Toast? = null
 
     private fun update(toast: Toast): Toast {
         // cancel last toast and update it
-        synchronized(lock) {
+        synchronized(this) {
             lastToast?.cancel()
             lastToast = toast
         }
@@ -28,80 +28,83 @@ object ToastHandler {
     }
 
     /**
+     * Create a formatted CharSequence from a string resource containing arguments and HTML formatting
+     *
+     * The string resource must be wrapped in a CDATA section so that the HTML formatting is conserved.
+     *
+     * Example of an HTML formatted string resource:
+     * <string name="html_formatted"><![CDATA[ bold text: <B>%1$s</B> ]]></string>
+     *
+     * [Source](https://stackoverflow.com/questions/23503642)
+     */
+    private fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
+            HtmlCompat.fromHtml(String.format(getString(id), *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
+
+    /**
      * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
      * The [context] in which the toast will be displayed must be provided
      *
-     * This function must be called from the UI thread
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can only be called from the UI thread
      */
     fun showToast(context: Context,
                   text: String,
-                  duration: Int = Toast.LENGTH_SHORT) {
-        update(makeText(context, text, duration)).show()
+                  duration: Int = Toast.LENGTH_SHORT,
+                  vararg args: Any?) {
+        // Make sure to not format texts that should not be formatted
+        if (args.isNotEmpty())
+            update(makeText(context, text.format(*args), duration)).show()
+        else
+            update(makeText(context, text, duration)).show()
     }
 
-
     /**
-     * Show a toast with given the test [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * Show a toast with given the text [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
      * The [context] in which the toast will be displayed must be provided
      *
-     * This function must be called from the UI thread
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can only be called from the UI thread
      */
     fun showToast(context: Context,
-                  resId: Int,
-                  duration: Int = Toast.LENGTH_SHORT) {
-        update(makeText(context, resId, duration)).show()
-    }
-
-    /**
-     * Show a [String.format] text with arguments [args] in a [Toast] of given [duration]
-     * (by default [Toast.LENGTH_SHORT])
-     * The [context] in which the toast will be displayed must be provided
-     *
-     * This function must be called from the UI thread
-     */
-    fun showToastF(context: Context,
-                   format: String,
-                   duration: Int,
-                   vararg args: Any) {
-        val text = format.format(*args)
-        showToast(context, text, duration)
+                  @StringRes resId: Int,
+                  duration: Int = Toast.LENGTH_SHORT,
+                  vararg args: Any?) {
+        // Make sure to not format texts that should not be formatted
+        if (args.isNotEmpty())
+            update(makeText(context, context.getText(resId), duration)).show()
+        else
+            update(makeText(context, context.getText(resId, *args), duration)).show()
     }
 
     /**
      * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
      * The [context] in which the toast will be displayed must be provided
      *
-     * This function must be called from the UI thread
-     */
-    fun showToastAsync(context: Context,
-                       text: String,
-                       duration: Int = Toast.LENGTH_SHORT) {
-        handler.post{ showToast(context, text, duration) }
-    }
-
-    /**
-     * Show a toast with given the test [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
-     * The [context] in which the toast will be displayed must be provided
-     *
-     * This function must be called from the UI thread
-     */
-    fun showToastAsync(context: Context,
-                       resId: Int,
-                       duration: Int = Toast.LENGTH_SHORT) {
-        handler.post{ showToast(context, resId, duration) }
-    }
-
-    /**
-     * Show a [String.format] text with arguments [args] in a [Toast] of given [duration]
-     * (by default [Toast.LENGTH_SHORT])
-     * The [context] in which the toast will be displayed must be provided
+     * The text can be formatted with arguments following [String.format]
      *
      * This function can be called from any thread
      */
-    fun showToastAsyncF(context: Context,
-                        format: String,
-                        duration: Int,
-                        vararg args: Any) {
-        handler.post{ showToastF(context, format, duration, *args) }
+    fun showToastAsync(context: Context,
+                       text: String,
+                       duration: Int = Toast.LENGTH_SHORT,
+                       vararg args: Any?) {
+        handler.post{ showToast(context, text, duration, *args) }
+    }
+
+    /**
+     * Show a toast with given the text [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * The [context] in which the toast will be displayed must be provided
+     *
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can be called from any thread
+     */
+    fun showToastAsync(context: Context,
+                       @StringRes resId: Int,
+                       duration: Int = Toast.LENGTH_SHORT,
+                       vararg args: Any?) {
+        handler.post{ showToast(context, resId, duration, *args) }
     }
 }
