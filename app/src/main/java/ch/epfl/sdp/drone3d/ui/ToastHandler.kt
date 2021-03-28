@@ -15,7 +15,7 @@ import androidx.core.text.HtmlCompat
 object ToastHandler {
 
     private val handler: Handler = Handler(Looper.getMainLooper())
-    private var lastToast: Toast? = null
+    @Volatile private var lastToast: Toast? = null
 
     private fun update(toast: Toast): Toast {
         // cancel last toast and update it
@@ -38,7 +38,7 @@ object ToastHandler {
      * [Source](https://stackoverflow.com/questions/23503642)
      */
     private fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
-            HtmlCompat.fromHtml(String.format(getString(id), *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
 
     /**
      * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
@@ -53,10 +53,10 @@ object ToastHandler {
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
         // Make sure to not format texts that should not be formatted
-        if (args.isNotEmpty())
-            update(makeText(context, text.format(*args), duration)).show()
-        else
+        if (args.isEmpty())
             update(makeText(context, text, duration)).show()
+        else
+            update(makeText(context, text.format(*args), duration)).show()
     }
 
     /**
@@ -72,7 +72,7 @@ object ToastHandler {
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
         // Make sure to not format texts that should not be formatted
-        if (args.isNotEmpty())
+        if (args.isEmpty())
             update(makeText(context, context.getText(resId), duration)).show()
         else
             update(makeText(context, context.getText(resId, *args), duration)).show()

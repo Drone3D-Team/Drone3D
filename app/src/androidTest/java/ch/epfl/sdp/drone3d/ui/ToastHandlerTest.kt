@@ -32,7 +32,7 @@ class ToastHandlerTest {
     fun simpleToastWorks() {
         val text = "Toast text"
         testToast(
-            { activity -> ToastHandler.showToast(activity, text, 5) },
+            { activity -> ToastHandler.showToast(activity, text) },
             { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
@@ -40,8 +40,8 @@ class ToastHandlerTest {
     @Test
     fun simpleToastWithResWorks() {
         testToast(
-            { activity -> ToastHandler.showToast(activity, R.string.connect_a_drone, Toast.LENGTH_LONG) },
-            { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
+            { activity -> ToastHandler.showToast(activity, R.string.app_name) },
+            { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
 
@@ -52,7 +52,7 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
+                    ToastHandler.showToastAsync(activity, text)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, text) }
@@ -64,10 +64,10 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsync(activity, R.string.connect_a_drone, Toast.LENGTH_LONG)
+                    ToastHandler.showToastAsync(activity,R.string.app_name)
                 }.start()
             },
-            { activity -> ToastMatcher.onToast(activity, R.string.connect_a_drone) }
+            { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
 
@@ -94,6 +94,73 @@ class ToastHandlerTest {
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, format.format(*args)) }
+        )
+    }
+
+    @Test
+    fun toastResFormatWorks() {
+        val args = arrayOf("formatting")
+
+        testToast(
+                { activity -> ToastHandler.showToast(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args) },
+                { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
+        )
+    }
+
+    @Test
+    fun asyncToastResFormatWorks() {
+        val args = arrayOf("formatting")
+
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsync(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
+        )
+    }
+
+    @Test
+    fun simpleToastCustomDurationWorks() {
+        val text = "Toast text"
+        testToast(
+                { activity -> ToastHandler.showToast(activity, text, 5) },
+                { activity -> ToastMatcher.onToast(activity, text) }
+        )
+    }
+
+    @Test
+    fun simpleToastWithCustomDurationResWorks() {
+        testToast(
+                { activity -> ToastHandler.showToast(activity, R.string.app_name, Toast.LENGTH_LONG) },
+                { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
+        )
+    }
+
+    @Test
+    fun asyncToastCustomDurationWorks() {
+        val text = "Toast text"
+
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, text) }
+        )
+    }
+
+    @Test
+    fun asyncToastWithResCustomDurationCustomDurationWorks() {
+        testToast(
+                { activity ->
+                    Thread {
+                        ToastHandler.showToastAsync(activity,R.string.app_name, Toast.LENGTH_LONG)
+                    }.start()
+                },
+                { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
 
