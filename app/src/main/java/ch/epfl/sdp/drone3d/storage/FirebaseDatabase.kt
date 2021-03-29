@@ -1,6 +1,5 @@
 package ch.epfl.sdp.drone3d.storage
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
@@ -10,6 +9,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import timber.log.Timber
 
 
 class FirebaseDatabase: Database {
@@ -45,7 +45,7 @@ class FirebaseDatabase: Database {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "loadUserPseudo:onCancelled", databaseError.toException())
+                Timber.tag(TAG).w(databaseError.toException(), "loadUserPseudo:onCancelled")
             }
         }
         userRef(UID).child(PSEUDO_PATH).addValueEventListener(pseudoListener)
