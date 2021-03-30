@@ -1,43 +1,17 @@
-package ch.epfl.sdp.drone3d.storage.dao
+package ch.epfl.sdp.drone3d.service.storage.dao
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ch.epfl.sdp.drone3d.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.storage.data.State
+import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import timber.log.Timber
 import javax.inject.Inject
 
-
-class FirebaseMappingMissionDao : MappingMissionDao {
-
-    private lateinit var database: FirebaseDatabase
-
-    /**
-     * Default constructor, injected through hilt
-     */
-    @Inject
-    constructor()
-
-    /**
-     * Constructor to specify the firebase database to use.
-     *
-     * This is mostly for testing purpose
-     */
-    constructor(database: FirebaseDatabase) : this() {
-        this.database = database
-    }
-
-    private fun getDatabase(): FirebaseDatabase {
-        // Query the database if it is not initialized yet
-        if (!this::database.isInitialized)
-            database =
-                Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")//.setPersistenceEnabled(true)
-        return database
-    }
+class FirebaseMappingMissionDao @Inject constructor(
+            private val database: FirebaseDatabase
+        ) : MappingMissionDao {
 
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private var privateMappingMissionsIsInit: Boolean = false
@@ -56,14 +30,14 @@ class FirebaseMappingMissionDao : MappingMissionDao {
      * Return the firebase database reference to the repo of private mapping missions of the user specified by [UID]
      */
     private fun privateMappingMissionRef(UID: String): DatabaseReference {
-        return getDatabase().getReference("users/$UID/$MAPPING_MISSIONS_PATH")
+        return database.getReference("users/$UID/$MAPPING_MISSIONS_PATH")
     }
 
     /**
      * Return the firebase database reference to the repo of shared mapping missions
      */
     private fun sharedMappingMissionRef(): DatabaseReference {
-        return getDatabase().getReference(MAPPING_MISSIONS_PATH)
+        return database.getReference(MAPPING_MISSIONS_PATH)
     }
 
     /**

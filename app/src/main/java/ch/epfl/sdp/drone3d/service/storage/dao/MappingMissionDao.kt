@@ -1,7 +1,7 @@
-package ch.epfl.sdp.drone3d.storage.dao
+package ch.epfl.sdp.drone3d.service.storage.dao
 
 import androidx.lifecycle.LiveData
-import ch.epfl.sdp.drone3d.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 
 interface MappingMissionDao {
 

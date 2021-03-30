@@ -8,10 +8,10 @@ import android.widget.LinearLayout
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
-import ch.epfl.sdp.drone3d.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.storage.data.State
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.service.storage.data.State
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

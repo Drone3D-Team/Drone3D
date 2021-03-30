@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d.auth
+package ch.epfl.sdp.drone3d.service.auth
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

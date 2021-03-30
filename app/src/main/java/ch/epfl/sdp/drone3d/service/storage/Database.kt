@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d.storage
+package ch.epfl.sdp.drone3d.service.storage
 
 import androidx.lifecycle.LiveData
 

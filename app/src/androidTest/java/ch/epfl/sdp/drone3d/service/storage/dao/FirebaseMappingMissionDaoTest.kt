@@ -1,9 +1,9 @@
-package ch.epfl.sdp.drone3d.storage.dao
+package ch.epfl.sdp.drone3d.service.storage.dao
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import ch.epfl.sdp.drone3d.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.storage.data.State
+import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

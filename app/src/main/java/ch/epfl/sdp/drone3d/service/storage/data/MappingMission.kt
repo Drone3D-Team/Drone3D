@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d.storage.data
+package ch.epfl.sdp.drone3d.service.storage.data
 
 /**
  * The State is used to specify where the MappingMission is stored

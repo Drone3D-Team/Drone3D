@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d.storage.dao
+package ch.epfl.sdp.drone3d.service.storage.dao
 
 import dagger.Binds
 import dagger.Module

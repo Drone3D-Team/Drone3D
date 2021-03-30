@@ -109,6 +109,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
         // Exclude Hilt generated classes
         '**/*Hilt*.*',
         'hilt_aggregated_deps/**',
+        '**/*_HiltComponents*.class',
         '**/*_Factory.class',
         '**/*_MembersInjector.class'
     ]

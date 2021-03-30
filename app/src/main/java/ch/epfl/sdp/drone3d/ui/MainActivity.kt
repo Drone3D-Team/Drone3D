@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
