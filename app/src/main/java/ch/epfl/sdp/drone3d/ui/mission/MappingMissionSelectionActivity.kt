@@ -87,8 +87,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         })
     }
 
-
-    private fun populateMappingMissionsList() {
+    /*private fun populateMappingMissionsList() {
 
         for (i in 0..10) {
             val mm = MappingMission("Mission $i", emptyList())
@@ -108,8 +107,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             )
 
         }
-    }
-
+    }*/
 
     @SuppressLint("SetTextI18n")
     private fun updateList() {
