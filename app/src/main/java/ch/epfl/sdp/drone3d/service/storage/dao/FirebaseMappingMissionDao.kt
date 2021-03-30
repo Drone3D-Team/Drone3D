@@ -102,13 +102,16 @@ class FirebaseMappingMissionDao @Inject constructor(
                     Timber.tag(TAG).w(databaseError.toException(), "getMappingMissions:onCancelled")
                 }
             }
+
             rootRef.addValueEventListener(missionsListener)
+
             if (ownerUid != null) {
                 privateMappingMissionsIsInit = true
             } else {
                 sharedMappingMissionsIsInit = true
             }
         }
+
         return mappingMissions
     }
 
