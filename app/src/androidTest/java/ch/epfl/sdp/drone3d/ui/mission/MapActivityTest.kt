@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.mission
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -11,7 +11,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
-import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest

@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
@@ -10,6 +10,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
@@ -17,7 +18,6 @@ import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.ui.MainActivity
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity

@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.mission
 
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
@@ -11,14 +11,13 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
-import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule

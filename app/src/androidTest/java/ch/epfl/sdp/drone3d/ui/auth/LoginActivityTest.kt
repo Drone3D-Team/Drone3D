@@ -1,4 +1,4 @@
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.auth
 
 import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.action.ViewActions.*
@@ -10,11 +10,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
-import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
-import ch.epfl.sdp.drone3d.ui.auth.RegisterActivity
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.testing.BindValue
