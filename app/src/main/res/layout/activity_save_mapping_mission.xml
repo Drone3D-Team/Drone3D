@@ -10,11 +10,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".ui.login.SaveMappingMissionActivity">
+    tools:context=".SaveMappingMissionActivity">
 
     <EditText
         android:id="@+id/missionName"
@@ -23,7 +19,6 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="96dp"
         android:layout_marginEnd="24dp"
-        android:autofillHints="@string/prompt_email"
         android:hint="Name of the mission"
         android:inputType="text"
         android:selectAllOnFocus="true"
@@ -39,13 +34,14 @@
         android:layout_marginStart="48dp"
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="64dp"
-        android:enabled="false"
+        android:enabled="true"
+        android:onClick="save"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-   ^
+    ^
 
     <CheckBox
         android:id="@+id/privateCheckBox"
