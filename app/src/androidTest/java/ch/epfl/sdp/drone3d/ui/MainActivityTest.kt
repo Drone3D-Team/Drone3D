@@ -14,7 +14,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
+import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
@@ -144,14 +144,15 @@ class MainActivityTest {
 
     @Test
     fun goToDroneConnectWorks() {
-        onView(withId(R.id.disconnect_drone_button)).perform(click())
-        if(isConnected()) {
-            Intents.intended(
-                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
-            )
-        } else {
+        if(DroneInstanceProvider.isConnected()) {
+            onView(withId(R.id.disconnect_drone_button)).perform(click())
             Intents.intended(
                 hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+            )
+        } else {
+            onView(withId(R.id.connect_drone_button)).perform(click())
+            Intents.intended(
+                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
             )
         }
     }

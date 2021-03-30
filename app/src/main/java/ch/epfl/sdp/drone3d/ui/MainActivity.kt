@@ -1,6 +1,5 @@
 package ch.epfl.sdp.drone3d.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -28,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var authService: AuthenticationService
 
-    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
