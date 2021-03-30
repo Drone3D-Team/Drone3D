@@ -9,6 +9,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -81,7 +82,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "getMappingMission:onCancelled", databaseError.toException())
+                Timber.tag(TAG).w(databaseError.toException(), "getMappingMission:onCancelled")
             }
         }
 
@@ -125,7 +126,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    Log.w(TAG, "getMappingMissions:onCancelled", databaseError.toException())
+                    Timber.tag(TAG).w(databaseError.toException(), "getMappingMissions:onCancelled")
                 }
             }
             rootRef.addValueEventListener(missionsListener)
@@ -212,7 +213,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "removePrivateMappingMission:onCancelled", databaseError.toException())
+                Timber.tag(TAG).w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
             }
         }
 
@@ -241,7 +242,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Log.w(TAG, "removePrivateMappingMission:onCancelled", databaseError.toException())
+                Timber.tag(TAG).w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
             }
         }
 
