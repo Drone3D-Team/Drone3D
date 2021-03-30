@@ -45,6 +45,7 @@ class SaveMappingMissionActivityTest {
 
     @BindValue
     val authService: AuthenticationService = mockAuthenticationService()
+
     @BindValue
     val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
 
