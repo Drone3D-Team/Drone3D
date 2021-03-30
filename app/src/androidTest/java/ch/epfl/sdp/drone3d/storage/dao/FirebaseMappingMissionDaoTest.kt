@@ -20,11 +20,13 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 class FirebaseMappingMissionDaoTest {
+
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val database =
         Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+
     private val db = FirebaseMappingMissionDao(database)
 
     private val timeout = 5L
@@ -34,7 +36,6 @@ class FirebaseMappingMissionDaoTest {
         private val MAPPING_MISSION_1: MappingMission = MappingMission()
         private val MAPPING_MISSION_2: MappingMission = MappingMission()
     }
-
 
     @Before
     fun beforeTests() {
@@ -63,7 +64,6 @@ class FirebaseMappingMissionDaoTest {
             }
         }
         live.observeForever(observer)
-
 
         counter.await(timeout, TimeUnit.SECONDS)
         assertThat(counter.count, equalTo(0L))
@@ -101,7 +101,6 @@ class FirebaseMappingMissionDaoTest {
 
         db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
         live.removeObserver(observer)
-
     }
 
     @Test
