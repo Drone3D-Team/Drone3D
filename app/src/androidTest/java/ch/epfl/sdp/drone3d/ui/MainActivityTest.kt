@@ -147,12 +147,12 @@ class MainActivityTest {
         if(DroneInstanceProvider.isConnected()) {
             onView(withId(R.id.disconnect_drone_button)).perform(click())
             Intents.intended(
-                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
             )
         } else {
             onView(withId(R.id.connect_drone_button)).perform(click())
             Intents.intended(
-                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
             )
         }
     }
