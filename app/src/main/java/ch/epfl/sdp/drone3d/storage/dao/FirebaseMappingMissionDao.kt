@@ -99,7 +99,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
     }
 
     override fun getSharedMappingMission(sharedId: String): LiveData<MappingMission> {
-        return getMappingMission(null, sharedId);
+        return getMappingMission(null, sharedId)
     }
 
     /**
@@ -108,7 +108,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
      * Otherwise in the shared repo
      */
     private fun getMappingMissions(ownerUid: String?): LiveData<List<MappingMission>> {
-        var mappingMissionIsInit =
+        val mappingMissionIsInit =
             if (ownerUid != null) privateMappingMissionsIsInit else sharedMappingMissionsIsInit
         val rootRef =
             if (ownerUid != null) privateMappingMissionRef(ownerUid) else sharedMappingMissionRef()
@@ -148,8 +148,8 @@ class FirebaseMappingMissionDao : MappingMissionDao {
 
     override fun storeMappingMission(ownerUid: String, mappingMission: MappingMission) {
         val privateId = privateMappingMissionRef(ownerUid).push().key
-        mappingMission.privateId = privateId;
-        mappingMission.ownerUid = ownerUid;
+        mappingMission.privateId = privateId
+        mappingMission.ownerUid = ownerUid
         when (mappingMission.state) {
             // Not already stored => only in private repo
             State.NOT_STORED -> mappingMission.state = State.PRIVATE
@@ -158,21 +158,19 @@ class FirebaseMappingMissionDao : MappingMissionDao {
                 mappingMission.state = State.PRIVATE_AND_SHARED
 
                 // Update state and privateId in shared repo
-                val refSharedMission = sharedMappingMissionRef().child(mappingMission.sharedId!!);
+                val refSharedMission = sharedMappingMissionRef().child(mappingMission.sharedId!!)
                 refSharedMission.child(PRIVATE_ID_PATH).setValue(privateId)
                 refSharedMission.child(STATE_PATH).setValue(State.PRIVATE_AND_SHARED)
             }
-            else -> {
-            }
+            else -> {}
         }
         privateMappingMissionRef(ownerUid).child(privateId!!).setValue(mappingMission)
     }
 
-
     override fun shareMappingMission(ownerUid: String, mappingMission: MappingMission) {
         val sharedId = sharedMappingMissionRef().push().key
         mappingMission.sharedId = sharedId
-        mappingMission.ownerUid = ownerUid;
+        mappingMission.ownerUid = ownerUid
         when (mappingMission.state) {
             // Not already stored => only in shared repo
             State.NOT_STORED -> mappingMission.state = State.SHARED
@@ -202,7 +200,7 @@ class FirebaseMappingMissionDao : MappingMissionDao {
                     if (mission.state == State.PRIVATE_AND_SHARED) {
 
                         // Remove privateId and change state
-                        val refSharedMission = sharedMappingMissionRef().child(mission.sharedId!!);
+                        val refSharedMission = sharedMappingMissionRef().child(mission.sharedId!!)
                         refSharedMission.child(PRIVATE_ID_PATH).removeValue()
                         refSharedMission.child(STATE_PATH).setValue(State.SHARED)
                     }

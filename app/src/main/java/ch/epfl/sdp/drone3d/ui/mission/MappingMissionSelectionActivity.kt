@@ -1,12 +1,12 @@
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
@@ -51,7 +51,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         createNewMappingMissionButton = findViewById(R.id.createMappingMissionButton)
 
         selectedStorageTypeToggleButton.isChecked = currentType.checked
-        selectedStorageTypeToggleButton.setOnCheckedChangeListener { buttonView, isChecked ->
+        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
             currentType = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
             updateList()
         }
@@ -64,7 +64,6 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             val intent = Intent(this, ItineraryCreateActivity::class.java).apply {}
             startActivity(intent)
         }
-
     }
 
 
@@ -72,7 +71,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val ownerId = authService.getCurrentSession()!!.user.uid
 
         val liveSharedMappingMissions = mappingMissionDao.getSharedMappingMissions()
-        liveSharedMappingMissions.observe(this, Observer {
+        liveSharedMappingMissions.observe(this, {
             mappingMissionSharedList = it.toMutableList()
             if (currentType == StorageType.SHARED) {
                 updateList()
@@ -80,7 +79,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         })
 
         val livePrivateMappingMissions = mappingMissionDao.getPrivateMappingMissions(ownerId)
-        livePrivateMappingMissions.observe(this, Observer {
+        livePrivateMappingMissions.observe(this, {
             mappingMissionPrivateList = it.toMutableList()
             if (currentType == StorageType.PRIVATE) {
                 updateList()
@@ -112,14 +111,14 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun updateList() {
         mappingMissionListView.removeAllViews()
         buttonList.clear()
 
-        val list: MutableList<MappingMission>
-        when (currentType) {
-            StorageType.PRIVATE -> list = mappingMissionPrivateList
-            StorageType.SHARED -> list = mappingMissionSharedList
+        val list: MutableList<MappingMission> = when (currentType) {
+            StorageType.PRIVATE -> mappingMissionPrivateList
+            StorageType.SHARED -> mappingMissionSharedList
         }
 
         for (mission in list) {
