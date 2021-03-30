@@ -18,6 +18,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * This activity let the user name then store and/or share a mapping mission.
+ */
 @AndroidEntryPoint
 class SaveMappingMissionActivity : AppCompatActivity() {
 
@@ -64,6 +67,9 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         saveButton.isEnabled = privateCheckBox.isChecked || sharedCheckBox.isChecked
     }
 
+    /**
+     * Store the mapping mission in the checked repo(s)
+     */
     fun save(@Suppress("UNUSED_PARAMETER") view: View) {
         val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
         val newMappingMission = MappingMission(name.toString(), flightPath)
