@@ -16,7 +16,6 @@ import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
-import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -28,6 +27,7 @@ import org.hamcrest.Matchers.not
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
@@ -85,7 +85,10 @@ class SaveMappingMissionActivityTest {
 
         val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
 
-        val expectedMappingMission = MappingMission("Unnamed mission", flightPath)
+        val expectedMappingMission = MappingMission(
+            "Unnamed mission",
+            flightPath
+        )
 
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
@@ -135,7 +138,11 @@ class SaveMappingMissionActivityTest {
         intent.putExtra("flightPath", flightPath)
         ActivityScenario.launch<Activity>(intent)
 
-        onView(ViewMatchers.withId(R.id.missionName)).perform(ViewActions.click()).perform(ViewActions.typeText(name)).perform(ViewActions.closeSoftKeyboard())
+        onView(ViewMatchers.withId(R.id.missionName)).perform(ViewActions.click()).perform(
+            ViewActions.typeText(
+                name
+            )
+        ).perform(ViewActions.closeSoftKeyboard())
 
         onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
         onView(ViewMatchers.withId(R.id.saveButton)).perform(ViewActions.click())
