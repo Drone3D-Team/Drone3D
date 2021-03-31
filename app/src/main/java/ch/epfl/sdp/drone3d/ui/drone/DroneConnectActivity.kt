@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.ui.drone
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,7 +26,7 @@ class DroneConnectActivity : AppCompatActivity() {
     fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
         val port = findViewById<EditText>(R.id.text_port).text.toString()
-        DroneInstanceProvider.setSimIPAndPort(ip, port)
+        DroneInstanceProvider.setSimulation(ip, port)
         val intent = Intent(this, ConnectedDroneActivity::class.java)
         DroneInstanceProvider.setSimulation(ip, port)
         val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}

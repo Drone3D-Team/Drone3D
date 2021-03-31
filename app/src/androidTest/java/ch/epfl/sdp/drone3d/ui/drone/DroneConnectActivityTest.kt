@@ -20,8 +20,8 @@ import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getIP
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getPort
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isSimulation
-import junit.framework.Assert.assertEquals
 import org.junit.*
+import org.junit.Assert.*
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -60,11 +60,12 @@ class DroneConnectActivityTest {
             .perform(typeText(port))
         onView(ViewMatchers.withId(R.id.connect_simulation_button))
             .perform(ViewActions.click())
-
+        onView(ViewMatchers.isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
         assertEquals(ip, getIP())
         assertEquals(port, getPort())
-        assertEquals(true, isConnected())
-        assertEquals(true, isSimulation())
+        assertTrue(isConnected())
+        assertTrue(isSimulation())
         Intents.intended(
             hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
@@ -75,7 +76,7 @@ class DroneConnectActivityTest {
         onView(ViewMatchers.withId(R.id.connect_drone_button))
             .perform(ViewActions.click())
 
-        assertEquals(true, isConnected())
-        assertEquals(false, isSimulation())
+        assertTrue(isConnected())
+        assertFalse(isSimulation())
     }
 }

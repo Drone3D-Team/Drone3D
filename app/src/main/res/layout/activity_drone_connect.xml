@@ -57,7 +57,7 @@
         app:layout_constraintVertical_bias="0.042" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/connect_drone_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="connectDrone"
