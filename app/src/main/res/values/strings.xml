@@ -26,7 +26,6 @@
     <string name="drone_disconnect_button">Disconnect</string>
     <string name="drone_simulated_ip">IP : %1$s</string>
     <string name="drone_simulated_port">Port : %1$s</string>
-    <string name="unnamed_mission">Unnamed mission</string>
     <string name="save_mission_text">Save</string>
     <string name="private_repo">Private</string>
     <string name="share_repo">Share</string>

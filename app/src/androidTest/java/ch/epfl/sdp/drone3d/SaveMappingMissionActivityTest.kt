@@ -5,10 +5,10 @@ import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
@@ -98,8 +98,8 @@ class SaveMappingMissionActivityTest {
         intent.putExtra("flightPath", flightPath)
         ActivityScenario.launch<Activity>(intent)
 
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton)).perform(ViewActions.click())
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
 
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
@@ -118,8 +118,8 @@ class SaveMappingMissionActivityTest {
         intent.putExtra("flightPath", flightPath)
         ActivityScenario.launch<Activity>(intent)
 
-        onView(ViewMatchers.withId(R.id.sharedCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton)).perform(ViewActions.click())
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
 
         verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
     }
@@ -139,14 +139,14 @@ class SaveMappingMissionActivityTest {
         intent.putExtra("flightPath", flightPath)
         ActivityScenario.launch<Activity>(intent)
 
-        onView(ViewMatchers.withId(R.id.missionName)).perform(ViewActions.click()).perform(
-            ViewActions.typeText(
+        onView(withId(R.id.missionName)).perform(click()).perform(
+            typeText(
                 name
             )
-        ).perform(ViewActions.closeSoftKeyboard())
+        ).perform(closeSoftKeyboard())
 
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton)).perform(ViewActions.click())
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
 
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
@@ -154,50 +154,50 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun checkBoxesEnableSaveButton() {
-        onView(ViewMatchers.withId(R.id.privateCheckBox))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        onView(ViewMatchers.withId(R.id.sharedCheckBox))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(not(ViewMatchers.isEnabled())))
+        onView(withId(R.id.privateCheckBox))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        onView(withId(R.id.sharedCheckBox))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        onView(withId(R.id.saveButton))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        onView(withId(R.id.saveButton))
+            .check(matches(not(isEnabled())))
 
 
         // Check private box
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(isEnabled()))
 
         // Uncheck private box
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(not(ViewMatchers.isEnabled())))
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(not(isEnabled())))
 
         // Check share box
-        onView(ViewMatchers.withId(R.id.sharedCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(isEnabled()))
 
         // Uncheck share box
-        onView(ViewMatchers.withId(R.id.sharedCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(not(ViewMatchers.isEnabled())))
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(not(isEnabled())))
 
         // Check both boxes
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.sharedCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(isEnabled()))
 
         // Uncheck share box
-        onView(ViewMatchers.withId(R.id.sharedCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(ViewMatchers.isEnabled()))
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(isEnabled()))
 
         // Uncheck private box
-        onView(ViewMatchers.withId(R.id.privateCheckBox)).perform(ViewActions.click())
-        onView(ViewMatchers.withId(R.id.saveButton))
-            .check(ViewAssertions.matches(not(ViewMatchers.isEnabled())))
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton))
+            .check(matches(not(isEnabled())))
     }
 }
