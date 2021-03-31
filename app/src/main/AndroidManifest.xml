@@ -29,9 +29,11 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
-
         <activity
             android:name=".MappingMissionSelectionActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".SaveMappingMissionActivity"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ItineraryCreateActivity"

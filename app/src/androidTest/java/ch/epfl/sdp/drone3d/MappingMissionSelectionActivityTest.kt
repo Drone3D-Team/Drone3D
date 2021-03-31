@@ -21,9 +21,9 @@ import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
-import ch.epfl.sdp.drone3d.storage.data.LatLong
 import ch.epfl.sdp.drone3d.storage.data.MappingMission
 import com.google.firebase.auth.FirebaseUser
+import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -45,7 +45,7 @@ class MappingMissionSelectionActivityTest {
 
     private fun mappingMissionDaoMock(): MappingMissionDao {
         val mappingMission = mock(MappingMissionDao::class.java)
-        val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLong>())))
+        val liveData = MutableLiveData(listOf(MappingMission("name", listOf<LatLng>())))
         `when`(mappingMission.getPrivateMappingMissions(anyString())).thenReturn(liveData)
         `when`(mappingMission.getSharedMappingMissions()).thenReturn(liveData)
 
