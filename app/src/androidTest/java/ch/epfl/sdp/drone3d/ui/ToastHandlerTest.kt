@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui
 
 import android.app.Activity
@@ -9,7 +14,10 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
-import org.junit.*
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import java.util.concurrent.CompletableFuture
 
 class ToastHandlerTest {
