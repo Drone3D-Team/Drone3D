@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d
 
 import androidx.lifecycle.MutableLiveData
@@ -145,7 +150,7 @@ class MainActivityTest {
 
     @Test
     fun goToDroneConnectWorks() {
-        onView(ViewMatchers.withId(R.id.connect_drone_button)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.disconnect_drone_button)).perform(ViewActions.click())
         if(isConnected()) {
             Intents.intended(
                 hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))

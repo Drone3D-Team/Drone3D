@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2021  Drone3D-Team
+  ~ The license can be found in LICENSE at root of the repository
+  -->
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_activity"
@@ -49,6 +54,15 @@
             android:layout_weight="1"
             android:onClick="goToItineraryCreate"
             android:text="@string/create_a_new_itinerary" />
+
+        <Button
+            android:id="@+id/disconnect_drone_button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="7dp"
+            android:layout_weight="1"
+            android:onClick="goToDroneConnect"
+            android:text="@string/disconnect_drone" />
 
         <Button
             android:id="@+id/connect_drone_button"
