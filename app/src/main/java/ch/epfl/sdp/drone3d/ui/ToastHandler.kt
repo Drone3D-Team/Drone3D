@@ -1,0 +1,110 @@
+package ch.epfl.sdp.drone3d.ui
+
+import android.content.Context
+import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
+import android.widget.Toast.makeText
+import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
+
+/**
+ * This class centralize [Toast] creation. It allows lazy developers to show meaningful information
+ * very easily.
+ */
+object ToastHandler {
+
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    @Volatile private var lastToast: Toast? = null
+
+    private fun update(toast: Toast): Toast {
+        // cancel last toast and update it
+        synchronized(this) {
+            lastToast?.cancel()
+            lastToast = toast
+        }
+
+        return toast
+    }
+
+    /**
+     * Create a formatted CharSequence from a string resource containing arguments and HTML formatting
+     *
+     * The string resource must be wrapped in a CDATA section so that the HTML formatting is conserved.
+     *
+     * Example of an HTML formatted string resource:
+     * <string name="html_formatted"><![CDATA[ bold text: <B>%1$s</B> ]]></string>
+     *
+     * [Source](https://stackoverflow.com/questions/23503642)
+     */
+    private fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
+            HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
+
+    /**
+     * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * The [context] in which the toast will be displayed must be provided
+     *
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can only be called from the UI thread
+     */
+    fun showToast(context: Context,
+                  text: String,
+                  duration: Int = Toast.LENGTH_SHORT,
+                  vararg args: Any?) {
+        // Make sure to not format texts that should not be formatted
+        if (args.isEmpty())
+            update(makeText(context, text, duration)).show()
+        else
+            update(makeText(context, text.format(*args), duration)).show()
+    }
+
+    /**
+     * Show a toast with given the text [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * The [context] in which the toast will be displayed must be provided
+     *
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can only be called from the UI thread
+     */
+    fun showToast(context: Context,
+                  @StringRes resId: Int,
+                  duration: Int = Toast.LENGTH_SHORT,
+                  vararg args: Any?) {
+        // Make sure to not format texts that should not be formatted
+        if (args.isEmpty())
+            update(makeText(context, context.getText(resId), duration)).show()
+        else
+            update(makeText(context, context.getText(resId, *args), duration)).show()
+    }
+
+    /**
+     * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * The [context] in which the toast will be displayed must be provided
+     *
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can be called from any thread
+     */
+    fun showToastAsync(context: Context,
+                       text: String,
+                       duration: Int = Toast.LENGTH_SHORT,
+                       vararg args: Any?) {
+        handler.post{ showToast(context, text, duration, *args) }
+    }
+
+    /**
+     * Show a toast with given the text [resId] and of given [duration] (by default [Toast.LENGTH_SHORT])
+     * The [context] in which the toast will be displayed must be provided
+     *
+     * The text can be formatted with arguments following [String.format]
+     *
+     * This function can be called from any thread
+     */
+    fun showToastAsync(context: Context,
+                       @StringRes resId: Int,
+                       duration: Int = Toast.LENGTH_SHORT,
+                       vararg args: Any?) {
+        handler.post{ showToast(context, resId, duration, *args) }
+    }
+}
