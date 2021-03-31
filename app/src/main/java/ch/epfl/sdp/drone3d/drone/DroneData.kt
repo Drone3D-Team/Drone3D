@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +14,7 @@ import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.math.*
 
 /**
@@ -19,7 +25,10 @@ import kotlin.math.*
  *  - Add functionality used by our app
  *  - Convert certain types to our owns
  */
-class DroneData {
+class DroneData @Inject constructor(provider: DroneProvider) {
+
+    // Drone instance
+    private val instance: System = provider.provideDrone()
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
@@ -32,9 +41,6 @@ class DroneData {
     val isFlying: MutableLiveData<Boolean> = MutableLiveData(false)
     val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
-
-    // Drone instance
-    private val instance: System = DroneInstanceProvider.provide()
 
     init {
         createDefaultSubs()

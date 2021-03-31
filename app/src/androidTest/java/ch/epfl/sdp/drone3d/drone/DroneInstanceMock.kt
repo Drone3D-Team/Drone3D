@@ -26,7 +26,7 @@ object DroneInstanceMock {
     val droneAction: Action = mock(Action::class.java)
 
     init {
-        DroneInstanceProvider.provide = {
+        DroneProviderImpl.provide = {
             droneSystem
         }
 

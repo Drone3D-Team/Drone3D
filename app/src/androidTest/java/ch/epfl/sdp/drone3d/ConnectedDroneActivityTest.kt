@@ -14,7 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isConnected
 import junit.framework.Assert.assertEquals
 import org.junit.*
 import org.junit.runner.RunWith

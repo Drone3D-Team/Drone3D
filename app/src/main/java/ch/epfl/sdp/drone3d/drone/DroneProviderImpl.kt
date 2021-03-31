@@ -10,33 +10,28 @@ package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-object DroneInstanceProvider {
+object DroneProviderImpl : DroneProvider {
+
     private var isConnected = false
 
     private var isSimulation = true
     private var simIP = "0.0.0.0"
     private var simPort = "0"
 
-    /**
-     * Provide the information of a drone or a simulation to the application depending on the value of [isSimulation]
-     */
-    var provide: () -> System = {
+    override fun provideDrone(): System {
         if (isSimulation) {
             // Works for armeabi-v7a and arm64-v8a (not x86 or x86_64)
             val mavsdkServer = MavsdkServer()
             val cloudSimIPAndPort = "tcp://$simIP:$simPort"
             val mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
-            System("localhost", mavsdkServerPort)
+            return System("localhost", mavsdkServerPort)
         } else {
             // TODO : write the program needed to connect a drone to the program
             throw NotImplementedError()
         }
     }
 
-    /**
-     * Setup the [IP] and [port] of a simulation and connect it to the application
-     */
-    fun setSimIPAndPort(IP: String, port: String) {
+    override fun setSimIPAndPort(IP: String, port: String) {
         isConnected = true
         isSimulation = true
         simIP = IP
@@ -46,35 +41,35 @@ object DroneInstanceProvider {
     /**
      * Returns [simIP]
      */
-    fun getIP(): String {
+    override fun getIP(): String {
         return simIP
     }
 
     /**
      * Returns [simPort]
      */
-    fun getPort(): String {
+    override fun getPort(): String {
         return simPort
     }
 
     /**
      * Returns [isConnected]
      */
-    fun isConnected() : Boolean {
+    override fun isConnected() : Boolean {
         return isConnected
     }
 
     /**
      * Returns [isSimulation]
      */
-    fun isSimulation(): Boolean {
+    override fun isSimulation(): Boolean {
         return isSimulation
     }
 
     /**
      * Disconnect a connected drone or simulation
      */
-    fun disconnect() {
+    override fun disconnect() {
         isConnected = false
     }
 }

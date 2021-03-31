@@ -13,7 +13,7 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isConnected
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass

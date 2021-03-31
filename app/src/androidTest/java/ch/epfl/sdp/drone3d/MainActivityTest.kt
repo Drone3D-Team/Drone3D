@@ -18,7 +18,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.auth.UserSession
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isConnected
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.storage.data.MappingMission

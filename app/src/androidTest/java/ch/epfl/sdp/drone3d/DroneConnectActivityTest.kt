@@ -15,10 +15,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getIP
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getPort
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isSimulation
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.getIP
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.getPort
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isConnected
+import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isSimulation
 import junit.framework.Assert.assertEquals
 import org.junit.*
 import org.junit.runner.RunWith
