@@ -25,7 +25,16 @@ class DroneConnectActivity : AppCompatActivity() {
     fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
         val port = findViewById<EditText>(R.id.text_port).text.toString()
-        DroneInstanceProvider.setSimIPAndPort(ip, port)
+        DroneInstanceProvider.setSimulation(ip, port)
+        val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}
+        startActivity(intent)
+    }
+
+    /**
+     * Connect a drone to the application
+     */
+    fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+        DroneInstanceProvider.setDrone()
         val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}
         startActivity(intent)
     }

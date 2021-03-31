@@ -50,14 +50,14 @@ class DroneConnectActivityTest {
     }
 
     @Test
-    fun droneConnectWorks() {
+    fun connectSimulatedDroneWorks() {
         val ip = "1.1.1.1"
         val port = "1111"
         onView(ViewMatchers.withId(R.id.text_IP_address))
             .perform(typeText(ip))
         onView(ViewMatchers.withId(R.id.text_port))
             .perform(typeText(port))
-        onView(ViewMatchers.withId(R.id.connect_button))
+        onView(ViewMatchers.withId(R.id.connect_simulation_button))
             .perform(ViewActions.click())
 
         assertEquals(ip, getIP())
@@ -67,5 +67,14 @@ class DroneConnectActivityTest {
         Intents.intended(
             hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
+    }
+
+    @Test
+    fun connectDroneWorks() {
+        onView(ViewMatchers.withId(R.id.connect_drone_button))
+            .perform(ViewActions.click())
+
+        assertEquals(true, isConnected())
+        assertEquals(false, isSimulation())
     }
 }

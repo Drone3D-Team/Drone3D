@@ -25,7 +25,9 @@
     <string name="register_fail">Registration failed</string>
     <string name="register_info_default">Enter your register information</string>
     <string name="login_info_default">Enter your login information</string>
-    <string name="drone_connect_button">Connect</string>
+    <string name="drone_connect_button">Connect a drone</string>
+    <string name="simulation_connect_button">Connect a simulation</string>
+    <string name="is_connected_drone">There is a connected drone</string>
     <string name="drone_connect_ip_default">IP address</string>
     <string name="drone_connect_port_default">Port</string>
     <string name="drone_disconnect_button">Disconnect</string>

@@ -17,7 +17,7 @@ class ConnectedDroneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (DroneInstanceProvider.isSimulation()) {
-            setContentView(R.layout.activity_connected_drone_simulation)
+            setContentView(R.layout.activity_connected_simulation)
 
             findViewById<TextView>(R.id.simulation_ip).apply {
                 text = getString(R.string.drone_simulated_ip, DroneInstanceProvider.getIP())
@@ -25,6 +25,8 @@ class ConnectedDroneActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.simulation_port).apply {
                 text = getString(R.string.drone_simulated_port, DroneInstanceProvider.getPort())
             }
+        } else {
+            setContentView(R.layout.activity_connected_drone)
         }
     }
 

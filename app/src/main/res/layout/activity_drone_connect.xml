@@ -12,18 +12,18 @@
     tools:context=".DroneConnectActivity">
 
     <Button
-        android:id="@+id/connect_button"
+        android:id="@+id/connect_simulation_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:onClick="connectSimulatedDrone"
-        android:text="@string/drone_connect_button"
+        android:text="@string/simulation_connect_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.479"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_port"
-        app:layout_constraintVertical_bias="0.01" />
+        app:layout_constraintVertical_bias="0.014" />
 
     <EditText
         android:id="@+id/text_IP_address"
@@ -31,14 +31,14 @@
         android:layout_height="wrap_content"
         android:autofillHints="0.0.0.0"
         android:ems="10"
-        android:inputType="text"
         android:hint="@string/drone_connect_ip_default"
+        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.185" />
+        app:layout_constraintVertical_bias="0.542" />
 
     <EditText
         android:id="@+id/text_port"
@@ -47,13 +47,35 @@
         android:layout_marginTop="76dp"
         android:autofillHints="0"
         android:ems="10"
-        android:inputType="text"
         android:hint="@string/drone_connect_port_default"
+        android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.477"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_IP_address"
-        app:layout_constraintVertical_bias="0.022" />
+        app:layout_constraintVertical_bias="0.042" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="connectDrone"
+        android:text="@string/drone_connect_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.177" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.384"
+        tools:layout_editor_absoluteX="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
