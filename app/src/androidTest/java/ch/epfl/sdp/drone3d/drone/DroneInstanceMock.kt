@@ -19,6 +19,9 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 
 object DroneInstanceMock {
+
+    val mockProvider: DroneProvider = mock(DroneProvider::class.java)
+
     val droneSystem: System = mock(System::class.java)
     val droneTelemetry: Telemetry = mock(Telemetry::class.java)
     val droneCore: Core = mock(Core::class.java)
@@ -26,9 +29,7 @@ object DroneInstanceMock {
     val droneAction: Action = mock(Action::class.java)
 
     init {
-        DroneProviderImpl.provide = {
-            droneSystem
-        }
+        resetProviderMock()
 
         `when`(droneSystem.telemetry)
             .thenReturn(droneTelemetry)
@@ -40,9 +41,22 @@ object DroneInstanceMock {
             .thenReturn(droneAction)
     }
 
-    fun setupDefaultMocks() {
-        resetMocks()
+    fun resetProviderMock() {
+        `when`(mockProvider.provideDrone())
+            .thenReturn(droneSystem)
+        `when`(mockProvider.getIP())
+            .thenAnswer { DroneProviderImpl.getIP() }
+        `when`(mockProvider.getPort())
+            .thenAnswer { DroneProviderImpl.getPort() }
+        `when`(mockProvider.isConnected())
+            .thenAnswer { DroneProviderImpl.isConnected() }
+        `when`(mockProvider.isSimulation())
+            .thenAnswer { DroneProviderImpl.isSimulation() }
+        `when`(mockProvider.disconnect())
+            .then { DroneProviderImpl.disconnect() }
+    }
 
+    fun setupDefaultMocks() {
         // Telemetry Mocks
         `when`(droneTelemetry.flightMode)
             .thenReturn(
@@ -122,9 +136,5 @@ object DroneInstanceMock {
             .thenReturn(Completable.complete())
         `when`(droneAction.land())
             .thenReturn(Completable.complete())
-    }
-
-    fun resetMocks() {
-        reset(droneAction, droneCore, droneMission, droneTelemetry)
     }
 }
