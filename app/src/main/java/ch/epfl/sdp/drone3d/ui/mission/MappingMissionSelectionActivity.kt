@@ -61,7 +61,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         setListenerMappingMissions()
 
         createNewMappingMissionButton.setOnClickListener {
-            val intent = Intent(this, ItineraryCreateActivity::class.java).apply {}
+            val intent = Intent(this, ItineraryCreateActivity::class.java)
             startActivity(intent)
         }
     }
@@ -124,9 +124,9 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             button.height = 50
             button.width = 100
             button.text = mission.name
-            if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED) {
+            if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED)
                 button.text = mission.name + "- S"
-            }
+
             button.setOnClickListener {
                 //TODO: go to mission details
             }

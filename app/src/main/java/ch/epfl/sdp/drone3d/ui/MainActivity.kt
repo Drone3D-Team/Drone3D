@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun <T> open(activity: KClass<T>) where T : Activity {
-        val intent = Intent(this, activity.java).apply {}
+        val intent = Intent(this, activity.java)
         startActivity(intent)
     }
 }

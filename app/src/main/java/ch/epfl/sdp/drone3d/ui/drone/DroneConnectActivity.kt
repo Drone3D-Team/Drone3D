@@ -22,7 +22,7 @@ class DroneConnectActivity : AppCompatActivity() {
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
         val port = findViewById<EditText>(R.id.text_port).text.toString()
         DroneInstanceProvider.setSimIPAndPort(ip, port)
-        val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}
+        val intent = Intent(this, ConnectedDroneActivity::class.java)
         startActivity(intent)
     }
 }

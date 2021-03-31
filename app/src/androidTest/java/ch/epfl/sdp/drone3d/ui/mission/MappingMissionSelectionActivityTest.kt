@@ -18,6 +18,7 @@ import ch.epfl.sdp.drone3d.service.auth.UserSession
 import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -36,6 +37,15 @@ class MappingMissionSelectionActivityTest {
 
     companion object {
         private const val USER_UID = "asdfg"
+
+        private val SHARED_MAPPING_MISSION = MappingMission("shared", listOf())
+        private val PRIVATE_MAPPING_MISSION = MappingMission("private1", listOf())
+        private val PRIVATE_AND_SHARED_MAPPING_MISSION = MappingMission("private2", listOf()).apply {
+            state = State.PRIVATE_AND_SHARED
+        }
+
+        private val SHARED_LIVE_DATA = MutableLiveData(listOf(SHARED_MAPPING_MISSION))
+        private val PRIVATE_LIVE_DATA = MutableLiveData(listOf(PRIVATE_MAPPING_MISSION))
     }
 
     @get:Rule
@@ -53,9 +63,10 @@ class MappingMissionSelectionActivityTest {
         `when`(authService.getCurrentSession()).thenReturn(userSession)
 
         // Mock mapping mission dao
-        val liveData = MutableLiveData(listOf(MappingMission("name", listOf())))
-        `when`(mappingMissionDao.getPrivateMappingMissions(anyString())).thenReturn(liveData)
-        `when`(mappingMissionDao.getSharedMappingMissions()).thenReturn(liveData)
+        `when`(mappingMissionDao.getPrivateMappingMissions(anyString()))
+                .thenReturn(PRIVATE_LIVE_DATA)
+        `when`(mappingMissionDao.getSharedMappingMissions())
+                .thenReturn(SHARED_LIVE_DATA)
     }
 
     @Before
@@ -80,22 +91,46 @@ class MappingMissionSelectionActivityTest {
 
     @Test
     fun clickOnSwitchChangesPrivateOrSharedMode() {
-        var initialState = false
+        var isPrivate = false
 
-        //Sets initial state to the current value of the toggle button
+        //Sets initial state to shared
         onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
-            initialState =
+            isPrivate =
                 view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
         }
 
+        if (isPrivate)
+            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+
+        // Shared state
+        onView(withId(R.id.mappingMissionToggleButton))
+            .check(matches(isNotChecked()))
+
+        val curShared = SHARED_LIVE_DATA.value
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curShared?.size ?: 0)))
+
+        curShared?.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(true, m)))))
+        }
+
+        // Check the box
         onView(withId(R.id.mappingMissionToggleButton))
             .perform(click())
+
+        // Private state
         onView(withId(R.id.mappingMissionToggleButton))
-            .check(matches(if (initialState) isNotChecked() else isChecked()))
-        onView(withId(R.id.mappingMissionToggleButton))
-            .perform(click())
-        onView(withId(R.id.mappingMissionToggleButton))
-            .check(matches(if (initialState) isChecked() else isNotChecked()))
+            .check(matches(isChecked()))
+
+        val curPrivate = PRIVATE_LIVE_DATA.value
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curPrivate?.size ?: 0)))
+
+        curPrivate?.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(false, m)))))
+        }
     }
 
     @Test
@@ -107,4 +142,72 @@ class MappingMissionSelectionActivityTest {
         )
     }
 
+    @Test
+    fun changeInLiveDataHasEffect() {
+        // Make sure the current state is shared
+        var isPrivate = false
+
+        //Sets initial state to shared
+        onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
+            isPrivate =
+                    view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
+        }
+
+        if (isPrivate)
+            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+
+        // Shared
+        var curShared = SHARED_LIVE_DATA.value
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curShared?.size ?: 0)))
+
+        curShared?.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(true, m)))))
+        }
+
+        curShared = listOf(SHARED_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
+        SHARED_LIVE_DATA.postValue(curShared)
+
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curShared.size)))
+
+        curShared.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(true, m)))))
+        }
+
+        //switch state
+        onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+
+        // private
+        var curPrivate = PRIVATE_LIVE_DATA.value
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curPrivate?.size ?: 0)))
+
+        curPrivate?.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(false, m)))))
+        }
+
+        curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
+
+        PRIVATE_LIVE_DATA.postValue(curPrivate)
+        onView(withId(R.id.mappingMissionList))
+                .check(matches(hasChildCount(curPrivate.size)))
+
+        curPrivate.forEach {
+            m -> onView(withId(R.id.mappingMissionList))
+                .check(matches(withChild(withText(buttonName(false, m)))))
+        }
+
+        // Reset LIVE DATA
+        SHARED_LIVE_DATA.postValue(listOf(SHARED_MAPPING_MISSION))
+        PRIVATE_LIVE_DATA.postValue(listOf(PRIVATE_MAPPING_MISSION))
+    }
+
+    private fun buttonName(shared: Boolean, m: MappingMission): String {
+        return if (!shared && m.state == State.PRIVATE_AND_SHARED) m.name + "- S"
+        else m.name
+    }
 }

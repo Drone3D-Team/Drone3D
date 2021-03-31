@@ -29,7 +29,7 @@ class ConnectedDroneActivity : AppCompatActivity() {
      */
     fun disconnectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         DroneInstanceProvider.disconnect()
-        val intent = Intent(this, DroneConnectActivity::class.java).apply {}
+        val intent = Intent(this, DroneConnectActivity::class.java)
         startActivity(intent)
     }
 }
