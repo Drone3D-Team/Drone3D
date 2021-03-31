@@ -31,49 +31,49 @@
             android:value="true" />
 
         <activity
-            android:name=".MappingMissionSelectionActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".ui.mission.MappingMissionSelectionActivity"
+            android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name=".ItineraryCreateActivity"
-            android:parentActivityName=".MainActivity" />
+            android:name=".ui.mission.ItineraryCreateActivity"
+            android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name=".DroneConnectActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".ui.drone.DroneConnectActivity"
+            android:parentActivityName=".ui.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".ConnectedDroneActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".ui.drone.ConnectedDroneActivity"
+            android:parentActivityName=".ui.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
 
         <activity
-            android:name=".RegisterActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".ui.auth.RegisterActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".ui.auth.LoginActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:screenOrientation="portrait" >
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -81,13 +81,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TempTestActivity"
-            android:parentActivityName=".MainActivity">
+            android:name=".ui.TempTestActivity"
+            android:parentActivityName=".ui.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".ui.MainActivity" />
         </activity>
     </application>
 
