@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom|right"
+    android:layout_gravity="bottom|end"
     tools:context=".ItineraryCreateActivity">
 
     <com.mapbox.mapboxsdk.maps.MapView
@@ -14,8 +14,8 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/buttonToSaveActivity"
-            android:layout_width="103dp"
-            android:layout_height="42dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_gravity="bottom|end"
