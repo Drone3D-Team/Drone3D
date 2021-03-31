@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,8 +54,7 @@ abstract class AuthActivity : AppCompatActivity()  {
                     success()
                 } else {
                     // If sign in fails, display a message to the user.
-                    Toast.makeText(baseContext, failMessage,
-                            Toast.LENGTH_SHORT).show()
+                    ToastHandler.showToast(baseContext, failMessage)
                     if (task.exception?.message != null) {
                         infoText.text = task.exception?.message
                         infoText.setTextColor(Color.RED)

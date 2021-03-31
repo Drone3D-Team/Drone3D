@@ -40,6 +40,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -62,7 +66,6 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.7.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
-
 
     // Import mavsdk to control the drone
     implementation 'io.mavsdk:mavsdk:0.3.1'
