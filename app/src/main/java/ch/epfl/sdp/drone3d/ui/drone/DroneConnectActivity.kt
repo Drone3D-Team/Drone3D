@@ -28,8 +28,6 @@ class DroneConnectActivity : AppCompatActivity() {
         val port = findViewById<EditText>(R.id.text_port).text.toString()
         DroneInstanceProvider.setSimulation(ip, port)
         val intent = Intent(this, ConnectedDroneActivity::class.java)
-        DroneInstanceProvider.setSimulation(ip, port)
-        val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}
         startActivity(intent)
     }
 
