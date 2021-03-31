@@ -1,9 +1,14 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.service.auth
 
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import org.junit.Assert
+import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
@@ -24,9 +29,9 @@ class AuthenticationServiceTest {
         val user = mock(FirebaseUser::class.java)
         `when`(auth.currentUser).thenReturn(user)
 
-        Assert.assertTrue(service.hasActiveSession())
-        Assert.assertNotNull(service.getCurrentSession())
-        Assert.assertEquals(user, service.getCurrentSession()?.user)
+        assertTrue(service.hasActiveSession())
+        assertNotNull(service.getCurrentSession())
+        assertEquals(user, service.getCurrentSession()?.user)
     }
 
     @Test
