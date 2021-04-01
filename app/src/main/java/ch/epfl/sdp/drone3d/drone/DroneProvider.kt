@@ -13,15 +13,35 @@ interface DroneProvider {
     /**
      * Setup the [IP] and [port] of a simulation and connect it to the application
      */
-    fun setSimIPAndPort(IP: String, port: String)
+    fun setSimulation(IP: String, port: String)
 
+    /**
+     * Connect a drone to the application
+     */
+    fun setDrone()
+
+    /**
+     * Returns the drone connection ip
+     */
     fun getIP(): String
 
+    /**
+     * Returns the drone connection port
+     */
     fun getPort(): String
 
+    /**
+     * Returns true if the drone is currently connected
+     */
     fun isConnected() : Boolean
 
+    /**
+     * Returns true if the drone is simulated
+     */
     fun isSimulation(): Boolean
 
+    /**
+     * Disconnect the current drone
+     */
     fun disconnect()
 }

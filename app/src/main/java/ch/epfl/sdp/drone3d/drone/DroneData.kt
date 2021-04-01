@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.MutableLiveData
-import ch.epfl.sdp.drone3d.storage.data.LatLong
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import io.mavsdk.System
 import io.mavsdk.core.Core
 import io.mavsdk.mission.Mission

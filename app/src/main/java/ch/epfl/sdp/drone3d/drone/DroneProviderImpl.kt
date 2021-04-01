@@ -7,6 +7,7 @@
  */
 
 package ch.epfl.sdp.drone3d.drone
+
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
@@ -19,15 +20,15 @@ object DroneProviderImpl : DroneProvider {
     private var simPort = "0"
 
     override fun provideDrone(): System {
-        if (isSimulation) {
+        return if (isSimulation) {
             val mavsdkServer = MavsdkServer()
             val cloudSimIPAndPort = "tcp://$simIP:$simPort"
             val mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
-            return System("localhost", mavsdkServerPort)
+            System("localhost", mavsdkServerPort)
         } else {
             val mavsdkServer = MavsdkServer()
             val mavsdkServerPort = mavsdkServer.run()
-            return System("localhost", mavsdkServerPort)
+            System("localhost", mavsdkServerPort)
         }
     }
 
@@ -38,45 +39,27 @@ object DroneProviderImpl : DroneProvider {
         simPort = port
     }
 
-    /**
-     * Connect a drone to the application
-     */
-    fun setDrone() {
+    override fun setDrone() {
         isConnected = true
         isSimulation = false
     }
 
-    /**
-     * Returns [simIP]
-     */
     override fun getIP(): String {
         return simIP
     }
 
-    /**
-     * Returns [simPort]
-     */
     override fun getPort(): String {
         return simPort
     }
 
-    /**
-     * Returns [isConnected]
-     */
     override fun isConnected() : Boolean {
         return isConnected
     }
 
-    /**
-     * Returns [isSimulation]
-     */
     override fun isSimulation(): Boolean {
         return isSimulation
     }
 
-    /**
-     * Disconnect a connected drone or simulation
-     */
     override fun disconnect() {
         isConnected = false
     }

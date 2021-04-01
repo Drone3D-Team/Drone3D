@@ -42,8 +42,14 @@ object DroneInstanceMock {
     }
 
     fun resetProviderMock() {
+        reset(mockProvider)
+
         `when`(mockProvider.provideDrone())
             .thenReturn(droneSystem)
+        `when`(mockProvider.setSimulation(anyString(), anyString()))
+                .thenAnswer {
+                    an -> DroneProviderImpl.setSimulation(an.getArgument(0), an.getArgument(1))
+                }
         `when`(mockProvider.getIP())
             .thenAnswer { DroneProviderImpl.getIP() }
         `when`(mockProvider.getPort())

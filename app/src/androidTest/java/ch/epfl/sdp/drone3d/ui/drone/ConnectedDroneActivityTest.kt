@@ -12,20 +12,30 @@ import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneProviderImpl.isConnected
-import junit.framework.Assert.assertEquals
+import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.drone.DroneProvider
+import ch.epfl.sdp.drone3d.drone.DroneProviderModule
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
-import org.junit.runner.RunWith
+import org.junit.Assert.*
+import org.junit.rules.RuleChain
+import org.mockito.Mockito.verify
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
+@UninstallModules(DroneProviderModule::class)
 class ConnectedDroneActivityTest {
 
     @get:Rule
-    val activityRule = ActivityScenarioRule(ConnectedDroneActivity::class.java)
+    val activityRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+            .around(ActivityScenarioRule(ConnectedDroneActivity::class.java))
 
+    @BindValue
+    val droneProvider: DroneProvider = DroneInstanceMock.mockProvider
 
     @Before
     fun setUp() {
@@ -44,14 +54,16 @@ class ConnectedDroneActivityTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
+        assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
     @Test
     fun disconnectDroneWorks() {
         onView(ViewMatchers.withId(R.id.disconnect_simulation))
             .perform(ViewActions.click())
-        assertEquals(false, isConnected())
+
+        verify(droneProvider).disconnect()
+
         Intents.intended(
             hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
