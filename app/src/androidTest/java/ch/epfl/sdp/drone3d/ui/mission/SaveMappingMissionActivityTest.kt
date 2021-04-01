@@ -12,7 +12,6 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.SaveMappingMissionActivity
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.auth.UserSession
