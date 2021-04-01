@@ -11,7 +11,7 @@ import android.os.Looper
 import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.annotation.StringRes
-import androidx.core.text.HtmlCompat
+import ch.epfl.sdp.drone3d.Drone3D.Companion.getText
 
 /**
  * This class centralize [Toast] creation. It allows lazy developers to show meaningful information
@@ -31,19 +31,6 @@ object ToastHandler {
 
         return toast
     }
-
-    /**
-     * Create a formatted CharSequence from a string resource containing arguments and HTML formatting
-     *
-     * The string resource must be wrapped in a CDATA section so that the HTML formatting is conserved.
-     *
-     * Example of an HTML formatted string resource:
-     * <string name="html_formatted"><![CDATA[ bold text: <B>%1$s</B> ]]></string>
-     *
-     * [Source](https://stackoverflow.com/questions/23503642)
-     */
-    private fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
-            HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
 
     /**
      * Show a toast with given [text] and of given [duration] (by default [Toast.LENGTH_SHORT])
