@@ -49,7 +49,7 @@ class ConnectedDroneActivityTest {
 
     @Test
     fun disconnectDroneWorks() {
-        onView(ViewMatchers.withId(R.id.disconnect_drone))
+        onView(ViewMatchers.withId(R.id.disconnect_simulation))
             .perform(ViewActions.click())
         assertEquals(false, isConnected())
         Intents.intended(

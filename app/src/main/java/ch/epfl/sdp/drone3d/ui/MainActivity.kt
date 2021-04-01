@@ -41,8 +41,8 @@ class MainActivity : AppCompatActivity() {
         val loginButton: Button = findViewById(R.id.log_in_button)
         val logoutButton: Button = findViewById(R.id.log_out_button)
 
-        val connectDroneButton: Button = findViewById(R.id.connect_drone_button)
-        val disconnectDroneButton: Button = findViewById(R.id.disconnect_drone_button)
+        val connectDroneButton: Button = findViewById(R.id.go_connect_drone_button)
+        val disconnectDroneButton: Button = findViewById(R.id.go_disconnect_drone_button)
 
         if (authService.hasActiveSession()) {
             logoutButton.visibility = View.VISIBLE
