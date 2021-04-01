@@ -20,8 +20,8 @@ import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getIP
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.getPort
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isSimulation
-import junit.framework.Assert.assertEquals
 import org.junit.*
+import org.junit.Assert.*
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -51,22 +51,34 @@ class DroneConnectActivityTest {
     }
 
     @Test
-    fun droneConnectWorks() {
+    fun connectSimulatedDroneWorks() {
         val ip = "1.1.1.1"
         val port = "1111"
         onView(ViewMatchers.withId(R.id.text_IP_address))
             .perform(typeText(ip))
+        onView(ViewMatchers.isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
         onView(ViewMatchers.withId(R.id.text_port))
             .perform(typeText(port))
-        onView(ViewMatchers.withId(R.id.connect_button))
+        onView(ViewMatchers.isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
+        onView(ViewMatchers.withId(R.id.connect_simulation_button))
             .perform(ViewActions.click())
-
         assertEquals(ip, getIP())
         assertEquals(port, getPort())
-        assertEquals(true, isConnected())
-        assertEquals(true, isSimulation())
+        assertTrue(isConnected())
+        assertTrue(isSimulation())
         Intents.intended(
             hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
+    }
+
+    @Test
+    fun connectDroneWorks() {
+        onView(ViewMatchers.withId(R.id.connect_drone_button))
+            .perform(ViewActions.click())
+
+        assertTrue(isConnected())
+        assertFalse(isSimulation())
     }
 }

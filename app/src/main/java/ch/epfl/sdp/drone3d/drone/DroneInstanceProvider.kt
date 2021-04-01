@@ -22,24 +22,33 @@ object DroneInstanceProvider {
      */
     var provide = {
         if (isSimulation) {
-            // Works for armeabi-v7a and arm64-v8a (not x86 or x86_64)
             val mavsdkServer = MavsdkServer()
             val cloudSimIPAndPort = "tcp://$simIP:$simPort"
             val mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
             System("localhost", mavsdkServerPort)
         } else {
-            // TODO : write the program needed to connect a drone to the program
+            val mavsdkServer = MavsdkServer()
+            val mavsdkServerPort = mavsdkServer.run()
+            System("localhost", mavsdkServerPort)
         }
     }
 
     /**
      * Setup the [IP] and [port] of a simulation and connect it to the application
      */
-    fun setSimIPAndPort(IP: String, port: String) {
+    fun setSimulation(IP: String, port: String) {
         isConnected = true
         isSimulation = true
         simIP = IP
         simPort = port
+    }
+
+    /**
+     * Connect a drone to the application
+     */
+    fun setDrone() {
+        isConnected = true
+        isSimulation = false
     }
 
     /**
