@@ -5,6 +5,9 @@
 
 package ch.epfl.sdp.drone3d.service.storage.data
 
+import com.mapbox.mapboxsdk.geometry.LatLng
+
+
 /**
  * The State is used to specify where the MappingMission is stored
  * It's either:
@@ -24,7 +27,7 @@ enum class State {
  */
 data class MappingMission(
     val name: String = "",
-    val flightPath: List<LatLong> = listOf(),
+    val flightPath: List<LatLng> = listOf(),
     var privateId: String? = null,
     var sharedId: String? = null,
     var state: State = State.NOT_STORED,
