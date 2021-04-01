@@ -1,7 +1,6 @@
 package ch.epfl.sdp.drone3d.gps
 
 import android.app.Activity
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import ch.epfl.sdp.drone3d.R
@@ -74,10 +73,8 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
 
     private fun checkAndRequestLocationPermission(): Boolean {
         if (PermissionsManager.areLocationPermissionsGranted(activity)) {
-            Log.d(null, "permission granted")
             return true
         }
-        Log.d(null, "permission not granted")
         permissionsManager = PermissionsManager(this)
         permissionsManager.requestLocationPermissions(activity)
         return false
@@ -89,12 +86,9 @@ class LocationComponentManager(private val activity: Activity, private val mapbo
     }
 
     override fun onPermissionResult(granted: Boolean) {
-        Log.d(null, "results coming")
         if (granted) {
-            Log.d(null, "permission becomes granted")
             enableLocationComponent(style!!)
         } else {
-            Log.d(null, "permission becomes not granted")
             Toast.makeText(
                 activity,
                 R.string.user_location_permission_not_granted,
