@@ -10,6 +10,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import io.mavsdk.System
 import io.mavsdk.action.Action
+import io.mavsdk.camera.Camera
 import io.mavsdk.core.Core
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
@@ -27,6 +28,7 @@ object DroneInstanceMock {
     val droneCore: Core = mock(Core::class.java)
     val droneMission: Mission = mock(Mission::class.java)
     val droneAction: Action = mock(Action::class.java)
+    val droneCamera: Camera = mock(Camera::class.java)
 
     init {
         resetProviderMock()
@@ -39,6 +41,8 @@ object DroneInstanceMock {
             .thenReturn(droneMission)
         `when`(droneSystem.action)
             .thenReturn(droneAction)
+        `when`(droneSystem.camera)
+            .thenReturn(droneCamera)
     }
 
     fun resetProviderMock() {
@@ -85,7 +89,7 @@ object DroneInstanceMock {
             ))
         `when`(droneTelemetry.battery)
             .thenReturn(Flowable.fromArray(
-                Telemetry.Battery(0.0f, 0.0f)
+                Telemetry.Battery(5.0f, 10.0f)
             ))
         `when`(droneTelemetry.positionVelocityNed)
             .thenReturn(Flowable.fromArray(
@@ -142,5 +146,18 @@ object DroneInstanceMock {
             .thenReturn(Completable.complete())
         `when`(droneAction.land())
             .thenReturn(Completable.complete())
+
+        // Camera
+        `when`(droneCamera.information)
+            .thenReturn(
+                Flowable.fromArray(Camera.Information(
+                    "vendor",
+                    "model",
+                                45f,
+                                10f,
+                                10f,
+                                2500,
+                                2500))
+            )
     }
 }

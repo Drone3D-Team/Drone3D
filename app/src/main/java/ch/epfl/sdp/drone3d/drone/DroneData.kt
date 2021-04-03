@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import io.mavsdk.System
 import io.mavsdk.core.Core
-import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.disposables.Disposable
@@ -27,6 +26,8 @@ import kotlin.math.*
  */
 class DroneData @Inject constructor(provider: DroneProvider) {
 
+    data class CameraResolution(val width: Int, val height: Int)
+
     // Drone instance
     private val instance: System = provider.provideDrone()
 
@@ -36,11 +37,11 @@ class DroneData @Inject constructor(provider: DroneProvider) {
     val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
     val speed: MutableLiveData<Float> = MutableLiveData()
-    val mission: MutableLiveData<List<Mission.MissionItem>> = MutableLiveData()
     val homeLocation: MutableLiveData<Telemetry.Position> = MutableLiveData()
     val isFlying: MutableLiveData<Boolean> = MutableLiveData(false)
     val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
+    val cameraResolution: MutableLiveData<CameraResolution> = MutableLiveData()
 
     init {
         createDefaultSubs()
@@ -104,6 +105,18 @@ class DroneData @Inject constructor(provider: DroneProvider) {
                         { error -> Timber.e("Error connectionState : $error") }
                 )
         )
+        disposables.add(instance.camera.information.distinctUntilChanged()
+                .subscribe(
+                        { i -> i.horizontalResolutionPx},
+                        {}
+                )
+        )
+        disposables.add(instance.camera.information.distinctUntilChanged()
+                .subscribe(
+                        { i -> cameraResolution.postValue(CameraResolution(i.verticalResolutionPx, i.horizontalResolutionPx)) },
+                        { error -> Timber.e("Error cameraResolution : $error") }
+                )
+        )
     }
 
     private fun disposeOfAll() {
@@ -116,7 +129,7 @@ class DroneData @Inject constructor(provider: DroneProvider) {
      *
      * Dispose of all subscriptions, clear the list and recreate the default ones
      */
-    fun dumpOutdatedSubs() {
+    fun disposeOutdatedSubs() {
         disposeOfAll()
         createDefaultSubs()
     }
