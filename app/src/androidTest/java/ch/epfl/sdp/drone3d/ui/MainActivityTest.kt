@@ -155,7 +155,7 @@ class MainActivityTest {
         // Refresh
         activityRule.scenario.recreate()
 
-        onView(withId(R.id.go_disconnect_drone_button)).perform(click())
+        onView(withId(R.id.go_connect_drone_button)).perform(click())
         Intents.intended(
                 hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
@@ -167,7 +167,7 @@ class MainActivityTest {
 
         activityRule.scenario.recreate()
 
-        onView(withId(R.id.go_connect_drone_button)).perform(click())
+        onView(withId(R.id.go_disconnect_drone_button)).perform(click())
         Intents.intended(
                 hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
