@@ -1,9 +1,10 @@
 package ch.epfl.sdp.drone3d.mission
 
-import ch.epfl.sdp.drone3d.storage.data.LatLong
 import kotlin.math.sqrt
-import kotlin.math.abs
 
+/**
+ * Utility class to represent a 2D vector
+ */
 data class Vector (val x:Double,val y:Double) {
 
     /**
@@ -20,8 +21,20 @@ data class Vector (val x:Double,val y:Double) {
     operator fun div(factor: Double) = Vector(x/factor,y/factor)
     operator fun times(factor: Int) = Vector(x*factor,y*factor)
     operator fun div(factor: Int) = Vector(x/factor,y/factor)
+
+    /**
+     * Returns the euclidean norm of the vector
+     */
     fun norm() = sqrt(x*x+y*y)
+
+    /**
+     * Returns a normalized version of this vector
+     */
     fun normalized() = this/norm()
+
+    /**
+     * Reverse the vectors orientation
+     */
     fun reverse() = -this
 
 }

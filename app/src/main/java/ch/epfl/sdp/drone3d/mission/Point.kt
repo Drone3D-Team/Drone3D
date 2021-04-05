@@ -1,9 +1,10 @@
 package ch.epfl.sdp.drone3d.mission
 
-import kotlin.math.abs
-import kotlin.math.sqrt
 
-data class Point (val x:Double,val y:Double) {
+/**
+ * Utility class to represent a 2D point
+ */
+data class Point(val x:Double,val y:Double) {
 
     companion object{
         /**
@@ -22,7 +23,7 @@ data class Point (val x:Double,val y:Double) {
 
 
     /**
-     * Unit vector representing the direction from this to a
+     * Unit vector representing the direction from this point to [other]
      */
     fun direction(other:Point) = Vector(this,other).normalized()
 }
