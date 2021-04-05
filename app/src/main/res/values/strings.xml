@@ -33,6 +33,9 @@
     <string name="drone_disconnect_button">Disconnect</string>
     <string name="drone_simulated_ip">IP : %1$s</string>
     <string name="drone_simulated_port">Port : %1$s</string>
+    <string name="stop_mission_button">Stop Mission</string>
+    <!-- Message showed in case of a loss of connection with the drone during a mission -->
+    <string name="lost_connection_message">Lost Connection With the Drone</string>
     <string name="save_mission_text">Save</string>
     <string name="private_repo">Private</string>
     <string name="share_repo">Share</string>

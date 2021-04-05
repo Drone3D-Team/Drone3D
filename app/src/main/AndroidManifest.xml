@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2021  Drone3D-Team
-  ~ The license can be found in LICENSE at root of the repository
-  -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ch.epfl.sdp.drone3d">
 
@@ -21,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D">
-
+        <activity android:name=".MissionInProgressActivity"></activity>
         <!--
                Set to true if your app is Standalone, that is, it does not require the handheld
                app to run.
@@ -29,6 +24,7 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
+
         <activity
             android:name=".ui.mission.MappingMissionSelectionActivity"
             android:parentActivityName=".ui.MainActivity" />
@@ -38,7 +34,6 @@
         <activity
             android:name=".ui.mission.ItineraryCreateActivity"
             android:parentActivityName=".ui.MainActivity" />
-
         <activity
             android:name=".ui.drone.DroneConnectActivity"
             android:parentActivityName=".ui.MainActivity">
@@ -57,11 +52,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
         </activity>
-
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -70,7 +65,8 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
