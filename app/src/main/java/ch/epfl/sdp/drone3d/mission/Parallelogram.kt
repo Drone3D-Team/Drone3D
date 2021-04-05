@@ -6,9 +6,7 @@ import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
  */
 data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vector){
 
-    constructor(origin: Point,dir1Point:Point,dir2Point:Point) {
-        Parallelogram(origin,Vector(origin,dir1Point),Vector(origin,dir2Point))
-    }
+    constructor(origin: Point,dir1Point:Point,dir2Point:Point): this(origin,Vector(origin,dir1Point),Vector(origin,dir2Point))
 
     /**
      * Translate the parallelogram by [translationVector]
@@ -28,7 +26,7 @@ data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vec
     /**
      * Returns the 4 vertices of the parallelogram
      */
-    private fun getVertices():List<Point>{
+    fun getVertices():List<Point>{
         var vertices = mutableListOf<Point>()
 
         vertices.add(origin)
@@ -52,7 +50,7 @@ data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vec
                 closestOriginIndex = i
             }
         }
-        return Parallelogram(vertices[closestOriginIndex],vertices[(closestOriginIndex-1)%vertices.size], vertices[(closestOriginIndex+1)%vertices.size])
+        return Parallelogram(vertices[closestOriginIndex],vertices[(closestOriginIndex-1+vertices.size)%vertices.size], vertices[(closestOriginIndex+1)%vertices.size])
     }
 
 }

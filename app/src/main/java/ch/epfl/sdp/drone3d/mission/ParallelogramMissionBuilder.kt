@@ -19,9 +19,7 @@ class ParallelogramMissionBuilder {
          */
         fun buildSinglePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,droneHeight:Double, projectedImageWidth:Double,projectedImageHeight: Double):List<Point>{
             val newArea = area.getClosestEquivalentParallelogram(startingPoint)
-            var mappingMission = mutableListOf(startingPoint)
-            mappingMission.addAll(singlePassMappingMission(newArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight))
-            return mappingMission
+            return singlePassMappingMission(newArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
         }
 
         /**
@@ -30,11 +28,10 @@ class ParallelogramMissionBuilder {
          */
         fun buildDoublePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,droneHeight:Double, projectedImageWidth:Double,projectedImageHeight: Double):List<Point>{
             val firstPassArea = area.getClosestEquivalentParallelogram(startingPoint)
-            var mappingMission = mutableListOf(startingPoint)
-            mappingMission.addAll(singlePassMappingMission(firstPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight))
+            val mappingMissionFirst = singlePassMappingMission(firstPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
             val secondPassArea = firstPassArea.diagonalEquivalent()
-            mappingMission.addAll(singlePassMappingMission(secondPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight))
-            return mappingMission
+            val mappingMissionSecond = singlePassMappingMission(secondPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+            return mappingMissionFirst + mappingMissionSecond
         }
 
         /**
@@ -60,7 +57,7 @@ class ParallelogramMissionBuilder {
             val direction1Increment = area.dir1Span.normalized()*projectedImageWidth*(1-FRONTAL_OVERLAP)
             val direction2Increment = area.dir2Span.normalized()*projectedImageHeight*(1-SIDE_OVERLAP)
             val direction1IncrementCount = ceil(area.dir1Span.norm()/direction1Increment.norm()).toInt()
-            val direction2IncrementCount = ceil(area.dir2Span.norm()/direction2Increment.norm()).toInt()
+            val direction2IncrementCount = ceil(area.dir2Span.norm()/direction2Increment.norm()).toInt() +1
 
             var currentPoint = area.origin
 
@@ -71,9 +68,12 @@ class ParallelogramMissionBuilder {
                     currentPoint += currentDirection1Increment
                     resultList.add(currentPoint)
                 }
-                currentPoint += direction2Increment
-                resultList.add(currentPoint)
-                currentDirection1Increment = currentDirection1Increment.reverse()
+                //Not needed for last iteration
+                if(i!=direction2IncrementCount-1){
+                    currentPoint += direction2Increment
+                    resultList.add(currentPoint)
+                    currentDirection1Increment = currentDirection1Increment.reverse()
+                }
             }
             return resultList.toList()
         }
