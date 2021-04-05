@@ -11,14 +11,12 @@ import android.view.View
 import android.widget.MediaController
 import android.widget.Toast
 import android.widget.VideoView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
@@ -36,9 +34,7 @@ import java.lang.Math.abs
  * - addition of the use of the camera of the drone, and a video feed on the layout of this activity
  * - a few minor adaptations to make the class compatible with our project
  */
-class MissionInProgressActivity : AppCompatActivity(), OnMapReadyCallback {
-
-    private lateinit var mapView: MapView
+class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     private lateinit var mapboxMap: MapboxMap
 
     private lateinit var cameraView: VideoView
@@ -81,11 +77,7 @@ class MissionInProgressActivity : AppCompatActivity(), OnMapReadyCallback {
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
-        setContentView(R.layout.activity_mission_in_progress_activity)
-
-        mapView = findViewById(R.id.mapInMissionView)
-        mapView.onCreate(savedInstanceState)
-
+        initMapView(savedInstanceState, R.layout.activity_mission_in_progress, R.id.mapView)
         mapView.getMapAsync(this)
 
         cameraView = findViewById(R.id.camera_mission_view)
@@ -121,13 +113,13 @@ class MissionInProgressActivity : AppCompatActivity(), OnMapReadyCallback {
         if (DroneData.positionLiveData.value != null) {
             mapboxMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(DroneData.positionLiveData.value!!,
-                if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM))
+                if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
+                ))
         }
     }
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
 
         DroneData.position.observe(this, dronePositionObserver)
         DroneData.homeLocation.observe(this, homePositionObserver)
@@ -138,7 +130,6 @@ class MissionInProgressActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
-        mapView.onPause()
 
         DroneData.position.removeObserver(dronePositionObserver)
         DroneData.homeLocation.removeObserver(homePositionObserver)
@@ -147,32 +138,16 @@ class MissionInProgressActivity : AppCompatActivity(), OnMapReadyCallback {
         DroneData.videoStreamUri.removeObserver(videoStreamUriObserver)
     }
 
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        mapView.onDestroy()
 
         dronePainter.onDestroy()
         missionPainter.onDestroy()
         homePainter.onDestroy()
     }
 
-    override fun onSaveInstanceFile(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+    companion object {
+        private const val DEFAULT_ZOOM: Double = 17.0
+        private const val ZOOM_TOLERANCE: Double = 2.0
     }
 }
