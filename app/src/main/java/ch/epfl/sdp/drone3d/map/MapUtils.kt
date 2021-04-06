@@ -9,6 +9,7 @@ import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 object MapUtils {
+
     fun toLatLng(latLong: LatLong?) : LatLng? {
         return if (latLong?.latitude == null || latLong.longitude == null) {
             null

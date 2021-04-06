@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.map
+package ch.epfl.sdp.drone3d.ui.map
 
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +15,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneData
+import ch.epfl.sdp.drone3d.map.MapUtils
+import ch.epfl.sdp.drone3d.map.MapboxDronePainter
+import ch.epfl.sdp.drone3d.map.MapboxHomePainter
+import ch.epfl.sdp.drone3d.map.MapboxMissionPainter
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -120,7 +124,8 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
         val currentZoom = mapboxMap.cameraPosition.zoom
         if (droneData.position.value != null) {
             mapboxMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(MapUtils.toLatLng(droneData.position.value)!!,
+                CameraUpdateFactory.newLatLngZoom(
+                    MapUtils.toLatLng(droneData.position.value)!!,
                 if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
                 ))
         }

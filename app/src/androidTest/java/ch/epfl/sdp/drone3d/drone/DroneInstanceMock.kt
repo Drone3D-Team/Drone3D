@@ -159,5 +159,21 @@ object DroneInstanceMock {
                                 2500,
                                 2500))
             )
+        `when`(droneCamera.videoStreamInfo)
+            .thenReturn(
+                Flowable.fromArray(Camera.VideoStreamInfo(
+                    Camera.VideoStreamSettings(
+                        30f,
+                        2500,
+                        2500,
+                        60,
+                        0,
+                        "uri",
+                        0f
+                            ),
+                    Camera.VideoStreamInfo.VideoStreamStatus.IN_PROGRESS,
+                    Camera.VideoStreamInfo.VideoStreamSpectrum.VISIBLE_LIGHT
+                ))
+            )
     }
 }

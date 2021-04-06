@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.map
+package ch.epfl.sdp.drone3d.ui.map
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
