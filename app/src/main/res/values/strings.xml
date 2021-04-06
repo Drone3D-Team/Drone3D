@@ -1,3 +1,8 @@
+<!--
+  ~ Copyright (C) 2021  Drone3D-Team
+  ~ The license can be found in LICENSE at root of the repository
+  -->
+
 <resources>
     <string name="app_name">Drone3D</string>
     <string name="email_text">Email</string>
@@ -9,7 +14,9 @@
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
     <string name="log_in">Log in</string>
+    <string name="log_out">Logout</string>
     <string name="connect_a_drone">Connect a drone</string>
+    <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
     <string name="login_success">Login succeed</string>
@@ -18,5 +25,18 @@
     <string name="register_fail">Registration failed</string>
     <string name="register_info_default">Enter your register information</string>
     <string name="login_info_default">Enter your login information</string>
+    <string name="drone_connect_button">Connect a drone</string>
+    <string name="simulation_connect_button">Connect a simulation</string>
+    <string name="is_connected_drone">There is a connected drone</string>
+    <string name="drone_connect_ip_default">IP address</string>
+    <string name="drone_connect_port_default">Port</string>
+    <string name="drone_disconnect_button">Disconnect</string>
+    <string name="drone_simulated_ip">IP : %1$s</string>
+    <string name="drone_simulated_port">Port : %1$s</string>
+    <string name="save_mission_text">Save</string>
+    <string name="private_repo">Private</string>
+    <string name="share_repo">Share</string>
+    <string name="name_mission_text">Mission name</string>
+
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
 </resources>
