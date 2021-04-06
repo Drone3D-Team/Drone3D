@@ -11,10 +11,16 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider
+import ch.epfl.sdp.drone3d.drone.DroneProvider
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class DroneConnectActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var droneProvider: DroneProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drone_connect)
@@ -26,7 +32,7 @@ class DroneConnectActivity : AppCompatActivity() {
     fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
         val port = findViewById<EditText>(R.id.text_port).text.toString()
-        DroneInstanceProvider.setSimulation(ip, port)
+        droneProvider.setSimulation(ip, port)
         val intent = Intent(this, ConnectedDroneActivity::class.java)
         startActivity(intent)
     }
@@ -35,8 +41,8 @@ class DroneConnectActivity : AppCompatActivity() {
      * Connect a drone to the application
      */
     fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
-        DroneInstanceProvider.setDrone()
-        val intent = Intent(this, ConnectedDroneActivity::class.java).apply{}
+        droneProvider.setDrone()
+        val intent = Intent(this, ConnectedDroneActivity::class.java)
         startActivity(intent)
     }
 }

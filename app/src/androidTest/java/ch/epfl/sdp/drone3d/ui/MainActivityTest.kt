@@ -17,7 +17,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider
+import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.drone.DroneProvider
+import ch.epfl.sdp.drone3d.drone.DroneProviderModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.auth.UserSession
@@ -38,7 +40,7 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
+@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class, DroneProviderModule::class)
 class MainActivityTest {
 
     private val activityRule = ActivityScenarioRule(MainActivity::class.java)
@@ -49,6 +51,7 @@ class MainActivityTest {
 
     @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
     @BindValue val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
+    @BindValue val droneProvider: DroneProvider = DroneInstanceMock.mockProvider
 
     init {
         // Default mocks needed at creation of the activity
@@ -140,6 +143,7 @@ class MainActivityTest {
     fun goToMappingMissionSelectionWorksWithoutActiveSession() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
+        // Refresh
         onView(withId(R.id.browse_itinerary_button))
                 .perform(click())
         Intents.intended(
@@ -149,16 +153,30 @@ class MainActivityTest {
 
     @Test
     fun goToDroneConnectWorks() {
-        if(DroneInstanceProvider.isConnected()) {
-            onView(withId(R.id.go_disconnect_drone_button)).perform(click())
-            Intents.intended(
-                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
-            )
-        } else {
-            onView(withId(R.id.go_connect_drone_button)).perform(click())
-            Intents.intended(
+        `when`(droneProvider.isConnected()).thenReturn(false)
+
+        // Refresh
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.go_connect_drone_button)).perform(click())
+        Intents.intended(
                 hasComponent(hasClassName(DroneConnectActivity::class.java.name))
-            )
-        }
+        )
+
+        DroneInstanceMock.resetProviderMock()
+    }
+
+    @Test
+    fun goToDroneDisconnectWorks() {
+        `when`(droneProvider.isConnected()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.go_disconnect_drone_button)).perform(click())
+        Intents.intended(
+                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+        )
+
+        DroneInstanceMock.resetProviderMock()
     }
 }
