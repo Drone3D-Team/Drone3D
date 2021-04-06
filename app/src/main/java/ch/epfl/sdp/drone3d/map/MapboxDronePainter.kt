@@ -3,10 +3,10 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
-import com.mapbox.mapboxsdk.geometry.LatLng
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -23,7 +23,8 @@ class MapboxDronePainter(mapView: MapView, mapboxMap: MapboxMap, style: Style) :
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
-    fun paint(location: LatLng?) {
+    fun paint(locationLatLong: LatLong?) {
+        val location = MapUtils.toLatLng(locationLatLong)
         if (location == null) {
             circleManager.deleteAll()
             reset = true

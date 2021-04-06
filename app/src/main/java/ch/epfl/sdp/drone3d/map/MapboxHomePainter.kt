@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
 import com.mapbox.mapboxsdk.geometry.LatLng

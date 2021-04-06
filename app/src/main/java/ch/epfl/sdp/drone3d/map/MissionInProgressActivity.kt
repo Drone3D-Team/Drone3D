@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d
+package ch.epfl.sdp.drone3d.map
 
 import android.net.Uri
 import android.os.Bundle
@@ -13,6 +13,9 @@ import android.widget.Toast
 import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
+import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.drone.DroneData
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -21,9 +24,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
 import org.jetbrains.annotations.NotNull
 import java.lang.Math.abs
+import javax.inject.Inject
 
 /**
  * This class is heavily inspired by the class MapActivity.kt from the Fly2Find project. It has a few
@@ -34,7 +39,11 @@ import java.lang.Math.abs
  * - addition of the use of the camera of the drone, and a video feed on the layout of this activity
  * - a few minor adaptations to make the class compatible with our project
  */
+@AndroidEntryPoint
 class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
+    @Inject
+    lateinit var droneData: DroneData
+
     private lateinit var mapboxMap: MapboxMap
 
     private lateinit var cameraView: VideoView
@@ -43,8 +52,8 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     private lateinit var dronePainter: MapboxDronePainter
     private lateinit var homePainter: MapboxHomePainter
 
-    private var dronePositionObserver = Observer<LatLng> { newLatLng ->
-        newLatLng?.let { if (::dronePainter.isInitialized) dronePainter.paint(it) }
+    private var dronePositionObserver = Observer<LatLong> { newLatLong ->
+        newLatLong?.let { if (::dronePainter.isInitialized) dronePainter.paint(it) }
     }
 
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
@@ -94,15 +103,14 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
 
             centerCameraOnDrone(mapView)
 
-            Transformations.map(DroneData.missionLiveData) { mission ->
+            Transformations.map(droneData.mission) { mission ->
                 return@map mission?.map { item ->
-                    LatLng(item.latitudeDeg, item.longitudeDeg)
+                    LatLng(item.latitude, item.longitude)
                 }
             }.observe(this, Observer {
                 missionPainter.paint(it)
             })
         }
-
     }
 
     /**
@@ -110,9 +118,9 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
      */
     fun centerCameraOnDrone(v: View) {
         val currentZoom = mapboxMap.cameraPosition.zoom
-        if (DroneData.positionLiveData.value != null) {
+        if (droneData.position.value != null) {
             mapboxMap.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(DroneData.positionLiveData.value!!,
+                CameraUpdateFactory.newLatLngZoom(MapUtils.toLatLng(droneData.position.value)!!,
                 if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
                 ))
         }
@@ -121,21 +129,21 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
 
-        DroneData.position.observe(this, dronePositionObserver)
-        DroneData.homeLocation.observe(this, homePositionObserver)
-        DroneData.isFlying.observe(this, droneFlyingStatusObserver)
-        DroneData.isConnected.observe(this, droneConnectionStatusObserver)
-        DroneData.videoStreamUri.observe(this, videoStreamUriObserver)
+        droneData.position.observe(this, dronePositionObserver)
+        droneData.homeLocation.observe(this, homePositionObserver)
+        droneData.isFlying.observe(this, droneFlyingStatusObserver)
+        droneData.isConnected.observe(this, droneConnectionStatusObserver)
+        droneData.videoStreamUri.observe(this, videoStreamUriObserver)
     }
 
     override fun onPause() {
         super.onPause()
 
-        DroneData.position.removeObserver(dronePositionObserver)
-        DroneData.homeLocation.removeObserver(homePositionObserver)
-        DroneData.isFlying.removeObserver(droneFlyingStatusObserver)
-        DroneData.isConnected.removeObserver(droneConnectionStatusObserver)
-        DroneData.videoStreamUri.removeObserver(videoStreamUriObserver)
+        droneData.position.removeObserver(dronePositionObserver)
+        droneData.homeLocation.removeObserver(homePositionObserver)
+        droneData.isFlying.removeObserver(droneFlyingStatusObserver)
+        droneData.isConnected.removeObserver(droneConnectionStatusObserver)
+        droneData.videoStreamUri.removeObserver(videoStreamUriObserver)
     }
 
     override fun onDestroy() {

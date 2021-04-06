@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.core.Core
 import io.mavsdk.telemetry.Telemetry
@@ -16,7 +17,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.math.*
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * This class regroup all the data from the drone. This is inspired a lot by the Drone class from Fly2Find project.
@@ -44,6 +46,8 @@ class DroneData @Inject constructor(provider: DroneProvider) {
     val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     val cameraResolution: MutableLiveData<CameraResolution> = MutableLiveData()
+    val videoStreamUri: MutableLiveData<String> = MutableLiveData()
+    val mission: MutableLiveData<List<LatLng>> = MutableLiveData()
 
     init {
         createDefaultSubs()
@@ -79,6 +83,9 @@ class DroneData @Inject constructor(provider: DroneProvider) {
         }
         addSubscription(instance.camera.information, "cameraResolution") { i ->
             cameraResolution.postValue(CameraResolution(i.verticalResolutionPx, i.horizontalResolutionPx))
+        }
+        addSubscription(instance.camera.videoStreamInfo, "settings") { i ->
+            videoStreamUri.postValue(i.settings.uri)
         }
     }
 
