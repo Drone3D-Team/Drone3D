@@ -31,8 +31,8 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
 import org.jetbrains.annotations.NotNull
-import java.lang.Math.abs
 import javax.inject.Inject
+import kotlin.math.abs
 
 /**
  * This class is heavily inspired by the class MapActivity.kt from the Fly2Find project. It has a few
@@ -120,7 +120,7 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     /**
      * Centers the camera on the drone
      */
-    fun centerCameraOnDrone(v: View) {
+    private fun centerCameraOnDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val currentZoom = mapboxMap.cameraPosition.zoom
         if (droneData.position.value != null) {
             mapboxMap.moveCamera(

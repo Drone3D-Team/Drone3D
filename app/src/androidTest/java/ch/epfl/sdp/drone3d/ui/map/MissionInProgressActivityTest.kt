@@ -16,12 +16,11 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneData
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.*
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import java.util.concurrent.CompletableFuture
 
-@RunWith(JUnit4::class)
+@HiltAndroidTest
 class MissionInProgressActivityTest {
 
     @get:Rule
