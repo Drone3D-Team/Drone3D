@@ -12,8 +12,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  */
 data class Point(val x:Double,val y:Double) {
 
-    constructor(point : LatLng): this(point.longitude,point.latitude)
-
     companion object{
         /**
          * Computes the middle point between two points
@@ -28,7 +26,6 @@ data class Point(val x:Double,val y:Double) {
 
     operator fun plus(vector: Vector) = Point(this.x+vector.x, this.y+vector.y)
     operator fun minus(vector: Vector) = Point(this.x-vector.x, this.y-vector.y)
-
 
     /**
      * Unit vector representing the direction from this point to [other]

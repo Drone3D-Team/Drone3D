@@ -2,6 +2,7 @@ package ch.epfl.sdp.drone3d.mission
 
 import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
 import ch.epfl.sdp.drone3d.mission.Point.Companion.middle
+import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import kotlin.math.sqrt
