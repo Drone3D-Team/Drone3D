@@ -1,10 +1,14 @@
 package ch.epfl.sdp.drone3d.mission
 
+import com.mapbox.mapboxsdk.geometry.LatLng
+
 
 /**
  * Utility class to represent a 2D point
  */
 data class Point(val x:Double,val y:Double) {
+
+    constructor(point : LatLng): this(point.longitude,point.latitude)
 
     companion object{
         /**

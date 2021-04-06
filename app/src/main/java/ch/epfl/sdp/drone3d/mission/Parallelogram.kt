@@ -1,5 +1,6 @@
 package ch.epfl.sdp.drone3d.mission
 import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Utility class to represent a parallelogram
@@ -7,6 +8,8 @@ import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
 data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vector){
 
     constructor(origin: Point,dir1Point:Point,dir2Point:Point): this(origin,Vector(origin,dir1Point),Vector(origin,dir2Point))
+
+    constructor(origin: LatLng, dir1Point:LatLng, dir2Point:LatLng): this(Point(origin),Point(dir1Point),Point(dir2Point))
 
     /**
      * Translate the parallelogram by [translationVector]
