@@ -26,10 +26,10 @@ import kotlin.math.sqrt
  *  - Convert certain types to our owns
  *  - Change from object to api/implementation
  */
-class DroneDataImpl constructor(provider: DroneService) : DroneData {
+class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     // Drone instance
-    private val instance: System = provider.provideDrone()
+    private lateinit var instance: System
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
@@ -48,6 +48,8 @@ class DroneDataImpl constructor(provider: DroneService) : DroneData {
     }
 
     private fun createDefaultSubs() {
+        instance = provider.provideDrone()
+
         addSubscription(instance.telemetry.flightMode, "Flight Mode") { flightMode ->
             if (flightMode == Telemetry.FlightMode.HOLD) isMissionPaused.postValue(true)
             if (flightMode == Telemetry.FlightMode.MISSION) isMissionPaused.postValue(false)
@@ -116,7 +118,7 @@ class DroneDataImpl constructor(provider: DroneService) : DroneData {
 
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
 
-    override fun disposeOfOutdatedSubscriptions() {
+    override fun refresh() {
         disposeOfAll()
         createDefaultSubs()
     }

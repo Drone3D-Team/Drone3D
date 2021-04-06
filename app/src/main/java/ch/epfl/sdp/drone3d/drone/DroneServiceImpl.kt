@@ -13,7 +13,7 @@ import io.mavsdk.mavsdkserver.MavsdkServer
 
 object DroneServiceImpl : DroneService {
 
-    private var droneData: DroneData? = null
+    private val droneData = DroneDataImpl(this)
 
     private var isConnected = false
     private var isSimulation = true
@@ -38,11 +38,15 @@ object DroneServiceImpl : DroneService {
         isSimulation = true
         simIP = IP
         simPort = port
+
+        droneData.refresh()
     }
 
     override fun setDrone() {
         isConnected = true
         isSimulation = false
+
+        droneData.refresh()
     }
 
     override fun getIP(): String {
@@ -63,12 +67,11 @@ object DroneServiceImpl : DroneService {
 
     override fun disconnect() {
         isConnected = false
+
+        droneData.refresh()
     }
 
     override fun getData(): DroneData {
-        if (droneData == null)
-            throw IllegalStateException("The DroneData object is null")
-
-        return droneData!!
+        return droneData
     }
 }
