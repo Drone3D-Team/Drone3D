@@ -5,9 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.content.Context
-import android.content.pm.PackageManager
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
@@ -17,7 +14,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.uiautomator.UiDevice
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
@@ -37,9 +33,6 @@ import org.mockito.Mockito.mock
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class)
 class MapActivityTest {
-
-    private lateinit var mUiDevice: UiDevice
-    private val context = mock(Context::class.java)
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
@@ -64,11 +57,6 @@ class MapActivityTest {
     @Before
     fun setUp() {
         Intents.init()
-        `when`(context.checkSelfPermission(ACCESS_FINE_LOCATION))
-            .thenReturn(
-                PackageManager.PERMISSION_DENIED
-            )
-        mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     }
 
     @After
@@ -92,28 +80,8 @@ class MapActivityTest {
     }
 
     @Test
-    fun denyLocatePositionWorks() {
-        `when`(context.checkSelfPermission(ACCESS_FINE_LOCATION))
-            .thenReturn(
-                PackageManager.PERMISSION_DENIED
-            )
-
-        activityRule.scenario.onActivity {
-            it.onRequestPermissionsResult(
-                0,
-                arrayOf("android.permission.ACCESS_FINE_LOCATION"),
-                intArrayOf(-1)
-            )
-        }
-
-    }
-
-    @Test
     fun allowLocatePositionWorks() {
-        `when`(context.checkSelfPermission(ACCESS_FINE_LOCATION))
-            .thenReturn(
-                PackageManager.PERMISSION_DENIED
-            )
+        var locationEnabled = true
 
         activityRule.scenario.onActivity {
             it.onRequestPermissionsResult(
@@ -121,6 +89,9 @@ class MapActivityTest {
                 arrayOf("android.permission.ACCESS_FINE_LOCATION"),
                 intArrayOf(0)
             )
+            locationEnabled =
+                it.locationComponentManager.mapboxMap.locationComponent.isLocationComponentEnabled
         }
+        Assert.assertTrue(locationEnabled)
     }
 }

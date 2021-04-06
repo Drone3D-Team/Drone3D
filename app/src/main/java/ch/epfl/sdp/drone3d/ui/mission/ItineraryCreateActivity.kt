@@ -19,7 +19,7 @@ import com.mapbox.mapboxsdk.maps.Style
  */
 class ItineraryCreateActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
-    private lateinit var locationComponentManager: LocationComponentManager
+    lateinit var locationComponentManager: LocationComponentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -21,7 +21,7 @@ import com.mapbox.mapboxsdk.maps.Style
 /**
  * The manager for map phone location
  */
-class LocationComponentManager(private val activity: Activity, private val mapboxMap: MapboxMap) :
+class LocationComponentManager(private val activity: Activity, val mapboxMap: MapboxMap) :
     PermissionsListener {
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
