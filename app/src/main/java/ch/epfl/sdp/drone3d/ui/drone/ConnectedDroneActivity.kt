@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneDataImpl
 import ch.epfl.sdp.drone3d.drone.DroneService
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -21,8 +20,6 @@ class ConnectedDroneActivity : AppCompatActivity() {
 
     @Inject
     lateinit var droneService: DroneService
-
-    @Inject lateinit var droneDataImpl: DroneDataImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
