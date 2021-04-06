@@ -1,4 +1,10 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.mission
+
 import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
 import com.mapbox.mapboxsdk.geometry.LatLng
 

@@ -4,7 +4,6 @@
  */
 
 package ch.epfl.sdp.drone3d.service.storage.data
-
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 
@@ -27,7 +26,7 @@ enum class State {
  */
 data class MappingMission(
     val name: String = "",
-    val flightPath: List<LatLong> = listOf(),
+    val flightPath: List<LatLng> = listOf(),
     val flightHeight:Double = 0.0,
     var privateId: String? = null,
     var sharedId: String? = null,
