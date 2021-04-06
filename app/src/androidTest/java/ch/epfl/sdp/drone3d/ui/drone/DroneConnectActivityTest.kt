@@ -10,24 +10,28 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.drone.DroneProvider
-import ch.epfl.sdp.drone3d.drone.DroneProviderModule
+import ch.epfl.sdp.drone3d.drone.DroneModule
+import ch.epfl.sdp.drone3d.drone.DroneService
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 
 @HiltAndroidTest
-@UninstallModules(DroneProviderModule::class)
+@UninstallModules(DroneModule::class)
 class DroneConnectActivityTest {
 
     @get:Rule
@@ -35,7 +39,7 @@ class DroneConnectActivityTest {
             .around(ActivityScenarioRule(DroneConnectActivity::class.java))
 
     @BindValue
-    val droneProvider: DroneProvider = DroneInstanceMock.mockProvider
+    val droneService: DroneService = DroneInstanceMock.mockProvider
 
     @Before
     fun setUp() {
@@ -62,7 +66,7 @@ class DroneConnectActivityTest {
         val ip = "1.1.1.1"
         val port = "1111"
 
-        `when`(droneProvider.setSimulation(anyString(), anyString()))
+        `when`(droneService.setSimulation(anyString(), anyString()))
                 .then { an ->
                     assertEquals(ip, an.getArgument(0))
                     assertEquals(port, an.getArgument(1))
@@ -79,7 +83,7 @@ class DroneConnectActivityTest {
         onView(withId(R.id.connect_simulation_button))
             .perform(click())
 
-        verify(droneProvider).setSimulation(anyString(), anyString())
+        verify(droneService).setSimulation(anyString(), anyString())
         Intents.intended(
             hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
@@ -92,6 +96,6 @@ class DroneConnectActivityTest {
         onView(withId(R.id.connect_drone_button))
             .perform(click())
 
-        verify(droneProvider).setDrone()
+        verify(droneService).setDrone()
     }
 }

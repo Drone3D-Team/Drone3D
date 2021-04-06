@@ -15,11 +15,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.drone.DroneProvider
-import ch.epfl.sdp.drone3d.drone.DroneProviderModule
+import ch.epfl.sdp.drone3d.drone.DroneModule
+import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.auth.UserSession
@@ -28,6 +27,7 @@ import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
+import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import com.google.firebase.auth.FirebaseUser
@@ -40,7 +40,7 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class, DroneProviderModule::class)
+@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class, DroneModule::class)
 class MainActivityTest {
 
     private val activityRule = ActivityScenarioRule(MainActivity::class.java)
@@ -51,7 +51,7 @@ class MainActivityTest {
 
     @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
     @BindValue val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
-    @BindValue val droneProvider: DroneProvider = DroneInstanceMock.mockProvider
+    @BindValue val droneService: DroneService = DroneInstanceMock.mockProvider
 
     init {
         // Default mocks needed at creation of the activity
@@ -153,7 +153,7 @@ class MainActivityTest {
 
     @Test
     fun goToDroneConnectWorks() {
-        `when`(droneProvider.isConnected()).thenReturn(false)
+        `when`(droneService.isConnected()).thenReturn(false)
 
         // Refresh
         activityRule.scenario.recreate()
@@ -168,7 +168,7 @@ class MainActivityTest {
 
     @Test
     fun goToDroneDisconnectWorks() {
-        `when`(droneProvider.isConnected()).thenReturn(true)
+        `when`(droneService.isConnected()).thenReturn(true)
 
         activityRule.scenario.recreate()
 

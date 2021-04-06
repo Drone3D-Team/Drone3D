@@ -28,17 +28,17 @@ class DroneDataTest {
 
     @Test
     fun expectedData() {
-        val droneData = DroneData(DroneInstanceMock.mockProvider)
+        val droneData = DroneDataImpl(DroneInstanceMock.mockProvider)
 
-        assertEquals(0f, droneData.absoluteAltitude.value)
-        assertEquals(10f, droneData.batteryLevel.value)
-        assertEquals(DroneData.CameraResolution(2500, 2500), droneData.cameraResolution.value)
-        assertTrue(posEquals(Telemetry.Position(0.0, 0.0, 0.0f, 0.0f), droneData.homeLocation.value))
-        assertEquals(true, droneData.isConnected.value)
-        assertEquals(true, droneData.isFlying.value)
-        assertEquals(false, droneData.isMissionPaused.value)
-        assertEquals(LatLong(0.3, 0.0), droneData.position.value)
-        assertEquals(0f, droneData.speed.value)
+        assertEquals(0f, droneData.getAbsoluteAltitude().value)
+        assertEquals(10f, droneData.getBatteryLevel().value)
+        assertEquals(DroneData.CameraResolution(2500, 2500), droneData.getCameraResolution().value)
+        assertTrue(posEquals(Telemetry.Position(0.0, 0.0, 0.0f, 0.0f), droneData.getHomeLocation().value))
+        assertEquals(true, droneData.isConnected().value)
+        assertEquals(true, droneData.isFlying().value)
+        assertEquals(false, droneData.isMissionPaused().value)
+        assertEquals(LatLong(0.3, 0.0), droneData.getPosition().value)
+        assertEquals(0f, droneData.getSpeed().value)
     }
 
     private fun posEquals(expected: Telemetry.Position, value: Telemetry.Position?): Boolean {

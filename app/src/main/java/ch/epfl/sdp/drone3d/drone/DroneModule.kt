@@ -7,8 +7,8 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DroneProviderModule {
+object DroneModule {
 
     @Provides
-    fun provideDroneProvider() : DroneProvider = DroneProviderImpl
+    fun provideDroneProvider() : DroneService = DroneServiceImpl
 }

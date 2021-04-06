@@ -11,10 +11,11 @@ package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-object DroneProviderImpl : DroneProvider {
+object DroneServiceImpl : DroneService {
+
+    private var droneData: DroneData? = null
 
     private var isConnected = false
-
     private var isSimulation = true
     private var simIP = "0.0.0.0"
     private var simPort = "0"
@@ -62,5 +63,12 @@ object DroneProviderImpl : DroneProvider {
 
     override fun disconnect() {
         isConnected = false
+    }
+
+    override fun getData(): DroneData {
+        if (droneData == null)
+            throw IllegalStateException("The DroneData object is null")
+
+        return droneData!!
     }
 }

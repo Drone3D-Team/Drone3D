@@ -2,7 +2,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import io.mavsdk.System
 
-interface DroneProvider {
+interface DroneService {
 
     /**
      * Provide the information of a drone or a simulation to the application
@@ -44,4 +44,9 @@ interface DroneProvider {
      * Disconnect the current drone
      */
     fun disconnect()
+
+    /**
+     * Returns the object holding [androidx.lifecycle.LiveData] of the information of the drone
+     */
+    fun getData(): DroneData
 }
