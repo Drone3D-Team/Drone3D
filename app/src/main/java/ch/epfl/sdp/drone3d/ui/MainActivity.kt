@@ -11,14 +11,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
-import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.drone.DroneInstanceProvider.isConnected
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
+import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -31,6 +31,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var authService: AuthenticationService
+
+    @Inject
+    lateinit var droneService: DroneService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             loginButton.visibility = View.VISIBLE
         }
 
-        if (isConnected()) {
+        if (droneService.isConnected()) {
             disconnectDroneButton.visibility = View.VISIBLE
             connectDroneButton.visibility = View.GONE
         } else {
@@ -104,7 +107,7 @@ class MainActivity : AppCompatActivity() {
      * depending of if a drone is connected or not
      */
     fun goToDroneConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(isConnected()) {
+        if(droneService.isConnected()) {
             open(ConnectedDroneActivity::class)
         } else {
             open(DroneConnectActivity::class)
