@@ -21,7 +21,7 @@ import org.mockito.Mockito.*
 
 object DroneInstanceMock {
 
-    val mockProvider: DroneProvider = mock(DroneProvider::class.java)
+    val mockProvider: DroneService = mock(DroneService::class.java)
 
     val droneSystem: System = mock(System::class.java)
     val droneTelemetry: Telemetry = mock(Telemetry::class.java)
@@ -52,18 +52,18 @@ object DroneInstanceMock {
             .thenReturn(droneSystem)
         `when`(mockProvider.setSimulation(anyString(), anyString()))
                 .thenAnswer {
-                    an -> DroneProviderImpl.setSimulation(an.getArgument(0), an.getArgument(1))
+                    an -> DroneServiceImpl.setSimulation(an.getArgument(0), an.getArgument(1))
                 }
         `when`(mockProvider.getIP())
-            .thenAnswer { DroneProviderImpl.getIP() }
+            .thenAnswer { DroneServiceImpl.getIP() }
         `when`(mockProvider.getPort())
-            .thenAnswer { DroneProviderImpl.getPort() }
+            .thenAnswer { DroneServiceImpl.getPort() }
         `when`(mockProvider.isConnected())
-            .thenAnswer { DroneProviderImpl.isConnected() }
+            .thenAnswer { DroneServiceImpl.isConnected() }
         `when`(mockProvider.isSimulation())
-            .thenAnswer { DroneProviderImpl.isSimulation() }
+            .thenAnswer { DroneServiceImpl.isSimulation() }
         `when`(mockProvider.disconnect())
-            .then { DroneProviderImpl.disconnect() }
+            .then { DroneServiceImpl.disconnect() }
     }
 
     fun setupDefaultMocks() {

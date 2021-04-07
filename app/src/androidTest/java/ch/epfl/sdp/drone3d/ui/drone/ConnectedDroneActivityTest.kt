@@ -15,19 +15,22 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.drone.DroneProvider
-import ch.epfl.sdp.drone3d.drone.DroneProviderModule
+import ch.epfl.sdp.drone3d.drone.DroneModule
+import ch.epfl.sdp.drone3d.drone.DroneService
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import org.junit.*
-import org.junit.Assert.*
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.verify
 
 @HiltAndroidTest
-@UninstallModules(DroneProviderModule::class)
+@UninstallModules(DroneModule::class)
 class ConnectedDroneActivityTest {
 
     @get:Rule
@@ -35,7 +38,7 @@ class ConnectedDroneActivityTest {
             .around(ActivityScenarioRule(ConnectedDroneActivity::class.java))
 
     @BindValue
-    val droneProvider: DroneProvider = DroneInstanceMock.mockProvider
+    val droneService: DroneService = DroneInstanceMock.mockProvider
 
     @Before
     fun setUp() {
@@ -62,7 +65,7 @@ class ConnectedDroneActivityTest {
         onView(ViewMatchers.withId(R.id.disconnect_simulation))
             .perform(ViewActions.click())
 
-        verify(droneProvider).disconnect()
+        verify(droneService).disconnect()
 
         Intents.intended(
             hasComponent(hasClassName(DroneConnectActivity::class.java.name))

@@ -11,10 +11,11 @@ package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-object DroneProviderImpl : DroneProvider {
+object DroneServiceImpl : DroneService {
+
+    private val droneData = DroneDataImpl(this)
 
     private var isConnected = false
-
     private var isSimulation = true
     private var simIP = "0.0.0.0"
     private var simPort = "0"
@@ -37,11 +38,15 @@ object DroneProviderImpl : DroneProvider {
         isSimulation = true
         simIP = IP
         simPort = port
+
+        droneData.refresh()
     }
 
     override fun setDrone() {
         isConnected = true
         isSimulation = false
+
+        droneData.refresh()
     }
 
     override fun getIP(): String {
@@ -62,5 +67,11 @@ object DroneProviderImpl : DroneProvider {
 
     override fun disconnect() {
         isConnected = false
+
+        droneData.refresh()
+    }
+
+    override fun getData(): DroneData {
+        return droneData
     }
 }
