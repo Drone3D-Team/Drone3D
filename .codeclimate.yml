@@ -1,4 +1,7 @@
 checks:
+  argument-count:
+    config:
+      threshold: 8
   similar-code:
     config:
       threshold: 150
