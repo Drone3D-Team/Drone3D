@@ -21,13 +21,14 @@ enum class State {
 }
 
 /**
- * A MappingMission is instantiated with a [name] and a [flightPath].
+ * A MappingMission is instantiated with a [name], a [flightPath] and a [flightHeight].
  * The [privateId], [sharedId] and [state] are updated according to where the MappingMission are stored.
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */
 data class MappingMission(
     val name: String = "",
     val flightPath: List<LatLng> = listOf(),
+    val flightHeight:Double = 0.0,
     var privateId: String? = null,
     var sharedId: String? = null,
     var state: State = State.NOT_STORED,
