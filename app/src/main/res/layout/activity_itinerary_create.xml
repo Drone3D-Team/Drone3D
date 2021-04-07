@@ -9,8 +9,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:layout_gravity="bottom|end"
     tools:context=".ItineraryCreateActivity">
+=======
+    tools:context=".ui.mission.ItineraryCreateActivity">
+>>>>>>> main
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
