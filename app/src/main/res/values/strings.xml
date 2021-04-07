@@ -1,3 +1,8 @@
+<!--
+  ~ Copyright (C) 2021  Drone3D-Team
+  ~ The license can be found in LICENSE at root of the repository
+  -->
+
 <resources>
     <string name="app_name">Drone3D</string>
     <string name="email_text">Email</string>
