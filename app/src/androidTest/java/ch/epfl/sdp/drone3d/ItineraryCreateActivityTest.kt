@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d
 
 
@@ -11,8 +16,10 @@ import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.epfl.sdp.drone3d.auth.AuthenticationModule
-import ch.epfl.sdp.drone3d.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
+import ch.epfl.sdp.drone3d.ui.mission.SaveMappingMissionActivity
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
