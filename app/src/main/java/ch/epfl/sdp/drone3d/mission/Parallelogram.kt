@@ -13,7 +13,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  */
 data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vector){
 
-    constructor(origin: Point,dir1Point:Point,dir2Point:Point): this(origin,Vector(origin,dir1Point),Vector(origin,dir2Point))
+    constructor(origin: Point,adjacentPoint1:Point,adjacentPoint2:Point): this(origin,Vector(origin,adjacentPoint1),Vector(origin,adjacentPoint2))
 
     /**
      * Translate the parallelogram by [translationVector]

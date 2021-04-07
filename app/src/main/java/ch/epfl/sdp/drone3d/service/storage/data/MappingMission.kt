@@ -4,6 +4,7 @@
  */
 
 package ch.epfl.sdp.drone3d.service.storage.data
+
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 
