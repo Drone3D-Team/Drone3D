@@ -5,14 +5,19 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.app.Activity
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.*
+import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher.onToast
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
@@ -23,7 +28,8 @@ import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 /**
  * Test for the map activity
@@ -34,7 +40,10 @@ class MapActivityTest {
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(ActivityScenarioRule(ItineraryCreateActivity::class.java))
+        .around(ActivityScenarioRule(ItineraryCreateActivity::class.java))
+
+    @get:Rule
+    var activityRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
 
     /**
      * Make sure the context of the app is the right one
@@ -46,7 +55,8 @@ class MapActivityTest {
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
-    @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
+    @BindValue
+    val authService: AuthenticationService = mock(AuthenticationService::class.java)
 
     @Before
     fun setUp() {
@@ -71,5 +81,31 @@ class MapActivityTest {
 
         imageButton.perform(click())
         intended(hasComponent(MainActivity::class.java.name))
+    }
+
+    @Test
+    fun sendLocationPermissionAllowedEnablesLocation() {
+        var locationEnabled = true
+
+        activityRule.scenario.onActivity {
+            it.onRequestPermissionsResult(
+                0,
+                arrayOf("android.permission.ACCESS_FINE_LOCATION"),
+                intArrayOf(0)
+            )
+            locationEnabled =
+                it.locationComponentManager.mapboxMap.locationComponent.isLocationComponentEnabled
+        }
+        Assert.assertTrue(locationEnabled)
+    }
+
+    @Test
+    fun onExplanationNeededShowsToast() {
+        lateinit var activity: Activity
+        activityRule.scenario.onActivity {
+            activity = it
+            it.locationComponentManager.onExplanationNeeded(mutableListOf("android.permission.ACCESS_FINE_LOCATION"))
+        }
+        onToast(activity, R.string.user_location_permission_request).check(matches(isDisplayed()))
     }
 }

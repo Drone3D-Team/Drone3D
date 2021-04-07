@@ -39,4 +39,6 @@
     <string name="name_mission_text">Mission name</string>
     <string name="content_descriptor_save_icon">save icon</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
+    <string name="user_location_permission_request">In order to show your current location, you have to enable location sharing.</string>
+    <string name="user_location_permission_not_granted">Your current location cannot be found.</string>
 </resources>

@@ -12,7 +12,11 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import android.annotation.SuppressLint
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -27,12 +31,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ItineraryCreateActivity : AppCompatActivity() {
     private lateinit var mapView: MapView
+
     private lateinit var goToSaveButton: FloatingActionButton
 
     private var flightPath = arrayListOf<LatLng>()
 
     @Inject
     lateinit var authService: AuthenticationService
+
+    lateinit var locationComponentManager: LocationComponentManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +55,11 @@ class ItineraryCreateActivity : AppCompatActivity() {
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
+
+            locationComponentManager = LocationComponentManager(this, mapboxMap)
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
+                locationComponentManager.enableLocationComponent(it)
 
             }
         }
@@ -91,4 +102,14 @@ class ItineraryCreateActivity : AppCompatActivity() {
         super.onDestroy()
         mapView.onDestroy()
     }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        locationComponentManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
 }
