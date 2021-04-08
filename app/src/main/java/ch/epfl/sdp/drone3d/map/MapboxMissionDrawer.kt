@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.map
 
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
@@ -18,16 +23,26 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) 
 
     private var reset = true
 
+    /**
+     * Show a [mission] on the map by linking all points with lines.
+     */
     fun showMission(mission: MappingMission) {
+        showMission(mission.flightPath)
+    }
 
-        if(mission.flightPath.isEmpty()){
+    /**
+     * Show a [missionPath] on the map by linking all points with lines.
+     */
+    fun showMission(missionPath: List<LatLng>) {
+
+        if(missionPath.isEmpty()){
             lineManager.deleteAll()
             symbolManager.deleteAll()
             reset = true
         }
         else {
             symbolManager.deleteAll()
-            mapSymbols = mission.flightPath.mapIndexed() { index: Int, latlng: LatLng ->
+            mapSymbols = missionPath.mapIndexed() { index: Int, latlng: LatLng ->
 
                 val symbolOption = SymbolOptions()
                     .withLatLng(LatLng(latlng))
@@ -39,14 +54,14 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) 
             if (!::mapLines.isInitialized || reset) {
 
                 val lineOptions = LineOptions()
-                    .withLatLngs(mission.flightPath)
+                    .withLatLngs(missionPath)
 
                 mapLines = lineManager.create(lineOptions)
 
                 reset = false
 
             } else {
-                mapLines.latLngs = mission.flightPath
+                mapLines.latLngs = missionPath
                 lineManager.update(mapLines)
             }
         }

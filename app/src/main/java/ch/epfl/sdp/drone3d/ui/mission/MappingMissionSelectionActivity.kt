@@ -17,6 +17,7 @@ import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.service.storage.data.State
+import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +27,9 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class MappingMissionSelectionActivity : AppCompatActivity() {
+    companion object{
+        val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
+    }
 
     @Inject
     lateinit var mappingMissionDao: MappingMissionDao
@@ -70,7 +74,6 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 
     private fun setListenerMappingMissions() {
         val ownerId = authService.getCurrentSession()!!.user.uid
@@ -132,9 +135,18 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED)
                 button.text = mission.name + "- S"
 
+
             button.setOnClickListener {
-                //TODO: go to mission details
+
+                val intent = Intent(this, ItineraryShow::class.java)
+                val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
+
+                intent.putExtra(MISSION_PATH, flightPathArrayList)
+                startActivity(intent)
+
             }
+
+
             buttonList.add(button)
             mappingMissionListView.addView(button)
         }

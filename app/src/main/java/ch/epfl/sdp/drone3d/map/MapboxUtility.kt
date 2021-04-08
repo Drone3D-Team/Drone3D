@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.map
 
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
@@ -14,10 +19,17 @@ class MapboxUtility {
          * Zoom on the first step of a mission [mission] on the map [mapboxMap].
          */
         fun zoomOnMission(mission: MappingMission, mapboxMap: MapboxMap){
+            zoomOnMission(mission.flightPath, mapboxMap)
+        }
 
-            if(mission.flightPath.isNotEmpty()){
+        /**
+         * Zoom on the first step of a  [missionPath] on the map [mapboxMap].
+         */
+        fun zoomOnMission(missionPath: List<LatLng>, mapboxMap: MapboxMap){
 
-                val firstCoordinates = LatLng(mission.flightPath[0].latitude, mission.flightPath[0].longitude)
+            if(missionPath.isNotEmpty()){
+
+                val firstCoordinates = LatLng(missionPath[0].latitude, missionPath[0].longitude)
 
                 mapboxMap.cameraPosition =  CameraPosition.Builder()
                     .target(firstCoordinates)
