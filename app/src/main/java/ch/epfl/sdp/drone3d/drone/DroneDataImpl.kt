@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import io.mavsdk.System
+import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
@@ -42,6 +43,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
+    private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
+    private val missionPlan: MutableLiveData<Mission.MissionPlan> = MutableLiveData()
 
     init {
         createDefaultSubs()
@@ -80,6 +83,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         addSubscription(instance.camera.information, "cameraResolution") { i ->
             cameraResolution.postValue(DroneData.CameraResolution(i.verticalResolutionPx, i.horizontalResolutionPx))
         }
+        addSubscription(instance.camera.videoStreamInfo, "videoStreamUri") { i->
+            videoStreamUri.postValue(i.settings.uri)
+        }
     }
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
@@ -117,6 +123,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun isMissionPaused(): LiveData<Boolean> = isMissionPaused
 
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
+
+    override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
+
+    override fun getMissionPlan(): LiveData<Mission.MissionPlan> = missionPlan
 
     override fun refresh() {
         disposeOfAll()

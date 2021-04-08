@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 
 /**
@@ -64,6 +65,16 @@ interface DroneData {
      * Returns a [LiveData] containing the resolution in pixel of the camera
      */
     fun getCameraResolution(): LiveData<CameraResolution>
+
+    /**
+     * Returns a [LiveData] containing the uri of the video stream of the camera
+     */
+    fun getVideoStreamUri(): LiveData<String>
+
+    /**
+     * Returns a [LiveData] containing the [MissionPlan] for the current mission
+     */
+    fun getMissionPlan(): LiveData<Mission.MissionPlan>
 
     /**
      * Refresh the drone instance and its subscriptions
