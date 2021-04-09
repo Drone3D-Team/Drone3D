@@ -132,13 +132,14 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             button.height = 50
             button.width = 100
             button.text = mission.name
+            button.tag = "button " + mission.name //used for testing
             if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED)
                 button.text = mission.name + "- S"
 
 
             button.setOnClickListener {
 
-                val intent = Intent(this, ItineraryShow::class.java)
+                val intent = Intent(this, ItineraryShowActivity::class.java)
                 val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
 
                 intent.putExtra(MISSION_PATH, flightPathArrayList)

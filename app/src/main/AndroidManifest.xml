@@ -26,7 +26,7 @@
             android:value="true" />
 
         <activity
-            android:name=".ui.mission.ItineraryShow"
+            android:name=".ui.mission.ItineraryShowActivity"
             android:parentActivityName=".ui.mission.MappingMissionSelectionActivity"/>
 
         <activity

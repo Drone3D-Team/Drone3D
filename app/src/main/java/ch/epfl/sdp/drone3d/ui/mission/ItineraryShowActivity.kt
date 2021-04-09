@@ -15,10 +15,10 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 
-class ItineraryShow : AppCompatActivity() {
+class ItineraryShowActivity : AppCompatActivity() {
 
     private lateinit var mapView: MapView
-    private var currentMissionPath: ArrayList<LatLng>? = null
+    private var currentMissionPath: List<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,6 @@ class ItineraryShow : AppCompatActivity() {
 
 
         // Get the Intent that started this activity and extract the missionPath
-        val intent = intent
         currentMissionPath = intent.getSerializableExtra(MappingMissionSelectionActivity.MISSION_PATH) as ArrayList<LatLng>?
 
         mapView = findViewById(R.id.mapView)
