@@ -47,7 +47,7 @@ class MappingMissionSelectionActivityTest {
     companion object {
         private const val USER_UID = "asdfg"
 
-        private val SHARED_MAPPING_MISSION = MappingMission("shared", listOf(LatLng(10.0, 10.0), LatLng(20.0, 20.0)))
+        private val SHARED_MAPPING_MISSION = MappingMission("shared", listOf(LatLng(10.0, 10.0), LatLng(25.0, 25.0)))
         private val PRIVATE_MAPPING_MISSION = MappingMission("private1", listOf())
         private val PRIVATE_AND_SHARED_MAPPING_MISSION = MappingMission("private2", listOf()).apply {
             state = State.PRIVATE_AND_SHARED
