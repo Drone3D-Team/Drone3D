@@ -5,9 +5,12 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
@@ -16,8 +19,8 @@ import com.mapbox.mapboxsdk.maps.Style
  * The activity that allows the user to create itinerary using a map.
  */
 class ItineraryCreateActivity : AppCompatActivity() {
-
     private lateinit var mapView: MapView
+    lateinit var locationComponentManager: LocationComponentManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +35,13 @@ class ItineraryCreateActivity : AppCompatActivity() {
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
+
+            locationComponentManager = LocationComponentManager(this, mapboxMap)
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
+
+                locationComponentManager.enableLocationComponent(it)
+
             }
         }
     }
@@ -66,6 +74,15 @@ class ItineraryCreateActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView.onDestroy()
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        locationComponentManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
 }
