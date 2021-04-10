@@ -30,7 +30,7 @@ class ItineraryCreateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_itinerary_create)
 
         //Create a "back button" in the action bar up
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)

@@ -31,18 +31,18 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) 
     }
 
     /**
-     * Show a [missionPath] on the map by linking all points with lines.
+     * Show a [flightPath] on the map by linking all points with lines.
      */
-    fun showMission(missionPath: List<LatLng>) {
+    fun showMission(flightPath: List<LatLng>) {
 
-        if(missionPath.isEmpty()){
+        if(flightPath.isEmpty()){
             lineManager.deleteAll()
             symbolManager.deleteAll()
             reset = true
         }
         else {
             symbolManager.deleteAll()
-            mapSymbols = missionPath.mapIndexed() { index: Int, latlng: LatLng ->
+            mapSymbols = flightPath.mapIndexed() { index: Int, latlng: LatLng ->
 
                 val symbolOption = SymbolOptions()
                     .withLatLng(LatLng(latlng))
@@ -54,14 +54,14 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) 
             if (!::mapLines.isInitialized || reset) {
 
                 val lineOptions = LineOptions()
-                    .withLatLngs(missionPath)
+                    .withLatLngs(flightPath)
 
                 mapLines = lineManager.create(lineOptions)
 
                 reset = false
 
             } else {
-                mapLines.latLngs = missionPath
+                mapLines.latLngs = flightPath
                 lineManager.update(mapLines)
             }
         }
