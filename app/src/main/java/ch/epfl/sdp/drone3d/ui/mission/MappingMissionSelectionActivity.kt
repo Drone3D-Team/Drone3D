@@ -3,6 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
+
 package ch.epfl.sdp.drone3d.ui.mission
 
 import android.annotation.SuppressLint
