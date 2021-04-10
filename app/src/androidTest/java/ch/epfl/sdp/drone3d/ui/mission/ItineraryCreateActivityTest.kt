@@ -5,19 +5,21 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+
 import android.app.Activity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
+import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.matcher.ToastMatcher.onToast
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
@@ -26,34 +28,23 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.not
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
-/**
- * Test for the map activity
- */
+
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class)
-class MapActivityTest {
-
-    @get:Rule
-    var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-        .around(ActivityScenarioRule(ItineraryCreateActivity::class.java))
+class ItineraryCreateActivityTest {
 
     @get:Rule
     var activityRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
 
-    /**
-     * Make sure the context of the app is the right one
-     */
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
-    }
+    @get:Rule
+    val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+        .around(activityRule)
 
     @BindValue
     val authService: AuthenticationService = mock(AuthenticationService::class.java)
@@ -68,6 +59,16 @@ class MapActivityTest {
         Intents.release()
     }
 
+    /**
+     * Make sure the context of the app is the right one
+     */
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
+    }
+
     @Test
     fun supportActionBarGoesBackToMainActivity() {
         `when`(authService.hasActiveSession()).thenReturn(true)
@@ -80,7 +81,7 @@ class MapActivityTest {
         )
 
         imageButton.perform(click())
-        intended(hasComponent(MainActivity::class.java.name))
+        Intents.intended(hasComponent(MainActivity::class.java.name))
     }
 
     @Test
@@ -106,6 +107,35 @@ class MapActivityTest {
             activity = it
             it.locationComponentManager.onExplanationNeeded(mutableListOf("android.permission.ACCESS_FINE_LOCATION"))
         }
-        onToast(activity, R.string.user_location_permission_request).check(matches(isDisplayed()))
+        ToastMatcher.onToast(activity, R.string.user_location_permission_request)
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun goToSaveActivityButtonIsNotEnabledWhenUserNotLogin() {
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun goToSaveActivityWork() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToSaveActivity)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra("flightPath") })
     }
 }
