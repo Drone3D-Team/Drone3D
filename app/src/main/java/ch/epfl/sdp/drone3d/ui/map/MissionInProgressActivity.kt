@@ -21,6 +21,7 @@ import ch.epfl.sdp.drone3d.map.MapboxDronePainter
 import ch.epfl.sdp.drone3d.map.MapboxHomePainter
 import ch.epfl.sdp.drone3d.map.MapboxMissionPainter
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -71,11 +72,11 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
         stopMissionButton.visibility = if (it) View.VISIBLE else View.GONE
     }
 
-    private var droneConnectionStatusObserver = Observer<Boolean> {
-        if (!it) {
-            Toast.makeText(this, getString(R.string.lost_connection_message), Toast.LENGTH_SHORT).show()
+    private var droneConnectionStatusObserver = Observer<Boolean> { connectionStatus ->
+        if (!connectionStatus) {
+            ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
         }
-        stopMissionButton.isEnabled = it
+        stopMissionButton.isEnabled = connectionStatus
     }
 
     private var videoStreamUriObserver = Observer<String> {
@@ -158,9 +159,9 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (dronePainter != null) dronePainter.onDestroy()
-        if (missionPainter != null) missionPainter.onDestroy()
-        if (homePainter != null) homePainter.onDestroy()
+        if (this::dronePainter.isInitialized) dronePainter.onDestroy()
+        if (this::missionPainter.isInitialized) missionPainter.onDestroy()
+        if (this::homePainter.isInitialized) homePainter.onDestroy()
     }
 
     companion object {

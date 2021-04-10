@@ -5,8 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.app.Activity
-import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -22,7 +20,6 @@ import java.util.concurrent.CompletableFuture
 @HiltAndroidTest
 class MissionInProgressActivityTest {
 
-//    @get:Rule
     private val activityRule = ActivityScenarioRule(MissionInProgressActivity::class.java)
 
     @get:Rule
@@ -56,21 +53,10 @@ class MissionInProgressActivityTest {
     @Test
     fun loosingDroneConnectionShowsToast() {
         // Test that the toast is displayed
-        testToast({ activity ->
-            Thread {
-                activity
-            }.start() },
-            { activity -> ToastMatcher.onToast(activity, R.string.lost_connection_message) })
-    }
-
-    private fun testToast(generator: (Activity) -> Unit, matcher: (Activity) -> ViewInteraction) {
         val activity = CompletableFuture<MissionInProgressActivity>()
         activityRule.scenario.onActivity {
-            generator.invoke(it)
             activity.complete(it)
         }
-
-//        matcher.invoke(activity.get()).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
     }
-
 }
