@@ -7,9 +7,9 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -25,13 +25,17 @@ import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.auth.FirebaseUser
+import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import org.hamcrest.Matchers.`is`
+import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+
 
 /**
  * Test for the mapping mission selection activity
@@ -43,7 +47,7 @@ class MappingMissionSelectionActivityTest {
     companion object {
         private const val USER_UID = "asdfg"
 
-        private val SHARED_MAPPING_MISSION = MappingMission("shared", listOf())
+        private val SHARED_MAPPING_MISSION = MappingMission("shared", listOf(LatLng(10.0, 10.0), LatLng(25.0, 25.0)))
         private val PRIVATE_MAPPING_MISSION = MappingMission("private1", listOf())
         private val PRIVATE_AND_SHARED_MAPPING_MISSION = MappingMission("private2", listOf()).apply {
             state = State.PRIVATE_AND_SHARED
@@ -140,10 +144,64 @@ class MappingMissionSelectionActivityTest {
 
     @Test
     fun goToItineraryCreateWorks() {
+
         onView(withId(R.id.createMappingMissionButton))
             .perform(click())
         Intents.intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryCreateActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun goToShowItineraryWorksWithPrivateButton() {
+
+        // Make sure the current state is shared
+        var isPrivate = false
+
+        //Sets initial state to private
+        onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
+            isPrivate =
+                view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
+        }
+
+        if (!isPrivate)
+            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+
+        onView(
+            allOf(
+                withTagValue(`is`("button private1" as Any)),
+                isDisplayed()
+            )
+        ).perform(click())
+        Intents.intended(
+            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        )
+
+    }
+
+    @Test
+    fun goToShowItineraryWorksWithSharedButton() {
+
+        // Make sure the current state is shared
+        var isPrivate = false
+
+        //Sets initial state to shared
+        onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
+            isPrivate =
+                view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
+        }
+
+        if (isPrivate)
+            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+
+        onView(
+            allOf(
+                withTagValue(`is`("button shared" as Any)),
+                isDisplayed()
+            )
+        ).perform(click())
+        Intents.intended(
+            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
     }
 

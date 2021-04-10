@@ -6,13 +6,14 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.annotation.SuppressLint
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import com.mapbox.mapboxsdk.Mapbox
@@ -57,6 +58,7 @@ class ItineraryCreateActivity : AppCompatActivity() {
             locationComponentManager = LocationComponentManager(this, mapboxMap)
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
+
                 locationComponentManager.enableLocationComponent(it)
 
             }
