@@ -14,7 +14,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import android.annotation.SuppressLint
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import com.mapbox.mapboxsdk.Mapbox
