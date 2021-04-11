@@ -27,15 +27,18 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 
 @HiltAndroidTest
 @UninstallModules(DroneModule::class)
 class ConnectedDroneActivityTest {
 
+    val activityRule = ActivityScenarioRule(ConnectedDroneActivity::class.java)
+
     @get:Rule
-    val activityRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(ActivityScenarioRule(ConnectedDroneActivity::class.java))
+    val rule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+            .around(activityRule)
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
@@ -61,7 +64,11 @@ class ConnectedDroneActivityTest {
     }
 
     @Test
-    fun disconnectDroneWorks() {
+    fun disconnectSimulationDroneWorks() {
+        `when`(droneService.isSimulation()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
         onView(ViewMatchers.withId(R.id.disconnect_simulation))
             .perform(ViewActions.click())
 
@@ -69,6 +76,22 @@ class ConnectedDroneActivityTest {
 
         Intents.intended(
             hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun disconnectDroneWorks() {
+        `when`(droneService.isSimulation()).thenReturn(false)
+
+        activityRule.scenario.recreate()
+
+        onView(ViewMatchers.withId(R.id.disconnect_drone))
+                .perform(ViewActions.click())
+
+        verify(droneService).disconnect()
+
+        Intents.intended(
+                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
     }
 }
