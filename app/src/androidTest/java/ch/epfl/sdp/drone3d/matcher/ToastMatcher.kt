@@ -33,7 +33,7 @@ import org.hamcrest.Matcher
  */
 object ToastMatcher {
 
-   fun onToast(activity: Activity, text: String): ViewInteraction = onView(withText(text)).inRoot(isToast(activity))!!
+    fun onToast(activity: Activity, text: String): ViewInteraction = onView(withText(text)).inRoot(isToast(activity))!!
 
     fun onToast(activity: Activity, textId: Int): ViewInteraction = onView(withText(textId)).inRoot(isToast(activity))!!
 
