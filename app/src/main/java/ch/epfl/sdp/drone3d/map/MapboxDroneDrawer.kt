@@ -23,7 +23,7 @@ class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : 
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
-    fun paint(locationLatLong: LatLong?) {
+    fun showHome(locationLatLong: LatLong?) {
         val location = MapUtils.toLatLng(locationLatLong)
         if (location == null) {
             circleManager.deleteAll()

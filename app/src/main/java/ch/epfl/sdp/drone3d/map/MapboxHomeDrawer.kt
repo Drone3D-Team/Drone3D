@@ -24,7 +24,7 @@ class MapboxHomeDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : M
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
-    fun paint(location: LatLng?) {
+    fun showHome(location: LatLng?) {
         if (location == null) {
             circleManager.deleteAll()
             reset = true

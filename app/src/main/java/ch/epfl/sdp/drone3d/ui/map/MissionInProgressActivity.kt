@@ -56,12 +56,12 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     private lateinit var homeDrawer: MapboxHomeDrawer
 
     private var dronePositionObserver = Observer<LatLong> { newLatLong ->
-        newLatLong?.let { if (::droneDrawer.isInitialized) droneDrawer.paint(newLatLong) }
+        newLatLong?.let { if (::droneDrawer.isInitialized) droneDrawer.showHome(newLatLong) }
     }
 
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
         newPosition?.let {
-            if (::homeDrawer.isInitialized) homeDrawer.paint(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
+            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
         }
     }
 

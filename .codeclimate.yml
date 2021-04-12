@@ -4,7 +4,7 @@ checks:
       threshold: 8
   similar-code:
     config:
-      threshold: 150
+      threshold: 600
   method-count:
     config:
       threshold: 30
