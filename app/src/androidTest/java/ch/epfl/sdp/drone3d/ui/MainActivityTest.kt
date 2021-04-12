@@ -51,7 +51,7 @@ class MainActivityTest {
 
     @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
     @BindValue val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
-    @BindValue val droneService: DroneService = DroneInstanceMock.mockProvider
+    @BindValue val droneService: DroneService = DroneInstanceMock.mockService()
 
     init {
         // Default mocks needed at creation of the activity
@@ -162,8 +162,6 @@ class MainActivityTest {
         Intents.intended(
                 hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
-
-        DroneInstanceMock.resetProviderMock()
     }
 
     @Test
@@ -176,7 +174,5 @@ class MainActivityTest {
         Intents.intended(
                 hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
-
-        DroneInstanceMock.resetProviderMock()
     }
 }
