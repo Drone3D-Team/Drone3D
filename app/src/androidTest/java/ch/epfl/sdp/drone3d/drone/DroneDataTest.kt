@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.drone
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -28,7 +33,7 @@ class DroneDataTest {
 
     @Test
     fun expectedData() {
-        val droneData = DroneDataImpl(DroneInstanceMock.mockProvider)
+        val droneData = DroneDataImpl(DroneInstanceMock.mockService())
 
         assertEquals(0f, droneData.getAbsoluteAltitude().value)
         assertEquals(10f, droneData.getBatteryLevel().value)

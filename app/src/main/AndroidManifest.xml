@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+~ Copyright (C) 2021  Drone3D-Team
+~ The license can be found in LICENSE at root of the repository
+-->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ch.epfl.sdp.drone3d">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature android:name="android.hardware.type.watch" /> <!-- Permission used by mapbox -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".Drone3D"
@@ -24,6 +29,10 @@
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
+
+        <activity
+            android:name=".ui.mission.ItineraryShowActivity"
+            android:parentActivityName=".ui.mission.MappingMissionSelectionActivity"/>
 
         <activity
             android:name=".ui.mission.MappingMissionSelectionActivity"
