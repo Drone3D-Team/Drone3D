@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
-import com.mapbox.mapboxsdk.geometry.LatLng
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -16,22 +16,22 @@ import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
 /**
- * This class is taken from the Fly2Find project with one adaptation :
- * - the SymbolManager was replaced by a CircleManager, and the modifications implied by this change
+ * This class is taken from the Fly2Find project.
  */
-class MapboxHomePainter(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxPainter {
+class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
     private var circleManager = CircleManager(mapView, mapboxMap, style)
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
-    fun paint(location: LatLng?) {
+    fun paint(locationLatLong: LatLong?) {
+        val location = MapUtils.toLatLng(locationLatLong)
         if (location == null) {
             circleManager.deleteAll()
             reset = true
         } else if (!::marker.isInitialized || reset) {
             val circleOptions = CircleOptions()
                 .withLatLng(location)
-                .withCircleColor(ColorUtils.colorToRgbaString(Color.RED))
+                .withCircleColor(ColorUtils.colorToRgbaString(Color.YELLOW))
             marker = circleManager.create(circleOptions)
             reset = false
         } else {

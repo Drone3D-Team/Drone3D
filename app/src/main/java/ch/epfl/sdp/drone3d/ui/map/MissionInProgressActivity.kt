@@ -16,10 +16,7 @@ import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
-import ch.epfl.sdp.drone3d.map.MapUtils
-import ch.epfl.sdp.drone3d.map.MapboxDronePainter
-import ch.epfl.sdp.drone3d.map.MapboxHomePainter
-import ch.epfl.sdp.drone3d.map.MapboxMissionPainter
+import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
@@ -54,22 +51,22 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
 
     private lateinit var cameraView: VideoView
 
-    private lateinit var missionPainter: MapboxMissionPainter
-    private lateinit var dronePainter: MapboxDronePainter
-    private lateinit var homePainter: MapboxHomePainter
+    private lateinit var missionDrawer: MapboxMissionDrawer
+    private lateinit var droneDrawer: MapboxDroneDrawer
+    private lateinit var homeDrawer: MapboxHomeDrawer
 
     private var dronePositionObserver = Observer<LatLong> { newLatLong ->
-        newLatLong?.let { if (::dronePainter.isInitialized) dronePainter.paint(it) }
+        newLatLong?.let { if (::droneDrawer.isInitialized) droneDrawer.paint(newLatLong) }
     }
 
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
         newPosition?.let {
-            if (::homePainter.isInitialized) homePainter.paint(LatLng(it.latitudeDeg, it.longitudeDeg))
+            if (::homeDrawer.isInitialized) homeDrawer.paint(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
         }
     }
 
-    private var droneFlyingStatusObserver = Observer<Boolean> {
-        stopMissionButton.visibility = if (it) View.VISIBLE else View.GONE
+    private var droneFlyingStatusObserver = Observer<Boolean> { flyStatus ->
+        stopMissionButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
     }
 
     private var droneConnectionStatusObserver = Observer<Boolean> { connectionStatus ->
@@ -79,8 +76,8 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
         stopMissionButton.isEnabled = connectionStatus
     }
 
-    private var videoStreamUriObserver = Observer<String> {
-        cameraView.setVideoURI(Uri.parse(it))
+    private var videoStreamUriObserver = Observer<String> { streamUri ->
+        cameraView.setVideoURI(Uri.parse(streamUri))
         cameraView.requestFocus()
         cameraView.start()
     }
@@ -106,9 +103,9 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
         this.mapboxMap = mapboxMap
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-            homePainter = MapboxHomePainter(mapView, mapboxMap, style)
-            dronePainter = MapboxDronePainter(mapView, mapboxMap, style)
-            missionPainter = MapboxMissionPainter(mapView, mapboxMap, style)
+            homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
+            droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
+            missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
 
             centerCameraOnDrone(mapView)
 
@@ -116,8 +113,8 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
                 return@map mission.missionItems.map { item ->
                     LatLng(item.latitudeDeg, item.longitudeDeg)
                 }
-            }.observe(this, Observer {
-                missionPainter.paint(it)
+            }.observe(this, Observer { path ->
+                missionDrawer.showMission(path)
             })
         }
     }
@@ -159,9 +156,9 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (this::dronePainter.isInitialized) dronePainter.onDestroy()
-        if (this::missionPainter.isInitialized) missionPainter.onDestroy()
-        if (this::homePainter.isInitialized) homePainter.onDestroy()
+        if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
+        if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
+        if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
     }
 
     companion object {

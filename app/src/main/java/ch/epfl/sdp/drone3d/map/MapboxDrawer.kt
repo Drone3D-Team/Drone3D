@@ -8,6 +8,6 @@ package ch.epfl.sdp.drone3d.map
 /**
  * This interface is taken from the Fly2Find project.
  */
-interface MapboxPainter {
+interface MapboxDrawer {
     fun onDestroy()
 }
