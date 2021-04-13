@@ -70,7 +70,7 @@ class ItineraryShowActivity : AppCompatActivity() {
             }
         }
 
-        goToMissionInProgressButton = findViewById(R.id.buttonToSaveActivity)
+        goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
         goToMissionInProgressButton.isEnabled = droneService.isConnected()
     }
 
@@ -82,7 +82,7 @@ class ItineraryShowActivity : AppCompatActivity() {
         intent.putExtra(MISSION_PATH, currentMissionPath)
         startActivity(intent)
     }
-    
+
     override fun onStart() {
         super.onStart()
         mapView.onStart()
