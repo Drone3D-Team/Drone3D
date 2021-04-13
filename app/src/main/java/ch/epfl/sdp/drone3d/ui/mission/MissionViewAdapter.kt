@@ -25,7 +25,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
         ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
 
     companion object{
-        private const val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
+        const val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
     }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {

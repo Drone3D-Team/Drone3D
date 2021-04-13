@@ -30,11 +30,11 @@ class ItineraryShowActivity : AppCompatActivity() {
         setContentView(R.layout.activity_itinerary_show)
 
         //Create a "back button" in the action bar up
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
-
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Get the Intent that started this activity and extract the missionPath
-        currentMissionPath = intent.getSerializableExtra(MappingMissionSelectionActivity.MISSION_PATH) as ArrayList<LatLng>?
+        @Suppress("UNCHECKED_CAST")
+        currentMissionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
 
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
