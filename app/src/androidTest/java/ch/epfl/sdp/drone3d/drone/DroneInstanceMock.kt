@@ -146,8 +146,8 @@ object DroneInstanceMock {
                                 45f,
                                 10f,
                                 15f,
-                                2000,
-                                2500))
+                                2500,
+                                2000))
             )
     }
 }
