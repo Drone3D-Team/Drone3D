@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,17 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.service.storage.data.State
+import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Adapter for the Recycler view creating holders for the missions
  */
 class MissionViewAdapter(private val privateList: Boolean) :
         ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
+
+    companion object{
+        private const val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
+    }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
 
@@ -29,8 +35,12 @@ class MissionViewAdapter(private val privateList: Boolean) :
 
         init {
             textView.setOnClickListener {
-                curMission?.let {
-                    //TODO: go to mission details
+                curMission?.let { mission ->
+                    val intent = Intent(view.context, ItineraryShowActivity::class.java)
+                    val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
+
+                    intent.putExtra(MISSION_PATH, flightPathArrayList)
+                    view.context.startActivity(intent)
                 }
             }
         }
