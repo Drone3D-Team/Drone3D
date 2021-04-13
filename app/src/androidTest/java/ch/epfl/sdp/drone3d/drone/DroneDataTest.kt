@@ -44,7 +44,7 @@ class DroneDataTest {
         assertEquals(false, droneData.isMissionPaused().value)
         assertEquals(LatLng(0.3, 0.0), droneData.getPosition().value)
         assertEquals(0f, droneData.getSpeed().value)
-        assertEquals("uri", droneData.getVideoStreamUri())
+        assertEquals("uri", droneData.getVideoStreamUri().value)
     }
 
     private fun posEquals(expected: Telemetry.Position, value: Telemetry.Position?): Boolean {
