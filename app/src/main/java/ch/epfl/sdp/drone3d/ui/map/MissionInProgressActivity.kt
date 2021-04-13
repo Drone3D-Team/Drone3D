@@ -17,7 +17,6 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
 import ch.epfl.sdp.drone3d.map.*
-import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -55,10 +54,9 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
 
-    private var dronePositionObserver = Observer<LatLong> { newLatLong ->
-        newLatLong?.let { if (::droneDrawer.isInitialized) droneDrawer.showHome(newLatLong) }
+    private var dronePositionObserver = Observer<LatLng> { newLatLng ->
+        newLatLng?.let { if (::droneDrawer.isInitialized) droneDrawer.showHome(newLatLng) }
     }
-
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
         newPosition?.let {
             if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
@@ -127,7 +125,7 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
         if (droneService.getData().getPosition().value != null) {
             mapboxMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
-                    MapUtils.toLatLng(droneService.getData().getPosition().value)!!,
+                    droneService.getData().getPosition().value!!,
                 if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
                 ))
         }

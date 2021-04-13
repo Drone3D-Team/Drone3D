@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
-import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -23,8 +23,7 @@ class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : 
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
-    fun showHome(locationLatLong: LatLong?) {
-        val location = MapUtils.toLatLng(locationLatLong)
+    fun showHome(location: LatLng?) {
         if (location == null) {
             circleManager.deleteAll()
             reset = true
