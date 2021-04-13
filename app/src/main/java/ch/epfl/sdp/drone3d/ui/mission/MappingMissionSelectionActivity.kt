@@ -12,11 +12,14 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -40,6 +43,12 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private val currentType = MutableLiveData(StorageType.PRIVATE)
 
+    private fun setupAdapter(data: LiveData<List<MappingMission>>,
+                             adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>) =
+            data.observe(this) {
+                it?.let { adapter.submitList(it) }
+            }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapping_mission_selection)
@@ -57,13 +66,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         privateList.adapter = privateAdapter
 
         // Setup adapters
-        mappingMissionDao.getSharedMappingMissions().observe(this) {
-            it?.let { sharedAdapter.submitList(it) }
-        }
-
-        mappingMissionDao.getPrivateMappingMissions(ownerId).observe(this) {
-            it?.let { privateAdapter.submitList(it) }
-        }
+        setupAdapter(mappingMissionDao.getSharedMappingMissions(), sharedAdapter)
+        setupAdapter(mappingMissionDao.getPrivateMappingMissions(ownerId), privateAdapter)
 
         // Link state with view visibility
         currentType.observe(this) {
