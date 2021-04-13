@@ -37,7 +37,9 @@ class DroneDataTest {
 
         assertEquals(0f, droneData.getAbsoluteAltitude().value)
         assertEquals(10f, droneData.getBatteryLevel().value)
-        assertEquals(DroneData.CameraResolution(2500, 2500), droneData.getCameraResolution().value)
+        assertEquals(DroneData.CameraResolution(2000, 2500), droneData.getCameraResolution().value)
+        assertEquals(45f, droneData.getFocalLength().value)
+        assertEquals(DroneData.SensorSize(15f, 10f), droneData.getSensorSize().value)
         assertTrue(posEquals(Telemetry.Position(0.0, 0.0, 0.0f, 0.0f), droneData.getHomeLocation().value))
         assertEquals(true, droneData.isConnected().value)
         assertEquals(true, droneData.isFlying().value)

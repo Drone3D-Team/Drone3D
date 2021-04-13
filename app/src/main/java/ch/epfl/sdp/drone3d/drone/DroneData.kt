@@ -20,6 +20,11 @@ interface DroneData {
     data class CameraResolution(val width: Int, val height: Int)
 
     /**
+     * A simple data class holding the values in millimeters of the camera sensor's size
+     */
+    data class SensorSize(val horizontalSize: Float, val VerticalSize: Float)
+
+    /**
      * Returns a [LiveData] containing the current position of the drone
      */
     fun getPosition(): LiveData<LatLong>
@@ -64,6 +69,16 @@ interface DroneData {
      * Returns a [LiveData] containing the resolution in pixel of the camera
      */
     fun getCameraResolution(): LiveData<CameraResolution>
+
+    /**
+     * Returns a [LiveData] containing the camera's focal length in millimeters
+     */
+    fun getFocalLength(): LiveData<Float>
+
+    /**
+     * Returns a [LiveData] containing the camera's sensor size in millimeters
+     */
+    fun getSensorSize(): LiveData<SensorSize>
 
     /**
      * Refresh the drone instance and its subscriptions

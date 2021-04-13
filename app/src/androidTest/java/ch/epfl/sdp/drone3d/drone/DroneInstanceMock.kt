@@ -145,8 +145,8 @@ object DroneInstanceMock {
                     "model",
                                 45f,
                                 10f,
-                                10f,
-                                2500,
+                                15f,
+                                2000,
                                 2500))
             )
     }
