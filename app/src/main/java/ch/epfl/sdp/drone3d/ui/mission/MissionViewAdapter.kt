@@ -16,6 +16,9 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
 import ch.epfl.sdp.drone3d.service.storage.data.State
 
+/**
+ * Adapter for the Recycler view creating holders for the missions
+ */
 class MissionViewAdapter(private val privateList: Boolean) :
         ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
 
