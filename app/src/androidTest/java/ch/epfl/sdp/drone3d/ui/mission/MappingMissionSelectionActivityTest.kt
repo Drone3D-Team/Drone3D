@@ -7,11 +7,11 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -128,7 +128,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                    withText(buttonName(true, SHARED_MAPPING_MISSION)),
+                withText(buttonName(false, PRIVATE_MAPPING_MISSION)),
                 isDisplayed()
             )
         ).perform(click())
