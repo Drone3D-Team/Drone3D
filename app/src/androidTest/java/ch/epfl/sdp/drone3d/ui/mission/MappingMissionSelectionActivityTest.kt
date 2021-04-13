@@ -7,9 +7,11 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -29,9 +31,12 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import org.hamcrest.Matchers.`is`
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+import java.util.concurrent.TimeoutException
+
 
 /**
  * Test for the mapping mission selection activity
@@ -55,10 +60,12 @@ class MappingMissionSelectionActivityTest {
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-        .around(ActivityScenarioRule(MappingMissionSelectionActivity::class.java))
+            .around(ActivityScenarioRule(MappingMissionSelectionActivity::class.java))
 
-    @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
-    @BindValue val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
+    @BindValue
+    val authService: AuthenticationService = mock(AuthenticationService::class.java)
+    @BindValue
+    val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
 
     init {
         // Mock authService
@@ -95,55 +102,11 @@ class MappingMissionSelectionActivityTest {
     }
 
     @Test
-    fun clickOnSwitchChangesPrivateOrSharedMode() {
-        var isPrivate = false
-
-        //Sets initial state to shared
-        onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
-            isPrivate =
-                view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
-        }
-
-        if (isPrivate)
-            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
-
-        // Shared state
-        onView(withId(R.id.mappingMissionToggleButton))
-            .check(matches(isNotChecked()))
-
-        val curShared = SHARED_LIVE_DATA.value
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curShared?.size ?: 0)))
-
-        curShared?.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(true, m)))))
-        }
-
-        // Check the box
-        onView(withId(R.id.mappingMissionToggleButton))
-            .perform(click())
-
-        // Private state
-        onView(withId(R.id.mappingMissionToggleButton))
-            .check(matches(isChecked()))
-
-        val curPrivate = PRIVATE_LIVE_DATA.value
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curPrivate?.size ?: 0)))
-
-        curPrivate?.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(false, m)))))
-        }
-    }
-
-    @Test
     fun goToItineraryCreateWorks() {
         onView(withId(R.id.createMappingMissionButton))
-            .perform(click())
+                .perform(click())
         Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryCreateActivity::class.java.name))
+                IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryCreateActivity::class.java.name))
         )
     }
 
@@ -153,66 +116,92 @@ class MappingMissionSelectionActivityTest {
         var isPrivate = false
 
         //Sets initial state to shared
-        onView(withId(R.id.mappingMissionToggleButton)).check { view, _ ->
+        onView(withId(R.id.mapping_mission_state_toggle)).check { view, _ ->
             isPrivate =
-                    view.findViewById<ToggleButton>(R.id.mappingMissionToggleButton).isChecked
+                    view.findViewById<ToggleButton>(R.id.mapping_mission_state_toggle).isChecked
         }
 
         if (isPrivate)
-            onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+            onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         // Shared
         var curShared = SHARED_LIVE_DATA.value
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curShared?.size ?: 0)))
 
-        curShared?.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(true, m)))))
+        onView(withId(R.id.shared_mission_list_view)).check(matchCount(curShared?.size ?: 0))
+        onView(withId(R.id.shared_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+
+        curShared?.forEach { m ->
+            onView(withText(buttonName(true, m)))
+                    .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
 
         curShared = listOf(SHARED_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
         SHARED_LIVE_DATA.postValue(curShared)
 
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curShared.size)))
-
-        curShared.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(true, m)))))
+        // Wait for value to dispatch, this isn't pretty, but the most simple conditional wait I could come up with
+        var i = 0
+        while (SHARED_LIVE_DATA.value?.size != curShared.size) {
+            if (i++ > 50)
+                throw TimeoutException("Live data took to long to dispatch")
+            Thread.sleep(10)
         }
 
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        onView(withId(R.id.shared_mission_list_view)).check(matchCount(curShared.size))
+        onView(withId(R.id.shared_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+
         //switch state
-        onView(withId(R.id.mappingMissionToggleButton)).perform(click())
+        onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         // private
         var curPrivate = PRIVATE_LIVE_DATA.value
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curPrivate?.size ?: 0)))
 
-        curPrivate?.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(false, m)))))
+        onView(withId(R.id.private_mission_list_view)).check(matchCount(curPrivate?.size ?: 0))
+        onView(withId(R.id.private_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+
+        curPrivate?.forEach { m ->
+            onView(withText(buttonName(false, m)))
+                    .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
 
         curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
         PRIVATE_LIVE_DATA.postValue(curPrivate)
-        onView(withId(R.id.mappingMissionList))
-                .check(matches(hasChildCount(curPrivate.size)))
 
-        curPrivate.forEach {
-            m -> onView(withId(R.id.mappingMissionList))
-                .check(matches(withChild(withText(buttonName(false, m)))))
+        // Wait for value to dispatch, this isn't pretty, but the most simple conditional wait I could come up with
+        i = 0
+        while (PRIVATE_LIVE_DATA.value?.size != curPrivate.size) {
+            if (i++ > 50)
+                throw TimeoutException("Live data took to long to dispatch")
+            Thread.sleep(10)
         }
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+
+        onView(withId(R.id.private_mission_list_view)).check(matchCount(curPrivate.size))
+        onView(withId(R.id.private_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         // Reset LIVE DATA
         SHARED_LIVE_DATA.postValue(listOf(SHARED_MAPPING_MISSION))
         PRIVATE_LIVE_DATA.postValue(listOf(PRIVATE_MAPPING_MISSION))
+
     }
 
-    private fun buttonName(shared: Boolean, m: MappingMission): String {
-        return if (!shared && m.state == State.PRIVATE_AND_SHARED) m.name + "- S"
-        else m.name
+    private fun buttonName(shared: Boolean, m: MappingMission): String =
+            if (m.state == State.PRIVATE_AND_SHARED)
+                if (shared)
+                    m.name + " - P"
+                else
+                    m.name + " - S"
+            else m.name
+
+    private fun matchCount(expectedCount: Int): ViewAssertion = ViewAssertion { view, noViewFoundException ->
+        if (noViewFoundException != null) {
+            throw noViewFoundException
+        }
+        val recyclerView = view as RecyclerView
+        val adapter = recyclerView.adapter
+        assertThat(adapter!!.itemCount, `is`(expectedCount))
     }
 }

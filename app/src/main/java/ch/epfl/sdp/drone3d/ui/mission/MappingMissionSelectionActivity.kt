@@ -5,18 +5,21 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
+import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.service.storage.data.State
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -33,110 +36,59 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     @Inject
     lateinit var authService: AuthenticationService
 
-    private lateinit var selectedStorageTypeToggleButton: ToggleButton
-    private lateinit var mappingMissionListView: LinearLayout
-    private lateinit var createNewMappingMissionButton: Button
-    private val buttonList = mutableListOf<Button>()
-    private var mappingMissionPrivateList = mutableListOf<MappingMission>()
-    private var mappingMissionSharedList = mutableListOf<MappingMission>()
-
-    enum class StorageType(val checked: Boolean) {
-        PRIVATE(true), SHARED(false)
+    enum class StorageType(val checked: Boolean, val sharedVisible: Boolean, val privateVisible: Boolean) {
+        PRIVATE(true, false, true),
+        SHARED(false, true, false)
     }
 
-    private var currentType = StorageType.PRIVATE
+    private val currentType = MutableLiveData(StorageType.PRIVATE)
+
+    private fun setupAdapter(data: LiveData<List<MappingMission>>,
+                             adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>) =
+            data.observe(this) {
+                it?.let { adapter.submitList(it) }
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapping_mission_selection)
 
+        val ownerId = authService.getCurrentSession()!!.user.uid
 
-        selectedStorageTypeToggleButton = findViewById(R.id.mappingMissionToggleButton)
-        mappingMissionListView = findViewById(R.id.mappingMissionList)
-        createNewMappingMissionButton = findViewById(R.id.createMappingMissionButton)
+        val sharedAdapter = MissionViewAdapter( false)
+        val privateAdapter = MissionViewAdapter(true)
 
-        selectedStorageTypeToggleButton.isChecked = currentType.checked
+        val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
+        val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
+
+        // Setup lists
+        sharedList.adapter = sharedAdapter
+        privateList.adapter = privateAdapter
+
+        // Setup adapters
+        setupAdapter(mappingMissionDao.getSharedMappingMissions(), sharedAdapter)
+        setupAdapter(mappingMissionDao.getPrivateMappingMissions(ownerId), privateAdapter)
+
+        // Link state with view visibility
+        currentType.observe(this) {
+            it?.let {
+                sharedList.visibility = if (it.sharedVisible) VISIBLE else GONE
+                privateList.visibility = if (it.privateVisible) VISIBLE else GONE
+            }
+        }
+
+        // Setup toggle button
+        val selectedStorageTypeToggleButton = findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
+        selectedStorageTypeToggleButton.isChecked = currentType.value!!.checked
         selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
-            currentType = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
-            updateList()
+            currentType.value = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        setListenerMappingMissions()
-
-        createNewMappingMissionButton.setOnClickListener {
-            val intent = Intent(this, ItineraryCreateActivity::class.java)
-            startActivity(intent)
-        }
     }
 
-
-    private fun setListenerMappingMissions() {
-        val ownerId = authService.getCurrentSession()!!.user.uid
-
-        val liveSharedMappingMissions = mappingMissionDao.getSharedMappingMissions()
-        liveSharedMappingMissions.observe(this, {
-            mappingMissionSharedList = it.toMutableList()
-            if (currentType == StorageType.SHARED) {
-                updateList()
-            }
-        })
-
-        val livePrivateMappingMissions = mappingMissionDao.getPrivateMappingMissions(ownerId)
-        livePrivateMappingMissions.observe(this, {
-            mappingMissionPrivateList = it.toMutableList()
-            if (currentType == StorageType.PRIVATE) {
-                updateList()
-            }
-        })
-    }
-
-    /*private fun populateMappingMissionsList() {
-
-        for (i in 0..10) {
-            val mm = MappingMission("Mission $i", emptyList())
-            mappingMissionDao.storeMappingMission(authService.getCurrentSession()!!.user.uid, mm)
-            if (i > 4) {
-                mappingMissionDao.shareMappingMission(
-                    authService.getCurrentSession()!!.user.uid,
-                    mm
-                )
-            }
-
-        }
-        for (i in 10..20) {
-            mappingMissionDao.shareMappingMission(
-                authService.getCurrentSession()!!.user.uid,
-                MappingMission("Mission $i", emptyList())
-            )
-
-        }
-    }*/
-
-    @SuppressLint("SetTextI18n")
-    private fun updateList() {
-        mappingMissionListView.removeAllViews()
-        buttonList.clear()
-
-        val list: MutableList<MappingMission> = when (currentType) {
-            StorageType.PRIVATE -> mappingMissionPrivateList
-            StorageType.SHARED -> mappingMissionSharedList
-        }
-
-        for (mission in list) {
-            val button = Button(this)
-            button.height = 50
-            button.width = 100
-            button.text = mission.name
-            if (currentType == StorageType.PRIVATE && mission.state == State.PRIVATE_AND_SHARED)
-                button.text = mission.name + "- S"
-
-            button.setOnClickListener {
-                //TODO: go to mission details
-            }
-            buttonList.add(button)
-            mappingMissionListView.addView(button)
-        }
+    fun createNewMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        val intent = Intent(this, ItineraryCreateActivity::class.java)
+        startActivity(intent)
     }
 }
