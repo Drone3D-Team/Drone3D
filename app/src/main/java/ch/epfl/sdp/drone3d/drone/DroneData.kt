@@ -22,7 +22,7 @@ interface DroneData {
     /**
      * A simple data class holding the values in millimeters of the camera sensor's size
      */
-    data class SensorSize(val horizontalSize: Float, val VerticalSize: Float)
+    data class SensorSize(val horizontalSize: Float, val verticalSize: Float)
 
     /**
      * Returns a [LiveData] containing the current position of the drone
