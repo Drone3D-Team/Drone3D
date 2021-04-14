@@ -15,7 +15,6 @@ object DroneServiceImpl : DroneService {
 
     private val droneData = DroneDataImpl(this)
 
-    private var isConnected = false
     private var isSimulation = true
     private var simIP = "0.0.0.0"
     private var simPort = "0"
@@ -34,7 +33,6 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun setSimulation(IP: String, port: String) {
-        isConnected = true
         isSimulation = true
         simIP = IP
         simPort = port
@@ -43,7 +41,6 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun setDrone() {
-        isConnected = true
         isSimulation = false
 
         droneData.refresh()
@@ -58,7 +55,7 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun isConnected() : Boolean {
-        return isConnected
+        return droneData.isConnected().value ?: false
     }
 
     override fun isSimulation(): Boolean {
@@ -66,9 +63,7 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun disconnect() {
-        isConnected = false
-
-        droneData.refresh()
+        droneData.disconnect()
     }
 
     override fun getData(): DroneData {

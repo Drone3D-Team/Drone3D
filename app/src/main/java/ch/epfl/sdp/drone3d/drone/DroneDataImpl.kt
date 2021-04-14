@@ -122,4 +122,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         disposeOfAll()
         createDefaultSubs()
     }
+
+    fun disconnect() {
+        instance.dispose()
+    }
 }
