@@ -5,10 +5,14 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.view.View
 import android.widget.ToggleButton
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -32,12 +36,14 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
-import java.util.concurrent.TimeoutException
+import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -127,13 +133,13 @@ class MappingMissionSelectionActivityTest {
             onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         onView(
-            allOf(
-                withText(buttonName(false, PRIVATE_MAPPING_MISSION)),
-                isDisplayed()
-            )
+                allOf(
+                        withText(buttonName(false, PRIVATE_MAPPING_MISSION)),
+                        isDisplayed()
+                )
         ).perform(click())
         Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+                IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
 
     }
@@ -154,18 +160,21 @@ class MappingMissionSelectionActivityTest {
             onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         onView(
-            allOf(
-                withText(buttonName(true, SHARED_MAPPING_MISSION)),
-                isDisplayed()
-            )
+                allOf(
+                        withText(buttonName(true, SHARED_MAPPING_MISSION)),
+                        isDisplayed()
+                )
         ).perform(click())
         Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+                IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
     }
 
     @Test
     fun changeInLiveDataHasEffect() {
+
+        // Semaphore used to wait for live data to be dispatched
+        val mutex = Semaphore(0)
         // Make sure the current state is shared
         var isPrivate = false
 
@@ -190,17 +199,11 @@ class MappingMissionSelectionActivityTest {
         }
 
         curShared = listOf(SHARED_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
+
+        // Post new value to live data and wait for it to be dispatched
+        onView(withId(R.id.shared_mission_list_view)).perform(ReleaseOnChange(mutex))
         SHARED_LIVE_DATA.postValue(curShared)
-
-        // Wait for value to dispatch, this isn't pretty, but the most simple conditional wait I could come up with
-        var i = 0
-        while (SHARED_LIVE_DATA.value?.size != curShared.size) {
-            if (i++ > 50)
-                throw TimeoutException("Live data took to long to dispatch")
-            Thread.sleep(10)
-        }
-
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
         onView(withId(R.id.shared_mission_list_view)).check(matchCount(curShared.size))
         onView(withId(R.id.shared_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
@@ -221,17 +224,10 @@ class MappingMissionSelectionActivityTest {
 
         curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
+        // Post new value to live data and wait for it to be dispatched
+        onView(withId(R.id.private_mission_list_view)).perform(ReleaseOnChange(mutex))
         PRIVATE_LIVE_DATA.postValue(curPrivate)
-
-        // Wait for value to dispatch, this isn't pretty, but the most simple conditional wait I could come up with
-        i = 0
-        while (PRIVATE_LIVE_DATA.value?.size != curPrivate.size) {
-            if (i++ > 50)
-                throw TimeoutException("Live data took to long to dispatch")
-            Thread.sleep(10)
-        }
-
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
         onView(withId(R.id.private_mission_list_view)).check(matchCount(curPrivate.size))
         onView(withId(R.id.private_mission_list_view)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
@@ -239,6 +235,35 @@ class MappingMissionSelectionActivityTest {
         // Reset LIVE DATA
         SHARED_LIVE_DATA.postValue(listOf(SHARED_MAPPING_MISSION))
         PRIVATE_LIVE_DATA.postValue(listOf(PRIVATE_MAPPING_MISSION))
+    }
+
+    private class ReleaseOnChange(private val mutex: Semaphore) : ViewAction {
+
+        override fun getConstraints(): Matcher<View> = allOf(isDisplayed(), isAssignableFrom(RecyclerView::class.java))
+
+        override fun getDescription(): String = "Wait for an updated to be dispatched and then release the given mutex"
+
+        override fun perform(uiController: UiController?, view: View?) {
+            val recyclerView = view as RecyclerView
+            val adapter = recyclerView.adapter as ListAdapter<*, *>
+            adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+                    override fun onChanged() =
+                            mutex.release()
+
+                    override fun onItemRangeChanged(positionStart: Int, itemCount: Int) =
+                            mutex.release()
+
+                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) =
+                            mutex.release()
+
+                    override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) =
+                            mutex.release()
+
+                    override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int)=
+                            mutex.release()
+                }
+            )
+        }
     }
 
     private fun buttonName(shared: Boolean, m: MappingMission): String =
