@@ -144,10 +144,10 @@ object DroneInstanceMock {
                     "vendor",
                     "model",
                                 45f,
-                                10f,
+                                15f,
                                 10f,
                                 2500,
-                                2500))
+                                2000))
             )
     }
 }
