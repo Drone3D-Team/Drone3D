@@ -11,22 +11,42 @@ class MappingMissionService constructor(val droneService: DroneService) {
 
     private val cameraAngle = 0.0 // Suppose the drone is looking down
 
-    fun buildSinglePassMappingMission(startingPoint: Point, area: Parallelogram, flightHeight: Double): List<Point>? {
-        val groundImageDimension = computeGroundImageDimension(flightHeight)
-        return if (groundImageDimension != null) {
-            ParallelogramMissionBuilder.buildSinglePassMappingMission(startingPoint, area, cameraAngle,
-                flightHeight,
-                groundImageDimension
-            )
-        } else {
-            null
-        }
+    fun buildSinglePassMappingMission(
+        startingPoint: Point,
+        area: Parallelogram,
+        flightHeight: Double
+    ): List<Point>? {
+        return buildMappingMission(
+            startingPoint,
+            area,
+            flightHeight,
+            ParallelogramMissionBuilder.Companion::buildSinglePassMappingMission
+        )
     }
 
-    fun buildDoublePassMappingMission(startingPoint: Point, area: Parallelogram, flightHeight: Double): List<Point>? {
+    fun buildDoublePassMappingMission(
+        startingPoint: Point,
+        area: Parallelogram,
+        flightHeight: Double
+    ): List<Point>? {
+        return buildMappingMission(
+            startingPoint,
+            area,
+            flightHeight,
+            ParallelogramMissionBuilder.Companion::buildDoublePassMappingMission
+        )
+    }
+
+    private fun buildMappingMission(
+        startingPoint: Point, area: Parallelogram, flightHeight: Double,
+        mappingFunction: (
+            startingPoint: Point, area: Parallelogram, cameraAngle: Double,
+            flightHeight: Double, groundImageDimension: GroundImageDim
+        ) -> List<Point>
+    ): List<Point>? {
         val groundImageDimension = computeGroundImageDimension(flightHeight)
         return if (groundImageDimension != null) {
-            ParallelogramMissionBuilder.buildDoublePassMappingMission(startingPoint, area, cameraAngle, flightHeight, groundImageDimension)
+            mappingFunction(startingPoint, area, cameraAngle, flightHeight, groundImageDimension)
         } else {
             null
         }
