@@ -89,7 +89,7 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any{it.hasExtra(ItineraryShowActivity.MISSION_PATH)})
+        assert(intents.any{it.hasExtra(MissionViewAdapter.MISSION_PATH)})
     }
 
 }
