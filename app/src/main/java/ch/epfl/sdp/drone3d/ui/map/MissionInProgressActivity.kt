@@ -122,6 +122,7 @@ class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
      */
     private fun centerCameraOnDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val currentZoom = mapboxMap.cameraPosition.zoom
+
         if (droneService.getData().getPosition().value != null) {
             mapboxMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
