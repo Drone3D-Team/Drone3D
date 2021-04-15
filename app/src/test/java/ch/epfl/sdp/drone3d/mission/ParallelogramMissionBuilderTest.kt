@@ -17,10 +17,9 @@ class ParallelogramMissionBuilderTest {
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
         val cameraAngle = 0.0
         val droneHeight = 1.0
-        val projectedImageWidth = 6.0
-        val projectedImageHeight = 6.0
+        val groundImageDimension = GroundImageDim(6.0,6.0)
 
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
         val expectedMappingMission = listOf(Point(1.0,1.0),Point(1.0,0.0),Point(0.0,0.0),Point(0.0,1.0))
         for(i in actualMappingMission.indices){
             assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
@@ -33,10 +32,9 @@ class ParallelogramMissionBuilderTest {
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
         val cameraAngle = 0.0
         val droneHeight = 1.0
-        val projectedImageWidth = 6.0
-        val projectedImageHeight = 6.0
+        val groundImageDimension = GroundImageDim(6.0,6.0)
 
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
         val expectedMappingMission = listOf(Point(0.0,0.0),Point(0.0,1.0),Point(1.0,1.0),Point(1.0,0.0))
         for(i in actualMappingMission.indices){
             assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
@@ -49,10 +47,9 @@ class ParallelogramMissionBuilderTest {
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
         val cameraAngle = 0.0
         val droneHeight = 5.0
-        val projectedImageWidth = 3.0
-        val projectedImageHeight = 3.0
+        val groundImageDimension = GroundImageDim(3.0,3.0)
 
-        val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+        val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
         val expectedMappingMission =
             listOf(
                 Point(0.0,0.0),
