@@ -34,6 +34,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
+    // The data of the drone we keep track of
     private val position: MutableLiveData<LatLng> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
@@ -52,6 +53,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         createDefaultSubs()
     }
 
+    /**
+     * Setup the observers for the data of the drone we keep track of
+     */
     private fun createDefaultSubs() {
 
         val droneInstance = provider.provideDrone()
