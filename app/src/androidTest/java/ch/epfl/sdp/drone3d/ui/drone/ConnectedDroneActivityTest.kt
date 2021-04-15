@@ -34,7 +34,7 @@ import org.mockito.Mockito.verify
 @UninstallModules(DroneModule::class)
 class ConnectedDroneActivityTest {
 
-    val activityRule = ActivityScenarioRule(ConnectedDroneActivity::class.java)
+    private val activityRule = ActivityScenarioRule(ConnectedDroneActivity::class.java)
 
     @get:Rule
     val rule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))

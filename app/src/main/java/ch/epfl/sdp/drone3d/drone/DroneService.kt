@@ -13,7 +13,7 @@ interface DroneService {
      * Provide the information of a drone or a simulation to the application
      * depending on the value of [isSimulation]
      */
-    fun provideDrone(): System
+    fun provideDrone(): System?
 
     /**
      * Setup the [IP] and [port] of a simulation and connect it to the application

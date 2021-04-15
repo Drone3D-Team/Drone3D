@@ -11,30 +11,31 @@ package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-object DroneServiceImpl : DroneService {
+private const val DEFAULT_IP = "unknown"
+private const val DEFAULT_PORT = "-"
+
+class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneService {
 
     private val droneData = DroneDataImpl(this)
 
-    private var isConnected = false
-    private var isSimulation = true
-    private var simIP = "0.0.0.0"
-    private var simPort = "0"
+    private var server: MavsdkServer? = null
+    private var droneInstance: System? = null
 
-    override fun provideDrone(): System {
-        return if (isSimulation) {
-            val mavsdkServer = MavsdkServer()
-            val cloudSimIPAndPort = "tcp://$simIP:$simPort"
-            val mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
-            System("localhost", mavsdkServerPort)
-        } else {
-            val mavsdkServer = MavsdkServer()
-            val mavsdkServerPort = mavsdkServer.run()
-            System("localhost", mavsdkServerPort)
-        }
-    }
+    private var isSimulation = true
+    private var simIP = DEFAULT_IP
+    private var simPort = DEFAULT_PORT
+
+    override fun provideDrone(): System? = droneInstance
 
     override fun setSimulation(IP: String, port: String) {
-        isConnected = true
+
+        disconnect()
+
+        droneFactory.createSimulation(IP, port).also {
+            server = it.server
+            droneInstance = it.instance
+        }
+
         isSimulation = true
         simIP = IP
         simPort = port
@@ -43,7 +44,16 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun setDrone() {
-        isConnected = true
+
+        disconnect()
+
+        droneFactory.createDrone().also {
+            server = it.server
+            droneInstance = it.instance
+        }
+
+        simIP = DEFAULT_IP
+        simPort = DEFAULT_PORT
         isSimulation = false
 
         droneData.refresh()
@@ -57,8 +67,8 @@ object DroneServiceImpl : DroneService {
         return simPort
     }
 
-    override fun isConnected() : Boolean {
-        return isConnected
+    override fun isConnected(): Boolean {
+        return droneData.isConnected().value ?: false
     }
 
     override fun isSimulation(): Boolean {
@@ -66,7 +76,11 @@ object DroneServiceImpl : DroneService {
     }
 
     override fun disconnect() {
-        isConnected = false
+        server?.stop()
+        droneInstance?.dispose()
+
+        server = null
+        droneInstance = null
 
         droneData.refresh()
     }
