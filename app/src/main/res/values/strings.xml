@@ -49,6 +49,11 @@
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
 
+    <!-- Mission In Progress Activity -->
+    <string name="stop_mission_button">Stop Mission</string>
+    <!-- Message showed in case of a loss of connection with the drone during a mission -->
+    <string name="lost_connection_message">Lost Connection With the Drone</string>
+
     <!-- Utilities -->
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
     <string name="user_location_permission_request">In order to show your current location, you have to enable location sharing.</string>
