@@ -23,10 +23,12 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
+import org.jetbrains.annotations.NotNull
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -40,7 +42,7 @@ import kotlin.math.abs
  * - a few minor adaptations to make the class compatible with our project
  */
 @AndroidEntryPoint
-class MissionInProgressActivity : BaseMapActivity() {
+class MissionInProgressActivity : BaseMapActivity(), OnMapReadyCallback {
     @Inject
     lateinit var droneService: DroneService
 
@@ -87,23 +89,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
         initMapView(savedInstanceState, R.layout.activity_mission_in_progress, R.id.map_in_mission_view)
-        mapView.getMapAsync { mapboxMap ->
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-                homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
-                droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
-                missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
-
-                centerCameraOnDrone(mapView)
-
-                Transformations.map(droneService.getData().getMissionPlan()) { mission ->
-                    return@map mission.missionItems.map { item ->
-                        LatLng(item.latitudeDeg, item.longitudeDeg)
-                    }
-                }.observe(this, Observer { path ->
-                    missionDrawer.showMission(path)
-                })
-            }
-        }
+        mapView.getMapAsync(this)
 
         cameraView = findViewById(R.id.camera_mission_view)
         cameraView.setMediaController(object : MediaController(this) {})
@@ -111,10 +97,30 @@ class MissionInProgressActivity : BaseMapActivity() {
         stopMissionButton = findViewById(R.id.stopMissionButton)
     }
 
+    override fun onMapReady(@NotNull mapboxMap: MapboxMap) {
+        this.mapboxMap = mapboxMap
+
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
+            droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
+            missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
+
+            centerCameraOnDrone(mapView)
+
+            Transformations.map(droneService.getData().getMissionPlan()) { mission ->
+                return@map mission.missionItems.map { item ->
+                    LatLng(item.latitudeDeg, item.longitudeDeg)
+                }
+            }.observe(this, Observer { path ->
+                missionDrawer.showMission(path)
+            })
+        }
+    }
+
     /**
      * Centers the camera on the drone
      */
-    fun centerCameraOnDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    private fun centerCameraOnDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         val currentZoom = mapboxMap.cameraPosition.zoom
 
         if (droneService.getData().getPosition().value != null) {
