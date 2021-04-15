@@ -11,6 +11,11 @@ class MappingMissionService constructor(val droneService: DroneService) {
 
     private val cameraAngle = 0.0 // Suppose the drone is looking down
 
+    /**
+     * Returns the coordinates where the drone should take pictures on a single pass mapping mission of altitude [flightHeight] in meters.
+     * A single pass mapping mission is sufficient when the area to map has low terrain features such as a landscape or a field.
+     * For more vertical 3D mappings such a cities, see "buildDoublePassMappingMission"
+     */
     fun buildSinglePassMappingMission(
         startingPoint: Point,
         area: Parallelogram,
@@ -24,6 +29,10 @@ class MappingMissionService constructor(val droneService: DroneService) {
         )
     }
 
+    /**
+     * Returns the picture coordinates of the drone double pass mapping mission of altitude [flightHeight] in meters.
+     * Use this function for high resolution vertical 3D mappings such a cities.
+     */
     fun buildDoublePassMappingMission(
         startingPoint: Point,
         area: Parallelogram,
