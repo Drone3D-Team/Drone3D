@@ -29,6 +29,8 @@ import kotlin.math.sqrt
  */
 class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
+
+
     // Drone instance
     private lateinit var instance: System
 
@@ -45,6 +47,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
     private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
     private val missionPlan: MutableLiveData<Mission.MissionPlan> = MutableLiveData()
+    private val focalLength: MutableLiveData<Float> = MutableLiveData()
+    private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
     init {
         createDefaultSubs()
@@ -81,7 +85,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
             isConnected.postValue(state.isConnected)
         }
         addSubscription(instance.camera.information, "cameraResolution") { i ->
-            cameraResolution.postValue(DroneData.CameraResolution(i.verticalResolutionPx, i.horizontalResolutionPx))
+            cameraResolution.postValue(DroneData.CameraResolution(i.horizontalResolutionPx, i.verticalResolutionPx))
+            focalLength.postValue(i.focalLengthMm)
+            sensorSize.postValue(DroneData.SensorSize(i.horizontalSensorSizeMm, i.verticalSensorSizeMm))
         }
         addSubscription(instance.camera.videoStreamInfo, "videoStreamUri") { i->
             videoStreamUri.postValue(i.settings.uri)
@@ -127,6 +133,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
 
     override fun getMissionPlan(): LiveData<Mission.MissionPlan> = missionPlan
+
+    override fun getFocalLength(): LiveData<Float> = focalLength
+
+    override fun getSensorSize(): LiveData<DroneData.SensorSize> = sensorSize
 
     override fun refresh() {
         disposeOfAll()
