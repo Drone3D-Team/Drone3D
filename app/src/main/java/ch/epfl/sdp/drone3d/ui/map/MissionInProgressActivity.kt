@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
@@ -90,19 +91,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         mapView.getMapAsync { mapboxMap ->
             this.mapboxMap = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-                homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
-                droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
-                missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
-
-                centerCameraOnDrone(mapView)
-
-                Transformations.map(droneService.getData().getMissionPlan()) { mission ->
-                    return@map mission.missionItems.map { item ->
-                        LatLng(item.latitudeDeg, item.longitudeDeg)
-                    }
-                }.observe(this, Observer { path ->
-                    missionDrawer.showMission(path)
-                })
+                setupMapboxMap(mapView, style)
             }
         }
 
@@ -110,6 +99,22 @@ class MissionInProgressActivity : BaseMapActivity() {
         cameraView.setMediaController(object : MediaController(this) {})
 
         stopMissionButton = findViewById(R.id.stopMissionButton)
+    }
+
+    private fun setupMapboxMap(mapView: MapView, style: Style) {
+        homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
+        droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
+        missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
+
+        centerCameraOnDrone(mapView)
+
+        Transformations.map(droneService.getData().getMissionPlan()) { mission ->
+            return@map mission.missionItems.map { item ->
+                LatLng(item.latitudeDeg, item.longitudeDeg)
+            }
+        }.observe(this, Observer { path ->
+            missionDrawer.showMission(path)
+        })
     }
 
     /**

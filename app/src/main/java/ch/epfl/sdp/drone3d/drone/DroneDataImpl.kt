@@ -29,8 +29,6 @@ import kotlin.math.sqrt
  */
 class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
-
-
     // Drone instance
     private lateinit var instance: System
 
