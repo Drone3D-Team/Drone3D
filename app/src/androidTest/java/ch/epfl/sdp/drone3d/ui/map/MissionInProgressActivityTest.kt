@@ -35,6 +35,16 @@ class MissionInProgressActivityTest {
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
 
+    init {
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getMissionPlan()).thenReturn(MutableLiveData())
+    }
+
     @Before
     fun setUp() {
         Intents.init()
@@ -57,14 +67,19 @@ class MissionInProgressActivityTest {
 
     @Test
     fun loosingDroneConnectionShowsToast() {
-        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(false))
+        val isConnected = MutableLiveData(true)
+
+        `when`(droneService.getData().isConnected()).thenReturn(isConnected)
+
         activityRule.scenario.recreate()
 
         // Test that the toast is displayed
         val activity = CompletableFuture<MissionInProgressActivity>()
         activityRule.scenario.onActivity {
+            isConnected.value = false
             activity.complete(it)
         }
+
         ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
     }
 }

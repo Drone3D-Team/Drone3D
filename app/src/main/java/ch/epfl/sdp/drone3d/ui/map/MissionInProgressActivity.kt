@@ -110,7 +110,7 @@ class MissionInProgressActivity : BaseMapActivity() {
             return@map mission.missionItems.map { item ->
                 LatLng(item.latitudeDeg, item.longitudeDeg)
             }
-        }.observe(this, Observer { path ->
+        }.observe(this, { path ->
             missionDrawer.showMission(path)
         })
     }

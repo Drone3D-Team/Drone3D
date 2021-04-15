@@ -69,7 +69,6 @@ class ItineraryShowActivityTest {
                 .check(matches(Matchers.not(ViewMatchers.isEnabled())))
     }
 
-
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
@@ -91,5 +90,4 @@ class ItineraryShowActivityTest {
         val intents = Intents.getIntents()
         assert(intents.any{it.hasExtra(ItineraryShowActivity.MISSION_PATH)})
     }
-
 }
