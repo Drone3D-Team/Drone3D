@@ -23,7 +23,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
 
     private var isSimulation = true
     private var simIP = DEFAULT_IP
-    private var simPort = DEFAULT_IP
+    private var simPort = DEFAULT_PORT
 
     override fun provideDrone(): System? = droneInstance
 
