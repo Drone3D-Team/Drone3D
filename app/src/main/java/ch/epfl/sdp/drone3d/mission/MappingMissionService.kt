@@ -10,18 +10,11 @@ import ch.epfl.sdp.drone3d.drone.DroneService
 class MappingMissionService constructor(val droneService: DroneService) {
 
     private val cameraAngle = 0.0 // Suppose the drone is looking down
-    
-    fun buildSinglePassMappingMission(
-        startingPoint: Point,
-        area: Parallelogram,
-        flightHeight: Double
-    ): List<Point>? {
+
+    fun buildSinglePassMappingMission(startingPoint: Point, area: Parallelogram, flightHeight: Double): List<Point>? {
         val groundImageDimension = computeGroundImageDimension(flightHeight)
         return if (groundImageDimension != null) {
-            ParallelogramMissionBuilder.buildSinglePassMappingMission(
-                startingPoint,
-                area,
-                cameraAngle,
+            ParallelogramMissionBuilder.buildSinglePassMappingMission(startingPoint, area, cameraAngle,
                 flightHeight,
                 groundImageDimension
             )
@@ -30,20 +23,10 @@ class MappingMissionService constructor(val droneService: DroneService) {
         }
     }
 
-    fun buildDoublePassMappingMission(
-        startingPoint: Point,
-        area: Parallelogram,
-        flightHeight: Double
-    ): List<Point>? {
+    fun buildDoublePassMappingMission(startingPoint: Point, area: Parallelogram, flightHeight: Double): List<Point>? {
         val groundImageDimension = computeGroundImageDimension(flightHeight)
         return if (groundImageDimension != null) {
-            ParallelogramMissionBuilder.buildDoublePassMappingMission(
-                startingPoint,
-                area,
-                cameraAngle,
-                flightHeight,
-                groundImageDimension
-            )
+            ParallelogramMissionBuilder.buildDoublePassMappingMission(startingPoint, area, cameraAngle, flightHeight, groundImageDimension)
         } else {
             null
         }
