@@ -60,6 +60,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
             resetData()
         } else {
             addSubscriptions(droneInstance)
+            addSubscriptionsBis(droneInstance)
         }
     }
 
@@ -83,6 +84,28 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         addSubscription(droneInstance.telemetry.positionVelocityNed, "GroundSpeedNed") { vector_speed ->
             speed.postValue(sqrt(
                     vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)))
+        }
+        addSubscription(droneInstance.telemetry.inAir, "inAir") { isFlying ->
+            this.isFlying.postValue(isFlying)
+        }
+        addSubscription(droneInstance.telemetry.home, "home") { home -> homeLocation.postValue(home) }
+        addSubscription(droneInstance.core.connectionState, "connectionState") { state ->
+            isConnected.postValue(state.isConnected)
+        }
+        addSubscription(droneInstance.camera.information, "cameraResolution") { i ->
+            cameraResolution.postValue(DroneData.CameraResolution(i.horizontalResolutionPx, i.verticalResolutionPx))
+            focalLength.postValue(i.focalLengthMm)
+            sensorSize.postValue(DroneData.SensorSize(i.horizontalSensorSizeMm, i.verticalSensorSizeMm))
+        }
+        addSubscription(droneInstance.camera.videoStreamInfo, "videoStreamUri") { i->
+            videoStreamUri.postValue(i.settings.uri)
+        }
+    }
+
+    private fun addSubscriptionsBis(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.positionVelocityNed, "GroundSpeedNed") { vector_speed ->
+            speed.postValue(sqrt(
+                vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)))
         }
         addSubscription(droneInstance.telemetry.inAir, "inAir") { isFlying ->
             this.isFlying.postValue(isFlying)

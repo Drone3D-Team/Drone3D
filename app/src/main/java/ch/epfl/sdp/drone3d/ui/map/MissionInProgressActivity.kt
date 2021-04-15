@@ -15,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
-import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
 import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
@@ -42,8 +41,8 @@ import kotlin.math.abs
  */
 @AndroidEntryPoint
 class MissionInProgressActivity : BaseMapActivity() {
-    @Inject
-    lateinit var droneService: DroneService
+
+    @Inject lateinit var droneService: DroneService
 
     private lateinit var mapboxMap: MapboxMap
 
@@ -83,7 +82,6 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        droneService = DroneServiceImpl
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
