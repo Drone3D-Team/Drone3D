@@ -40,7 +40,7 @@ class ItineraryShowActivityTest {
         .around(activityRule)
 
     @BindValue
-    val droneService: DroneService = DroneInstanceMock.mockService()
+    val droneService: DroneService = DroneInstanceMock.mockServiceWithDefaultData()
 
     @Before
     fun setUp() {
