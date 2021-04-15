@@ -53,43 +53,64 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     }
 
     private fun createDefaultSubs() {
-        instance = provider.provideDrone()
 
-        addSubscription(instance.telemetry.flightMode, "Flight Mode") { flightMode ->
+        val droneInstance = provider.provideDrone()
+
+        if (droneInstance == null) {
+            resetData()
+        } else {
+            addSubscriptions(droneInstance)
+        }
+    }
+
+    private fun addSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.flightMode, "Flight Mode") { flightMode ->
             if (flightMode == Telemetry.FlightMode.HOLD) isMissionPaused.postValue(true)
             if (flightMode == Telemetry.FlightMode.MISSION) isMissionPaused.postValue(false)
         }
-        addSubscription(instance.telemetry.armed, "Armed") { armed ->
+        addSubscription(droneInstance.telemetry.armed, "Armed") { armed ->
             if (!armed) isMissionPaused.postValue(true)
         }
-        addSubscription(instance.telemetry.position, "Telemetry Position") { position ->
+        addSubscription(droneInstance.telemetry.position, "Telemetry Position") { position ->
             val latLng = LatLng(position.latitudeDeg, position.longitudeDeg)
             this.position.postValue(latLng)
             //Absolute altitude is the altitude w.r. to the sea level
             absoluteAltitude.postValue(position.absoluteAltitudeM)
         }
-        addSubscription(instance.telemetry.battery, "Battery") { battery ->
+        addSubscription(droneInstance.telemetry.battery, "Battery") { battery ->
             batteryLevel.postValue(battery.remainingPercent)
         }
-        addSubscription(instance.telemetry.positionVelocityNed, "GroundSpeedNed") { vector_speed ->
+        addSubscription(droneInstance.telemetry.positionVelocityNed, "GroundSpeedNed") { vector_speed ->
             speed.postValue(sqrt(
-                vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)))
+                    vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)))
         }
-        addSubscription(instance.telemetry.inAir, "inAir") { isFlying ->
+        addSubscription(droneInstance.telemetry.inAir, "inAir") { isFlying ->
             this.isFlying.postValue(isFlying)
         }
-        addSubscription(instance.telemetry.home, "home") { home -> homeLocation.postValue(home) }
-        addSubscription(instance.core.connectionState, "connectionState") { state ->
+        addSubscription(droneInstance.telemetry.home, "home") { home -> homeLocation.postValue(home) }
+        addSubscription(droneInstance.core.connectionState, "connectionState") { state ->
             isConnected.postValue(state.isConnected)
         }
-        addSubscription(instance.camera.information, "cameraResolution") { i ->
+        addSubscription(droneInstance.camera.information, "cameraResolution") { i ->
             cameraResolution.postValue(DroneData.CameraResolution(i.horizontalResolutionPx, i.verticalResolutionPx))
             focalLength.postValue(i.focalLengthMm)
             sensorSize.postValue(DroneData.SensorSize(i.horizontalSensorSizeMm, i.verticalSensorSizeMm))
         }
-        addSubscription(instance.camera.videoStreamInfo, "videoStreamUri") { i->
+        addSubscription(droneInstance.camera.videoStreamInfo, "videoStreamUri") { i->
             videoStreamUri.postValue(i.settings.uri)
         }
+    }
+
+    private fun resetData() {
+        position.postValue(null)
+        batteryLevel.postValue(null)
+        absoluteAltitude.postValue(null)
+        speed.postValue(null)
+        homeLocation.postValue(null)
+        isFlying.postValue(false)
+        isConnected.postValue(false)
+        isMissionPaused.postValue(true)
+        cameraResolution.postValue(null)
     }
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
