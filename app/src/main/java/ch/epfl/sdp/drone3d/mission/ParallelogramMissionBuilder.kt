@@ -4,7 +4,6 @@
  */
 
 package ch.epfl.sdp.drone3d.mission
-import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.tan
 
