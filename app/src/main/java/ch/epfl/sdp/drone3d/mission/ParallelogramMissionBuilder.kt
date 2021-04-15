@@ -18,8 +18,6 @@ class ParallelogramMissionBuilder {
 
         /**
          * Returns the coordinates where the drone should take pictures on a single pass mapping mission.
-         * A single pass mapping mission is sufficient when the area to map has low terrain features such as a landscape or a field.
-         * For more vertical 3D mappings such a cities, see "buildDoublePassMappingMission"
          * All distances are in meters and angles are in radians
          */
         fun buildSinglePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
@@ -29,7 +27,6 @@ class ParallelogramMissionBuilder {
 
         /**
          * Returns the coordinates where the drone should take pictures on a double pass mapping mission.
-         * Use this function for high resolution vertical 3D mappings such a cities.
          * All distances are in meters and angles are in radians
          */
         fun buildDoublePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,flightHeight:Double,  groundImageDimension: GroundImageDim):List<Point>{
