@@ -9,8 +9,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="bottom|end"
-    tools:context=".ui.mission.ItineraryCreateActivity">
+    tools:context=".ui.mission.ItineraryShowActivity">
+
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
@@ -18,7 +18,7 @@
         android:layout_height="match_parent">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/buttonToSaveActivity"
+            android:id="@+id/buttonToMissionInProgressActivity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -26,11 +26,8 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="30sp"
             android:clickable="true"
-            android:contentDescription="@string/content_descriptor_save_icon"
-            android:onClick="goToSaveActivity"
-            app:srcCompat="@android:drawable/ic_menu_save" />
+            android:onClick="goToMissionInProgressActivity"
+            app:srcCompat="@drawable/drone" />
     </com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-

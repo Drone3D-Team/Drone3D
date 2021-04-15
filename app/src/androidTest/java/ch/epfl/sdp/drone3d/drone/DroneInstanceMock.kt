@@ -17,11 +17,10 @@ import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 object DroneInstanceMock {
-
-    val mockProvider: DroneService = mock(DroneService::class.java)
 
     val droneSystem: System = mock(System::class.java)
     val droneTelemetry: Telemetry = mock(Telemetry::class.java)
@@ -31,8 +30,6 @@ object DroneInstanceMock {
     val droneCamera: Camera = mock(Camera::class.java)
 
     init {
-        resetProviderMock()
-
         `when`(droneSystem.telemetry)
             .thenReturn(droneTelemetry)
         `when`(droneSystem.core)
@@ -45,25 +42,18 @@ object DroneInstanceMock {
             .thenReturn(droneCamera)
     }
 
-    fun resetProviderMock() {
-        reset(mockProvider)
-
-        `when`(mockProvider.provideDrone())
-            .thenReturn(droneSystem)
-        `when`(mockProvider.setSimulation(anyString(), anyString()))
-                .thenAnswer {
-                    an -> DroneServiceImpl.setSimulation(an.getArgument(0), an.getArgument(1))
-                }
-        `when`(mockProvider.getIP())
-            .thenAnswer { DroneServiceImpl.getIP() }
-        `when`(mockProvider.getPort())
-            .thenAnswer { DroneServiceImpl.getPort() }
-        `when`(mockProvider.isConnected())
-            .thenAnswer { DroneServiceImpl.isConnected() }
-        `when`(mockProvider.isSimulation())
-            .thenAnswer { DroneServiceImpl.isSimulation() }
-        `when`(mockProvider.disconnect())
-            .then { DroneServiceImpl.disconnect() }
+    /**
+     * Returns a mocked version of [DroneService] that provides a mocked version of
+     * [DroneData] through getData() and a mock [System] through provideDrone().
+     *
+     * The [System] can be parametrised using the different values in [DroneInstanceMock]
+     */
+    fun mockService(): DroneService {
+        return mock(DroneService::class.java).apply {
+            val mockData = mock(DroneData::class.java)
+            `when`(this.getData()).thenReturn(mockData)
+            `when`(this.provideDrone()).thenReturn(droneSystem)
+        }
     }
 
     fun setupDefaultMocks() {
@@ -154,10 +144,10 @@ object DroneInstanceMock {
                     "vendor",
                     "model",
                                 45f,
-                                10f,
+                                15f,
                                 10f,
                                 2500,
-                                2500))
+                                2000))
             )
     }
 }

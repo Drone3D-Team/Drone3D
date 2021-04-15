@@ -39,7 +39,7 @@ class DroneConnectActivityTest {
             .around(ActivityScenarioRule(DroneConnectActivity::class.java))
 
     @BindValue
-    val droneService: DroneService = DroneInstanceMock.mockProvider
+    val droneService: DroneService = DroneInstanceMock.mockService()
 
     @Before
     fun setUp() {
@@ -87,8 +87,6 @@ class DroneConnectActivityTest {
         Intents.intended(
             hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
-
-        DroneInstanceMock.resetProviderMock()
     }
 
     @Test
