@@ -16,6 +16,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
 /**
+ * This class draw the location of the home of the drone on the map
+ *
  * This class is taken from the Fly2Find project with one adaptation :
  * - the SymbolManager was replaced by a CircleManager, and the modifications implied by this change
  */
@@ -24,6 +26,9 @@ class MapboxHomeDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : M
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
+    /**
+     * Draws the [location] of the home on the map
+     */
     fun showHome(location: LatLng?) {
         if (location == null) {
             circleManager.deleteAll()

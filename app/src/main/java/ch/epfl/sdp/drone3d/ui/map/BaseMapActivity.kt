@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.mapbox.mapboxsdk.maps.MapView
 
 /**
+ * This class defines the basic comportment of a map activity
+ *
  * This class is taken from the Fly2Find project, but has been renamed from MapViewBaseActivity.kt.
  */
 open class BaseMapActivity : AppCompatActivity() {

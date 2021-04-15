@@ -12,8 +12,10 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.*
 
+/**
+ * This class draws the mission of the drone on the map
+ */
 class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style): MapboxDrawer {
-
 
     private var lineManager: LineManager = LineManager(mapView, mapboxMap, style)
     private var symbolManager = SymbolManager(mapView, mapboxMap, style)

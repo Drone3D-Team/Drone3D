@@ -16,6 +16,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
 /**
+ * This class draws the location of drone on the map
+ *
  * This class is taken from the Fly2Find project.
  */
 class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
@@ -23,6 +25,9 @@ class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : 
     private lateinit var marker: Circle
     private var reset: Boolean = false
 
+    /**
+     * Draws the [location] of the drone on the map
+     */
     fun showDrone(location: LatLng?) {
         if (location == null) {
             circleManager.deleteAll()

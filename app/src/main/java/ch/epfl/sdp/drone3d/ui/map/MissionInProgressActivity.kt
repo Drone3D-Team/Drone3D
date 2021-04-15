@@ -31,6 +31,9 @@ import javax.inject.Inject
 import kotlin.math.abs
 
 /**
+ * This class show the drone on a map while it is doing a mission, as well as what the drone is currently
+ * seeing.
+ *
  * This class is heavily inspired by the class MapActivity.kt from the Fly2Find project. It has a few
  * adaptations :
  *
