@@ -133,21 +133,21 @@ class MissionInProgressActivity : BaseMapActivity() {
     override fun onResume() {
         super.onResume()
 
-        droneService.getData().getPosition().observe(this, dronePositionObserver)
-        droneService.getData().getHomeLocation().observe(this, homePositionObserver)
-        droneService.getData().isFlying().observe(this, droneFlyingStatusObserver)
-        droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
-        droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
+        if (dronePositionObserver != null) droneService.getData().getPosition().observe(this, dronePositionObserver)
+        if (homePositionObserver != null) droneService.getData().getHomeLocation().observe(this, homePositionObserver)
+        if (droneFlyingStatusObserver != null) droneService.getData().isFlying().observe(this, droneFlyingStatusObserver)
+        if (droneConnectionStatusObserver != null) droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
+        if (videoStreamUriObserver != null) droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
     }
 
     override fun onPause() {
         super.onPause()
 
-        droneService.getData().getPosition().removeObserver(dronePositionObserver)
-        droneService.getData().getHomeLocation().removeObserver(homePositionObserver)
-        droneService.getData().isFlying().removeObserver(droneFlyingStatusObserver)
-        droneService.getData().isConnected().removeObserver(droneConnectionStatusObserver)
-        droneService.getData().getVideoStreamUri().removeObserver(videoStreamUriObserver)
+        if (dronePositionObserver != null) droneService.getData().getPosition().removeObserver(dronePositionObserver)
+        if (homePositionObserver != null) droneService.getData().getHomeLocation().removeObserver(homePositionObserver)
+        if (droneFlyingStatusObserver != null) droneService.getData().isFlying().removeObserver(droneFlyingStatusObserver)
+        if (droneConnectionStatusObserver != null) droneService.getData().isConnected().removeObserver(droneConnectionStatusObserver)
+        if (videoStreamUriObserver != null) droneService.getData().getVideoStreamUri().removeObserver(videoStreamUriObserver)
     }
 
     override fun onDestroy() {
