@@ -39,6 +39,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
+    private val focalLength: MutableLiveData<Float> = MutableLiveData()
+    private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
     init {
         createDefaultSubs()
@@ -84,7 +86,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
             isConnected.postValue(state.isConnected)
         }
         addSubscription(droneInstance.camera.information, "cameraResolution") { i ->
-            cameraResolution.postValue(DroneData.CameraResolution(i.verticalResolutionPx, i.horizontalResolutionPx))
+            cameraResolution.postValue(DroneData.CameraResolution(i.horizontalResolutionPx, i.verticalResolutionPx))
+            focalLength.postValue(i.focalLengthMm)
+            sensorSize.postValue(DroneData.SensorSize(i.horizontalSensorSizeMm, i.verticalSensorSizeMm))
         }
     }
 
@@ -135,6 +139,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun isMissionPaused(): LiveData<Boolean> = isMissionPaused
 
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
+
+    override fun getFocalLength(): LiveData<Float> = focalLength
+
+    override fun getSensorSize(): LiveData<DroneData.SensorSize> = sensorSize
 
     override fun refresh() {
         disposeOfAll()
