@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.SearchView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
@@ -28,7 +29,7 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class MappingMissionSelectionActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
     }
 
@@ -39,11 +40,15 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     lateinit var authService: AuthenticationService
 
     private lateinit var selectedStorageTypeToggleButton: ToggleButton
+    private lateinit var searchBar: SearchView
     private lateinit var mappingMissionListView: LinearLayout
     private lateinit var createNewMappingMissionButton: Button
     private val buttonList = mutableListOf<Button>()
     private var mappingMissionPrivateList = mutableListOf<MappingMission>()
     private var mappingMissionSharedList = mutableListOf<MappingMission>()
+    private var mappingMissionPrivateFilteredList = mutableListOf<MappingMission>()
+    private var mappingMissionSharedFilteredList = mutableListOf<MappingMission>()
+    private var filter: String? = null
 
     enum class StorageType(val checked: Boolean) {
         PRIVATE(true), SHARED(false)
@@ -57,12 +62,29 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
 
         selectedStorageTypeToggleButton = findViewById(R.id.mappingMissionToggleButton)
+        searchBar = findViewById(R.id.searchView)
         mappingMissionListView = findViewById(R.id.mappingMissionList)
         createNewMappingMissionButton = findViewById(R.id.createMappingMissionButton)
+
+        searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                filter = searchBar.query.toString()
+                if (filter!!.replace("\\s".toRegex(), "") == "") {
+                    filter = null
+                }
+                updateFilter()
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                return false
+            }
+        })
 
         selectedStorageTypeToggleButton.isChecked = currentType.checked
         selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
             currentType = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
+            updateFilter()
             updateList()
         }
 
@@ -73,6 +95,17 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         createNewMappingMissionButton.setOnClickListener {
             val intent = Intent(this, ItineraryCreateActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun updateFilter() {
+        if (filter != null) {
+            val ownerId = authService.getCurrentSession()!!.user.uid
+            if (currentType == StorageType.PRIVATE) {
+                mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, filter!!)
+            } else if (currentType == StorageType.SHARED) {
+                mappingMissionDao.updateSharedFilteredMappingMissions((filter!!))
+            }
         }
     }
 
@@ -91,6 +124,23 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         livePrivateMappingMissions.observe(this, {
             mappingMissionPrivateList = it.toMutableList()
             if (currentType == StorageType.PRIVATE) {
+                updateList()
+            }
+        })
+
+        val livePrivateFilteredMappingMissions =
+            mappingMissionDao.getPrivateFilteredMappingMissions()
+        livePrivateFilteredMappingMissions.observe(this, {
+            mappingMissionPrivateFilteredList = it.toMutableList()
+            if (currentType == StorageType.PRIVATE) {
+                updateList()
+            }
+        })
+
+        val liveSharedFilteredMappingMissions = mappingMissionDao.getSharedFilteredMappingMissions()
+        liveSharedFilteredMappingMissions.observe(this, {
+            mappingMissionSharedFilteredList = it.toMutableList()
+            if (currentType == StorageType.SHARED) {
                 updateList()
             }
         })
@@ -124,8 +174,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         buttonList.clear()
 
         val list: MutableList<MappingMission> = when (currentType) {
-            StorageType.PRIVATE -> mappingMissionPrivateList
-            StorageType.SHARED -> mappingMissionSharedList
+            StorageType.PRIVATE -> if (filter == null) mappingMissionPrivateList else mappingMissionPrivateFilteredList
+            StorageType.SHARED -> if (filter == null) mappingMissionSharedList else mappingMissionSharedFilteredList
         }
 
         for (mission in list) {
@@ -141,13 +191,13 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             button.setOnClickListener {
 
                 val intent = Intent(this, ItineraryShowActivity::class.java)
-                val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
+                val flightPathArrayList: ArrayList<LatLng> =
+                    ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
 
                 intent.putExtra(MISSION_PATH, flightPathArrayList)
                 startActivity(intent)
 
             }
-
 
             buttonList.add(button)
             mappingMissionListView.addView(button)

@@ -35,6 +35,30 @@ interface MappingMissionDao {
     fun getSharedMappingMissions(): LiveData<List<MappingMission>>
 
     /**
+     * Returns the list of all private mapping missions filtered by the current filter,
+     * this live data is updated when updatePrivateFilteredMappingMissions is called with another filter
+     */
+    fun getPrivateFilteredMappingMissions(): LiveData<List<MappingMission>>
+
+    /**
+     * Returns the list of all shared mapping missions filtered by the current filter,
+     * this live data is updated when updateSharedFilteredMappingMissions is called with another filter
+     */
+    fun getSharedFilteredMappingMissions(): LiveData<List<MappingMission>>
+
+    /**
+     * Updates the list of all private filtered mapping missions
+     * by a new list of all private mapping missions filtered by the new filter
+     */
+    fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String)
+
+    /**
+     * Updates the list of all shared filtered mapping missions
+     * by a new list of all shared mapping missions filtered by the new filter
+     */
+    fun updateSharedFilteredMappingMissions(filter: String)
+
+    /**
      * Store the private [mappingMission] of owner [ownerUid]
      */
     fun storeMappingMission(ownerUid: String, mappingMission: MappingMission)

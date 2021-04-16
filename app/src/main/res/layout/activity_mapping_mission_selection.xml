@@ -11,6 +11,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.mission.MappingMissionSelectionActivity">
 
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search mission"
+        app:layout_constraintBottom_toBottomOf="@id/mappingMissionToggleButton"
+        app:layout_constraintEnd_toStartOf="@id/mappingMissionToggleButton"
+        app:layout_constraintStart_toStartOf="@id/scrollView"
+        app:layout_constraintTop_toTopOf="@id/mappingMissionToggleButton" />
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="300dp"
@@ -48,4 +60,5 @@
         android:textOn="@string/private_type_text"
         app:layout_constraintEnd_toEndOf="@id/scrollView"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
