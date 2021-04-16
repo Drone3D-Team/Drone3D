@@ -6,6 +6,7 @@
 package ch.epfl.sdp.drone3d.mission
 
 import ch.epfl.sdp.drone3d.drone.DroneService
+import javax.inject.Inject
 
 class MappingMissionService constructor(val droneService: DroneService) {
 

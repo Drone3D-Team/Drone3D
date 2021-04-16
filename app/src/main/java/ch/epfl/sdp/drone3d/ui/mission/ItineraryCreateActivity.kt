@@ -33,7 +33,14 @@ class ItineraryCreateActivity : AppCompatActivity() {
 
     private lateinit var goToSaveButton: FloatingActionButton
 
-    private var flightPath = arrayListOf<LatLng>()
+    //private var flightPath = arrayListOf<LatLng>()
+    private var flightPath = arrayListOf<LatLng>(
+        LatLng(46.517789, 6.567247),
+        LatLng(46.518896, 6.567234),
+        LatLng(46.518916, 6.569438),
+        LatLng(46.517812, 6.569448),
+        LatLng(46.517784, 6.567243),
+    )
 
     @Inject
     lateinit var authService: AuthenticationService
