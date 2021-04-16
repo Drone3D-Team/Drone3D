@@ -7,8 +7,9 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
+import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
@@ -28,14 +29,13 @@ import kotlin.math.sqrt
  */
 class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
-
-
     // Drone instance
     private lateinit var instance: System
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
-    private val position: MutableLiveData<LatLong> = MutableLiveData()
+    // The data of the drone we keep track of
+    private val position: MutableLiveData<LatLng> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
     private val speed: MutableLiveData<Float> = MutableLiveData()
@@ -44,6 +44,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val isConnected: MutableLiveData<Boolean> = MutableLiveData(false)
     private val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
+    private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
+    private val missionPlan: MutableLiveData<Mission.MissionPlan> = MutableLiveData()
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
@@ -51,41 +53,121 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         createDefaultSubs()
     }
 
+    /**
+     * Setup the observers for the data of the drone we keep track of
+     */
     private fun createDefaultSubs() {
-        instance = provider.provideDrone()
 
-        addSubscription(instance.telemetry.flightMode, "Flight Mode") { flightMode ->
+        val droneInstance = provider.provideDrone()
+
+        if (droneInstance == null) {
+            resetData()
+        } else {
+            addFlightModeSubscriptions(droneInstance)
+            addArmedSubscriptions(droneInstance)
+            addPositionSubscriptions(droneInstance)
+            addBatteryLevelSubscriptions(droneInstance)
+            addSpeedSubscriptions(droneInstance)
+            addIsFlyingSubscriptions(droneInstance)
+            addHomeSubscriptions(droneInstance)
+            addIsConnectedSubscriptions(droneInstance)
+            addCameraSubscriptions(droneInstance)
+            addVideoStreamSubscriptions(droneInstance)
+        }
+    }
+
+    private fun addFlightModeSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.flightMode, "Flight Mode") { flightMode ->
             if (flightMode == Telemetry.FlightMode.HOLD) isMissionPaused.postValue(true)
             if (flightMode == Telemetry.FlightMode.MISSION) isMissionPaused.postValue(false)
         }
-        addSubscription(instance.telemetry.armed, "Armed") { armed ->
+    }
+
+    private fun addArmedSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.armed, "Armed") { armed ->
             if (!armed) isMissionPaused.postValue(true)
         }
-        addSubscription(instance.telemetry.position, "Telemetry Position") { position ->
-            val latLng = LatLong(position.latitudeDeg, position.longitudeDeg)
+    }
+
+    private fun addPositionSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.position, "Telemetry Position") { position ->
+            val latLng = LatLng(position.latitudeDeg, position.longitudeDeg)
             this.position.postValue(latLng)
             //Absolute altitude is the altitude w.r. to the sea level
             absoluteAltitude.postValue(position.absoluteAltitudeM)
         }
-        addSubscription(instance.telemetry.battery, "Battery") { battery ->
+    }
+
+    private fun addBatteryLevelSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.battery, "Battery") { battery ->
             batteryLevel.postValue(battery.remainingPercent)
         }
-        addSubscription(instance.telemetry.positionVelocityNed, "GroundSpeedNed") { vector_speed ->
-            speed.postValue(sqrt(
-                vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)))
+    }
+
+    private fun addSpeedSubscriptions(droneInstance: System) {
+        addSubscription(
+            droneInstance.telemetry.positionVelocityNed,
+            "GroundSpeedNed"
+        ) { vector_speed ->
+            speed.postValue(
+                sqrt(
+                    vector_speed.velocity.eastMS.pow(2) + vector_speed.velocity.northMS.pow(2)
+                )
+            )
         }
-        addSubscription(instance.telemetry.inAir, "inAir") { isFlying ->
+    }
+
+    private fun addIsFlyingSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.inAir, "inAir") { isFlying ->
             this.isFlying.postValue(isFlying)
         }
-        addSubscription(instance.telemetry.home, "home") { home -> homeLocation.postValue(home) }
-        addSubscription(instance.core.connectionState, "connectionState") { state ->
+    }
+
+    private fun addHomeSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.telemetry.home, "home") { home ->
+            homeLocation.postValue(home)
+        }
+    }
+
+    private fun addIsConnectedSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.core.connectionState, "connectionState") { state ->
             isConnected.postValue(state.isConnected)
         }
-        addSubscription(instance.camera.information, "cameraResolution") { i ->
-            cameraResolution.postValue(DroneData.CameraResolution(i.horizontalResolutionPx, i.verticalResolutionPx))
+    }
+
+    private fun addCameraSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.camera.information, "cameraResolution") { i ->
+            cameraResolution.postValue(
+                DroneData.CameraResolution(
+                    i.horizontalResolutionPx,
+                    i.verticalResolutionPx
+                )
+            )
             focalLength.postValue(i.focalLengthMm)
-            sensorSize.postValue(DroneData.SensorSize(i.horizontalSensorSizeMm, i.verticalSensorSizeMm))
+            sensorSize.postValue(
+                DroneData.SensorSize(
+                    i.horizontalSensorSizeMm,
+                    i.verticalSensorSizeMm
+                )
+            )
         }
+    }
+    private fun addVideoStreamSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.camera.videoStreamInfo, "videoStreamUri") { i ->
+            videoStreamUri.postValue(i.settings.uri)
+        }
+    }
+
+    private fun resetData() {
+        position.postValue(null)
+        batteryLevel.postValue(null)
+        absoluteAltitude.postValue(null)
+        speed.postValue(null)
+        homeLocation.postValue(null)
+        isFlying.postValue(false)
+        isConnected.postValue(false)
+        isMissionPaused.postValue(true)
+        cameraResolution.postValue(null)
     }
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
@@ -106,7 +188,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         disposeOfAll()
     }
 
-    override fun getPosition(): LiveData<LatLong> = position
+    override fun getPosition(): LiveData<LatLng> = position
 
     override fun getBatteryLevel(): LiveData<Float> = batteryLevel
 
@@ -123,6 +205,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun isMissionPaused(): LiveData<Boolean> = isMissionPaused
 
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
+
+    override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
+
+    override fun getMissionPlan(): LiveData<Mission.MissionPlan> = missionPlan
 
     override fun getFocalLength(): LiveData<Float> = focalLength
 

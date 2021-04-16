@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -14,7 +13,6 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
-import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -26,10 +24,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ItineraryShowActivity : AppCompatActivity() {
-
-    companion object{
-        val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MISSION_PATH"
-    }
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private lateinit var mapView: MapView
@@ -48,11 +42,12 @@ class ItineraryShowActivity : AppCompatActivity() {
         setContentView(R.layout.activity_itinerary_show)
 
         //Create a "back button" in the action bar up
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Get the Intent that started this activity and extract the missionPath
+        @Suppress("UNCHECKED_CAST")
         currentMissionPath =
-            intent.getSerializableExtra(MappingMissionSelectionActivity.MISSION_PATH) as ArrayList<LatLng>?
+            intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
 
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
@@ -79,7 +74,7 @@ class ItineraryShowActivity : AppCompatActivity() {
      */
     fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, MissionInProgressActivity::class.java)
-        intent.putExtra(MISSION_PATH, currentMissionPath)
+        intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
     }
 

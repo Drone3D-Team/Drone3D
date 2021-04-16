@@ -40,7 +40,7 @@ class ItineraryShowActivityTest {
         .around(activityRule)
 
     @BindValue
-    val droneService: DroneService = DroneInstanceMock.mockService()
+    val droneService: DroneService = DroneInstanceMock.mockServiceWithDefaultData()
 
     @Before
     fun setUp() {
@@ -69,7 +69,6 @@ class ItineraryShowActivityTest {
                 .check(matches(Matchers.not(ViewMatchers.isEnabled())))
     }
 
-
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
@@ -89,7 +88,6 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any{it.hasExtra(ItineraryShowActivity.MISSION_PATH)})
+        assert(intents.any{it.hasExtra(MissionViewAdapter.MISSION_PATH)})
     }
-
 }
