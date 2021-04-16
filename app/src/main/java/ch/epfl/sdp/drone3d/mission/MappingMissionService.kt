@@ -8,7 +8,7 @@ package ch.epfl.sdp.drone3d.mission
 import ch.epfl.sdp.drone3d.drone.DroneService
 import javax.inject.Inject
 
-class MappingMissionService constructor(val droneService: DroneService) {
+class MappingMissionService @Inject constructor(private val droneService: DroneService) {
 
     private val cameraAngle = 0.0 // Suppose the drone is looking down
 
