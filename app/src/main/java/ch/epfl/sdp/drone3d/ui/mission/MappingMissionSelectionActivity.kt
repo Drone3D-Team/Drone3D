@@ -54,7 +54,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
     ) =
         data.observe(this) {
-            it?.let { adapter.submitList(it) }
+            it.let { adapter.submitList(it) }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +88,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
         // Link state with view visibility
         currentType.observe(this) {
-            it?.let {
+            it.let {
                 sharedList.visibility =
                     if (it.first.sharedVisible && it.second == null) VISIBLE else GONE
                 privateList.visibility =
@@ -113,7 +113,10 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         selectedStorageTypeToggleButton.isChecked = currentType.value!!.first.checked
         selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
             currentType.value =
-                Pair(if (isChecked) StorageType.PRIVATE else StorageType.SHARED, currentType.value!!.second)
+                Pair(
+                    if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
+                    currentType.value!!.second
+                )
         }
 
         val searchBar = findViewById<SearchView>(R.id.searchView)
