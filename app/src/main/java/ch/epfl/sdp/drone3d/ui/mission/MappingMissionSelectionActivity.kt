@@ -9,10 +9,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.SearchView
-import android.widget.ToggleButton
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
@@ -66,6 +63,27 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         mappingMissionListView = findViewById(R.id.mappingMissionList)
         createNewMappingMissionButton = findViewById(R.id.createMappingMissionButton)
 
+        selectedStorageTypeToggleButton.isChecked = currentType.checked
+        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
+            currentType = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
+            updateFilter()
+            updateList()
+        }
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        setupSearchBar()
+
+        setListenerMappingMissions()
+
+        createNewMappingMissionButton.setOnClickListener {
+            val intent = Intent(this, ItineraryCreateActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    private fun setupSearchBar() {
+        // Searches only when submit button is pressed
         searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 filter = searchBar.query.toString()
@@ -81,20 +99,14 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             }
         })
 
-        selectedStorageTypeToggleButton.isChecked = currentType.checked
-        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
-            currentType = if (isChecked) StorageType.PRIVATE else StorageType.SHARED
-            updateFilter()
+        // When the clear text button is pressed, show all private or shared mapping missions
+        val searchCloseButtonId =
+            searchBar.context.resources.getIdentifier("android:id/search_close_btn", null, null)
+        val closeButton: ImageView = searchBar.findViewById(searchCloseButtonId)
+        closeButton.setOnClickListener {
+            searchBar.setQuery("", false)
+            filter = null
             updateList()
-        }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        setListenerMappingMissions()
-
-        createNewMappingMissionButton.setOnClickListener {
-            val intent = Intent(this, ItineraryCreateActivity::class.java)
-            startActivity(intent)
         }
     }
 

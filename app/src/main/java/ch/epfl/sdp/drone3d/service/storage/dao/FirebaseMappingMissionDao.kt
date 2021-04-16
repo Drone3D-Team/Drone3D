@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.service.storage.dao
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
@@ -23,12 +22,18 @@ class FirebaseMappingMissionDao @Inject constructor(
     private var privateMappingMissionsIsInit: Boolean = false
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private var sharedMappingMissionsIsInit: Boolean = false
+
     private val privateFilteredMappingMissions: MutableLiveData<List<MappingMission>> =
         MutableLiveData()
     private var privateFilteredMappingMissionsFilter: String? = null
+    private var privateFilteredMappingMissionsQuery: Query? = null
+    private var privateFilteredMappingMissionsListener: ValueEventListener? = null
+
     private val sharedFilteredMappingMissions: MutableLiveData<List<MappingMission>> =
         MutableLiveData()
     private var sharedFilteredMappingMissionsFilter: String? = null
+    private var sharedFilteredMappingMissionsQuery: Query? = null
+    private var sharedFilteredMappingMissionsListener: ValueEventListener? = null
 
     companion object {
         private const val TAG = "FirebaseMappingMissionDao"
@@ -149,35 +154,42 @@ class FirebaseMappingMissionDao @Inject constructor(
      * Otherwise in the shared repo
      */
     private fun updateFilteredMappingMissions(ownerUid: String?, filter: String) {
-        Log.d(null, "Update with filter : " + filter)
         val rootRef =
             if (ownerUid != null) privateMappingMissionRef(ownerUid) else sharedMappingMissionRef()
         val mappingMissions =
             if (ownerUid != null) privateFilteredMappingMissions else sharedFilteredMappingMissions
+        val query =
+            if (ownerUid != null) privateFilteredMappingMissionsQuery else sharedFilteredMappingMissionsQuery
+        val listener =
+            if (ownerUid != null) privateFilteredMappingMissionsListener else sharedFilteredMappingMissionsListener
 
-        // TODO: Try to use Query.on("value", function(dataSnapshot) {}) to enable live data
-        val data = rootRef.orderByChild("name").startAt(filter).endAt(filter + "\uf8ff").get()
+        if (query != null && listener != null) {
+            query.removeEventListener(listener)
+        }
 
-        data.addOnSuccessListener {
-            Log.d(null, "Values retrieved : " + it.children.count())
-            val missionsSnapshot = it.children.map { c ->
-                Log.d(
-                    null,
-                    "New value : " + c.getValue(MappingMission::class.java)!!.name
-                ) //TODO: Debug
-                c.getValue(MappingMission::class.java)!!
+        val missionsQuery = rootRef.orderByChild("name").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val missionsSnapshot = dataSnapshot.children.map { c ->
+                    c.getValue(MappingMission::class.java)!!
+                }
+                mappingMissions.value = missionsSnapshot
             }
-            mappingMissions.value = missionsSnapshot
-        }
 
-        data.addOnFailureListener {
-            Timber.tag(TAG).w(it, "getFilteredMappingMissions")
-        }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.tag(TAG)
+                    .w(databaseError.toException(), "getFilteredMappingMissions:onCancelled")
+            }
+        })
 
         if (ownerUid != null) {
             privateFilteredMappingMissionsFilter = filter
+            privateFilteredMappingMissionsQuery = missionsQuery
+            privateFilteredMappingMissionsListener = missionsListener
         } else {
             sharedFilteredMappingMissionsFilter = filter
+            sharedFilteredMappingMissionsQuery = missionsQuery
+            sharedFilteredMappingMissionsListener = missionsListener
         }
     }
 
