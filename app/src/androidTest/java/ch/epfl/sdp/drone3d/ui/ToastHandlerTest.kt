@@ -170,7 +170,6 @@ class ToastHandlerTest {
                 { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
-
     private fun testToast(generator: (Activity) -> Unit, matcher: (Activity) -> ViewInteraction) {
         val activity = CompletableFuture<Activity>()
         intentsTestRule.scenario.onActivity {

@@ -56,6 +56,22 @@ object DroneInstanceMock {
         }
     }
 
+    /**
+     * Returns a mocked version of [DroneService] that provides an instance of
+     * [DroneDataImpl] through getData() and a mock [System] through provideDrone().
+     *
+     * The [System] can be parametrised using the different values in [DroneInstanceMock]
+     */
+    fun mockServiceWithDefaultData(): DroneService {
+        setupDefaultMocks()
+
+        return mock(DroneService::class.java).apply {
+            `when`(this.provideDrone()).thenReturn(droneSystem)
+            val data = DroneDataImpl(this)
+            `when`(this.getData()).thenReturn(data)
+        }
+    }
+
     fun setupDefaultMocks() {
         // Telemetry Mocks
         `when`(droneTelemetry.flightMode)
@@ -144,10 +160,26 @@ object DroneInstanceMock {
                     "vendor",
                     "model",
                                 45f,
-                                10f,
+                                15f,
                                 10f,
                                 2500,
-                                2500))
+                                2000))
+            )
+        `when`(droneCamera.videoStreamInfo)
+            .thenReturn(
+                Flowable.fromArray(Camera.VideoStreamInfo(
+                    Camera.VideoStreamSettings(
+                        30f,
+                        2500,
+                        2500,
+                        60,
+                        0,
+                        "uri",
+                        0f
+                            ),
+                    Camera.VideoStreamInfo.VideoStreamStatus.IN_PROGRESS,
+                    Camera.VideoStreamInfo.VideoStreamSpectrum.VISIBLE_LIGHT
+                ))
             )
     }
 }
