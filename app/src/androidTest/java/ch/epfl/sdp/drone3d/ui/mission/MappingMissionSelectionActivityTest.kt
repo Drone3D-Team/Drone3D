@@ -316,7 +316,7 @@ class MappingMissionSelectionActivityTest {
         // Post new value to live data and wait for it to be dispatched
         onView(withId(R.id.shared_filtered_mission_list_view)).perform(ReleaseOnChange(mutex))
         SHARED_FILTERED_LIVE_DATA.postValue(currentData)
-        mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
+        mutex.tryAcquire(1000, TimeUnit.MILLISECONDS)
 
 
         liveDataShowsToUser(true, true, currentData)
@@ -335,8 +335,7 @@ class MappingMissionSelectionActivityTest {
         // Post new value to live data and wait for it to be dispatched
         onView(withId(R.id.private_filtered_mission_list_view)).perform(ReleaseOnChange(mutex))
         PRIVATE_FILTERED_LIVE_DATA.postValue(currentData)
-        mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
-
+        mutex.tryAcquire(1000, TimeUnit.MILLISECONDS)
 
         liveDataShowsToUser(false, true, currentData)
 

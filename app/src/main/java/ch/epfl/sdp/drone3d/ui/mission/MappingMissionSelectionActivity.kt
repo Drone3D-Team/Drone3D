@@ -98,18 +98,28 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         // Link state with view visibility
         currentType.observe(this) {
             it.let {
-                sharedList.visibility =
-                    if (it.first.sharedVisible && it.second == null) VISIBLE else GONE
-                privateList.visibility =
-                    if (it.first.privateVisible && it.second == null) VISIBLE else GONE
-                sharedFilteredList.visibility =
-                    if (it.first.sharedVisible && it.second != null) VISIBLE else GONE
-                privateFilteredList.visibility =
-                    if (it.first.privateVisible && it.second != null) VISIBLE else GONE
+                sharedList.visibility = getVisibility(false, false, it)
+                privateList.visibility = getVisibility(true, false, it)
+                sharedFilteredList.visibility = getVisibility(false, true, it)
+                privateFilteredList.visibility = getVisibility(true, true, it)
 
                 mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
                 mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
             }
+        }
+    }
+
+    private fun getVisibility(
+        private: Boolean,
+        filter: Boolean,
+        current: Pair<StorageType, String?>
+    ): Int {
+        return when {
+            private && !current.first.privateVisible -> GONE
+            !private && !current.first.sharedVisible -> GONE
+            filter && current.second == null -> GONE
+            !filter && current.second != null -> GONE
+            else -> VISIBLE
         }
     }
 
