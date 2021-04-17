@@ -52,13 +52,13 @@ interface MappingMissionDao {
      * Updates the list of all private filtered mapping missions
      * by a new list of all private mapping missions filtered by the new filter
      */
-    fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String)
+    fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String?)
 
     /**
      * Updates the list of all shared filtered mapping missions
      * by a new list of all shared mapping missions filtered by the new filter
      */
-    fun updateSharedFilteredMappingMissions(filter: String)
+    fun updateSharedFilteredMappingMissions(filter: String?)
 
     /**
      * Store the private [mappingMission] of owner [ownerUid]

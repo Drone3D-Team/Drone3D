@@ -193,14 +193,14 @@ class FirebaseMappingMissionDao @Inject constructor(
         }
     }
 
-    override fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String) {
-        if (privateFilteredMappingMissionsFilter != filter) {
+    override fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String?) {
+        if (filter != null && privateFilteredMappingMissionsFilter != filter) {
             updateFilteredMappingMissions(ownerUid, filter)
         }
     }
 
-    override fun updateSharedFilteredMappingMissions(filter: String) {
-        if (sharedFilteredMappingMissionsFilter != filter) {
+    override fun updateSharedFilteredMappingMissions(filter: String?) {
+        if (filter != null && sharedFilteredMappingMissionsFilter != filter) {
             updateFilteredMappingMissions(null, filter)
         }
     }

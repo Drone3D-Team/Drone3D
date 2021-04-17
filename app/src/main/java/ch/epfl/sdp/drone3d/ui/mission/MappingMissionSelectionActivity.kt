@@ -107,12 +107,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
                 privateFilteredList.visibility =
                     if (it.first.privateVisible && it.second != null) VISIBLE else GONE
 
-                if (it.first.sharedVisible && it.second != null) {
-                    mappingMissionDao.updateSharedFilteredMappingMissions(it.second!!)
-                }
-                if (it.first.privateVisible && it.second != null) {
-                    mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second!!)
-                }
+                mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
+                mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
             }
         }
     }
