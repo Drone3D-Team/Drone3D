@@ -61,12 +61,28 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapping_mission_selection)
 
-        val ownerId = authService.getCurrentSession()!!.user.uid
+        setupListViews()
 
-        val sharedAdapter = MissionViewAdapter(false)
-        val privateAdapter = MissionViewAdapter(true)
-        val sharedFilteredAdapter = MissionViewAdapter(false)
-        val privateFilteredAdapter = MissionViewAdapter(true)
+        // Setup toggle button
+        val selectedStorageTypeToggleButton =
+            findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
+        selectedStorageTypeToggleButton.isChecked = currentType.value!!.first.checked
+        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
+            currentType.value =
+                Pair(
+                    if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
+                    currentType.value!!.second
+                )
+        }
+
+        val searchBar = findViewById<SearchView>(R.id.searchView)
+        setupSearchBar(searchBar)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setupListViews() {
+        val ownerId = authService.getCurrentSession()!!.user.uid
 
         val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
         val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
@@ -74,17 +90,10 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val privateFilteredList =
             findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
 
-        // Setup lists
-        sharedList.adapter = sharedAdapter
-        privateList.adapter = privateAdapter
-        sharedFilteredList.adapter = sharedFilteredAdapter
-        privateFilteredList.adapter = privateFilteredAdapter
-
-        // Setup adapters
-        setupAdapter(mappingMissionDao.getSharedMappingMissions(), sharedAdapter)
-        setupAdapter(mappingMissionDao.getPrivateMappingMissions(ownerId), privateAdapter)
-        setupAdapter(mappingMissionDao.getSharedFilteredMappingMissions(), sharedFilteredAdapter)
-        setupAdapter(mappingMissionDao.getPrivateFilteredMappingMissions(), privateFilteredAdapter)
+        setupListAdapter(sharedList, false, false)
+        setupListAdapter(privateList, true, false)
+        setupListAdapter(sharedFilteredList, false, true)
+        setupListAdapter(privateFilteredList, true, true)
 
         // Link state with view visibility
         currentType.observe(this) {
@@ -106,23 +115,25 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        // Setup toggle button
-        val selectedStorageTypeToggleButton =
-            findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
-        selectedStorageTypeToggleButton.isChecked = currentType.value!!.first.checked
-        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
-            currentType.value =
-                Pair(
-                    if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
-                    currentType.value!!.second
-                )
+    private fun setupListAdapter(list: RecyclerView, private: Boolean, filter: Boolean) {
+        val adapter = MissionViewAdapter(private)
+        list.adapter = adapter
+        setupAdapter(getMappingMissionsLiveData(private, filter), adapter)
+    }
+
+    private fun getMappingMissionsLiveData(
+        private: Boolean,
+        filter: Boolean
+    ): LiveData<List<MappingMission>> {
+        val ownerId = authService.getCurrentSession()!!.user.uid
+        return when {
+            private and !filter -> mappingMissionDao.getPrivateMappingMissions(ownerId)
+            !private and !filter -> mappingMissionDao.getSharedMappingMissions()
+            private and filter -> mappingMissionDao.getPrivateFilteredMappingMissions()
+            else -> mappingMissionDao.getSharedFilteredMappingMissions()
         }
-
-        val searchBar = findViewById<SearchView>(R.id.searchView)
-        setupSearchBar(searchBar)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setupSearchBar(searchBar: SearchView) {
