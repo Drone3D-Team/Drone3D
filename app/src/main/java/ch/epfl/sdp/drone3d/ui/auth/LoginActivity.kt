@@ -8,9 +8,11 @@ package ch.epfl.sdp.drone3d.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.*
-import ch.epfl.sdp.drone3d.ui.MainActivity
+import android.widget.EditText
+import android.widget.Toast
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.ui.MainActivity
+import ch.epfl.sdp.drone3d.ui.ToastHandler
 
 /**
  * The activity that allows the user to log in
@@ -42,8 +44,18 @@ class LoginActivity : AuthActivity() {
     }
 
     fun login(@Suppress("UNUSED_PARAMETER") view: View) {
-        startProcess(authService.login(emailEditText.text.toString(), passwordEditText.text.toString()),
+        val emailText = emailEditText.text.toString()
+        val passwordText = passwordEditText.text.toString()
+        if (emailText == "" || passwordText == "") {
+            ToastHandler.showToast(baseContext, R.string.login_fail)
+            infoText.text = getString(R.string.email_or_password_empty)
+            infoText.setTextColor(android.graphics.Color.RED)
+            infoText.visibility = View.VISIBLE
+        } else {
+            startProcess(
+                authService.login(emailEditText.text.toString(), passwordEditText.text.toString()),
                 R.string.login_fail)
+        }
     }
 
     fun register(@Suppress("UNUSED_PARAMETER") view: View) {

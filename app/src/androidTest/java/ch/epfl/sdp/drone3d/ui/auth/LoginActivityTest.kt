@@ -5,17 +5,20 @@
 
 package ch.epfl.sdp.drone3d.ui.auth
 
-import androidx.test.espresso.Espresso.*
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
@@ -28,7 +31,6 @@ import dagger.hilt.android.testing.UninstallModules
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
-import java.lang.Exception
 
 
 /**
@@ -38,9 +40,11 @@ import java.lang.Exception
 @UninstallModules(AuthenticationModule::class)
 class LoginActivityTest {
 
+    private val activityRule = ActivityTestRule(LoginActivity::class.java)
+
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-                        .around(ActivityScenarioRule(LoginActivity::class.java))
+                        .around(activityRule)
 
     @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
 
@@ -68,6 +72,15 @@ class LoginActivityTest {
     fun loginButtonWorksWithSuccess() {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.login(anyString(), anyString())).thenReturn(taskSource.task)
+
+        // write something in emailEditText and passwordEditText because particular comportment when empty
+        onView(withId(R.id.emailEditText))
+            .perform(typeText("Email"))
+        onView(withId(R.id.passwordEditText))
+            .perform(typeText("Password"))
+        onView(isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
+
         onView(withId(R.id.loginButton)).perform(click())
         // Progress bar visible until success
         onView(withId(R.id.progressBar))
@@ -85,6 +98,15 @@ class LoginActivityTest {
     fun loginButtonWorksWithFailure() {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.login(anyString(), anyString())).thenReturn(taskSource.task)
+
+        // write something in emailEditText and passwordEditText because particular comportment when empty
+        onView(withId(R.id.emailEditText))
+            .perform(typeText("Email"))
+        onView(withId(R.id.passwordEditText))
+            .perform(typeText("Password"))
+        onView(isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
+
         onView(withId(R.id.loginButton)).perform(click())
         // Progress bar visible until success
         onView(withId(R.id.progressBar))
@@ -98,6 +120,21 @@ class LoginActivityTest {
             .check(matches(withText(message)))
         onView(withId(R.id.progressBar))
             .check(matches(withEffectiveVisibility(Visibility.GONE)))
+    }
+
+    @Test
+    fun loginButtonWorksWithEmptyValues() {
+        // Test that the toast is displayed
+        onView(withId(R.id.emailEditText))
+            .perform(typeText(""))
+        onView(withId(R.id.passwordEditText))
+            .perform(typeText(""))
+        onView(isRoot())
+            .perform(ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.loginButton))
+            .perform(click())
+
+        ToastMatcher.onToast(activityRule.activity, R.string.login_fail)
     }
 
     @Test
