@@ -18,7 +18,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 
 @RunWith(AndroidJUnit4::class)
-class MappingMissionServiceTest {
+class ParallelogramMappingMissionServiceTest {
 
     companion object {
         val droneService = DroneInstanceMock.mockService()
@@ -27,7 +27,7 @@ class MappingMissionServiceTest {
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
 
 
-        val mappingMissionService = MappingMissionService(droneService)
+        val mappingMissionService = ParallelogramMappingMissionService(droneService)
 
     }
 

@@ -4,9 +4,9 @@
  */
 
 package ch.epfl.sdp.drone3d.mission
+
 import kotlin.math.min
 import kotlin.math.tan
-
 
 /**
  * Utility class that allows the creation of a parallelogram mapping mission

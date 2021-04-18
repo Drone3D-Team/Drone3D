@@ -14,6 +14,7 @@ data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vec
 
     constructor(origin: Point,adjacentPoint1:Point,adjacentPoint2:Point): this(origin,Vector(origin,adjacentPoint1),Vector(origin,adjacentPoint2))
 
+
     /**
      * Translate the parallelogram by [translationVector]
      */
