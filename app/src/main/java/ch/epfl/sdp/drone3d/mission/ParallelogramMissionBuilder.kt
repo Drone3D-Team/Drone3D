@@ -4,7 +4,6 @@
  */
 
 package ch.epfl.sdp.drone3d.mission
-import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.tan
 
@@ -19,25 +18,22 @@ class ParallelogramMissionBuilder {
 
         /**
          * Returns the coordinates where the drone should take pictures on a single pass mapping mission.
-         * A single pass mapping mission is sufficient when the area to map has low terrain features such as a landscape or a field.
-         * For more vertical 3D mappings such a cities, see "buildDoublePassMappingMission"
          * All distances are in meters and angles are in radians
          */
-        fun buildSinglePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,droneHeight:Double, projectedImageWidth:Double,projectedImageHeight: Double):List<Point>{
+        fun buildSinglePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
             val newArea = area.getClosestEquivalentParallelogram(startingPoint)
-            return singlePassMappingMission(newArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+            return singlePassMappingMission(newArea,cameraAngle,flightHeight,groundImageDimension)
         }
 
         /**
          * Returns the coordinates where the drone should take pictures on a double pass mapping mission.
-         * Use this function for high resolution vertical 3D mappings such a cities.
          * All distances are in meters and angles are in radians
          */
-        fun buildDoublePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,droneHeight:Double, projectedImageWidth:Double,projectedImageHeight: Double):List<Point>{
+        fun buildDoublePassMappingMission(startingPoint:Point,area:Parallelogram, cameraAngle:Double,flightHeight:Double,  groundImageDimension: GroundImageDim):List<Point>{
             val firstPassArea = area.getClosestEquivalentParallelogram(startingPoint)
-            val mappingMissionFirst = singlePassMappingMission(firstPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+            val mappingMissionFirst = singlePassMappingMission(firstPassArea,cameraAngle,flightHeight,groundImageDimension)
             val secondPassArea = firstPassArea.diagonalEquivalent()
-            val mappingMissionSecond = singlePassMappingMission(secondPassArea,cameraAngle,droneHeight,projectedImageWidth,projectedImageHeight)
+            val mappingMissionSecond = singlePassMappingMission(secondPassArea,cameraAngle,flightHeight,groundImageDimension)
             return mappingMissionFirst + mappingMissionSecond
         }
 
@@ -45,24 +41,24 @@ class ParallelogramMissionBuilder {
          * Builds a single pass mapping mission on a parallelogram starting at the origin of the [area]
          * and compensating for the camera angle and drone height
          */
-        private fun singlePassMappingMission(area:Parallelogram, cameraAngle:Double,droneHeight:Double, projectedImageWidth:Double,projectedImageHeight: Double):List<Point>{
-            val distanceToPictureCenterStart = droneHeight*tan(cameraAngle)
+        private fun singlePassMappingMission(area:Parallelogram, cameraAngle:Double,flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
+            val distanceToPictureCenterStart = flightHeight*tan(cameraAngle)
             val direction1CameraCompensation = (area.dir1Span.normalized()*distanceToPictureCenterStart).reverse()
             val direction2CameraCompensation = (area.dir2Span.normalized()*distanceToPictureCenterStart).reverse()
 
             //Shift it in order to compensate the fact that the image is not taken perpendicular
             val newArea = area.translate(direction1CameraCompensation).translate(direction2CameraCompensation)
 
-            return singlePassMappingMission(newArea,projectedImageWidth,projectedImageHeight)
+            return singlePassMappingMission(newArea,groundImageDimension)
         }
 
         /**
          * Builds a single pass mapping mission on a parallelogram starting at the origin of the [area]
          */
-        private fun singlePassMappingMission(area:Parallelogram, projectedImageWidth:Double,projectedImageHeight:Double):List<Point>{
+        private fun singlePassMappingMission(area:Parallelogram, groundImageDimension: GroundImageDim):List<Point>{
 
-            val direction1Increment = area.dir1Span.normalized()*projectedImageWidth*(1-FRONTAL_OVERLAP)
-            val direction2Increment = area.dir2Span.normalized()*projectedImageHeight*(1-SIDE_OVERLAP)
+            val direction1Increment = area.dir1Span.normalized()*groundImageDimension.width*(1-FRONTAL_OVERLAP)
+            val direction2Increment = area.dir2Span.normalized()*groundImageDimension.height*(1-SIDE_OVERLAP)
             val direction1IncrementCount:Double = area.dir1Span.norm()/direction1Increment.norm()
             val direction2IncrementCount:Double = area.dir2Span.norm()/direction2Increment.norm()
 
