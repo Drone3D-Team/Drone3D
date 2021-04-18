@@ -8,7 +8,7 @@ package ch.epfl.sdp.drone3d.mission
 import kotlin.math.sqrt
 
 /**
- * Utility class to represent a 2D vector
+ * Utility class to represent a 2D vector in meters
  */
 data class Vector (val x:Double,val y:Double) {
 

@@ -8,7 +8,7 @@ package ch.epfl.sdp.drone3d.mission
 import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
 
 /**
- * Utility class to represent a parallelogram
+ * Utility class to represent a parallelogram in meters
  */
 data class Parallelogram(val origin:Point, val dir1Span:Vector, val dir2Span:Vector){
 

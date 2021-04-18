@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.mission
 
 /**
- * Utility class to represent a 2D point
+ * Utility class to represent a 2D point in meters
  */
 data class Point(val x:Double,val y:Double) {
 
