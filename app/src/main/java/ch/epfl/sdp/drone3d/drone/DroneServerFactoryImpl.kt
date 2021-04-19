@@ -8,7 +8,7 @@ package ch.epfl.sdp.drone3d.drone
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-class DroneServerFactoryImpl: DroneServerFactory {
+object DroneServerFactoryImpl: DroneServerFactory {
 
     override fun createSimulation(simIP: String, simPort: String): DroneServerFactory.InstanceContainer {
         val mavsdkServer = MavsdkServer()

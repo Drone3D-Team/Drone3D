@@ -13,6 +13,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         val connectDroneButton: Button = findViewById(R.id.go_connect_drone_button)
         val disconnectDroneButton: Button = findViewById(R.id.go_disconnect_drone_button)
+
+        droneService = DroneServiceImpl
 
         if (authService.hasActiveSession()) {
             logoutButton.visibility = View.VISIBLE

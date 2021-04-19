@@ -15,5 +15,5 @@ import dagger.hilt.components.SingletonComponent
 object DroneModule {
 
     @Provides
-    fun provideDroneProvider() : DroneService = DroneServiceImpl(DroneServerFactoryImpl())
+    fun provideDroneProvider() : DroneService = DroneServiceImpl
 }

@@ -14,7 +14,9 @@ import io.mavsdk.mavsdkserver.MavsdkServer
 private const val DEFAULT_IP = "unknown"
 private const val DEFAULT_PORT = "-"
 
-class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneService {
+object DroneServiceImpl : DroneService {
+
+    private val droneFactory = DroneServerFactoryImpl
 
     private val droneData = DroneDataImpl(this)
 
