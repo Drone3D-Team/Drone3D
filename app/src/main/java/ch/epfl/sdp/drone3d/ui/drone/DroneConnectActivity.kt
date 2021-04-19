@@ -12,7 +12,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
-import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,7 +24,6 @@ class DroneConnectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drone_connect)
-        droneService = DroneServiceImpl
     }
 
     /**
@@ -44,9 +42,6 @@ class DroneConnectActivity : AppCompatActivity() {
      */
     fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
         droneService.setDrone()
-
-        val isConnected = droneService.isConnected()
-
         val intent = Intent(this, ConnectedDroneActivity::class.java)
         startActivity(intent)
     }

@@ -12,7 +12,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
-import ch.epfl.sdp.drone3d.drone.DroneServiceImpl
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,9 +35,6 @@ class ConnectedDroneActivity : AppCompatActivity() {
         } else {
             setContentView(R.layout.activity_connected_drone)
         }
-        droneService = DroneServiceImpl
-
-        val isConnected = droneService.isConnected()
     }
 
     /**
