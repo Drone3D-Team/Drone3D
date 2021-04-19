@@ -48,7 +48,7 @@
         android:autofillHints="0"
         android:ems="10"
         android:hint="@string/drone_connect_port_default"
-        android:inputType="text"
+        android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.477"

@@ -36,6 +36,8 @@
     <string name="drone_disconnect_button">Disconnect</string>
     <string name="drone_simulated_ip">IP : %1$s</string>
     <string name="drone_simulated_port">Port : %1$s</string>
+    <!-- Message showed when ip with invalid format is written -->
+    <string name="ip_format_invalid">The IP address need to have a valid format</string>
 
     <!-- Itinerary Create/Save Activities -->
     <string name="content_descriptor_save_icon">save icon</string>
