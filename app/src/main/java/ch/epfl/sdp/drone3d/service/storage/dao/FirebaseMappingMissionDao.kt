@@ -167,7 +167,7 @@ class FirebaseMappingMissionDao @Inject constructor(
             query.removeEventListener(listener)
         }
 
-        val missionsQuery = rootRef.orderByChild("name").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsQuery = rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
         val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val missionsSnapshot = dataSnapshot.children.map { c ->
@@ -194,14 +194,14 @@ class FirebaseMappingMissionDao @Inject constructor(
     }
 
     override fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String?) {
-        if (filter != null && privateFilteredMappingMissionsFilter != filter) {
-            updateFilteredMappingMissions(ownerUid, filter)
+        if (filter != null && privateFilteredMappingMissionsFilter != filter.toUpperCase()) {
+            updateFilteredMappingMissions(ownerUid, filter.toUpperCase())
         }
     }
 
     override fun updateSharedFilteredMappingMissions(filter: String?) {
-        if (filter != null && sharedFilteredMappingMissionsFilter != filter) {
-            updateFilteredMappingMissions(null, filter)
+        if (filter != null && sharedFilteredMappingMissionsFilter != filter.toUpperCase()) {
+            updateFilteredMappingMissions(null, filter.toUpperCase())
         }
     }
 
@@ -209,6 +209,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         val privateId = privateMappingMissionRef(ownerUid).push().key
         mappingMission.privateId = privateId
         mappingMission.ownerUid = ownerUid
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase()
         when (mappingMission.state) {
             // Not already stored => only in private repo
             State.NOT_STORED -> mappingMission.state = State.PRIVATE
@@ -231,6 +232,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         val sharedId = sharedMappingMissionRef().push().key
         mappingMission.sharedId = sharedId
         mappingMission.ownerUid = ownerUid
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase()
         when (mappingMission.state) {
             // Not already stored => only in shared repo
             State.NOT_STORED -> mappingMission.state = State.SHARED

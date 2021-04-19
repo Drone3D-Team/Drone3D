@@ -16,7 +16,6 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
@@ -268,6 +267,7 @@ class MappingMissionSelectionActivityTest {
         curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
         // Post new value to live data and wait for it to be dispatched
+        mutex.drainPermits()
         onView(withId(R.id.private_mission_list_view)).perform(ReleaseOnChange(mutex))
         PRIVATE_LIVE_DATA.postValue(curPrivate)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
@@ -305,13 +305,18 @@ class MappingMissionSelectionActivityTest {
             onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         // Update live data and wait for it to be dispatched
-        onView(withId(R.id.searchView)).perform(click(), typeText(filter), pressKey(KeyEvent.KEYCODE_ENTER))
+        onView(withId(R.id.searchView)).perform(
+            click(),
+            typeText(filter),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
 
         var currentData = SHARED_FILTERED_LIVE_DATA.value
 
         liveDataShowsToUser(true, true, currentData)
 
-        currentData = listOf(MappingMission("shared filtered 1"), MappingMission("shared filtered 2"))
+        currentData =
+            listOf(MappingMission("shared filtered 1"), MappingMission("shared filtered 2"))
 
         // Post new value to live data and wait for it to be dispatched
         onView(withId(R.id.shared_filtered_mission_list_view)).perform(ReleaseOnChange(mutex))
@@ -330,9 +335,11 @@ class MappingMissionSelectionActivityTest {
 
         liveDataShowsToUser(false, true, currentData)
 
-        currentData = listOf(MappingMission("private filtered 1"), MappingMission("private filtered 2"))
+        currentData =
+            listOf(MappingMission("private filtered 1"), MappingMission("private filtered 2"))
 
         // Post new value to live data and wait for it to be dispatched
+        mutex.drainPermits()
         onView(withId(R.id.private_filtered_mission_list_view)).perform(ReleaseOnChange(mutex))
         PRIVATE_FILTERED_LIVE_DATA.postValue(currentData)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
@@ -361,7 +368,11 @@ class MappingMissionSelectionActivityTest {
             onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         // Launch a search, update live data and wait for it to be dispatched
-        onView(withId(R.id.searchView)).perform(click(), typeText(filter), pressKey(KeyEvent.KEYCODE_ENTER))
+        onView(withId(R.id.searchView)).perform(
+            click(),
+            typeText(filter),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
 
         var currentData = SHARED_FILTERED_LIVE_DATA.value
 
@@ -369,8 +380,14 @@ class MappingMissionSelectionActivityTest {
         liveDataShowsToUser(true, true, currentData)
 
         //clear search
-        onView(withId(Resources.getSystem().getIdentifier("search_close_btn",
-            "id", "android"))).perform(click())
+        onView(
+            withId(
+                Resources.getSystem().getIdentifier(
+                    "search_close_btn",
+                    "id", "android"
+                )
+            )
+        ).perform(click())
 
         //now all shared missions are visible
         currentData = SHARED_LIVE_DATA.value
@@ -382,7 +399,11 @@ class MappingMissionSelectionActivityTest {
         onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
 
         // Launch a search, update live data and wait for it to be dispatched
-        onView(withId(R.id.searchView)).perform(click(), typeText(filter), pressKey(KeyEvent.KEYCODE_ENTER))
+        onView(withId(R.id.searchView)).perform(
+            click(),
+            typeText(filter),
+            pressKey(KeyEvent.KEYCODE_ENTER)
+        )
 
         currentData = PRIVATE_FILTERED_LIVE_DATA.value
 
@@ -390,8 +411,14 @@ class MappingMissionSelectionActivityTest {
         liveDataShowsToUser(false, true, currentData)
 
         //clear search
-        onView(withId(Resources.getSystem().getIdentifier("search_close_btn",
-            "id", "android"))).perform(click())
+        onView(
+            withId(
+                Resources.getSystem().getIdentifier(
+                    "search_close_btn",
+                    "id", "android"
+                )
+            )
+        ).perform(click())
 
         //now all shared missions are visible
         currentData = PRIVATE_LIVE_DATA.value
@@ -434,7 +461,11 @@ class MappingMissionSelectionActivityTest {
         }
     }
 
-    private fun liveDataShowsToUser(shared: Boolean, filter: Boolean, currentData: List<MappingMission>?) {
+    private fun liveDataShowsToUser(
+        shared: Boolean,
+        filter: Boolean,
+        currentData: List<MappingMission>?
+    ) {
         val id =
             if (shared && filter) R.id.shared_filtered_mission_list_view
             else if (shared && !filter) R.id.shared_mission_list_view
