@@ -168,8 +168,7 @@ class FirebaseMappingMissionDao @Inject constructor(
             query.removeEventListener(listener)
         }
 
-        val missionsQuery =
-            rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsQuery = rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
         val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val missionsSnapshot = dataSnapshot.children.map { c ->
