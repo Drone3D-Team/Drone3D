@@ -109,8 +109,8 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         centerCameraOnDrone(mapView)
 
-        Transformations.map(droneService.getData().getMissionPlan()) { mission ->
-            return@map mission.missionItems.map { item ->
+        Transformations.map(droneService.getData().getMission()) { mission ->
+            return@map mission.map { item ->
                 LatLng(item.latitudeDeg, item.longitudeDeg)
             }
         }.observe(this, { path ->

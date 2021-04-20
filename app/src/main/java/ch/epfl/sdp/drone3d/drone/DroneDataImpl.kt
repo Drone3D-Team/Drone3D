@@ -7,7 +7,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import ch.epfl.sdp.drone3d.service.storage.data.LatLong
+import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
@@ -31,7 +31,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
-    private val position: MutableLiveData<LatLong> = MutableLiveData()
+    private val position: MutableLiveData<LatLng> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
     private val speed: MutableLiveData<Float> = MutableLiveData()
@@ -87,7 +87,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     private fun addPositionSubscriptions(droneInstance: System) {
         addSubscription(droneInstance.telemetry.position, "Telemetry Position") { position ->
-            val latLng = LatLong(position.latitudeDeg, position.longitudeDeg)
+            val latLng = LatLng(position.latitudeDeg, position.longitudeDeg)
             this.position.postValue(latLng)
             //Absolute altitude is the altitude w.r. to the sea level
             absoluteAltitude.postValue(position.absoluteAltitudeM)
@@ -176,7 +176,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         disposeOfAll()
     }
 
-    override fun getPosition(): LiveData<LatLong> = position
+    override fun getPosition(): LiveData<LatLng> = position
 
     override fun getBatteryLevel(): LiveData<Float> = batteryLevel
 
