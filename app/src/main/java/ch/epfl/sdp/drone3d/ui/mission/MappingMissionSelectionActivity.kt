@@ -47,7 +47,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         SHARED(false, true, false)
     }
 
-    private val currentType = MutableLiveData(Pair<StorageType, String?>(StorageType.PRIVATE, null))
+    private val currentListState =
+        MutableLiveData(Pair<StorageType, String?>(StorageType.PRIVATE, null))
 
     private fun setupAdapter(
         data: LiveData<List<MappingMission>>,
@@ -66,12 +67,12 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         // Setup toggle button
         val selectedStorageTypeToggleButton =
             findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
-        selectedStorageTypeToggleButton.isChecked = currentType.value!!.first.checked
+        selectedStorageTypeToggleButton.isChecked = currentListState.value!!.first.checked
         selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
-            currentType.value =
+            currentListState.value =
                 Pair(
                     if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
-                    currentType.value!!.second
+                    currentListState.value!!.second
                 )
         }
 
@@ -96,7 +97,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         setupListAdapter(privateFilteredList, true, true)
 
         // Link state with view visibility
-        currentType.observe(this) {
+        currentListState.observe(this) {
             it.let {
                 sharedList.visibility = getVisibility(false, false, it)
                 privateList.visibility = getVisibility(true, false, it)
@@ -146,7 +147,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         // Searches only when submit button is pressed
         searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                currentType.value = Pair(currentType.value!!.first, query)
+                currentListState.value = Pair(currentListState.value!!.first, query)
                 return false
             }
 
@@ -161,7 +162,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val closeButton: ImageView = searchBar.findViewById(searchCloseButtonId)
         closeButton.setOnClickListener {
             searchBar.setQuery("", false)
-            currentType.value = Pair(currentType.value!!.first, null)
+            currentListState.value = Pair(currentListState.value!!.first, null)
         }
     }
 

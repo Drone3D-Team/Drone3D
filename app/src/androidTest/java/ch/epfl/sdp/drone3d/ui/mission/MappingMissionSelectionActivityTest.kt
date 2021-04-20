@@ -293,7 +293,7 @@ class MappingMissionSelectionActivityTest {
         // Make sure the current state is shared
         var isPrivate = false
         // The filter that will be entered in the search bar
-        var filter = "filter"
+        val filter = "filter"
 
         //Sets initial state to shared
         onView(withId(R.id.mapping_mission_state_toggle)).check { view, _ ->
@@ -356,7 +356,7 @@ class MappingMissionSelectionActivityTest {
         // Make sure the current state is shared
         var isPrivate = false
         // The filter that will be entered in the search bar
-        var filter = "filter"
+        val filter = "filter"
 
         //Sets initial state to shared
         onView(withId(R.id.mapping_mission_state_toggle)).check { view, _ ->

@@ -12,6 +12,7 @@ import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class FirebaseMappingMissionDao @Inject constructor(
@@ -167,7 +168,8 @@ class FirebaseMappingMissionDao @Inject constructor(
             query.removeEventListener(listener)
         }
 
-        val missionsQuery = rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsQuery =
+            rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
         val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val missionsSnapshot = dataSnapshot.children.map { c ->
@@ -194,14 +196,14 @@ class FirebaseMappingMissionDao @Inject constructor(
     }
 
     override fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String?) {
-        if (filter != null && privateFilteredMappingMissionsFilter != filter.toUpperCase()) {
-            updateFilteredMappingMissions(ownerUid, filter.toUpperCase())
+        if (filter != null && privateFilteredMappingMissionsFilter != filter.toUpperCase(Locale.ROOT)) {
+            updateFilteredMappingMissions(ownerUid, filter.toUpperCase(Locale.ROOT))
         }
     }
 
     override fun updateSharedFilteredMappingMissions(filter: String?) {
-        if (filter != null && sharedFilteredMappingMissionsFilter != filter.toUpperCase()) {
-            updateFilteredMappingMissions(null, filter.toUpperCase())
+        if (filter != null && sharedFilteredMappingMissionsFilter != filter.toUpperCase(Locale.ROOT)) {
+            updateFilteredMappingMissions(null, filter.toUpperCase(Locale.ROOT))
         }
     }
 
@@ -209,7 +211,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         val privateId = privateMappingMissionRef(ownerUid).push().key
         mappingMission.privateId = privateId
         mappingMission.ownerUid = ownerUid
-        mappingMission.nameUpperCase = mappingMission.name.toUpperCase()
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase(Locale.ROOT)
         when (mappingMission.state) {
             // Not already stored => only in private repo
             State.NOT_STORED -> mappingMission.state = State.PRIVATE
@@ -232,7 +234,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         val sharedId = sharedMappingMissionRef().push().key
         mappingMission.sharedId = sharedId
         mappingMission.ownerUid = ownerUid
-        mappingMission.nameUpperCase = mappingMission.name.toUpperCase()
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase(Locale.ROOT)
         when (mappingMission.state) {
             // Not already stored => only in shared repo
             State.NOT_STORED -> mappingMission.state = State.SHARED
