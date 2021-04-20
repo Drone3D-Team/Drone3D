@@ -7,7 +7,7 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.mapbox.mapboxsdk.geometry.LatLng
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
@@ -29,13 +29,9 @@ import kotlin.math.sqrt
  */
 class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
-    // Drone instance
-    private lateinit var instance: System
-
     private val disposables: MutableList<Disposable> = ArrayList()
 
-    // The data of the drone we keep track of
-    private val position: MutableLiveData<LatLng> = MutableLiveData()
+    private val position: MutableLiveData<LatLong> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
     private val speed: MutableLiveData<Float> = MutableLiveData()
@@ -45,7 +41,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
     private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
-    private val missionPlan: MutableLiveData<Mission.MissionPlan> = MutableLiveData()
+    private val mission: MutableLiveData<List<Mission.MissionItem>> = MutableLiveData()
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
@@ -91,7 +87,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     private fun addPositionSubscriptions(droneInstance: System) {
         addSubscription(droneInstance.telemetry.position, "Telemetry Position") { position ->
-            val latLng = LatLng(position.latitudeDeg, position.longitudeDeg)
+            val latLng = LatLong(position.latitudeDeg, position.longitudeDeg)
             this.position.postValue(latLng)
             //Absolute altitude is the altitude w.r. to the sea level
             absoluteAltitude.postValue(position.absoluteAltitudeM)
@@ -166,17 +162,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         homeLocation.postValue(null)
         isFlying.postValue(false)
         isConnected.postValue(false)
+        mission.postValue(null)
         isMissionPaused.postValue(true)
         cameraResolution.postValue(null)
-    }
-
-    private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
-        disposables.add(
-            flow.distinctUntilChanged().subscribe(
-                onNext,
-                {error -> Timber.e(error,"Error $name : $error")}
-            )
-        )
     }
 
     private fun disposeOfAll() {
@@ -188,7 +176,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         disposeOfAll()
     }
 
-    override fun getPosition(): LiveData<LatLng> = position
+    override fun getPosition(): LiveData<LatLong> = position
 
     override fun getBatteryLevel(): LiveData<Float> = batteryLevel
 
@@ -208,7 +196,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
 
-    override fun getMissionPlan(): LiveData<Mission.MissionPlan> = missionPlan
+    override fun getMission(): LiveData<List<Mission.MissionItem>> = mission
 
     override fun getFocalLength(): LiveData<Float> = focalLength
 
@@ -217,5 +205,30 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun refresh() {
         disposeOfAll()
         createDefaultSubs()
+    }
+
+    /**
+     * Returns the MutableLiveData of the mission plan
+     */
+    fun getMutableMission(): MutableLiveData<List<Mission.MissionItem>> = mission
+
+    /**
+     * Returns the MutableLiveData keeping the mission pause state
+     */
+    fun getMutableMissionPaused(): MutableLiveData<Boolean> = isMissionPaused
+
+    private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
+        addSubscription(
+                flow.distinctUntilChanged().subscribe(
+                    onNext,
+                    { error -> Timber.e(error,"Error $name : $error") }
+                )
+        )
+    }
+
+    fun addSubscription(disposable: Disposable) {
+        disposables.add(
+                disposable
+        )
     }
 }

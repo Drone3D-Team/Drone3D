@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.drone
 
 import androidx.lifecycle.LiveData
-import com.mapbox.mapboxsdk.geometry.LatLng
+import ch.epfl.sdp.drone3d.service.storage.data.LatLong
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 
@@ -28,7 +28,7 @@ interface DroneData {
     /**
      * Returns a [LiveData] containing the current position of the drone
      */
-    fun getPosition(): LiveData<LatLng>
+    fun getPosition(): LiveData<LatLong>
 
     /**
      * Returns a [LiveData] containing the current battery level of the drone
@@ -77,9 +77,9 @@ interface DroneData {
     fun getVideoStreamUri(): LiveData<String>
 
     /**
-     * Returns a [LiveData] containing the [MissionPlan] for the current mission
+     * Returns a [LiveData] containing the list of mission items the drone will make
      */
-    fun getMissionPlan(): LiveData<Mission.MissionPlan>
+    fun getMission(): LiveData<List<Mission.MissionItem>>
 
     /**
      * Returns a [LiveData] containing the camera's focal length in millimeters

@@ -54,4 +54,9 @@ interface DroneService {
      * Returns the object holding [androidx.lifecycle.LiveData] of the information of the drone
      */
     fun getData(): DroneData
+
+    /**
+     * Returns the object responsible of launching and controlling the missions of the drone
+     */
+    fun getExecutor(): DroneExecutor
 }

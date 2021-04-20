@@ -17,6 +17,7 @@ private const val DEFAULT_PORT = "-"
 class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneService {
 
     private val droneData = DroneDataImpl(this)
+    private val droneExectuor = DroneExecutorImpl(this, droneData)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
@@ -85,7 +86,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
         droneData.refresh()
     }
 
-    override fun getData(): DroneData {
-        return droneData
-    }
+    override fun getData(): DroneData = droneData
+
+    override fun getExecutor(): DroneExecutor = droneExectuor
 }
