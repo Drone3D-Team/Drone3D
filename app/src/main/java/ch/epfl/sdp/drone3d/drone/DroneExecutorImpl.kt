@@ -1,6 +1,11 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.drone
 
-import ch.epfl.sdp.drone3d.Drone3D
+import android.content.Context
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -15,9 +20,6 @@ import kotlin.math.roundToInt
 class DroneExecutorImpl(private val service: DroneService,
                         private val data: DroneDataImpl): DroneExecutor {
 
-    /**
-     * @return the connected instance as a Completable
-     */
     private fun getConnectedInstance(): Completable? {
         return service.provideDrone()?.core?.connectionState
                     ?.filter { state -> state.isConnected }
@@ -25,7 +27,7 @@ class DroneExecutorImpl(private val service: DroneService,
                     ?.toCompletable()
     }
 
-    override fun startMission(missionPlan: Mission.MissionPlan, groupId: String) {
+    override fun startMission(context: Context, missionPlan: Mission.MissionPlan) {
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
@@ -40,16 +42,16 @@ class DroneExecutorImpl(private val service: DroneService,
                         {
                             data.getMutableMission().postValue(missionPlan.missionItems)
                             data.getMutableMissionPaused().postValue(false)
-                            ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_mission_success)
+                            ToastHandler.showToastAsync(context, R.string.drone_mission_success)
                         },
                         {
-                            ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_mission_error)
+                            ToastHandler.showToastAsync(context, R.string.drone_mission_error)
                         }
                 )
         )
     }
 
-    override fun pauseMission() {
+    override fun pauseMission(context: Context) {
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
@@ -59,16 +61,16 @@ class DroneExecutorImpl(private val service: DroneService,
                         .subscribe(
                                 {
                                     data.getMutableMissionPaused().postValue(true)
-                                    ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_pause_success)
+                                    ToastHandler.showToastAsync(context, R.string.drone_pause_success)
                                 },
                                 {
-                                    ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_pause_error)
+                                    ToastHandler.showToastAsync(context, R.string.drone_pause_error)
                                 }
                         )
         )
     }
 
-    override fun resumeMission() {
+    override fun resumeMission(context: Context) {
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
@@ -78,33 +80,33 @@ class DroneExecutorImpl(private val service: DroneService,
                         .subscribe(
                                 {
                                     data.getMutableMissionPaused().postValue(false)
-                                    ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_mission_success)
+                                    ToastHandler.showToastAsync(context, R.string.drone_mission_success)
                                 },
                                 {
-                                    ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_mission_error)
+                                    ToastHandler.showToastAsync(context, R.string.drone_mission_error)
                                 }
                         )
         )
     }
 
-    override fun returnToHomeLocationAndLand() {
+    override fun returnToHomeLocationAndLand(context: Context) {
         val returnLocation = data.getHomeLocation().value
-                ?: throw IllegalStateException(Drone3D.getInstance().getString(R.string.drone_home_error))
+                ?: throw IllegalStateException(context.getString(R.string.drone_home_error))
 
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
-        goToLocation(completable, instance, returnLocation)
+        goToLocation(context, completable, instance, returnLocation)
     }
 
-    override fun returnToUserLocationAndLand() {
+    override fun returnToUserLocationAndLand(context: Context) {
         // TODO Query user position
         val returnLocation = Telemetry.Position(.0, .0, 10f, 10f)
 
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
-        goToLocation(completable, instance, returnLocation)
+        goToLocation(context, completable, instance, returnLocation)
 
         data.addSubscription(
                 instance.telemetry.position.subscribe(
@@ -125,7 +127,7 @@ class DroneExecutorImpl(private val service: DroneService,
                 .roundToInt()
     }
 
-    private fun goToLocation(completable: Completable, instance: System, returnLocation: Telemetry.Position) {
+    private fun goToLocation(context: Context, completable: Completable, instance: System, returnLocation: Telemetry.Position) {
         val future = completable
                 .andThen(instance.mission.pauseMission())
                 .andThen(instance.mission.clearMission())
@@ -135,11 +137,11 @@ class DroneExecutorImpl(private val service: DroneService,
                 future.subscribe(
                         {
                             data.getMutableMission().postValue(listOf(DroneUtils.generateMissionItem(returnLocation.latitudeDeg, returnLocation.longitudeDeg, returnLocation.absoluteAltitudeM)))
-                            ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_home_success)
+                            ToastHandler.showToastAsync(context, R.string.drone_home_success)
                         },
                         {
                             data.getMutableMission().postValue(null)
-                            ToastHandler.showToast(Drone3D.getInstance(), R.string.drone_home_error)
+                            ToastHandler.showToastAsync(context, R.string.drone_home_error)
                         }
                 )
         )
