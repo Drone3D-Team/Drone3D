@@ -81,7 +81,6 @@ class DroneConnectActivity : AppCompatActivity() {
                 startActivity(intent)
             } else {
                 showConnectionOptions()
-                startActivity(intent)
                 droneService.disconnect()
                 ToastHandler.showToastAsync(this, R.string.ip_connection_timeout)
             }
@@ -98,7 +97,7 @@ class DroneConnectActivity : AppCompatActivity() {
         droneService.setDrone()
 
         GlobalScope.launch {
-            async { checkIfDroneConnected(getString(R.string.no_drone_detected)) }
+            async { checkIfDroneConnected() }
         }
 
         if (droneService.isConnected()) {
@@ -140,7 +139,7 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Check if a drone was connected on the application after 5 seconds
      */
-    private suspend fun checkIfDroneConnected(error: String) {
+    private suspend fun checkIfDroneConnected() {
         var counter = 0
         while (!droneService.isConnected() && counter < 50) {
             delay(100L)
