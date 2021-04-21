@@ -48,9 +48,7 @@ class LoginActivity : AuthActivity() {
         val passwordText = passwordEditText.text.toString()
         if (emailText == "" || passwordText == "") {
             ToastHandler.showToast(baseContext, R.string.login_fail)
-            infoText.text = getString(R.string.email_or_password_empty)
-            infoText.setTextColor(android.graphics.Color.RED)
-            infoText.visibility = View.VISIBLE
+            writeErrorMessage(getString(R.string.email_or_password_empty))
         } else {
             startProcess(
                 authService.login(emailEditText.text.toString(), passwordEditText.text.toString()),

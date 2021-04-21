@@ -74,7 +74,7 @@ class RegisterActivityTest {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.register(anyString(), anyString())).thenReturn(taskSource.task)
 
-        // write something in emailEditText and passwordEditText because particular comportment when empty
+        // write something in emailEditText and passwordEditText because particular behaviour when empty
         onView(withId(R.id.emailEditText))
             .perform(ViewActions.typeText("Email"))
         onView(withId(R.id.passwordEditText))
@@ -100,7 +100,7 @@ class RegisterActivityTest {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.register(anyString(), anyString())).thenReturn(taskSource.task)
 
-        // write something in emailEditText and passwordEditText because particular comportment when empty
+        // write something in emailEditText and passwordEditText because particular behaviour when empty
         onView(withId(R.id.emailEditText))
             .perform(ViewActions.typeText("Email"))
         onView(withId(R.id.passwordEditText))

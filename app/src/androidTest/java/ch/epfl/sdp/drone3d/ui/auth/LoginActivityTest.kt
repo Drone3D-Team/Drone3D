@@ -73,7 +73,7 @@ class LoginActivityTest {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.login(anyString(), anyString())).thenReturn(taskSource.task)
 
-        // write something in emailEditText and passwordEditText because particular comportment when empty
+        // write something in emailEditText and passwordEditText because particular behaviour when empty
         onView(withId(R.id.emailEditText))
             .perform(typeText("Email"))
         onView(withId(R.id.passwordEditText))
@@ -99,7 +99,7 @@ class LoginActivityTest {
         val taskSource = TaskCompletionSource<AuthResult>()
         `when`(authService.login(anyString(), anyString())).thenReturn(taskSource.task)
 
-        // write something in emailEditText and passwordEditText because particular comportment when empty
+        // write something in emailEditText and passwordEditText because particular behaviour when empty
         onView(withId(R.id.emailEditText))
             .perform(typeText("Email"))
         onView(withId(R.id.passwordEditText))
@@ -125,10 +125,6 @@ class LoginActivityTest {
     @Test
     fun loginButtonWorksWithEmptyValues() {
         // Test that the toast is displayed
-        onView(withId(R.id.emailEditText))
-            .perform(typeText(""))
-        onView(withId(R.id.passwordEditText))
-            .perform(typeText(""))
         onView(isRoot())
             .perform(ViewActions.closeSoftKeyboard())
         onView(withId(R.id.loginButton))
