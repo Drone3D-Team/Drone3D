@@ -43,6 +43,9 @@ class LoginActivity : AuthActivity() {
                 Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Login an user by taking the contents of [emailEditText] and of [passwordEditText]
+     */
     fun login(@Suppress("UNUSED_PARAMETER") view: View) {
         val emailText = emailEditText.text.toString()
         val passwordText = passwordEditText.text.toString()
@@ -56,6 +59,9 @@ class LoginActivity : AuthActivity() {
         }
     }
 
+    /**
+     * Go to the activity allowing an user to register
+     */
     fun register(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, RegisterActivity::class.java))
     }

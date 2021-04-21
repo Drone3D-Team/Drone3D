@@ -46,6 +46,9 @@ class RegisterActivity : AuthActivity() {
         //TODO Set pseudo
     }
 
+    /**
+     * Register an user by taking the contents of [emailEditText], of [passwordEditText] and of [pseudoEditText]
+     */
     fun register(@Suppress("UNUSED_PARAMETER") view: View) {
         val emailText = emailEditText.text.toString()
         val passwordText = passwordEditText.text.toString()
@@ -61,6 +64,9 @@ class RegisterActivity : AuthActivity() {
         }
     }
 
+    /**
+     * Go to the activity allowing an user to login
+     */
     fun login(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, LoginActivity::class.java))
     }
