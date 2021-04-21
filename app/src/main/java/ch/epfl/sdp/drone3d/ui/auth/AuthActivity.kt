@@ -47,7 +47,7 @@ abstract class AuthActivity : AppCompatActivity()  {
 
     /**
      * Start the authentication process given the [authTask] that is being complete and
-     * the id [failMessage] of a String the show ehn the task fails
+     * the id [failMessage] of a String the show when the task fails
      */
     protected fun startProcess(authTask: Task<AuthResult>, failMessage: Int) {
         progressBar.visibility = View.VISIBLE
@@ -67,7 +67,7 @@ abstract class AuthActivity : AppCompatActivity()  {
                         infoText.visibility = View.VISIBLE
                     }
                 }
-            }
+        }
     }
 
     /**
