@@ -9,9 +9,12 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * This class can convert latlng to x,y coordinates in meters in a local area. This class only works well for
- * pretty small area (~10 km^2) due to approximation, since no isometric projection from a sphere
- * to a 2D plane exists. This class should not be used for areas near the poles (10km near the poles).
- * The [origin] should be one of the point that will be projected
+ * areas that are not too big and has some errors when the distance increases (maximum near the poles:
+ * ~1.2 meters (0.000012°) for ~100km in longitude (1°), almost no error for latitude when we project
+ * in plane and then back on sphere) due to approximation, since no isometric projection from a sphere
+ * to a 2D plane exists. This class should not be used for areas near the poles, where the distance
+ * passing on top of the pole is smaller than the distance around the earth.
+ * The [origin] should be one of the point that will be projected or close to them.
  */
 data class SphereToPlaneProjector(val origin: LatLng) {
     //TODO:
@@ -20,11 +23,11 @@ data class SphereToPlaneProjector(val origin: LatLng) {
     //The origin will have coordinates (0,0) in the projected space.
     //longitude will be projected along the x-axis and latitude along the y-axis
 
-    private val CONVERSION_FACTOR = 0.0001 //~100m near the Equator
+    private val CONVERSION_FACTOR_DEGREE = 0.0001 //~100m near the Equator
     private val MAX_LONGITUDE = 180
     private val MAX_LATITUDE = 90
-    private val meterToLong = CONVERSION_FACTOR/LatLng(origin.latitude, origin.longitude + CONVERSION_FACTOR).distanceTo(origin)
-    private val meterToLat = CONVERSION_FACTOR/LatLng(origin.latitude + CONVERSION_FACTOR, origin.longitude).distanceTo(origin)
+    private val meterToLong = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude, origin.longitude + CONVERSION_FACTOR_DEGREE).distanceTo(origin)
+    private val meterToLat = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude + CONVERSION_FACTOR_DEGREE, origin.longitude).distanceTo(origin)
 
 
     /**
@@ -50,18 +53,20 @@ data class SphereToPlaneProjector(val origin: LatLng) {
         var longitude = point.x * meterToLong + origin.longitude
         var latitude = point.y * meterToLat + origin.latitude
 
+        if(latitude > MAX_LATITUDE){
+            latitude = 2 * MAX_LATITUDE - latitude
+            longitude += MAX_LONGITUDE //We come on the other side of the earth in longitude
+        }
+        else if(latitude < -MAX_LATITUDE){
+            latitude = -2 * MAX_LATITUDE - latitude
+            longitude += MAX_LONGITUDE //We come on the other side of the earth in longitude
+        }
+
         if(longitude > MAX_LONGITUDE){
             longitude -= 2 * MAX_LONGITUDE
         }
         else if(longitude < -MAX_LONGITUDE){
             longitude += 2 * MAX_LONGITUDE
-        }
-
-        if(latitude > MAX_LATITUDE){
-            latitude = 2 * MAX_LATITUDE - latitude
-        }
-        else if(latitude < -MAX_LATITUDE){
-            latitude = -2 * MAX_LATITUDE - latitude
         }
 
         return LatLng(latitude, longitude)
