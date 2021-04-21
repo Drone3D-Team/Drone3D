@@ -74,6 +74,7 @@ class DroneConnectActivityTest {
                     assertEquals(ip, an.getArgument(0))
                     assertEquals(port, an.getArgument(1))
                 }
+        `when`(droneService.isConnected()).thenReturn(true)
 
         onView(withId(R.id.text_IP_address))
             .perform(typeText(ip))
@@ -101,10 +102,55 @@ class DroneConnectActivityTest {
     }
 
     @Test
+    fun connectSimulatedDroneShowsToastWhenNonAcceptedId() {
+        val ip = "1.1.1.1"
+        val port = "1111"
+
+        `when`(droneService.setSimulation(anyString(), anyString()))
+            .then { an ->
+                assertEquals(ip, an.getArgument(0))
+                assertEquals(port, an.getArgument(1))
+            }
+        `when`(droneService.isConnected()).thenReturn(false)
+
+        onView(withId(R.id.text_IP_address))
+            .perform(typeText(ip))
+        onView(isRoot())
+            .perform(closeSoftKeyboard())
+        onView(withId(R.id.text_port))
+            .perform(typeText(port))
+        onView(isRoot())
+            .perform(closeSoftKeyboard())
+
+
+        onView(withId(R.id.connect_simulation_button))
+            .perform(click())
+
+        verify(droneService).setSimulation(anyString(), anyString())
+        ToastMatcher.onToast(activityRule.activity, R.string.ip_connection_timeout)
+    }
+
+    @Test
     fun connectDroneWorks() {
+        `when`(droneService.isConnected()).thenReturn(true)
+
         onView(withId(R.id.connect_drone_button))
             .perform(click())
 
         verify(droneService).setDrone()
+        Intents.intended(
+            hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun connectDroneShowsToastWhenNoDroneDetected() {
+        `when`(droneService.isConnected()).thenReturn(false)
+
+        onView(withId(R.id.connect_drone_button))
+            .perform(click())
+
+        verify(droneService).setDrone()
+        ToastMatcher.onToast(activityRule.activity, R.string.no_drone_detected)
     }
 }
