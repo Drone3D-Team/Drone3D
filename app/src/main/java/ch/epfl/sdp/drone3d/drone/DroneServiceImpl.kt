@@ -37,6 +37,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
             droneInstance = it.instance
         }
 
+        droneData.refresh()
         if (isConnected()) {
             isSimulation = true
             simIP = IP
@@ -75,6 +76,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
 
     @Synchronized
     override fun isConnected(): Boolean {
+        val isConnected = droneData.isConnected().value
         return droneData.isConnected().value ?: false
     }
 

@@ -17,10 +17,9 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -96,8 +95,8 @@ class DroneConnectActivity : AppCompatActivity() {
         showWaiting()
         droneService.setDrone()
 
-        GlobalScope.launch {
-            async { checkIfDroneConnected() }
+        runBlocking {
+            launch { checkIfDroneConnected() }
         }
 
         if (droneService.isConnected()) {
