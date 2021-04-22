@@ -19,7 +19,11 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
 import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.auth.UserSession
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -27,11 +31,14 @@ import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
 @HiltAndroidTest
-@UninstallModules(DroneModule::class)
+@UninstallModules(DroneModule::class, AuthenticationModule::class)
 class ItineraryShowActivityTest {
+    private val USER_UID = "asdfg"
+
 
     private var activityRule = ActivityScenarioRule(ItineraryShowActivity::class.java)
 
@@ -41,6 +48,9 @@ class ItineraryShowActivityTest {
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockServiceWithDefaultData()
+    @BindValue
+    val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
+
 
     @Before
     fun setUp() {
@@ -89,6 +99,11 @@ class ItineraryShowActivityTest {
 
     @Test
     fun deleteMissionBringBackToMissionSelection() {
+        val user = Mockito.mock(FirebaseUser::class.java)
+        `when`(user.uid).thenReturn(USER_UID)
+        val userSession = UserSession(user)
+        `when`(authService.getCurrentSession()).thenReturn(userSession)
+
         onView(withId(R.id.mission_delete))
             .perform(click())
         Intents.intended(
