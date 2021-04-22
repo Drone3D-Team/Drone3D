@@ -26,6 +26,9 @@ class MissionViewAdapter(private val privateList: Boolean) :
 
     companion object{
         const val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
+        const val OWNER = "owner"
+        const val PRIVATE = "private"
+        const val SHARED = "shared"
     }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
@@ -40,6 +43,9 @@ class MissionViewAdapter(private val privateList: Boolean) :
                     val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
 
                     intent.putExtra(MISSION_PATH, flightPathArrayList)
+                    intent.putExtra(OWNER, mission.ownerUid)
+                    intent.putExtra(PRIVATE, mission.privateId)
+                    intent.putExtra(SHARED, mission.sharedId)
                     view.context.startActivity(intent)
                 }
             }
