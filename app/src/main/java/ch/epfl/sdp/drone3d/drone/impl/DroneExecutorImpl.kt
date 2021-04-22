@@ -111,18 +111,6 @@ class DroneExecutorImpl(private val service: DroneService,
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         goToLocation(context, completable, instance, returnLocation)
-
-        data.addSubscription(
-                instance.telemetry.position.subscribe(
-                        { pos ->
-                            val isRightPos = distance(pos, returnLocation) == 0
-                            val isStopped = data.getSpeed().value?.roundToInt() == 0
-                            if (isRightPos.and(isStopped)) instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
-                            data.getMutableMissionPaused().postValue(true)
-                        },
-                        { e -> Timber.e("ERROR LANDING : $e") }
-                )
-        )
     }
 
     private fun distance(pos: Telemetry.Position, returnLocation: Telemetry.Position): Int {
@@ -137,6 +125,7 @@ class DroneExecutorImpl(private val service: DroneService,
                 .andThen(instance.mission.clearMission())
                 .andThen(instance.action.returnToLaunch())
 
+        // Go to location
         data.addSubscription(
                 future.subscribe(
                         {
@@ -147,6 +136,19 @@ class DroneExecutorImpl(private val service: DroneService,
                             data.getMutableMission().postValue(null)
                             ToastHandler.showToastAsync(context, R.string.drone_home_error)
                         }
+                )
+        )
+
+        // Land when arrived
+        data.addSubscription(
+                instance.telemetry.position.subscribe(
+                        { pos ->
+                            val isRightPos = distance(pos, returnLocation) == 0
+                            val isStopped = data.getSpeed().value?.roundToInt() == 0
+                            if (isRightPos.and(isStopped)) instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
+                            data.getMutableMissionPaused().postValue(true)
+                        },
+                        { e -> Timber.e("ERROR LANDING : $e") }
                 )
         )
     }

@@ -31,7 +31,7 @@ class DroneDataTest {
     fun expectedData() {
         DroneInstanceMock.setupDefaultMocks()
 
-        val droneData = DroneDataImpl(DroneInstanceMock.mockService())
+        val droneData: DroneData = DroneDataImpl(DroneInstanceMock.mockService())
 
         assertEquals(0f, droneData.getAbsoluteAltitude().value)
         assertEquals(10f, droneData.getBatteryLevel().value)

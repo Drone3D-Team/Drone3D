@@ -79,7 +79,6 @@ class DroneExecutorTest {
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
         `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
                 Telemetry.Position(expectedLatLng.latitude, expectedLatLng.longitude, 400f, 50f)))
-        `when`(droneData.getMission()).thenReturn(missionLiveData)
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
         val executor = DroneExecutorImpl(droneService, droneData)
@@ -99,5 +98,77 @@ class DroneExecutorTest {
         //compare both position
         assertThat(currentLat, closeTo(expectedLatLng.latitude, EPSILON))
         assertThat(currentLong, closeTo(expectedLatLng.longitude, EPSILON))
+    }
+
+    @Test
+    fun canPauseAndResumeMission() {
+        DroneInstanceMock.setupDefaultMocks()
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val droneData = DroneDataImpl(droneService)
+
+        val executor = DroneExecutorImpl(droneService, droneData)
+
+        executor.startMission(context,
+                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+
+        assertThat(droneData.getMutableMission().value, `is`(notNullValue()))
+        assertThat(droneData.getMutableMission().value?.isEmpty(), `is`(false))
+
+        assertThat(droneData.isMissionPaused().value, `is`(notNullValue()))
+        assertThat(droneData.isMissionPaused().value, `is`(false))
+
+        executor.pauseMission(context)
+
+        assertThat(droneData.isMissionPaused().value, `is`(notNullValue()))
+        assertThat(droneData.isMissionPaused().value, `is`(true))
+
+        executor.resumeMission(context)
+
+        assertThat(droneData.isMissionPaused().value, `is`(notNullValue()))
+        assertThat(droneData.isMissionPaused().value, `is`(false))
+    }
+
+    @Test
+    fun canStartMissionAndReturnToUser() {
+        val userPosition = LatLng(.0, .0) //TODO when User location service is up, change this
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        DroneInstanceMock.setupDefaultMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val droneData = mock(DroneDataEditable::class.java)
+        val missionLiveData = MutableLiveData<List<Mission.MissionItem>>()
+        val positionLiveData = MutableLiveData(LatLng(47.397428, 8.545369))
+        val speedLiveData = MutableLiveData(10f)
+
+        `when`(droneData.getPosition()).thenReturn(positionLiveData)
+        `when`(droneData.getSpeed()).thenReturn(speedLiveData)
+        `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
+        `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
+
+        val executor = DroneExecutorImpl(droneService, droneData)
+
+        executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+
+        executor.returnToUserLocationAndLand(context)
+
+        assertThat(missionLiveData.value?.isEmpty(), `is`(false))
+        val returnToUserMission = missionLiveData.value?.get(0)
+        val currentLat = returnToUserMission?.latitudeDeg
+        val currentLong = returnToUserMission?.longitudeDeg
+
+        assertThat(currentLat, `is`(notNullValue()))
+        assertThat(currentLong, `is`(notNullValue()))
+
+        //compare both position
+        assertThat(currentLat, closeTo(userPosition.latitude, EPSILON))
+        assertThat(currentLong, closeTo(userPosition.longitude, EPSILON))
     }
 }
