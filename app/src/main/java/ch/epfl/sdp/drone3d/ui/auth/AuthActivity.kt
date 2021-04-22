@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.auth
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -47,7 +46,7 @@ abstract class AuthActivity : AppCompatActivity()  {
 
     /**
      * Start the authentication process given the [authTask] that is being complete and
-     * the id [failMessage] of a String the show ehn the task fails
+     * the id [failMessage] of a String the show when the task fails
      */
     protected fun startProcess(authTask: Task<AuthResult>, failMessage: Int) {
         progressBar.visibility = View.VISIBLE
@@ -62,12 +61,20 @@ abstract class AuthActivity : AppCompatActivity()  {
                     // If sign in fails, display a message to the user.
                     ToastHandler.showToast(baseContext, failMessage)
                     if (task.exception?.message != null) {
-                        infoText.text = task.exception?.message
-                        infoText.setTextColor(Color.RED)
-                        infoText.visibility = View.VISIBLE
+                        writeErrorMessage(task.exception?.message!!)
                     }
                 }
-            }
+        }
+    }
+
+    /**
+     * Writes an error message and show it
+     */
+    protected fun writeErrorMessage(error: String) {
+        infoText.text = error
+        infoText.setTextColor(android.graphics.Color.RED)
+        infoText.visibility = View.VISIBLE
+
     }
 
     /**

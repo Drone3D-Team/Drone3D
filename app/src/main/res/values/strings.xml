@@ -26,6 +26,7 @@
     <string name="register_fail">Registration failed</string>
     <string name="register_info_default">Enter your register information</string>
     <string name="login_info_default">Enter your login information</string>
+    <string name="email_or_password_empty">The email address and the password can\'t be empty</string>
 
     <!-- Connect/Disconnect Drone/Simulation Activities -->
     <string name="drone_connect_button">Connect a drone</string>
@@ -36,6 +37,13 @@
     <string name="drone_disconnect_button">Disconnect</string>
     <string name="drone_simulated_ip">IP : %1$s</string>
     <string name="drone_simulated_port">Port : %1$s</string>
+    <string name="waiting_connection">Waiting for connection</string>
+    <!-- Message showed when ip with invalid format is written -->
+    <string name="ip_format_invalid">The IP address need to have a valid format</string>
+    <!-- Message showed when application can't connect to provided ip -->
+    <string name="ip_connection_timeout">An error occurred when trying to connect to the provided IP : timeout</string>
+    <!-- Message showed when application couldn't detect a drone -->
+    <string name="no_drone_detected">No drone was detected</string>
 
     <!-- Itinerary Create/Save Activities -->
     <string name="content_descriptor_save_icon">save icon</string>
@@ -50,6 +58,12 @@
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
+
+    <!-- Itinerary Show Activity -->
+    <string name="delete_mission">Delete</string>
+    <string name="confirm_delete">Delete</string>
+    <string name="cancel_delete">Cancel</string>
+    <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
 
     <!-- Mission In Progress Activity -->
     <string name="stop_mission_button">Stop Mission</string>
