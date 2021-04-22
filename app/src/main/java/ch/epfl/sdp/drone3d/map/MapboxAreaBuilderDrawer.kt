@@ -77,9 +77,12 @@ class MapboxAreaBuilderDrawer(
         circleManager.onDestroy()
     }
 
-    fun draw(pa: DrawableArea) {
-        val controlVertices = pa.getControlVertices()
-        val shapeVertices = pa.getShapeVertices()
+    /**
+     * Draw the control vertices and the area formed by the shape vertices of the drawable area
+     */
+    fun draw(drawableArea: DrawableArea) {
+        val controlVertices = drawableArea.getControlVertices()
+        val shapeVertices = drawableArea.getShapeVertices()
 
         if (controlVertices.size != nbVertices || reset) {
             drawControlVertices(controlVertices)

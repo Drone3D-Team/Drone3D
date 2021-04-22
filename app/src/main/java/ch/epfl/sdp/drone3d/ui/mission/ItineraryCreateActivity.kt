@@ -162,8 +162,6 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
             areaBuilder.onDestroy()
         }
         mapView.onDestroy()
-
-        //missionDrawer.onDestroy()
     }
 
     @SuppressLint("MissingSuperCall")
