@@ -214,19 +214,7 @@ class MappingMissionSelectionActivityTest {
         // Shared
         var curShared = SHARED_LIVE_DATA.value
 
-        onView(withId(R.id.shared_mission_list_view)).check(matchCount(curShared?.size ?: 0))
-        onView(withId(R.id.shared_mission_list_view)).check(
-            matches(
-                withEffectiveVisibility(
-                    Visibility.VISIBLE
-                )
-            )
-        )
-
-        curShared?.forEach { m ->
-            onView(withText(buttonName(true, m)))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-        }
+        liveDataShowsToUser(true, false, curShared)
 
         curShared = listOf(SHARED_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
@@ -235,14 +223,7 @@ class MappingMissionSelectionActivityTest {
         SHARED_LIVE_DATA.postValue(curShared)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
-        onView(withId(R.id.shared_mission_list_view)).check(matchCount(curShared.size))
-        onView(withId(R.id.shared_mission_list_view)).check(
-            matches(
-                withEffectiveVisibility(
-                    Visibility.VISIBLE
-                )
-            )
-        )
+        liveDataShowsToUser(true, false, curShared)
 
         //switch state
         onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
@@ -250,14 +231,7 @@ class MappingMissionSelectionActivityTest {
         // private
         var curPrivate = PRIVATE_LIVE_DATA.value
 
-        onView(withId(R.id.private_mission_list_view)).check(matchCount(curPrivate?.size ?: 0))
-        onView(withId(R.id.private_mission_list_view)).check(
-            matches(
-                withEffectiveVisibility(
-                    Visibility.VISIBLE
-                )
-            )
-        )
+        liveDataShowsToUser(false, false, curPrivate)
 
         curPrivate?.forEach { m ->
             onView(withText(buttonName(false, m)))
@@ -272,14 +246,7 @@ class MappingMissionSelectionActivityTest {
         PRIVATE_LIVE_DATA.postValue(curPrivate)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
-        onView(withId(R.id.private_mission_list_view)).check(matchCount(curPrivate.size))
-        onView(withId(R.id.private_mission_list_view)).check(
-            matches(
-                withEffectiveVisibility(
-                    Visibility.VISIBLE
-                )
-            )
-        )
+        liveDataShowsToUser(false, false, curPrivate)
 
         // Reset LIVE DATA
         SHARED_LIVE_DATA.postValue(listOf(SHARED_MAPPING_MISSION))
