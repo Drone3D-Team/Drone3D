@@ -3,6 +3,9 @@
  * The license can be found in LICENSE at root of the repository
  */
 
+/*
+ * Some elements are inspired by Fly2Find project
+ */
 
 package ch.epfl.sdp.drone3d.ui.mission
 
@@ -30,7 +33,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
 /**
  * The activity that allows the user to create itinerary using a map.
  */
@@ -52,7 +54,7 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     private lateinit var goToSaveButton: FloatingActionButton
 
     // Location
-    private lateinit var locationComponentManager: LocationComponentManager
+    lateinit var locationComponentManager: LocationComponentManager
 
     // Area
     private var longClickConsumed = false
