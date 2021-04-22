@@ -77,21 +77,25 @@ class DroneConnectActivity : AppCompatActivity() {
             showWaiting()
             droneService.setSimulation(ip, port)
 
-            checkIfDroneConnected(20).thenAccept {
-                val mainHandler = Handler(this.mainLooper)
+            GlobalScope.launch {
+                async {
+                    checkIfDroneConnected(30)
 
-                val myRunnable = Runnable {
-                    if (it) {
-                        val intent = Intent(this, ConnectedDroneActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        droneService.disconnect()
-                        showConnectionOptions()
-                        ToastHandler.showToastAsync(this, R.string.ip_connection_timeout)
+                    val mainHandler = Handler(applicationContext.mainLooper)
+
+                    val myRunnable = Runnable {
+                        if (droneService.isConnected()) {
+                            val intent = Intent(applicationContext, ConnectedDroneActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            droneService.disconnect()
+                            showConnectionOptions()
+                            ToastHandler.showToastAsync(applicationContext, R.string.ip_connection_timeout)
+                        }
                     }
-                }
 
-                mainHandler.post(myRunnable)
+                    mainHandler.post(myRunnable)
+                }
             }
         } else {
             ToastHandler.showToastAsync(this, R.string.ip_format_invalid)
@@ -154,7 +158,7 @@ class DroneConnectActivity : AppCompatActivity() {
     }
 
     /**
-     * Check if a drone was connected on the application after 5 seconds
+     * Check if a drone was connected on the application after [counterMax]/10 seconds
      */
     private suspend fun checkIfDroneConnected(counterMax: Int) {
         var counter = 0
