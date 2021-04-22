@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.ui.drone
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -17,9 +18,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -73,15 +72,24 @@ class DroneConnectActivity : AppCompatActivity() {
         if (verifyIp(ip)) {
             val port = findViewById<EditText>(R.id.text_port).text.toString()
             showWaiting()
+
             droneService.setSimulation(ip, port)
 
-            if (droneService.isConnected()) {
-                val intent = Intent(this, ConnectedDroneActivity::class.java)
-                startActivity(intent)
-            } else {
-                showConnectionOptions()
-                droneService.disconnect()
-                ToastHandler.showToastAsync(this, R.string.ip_connection_timeout)
+            checkIfDroneConnected(20).thenAccept {
+                val mainHandler = Handler(this.mainLooper)
+
+                val myRunnable = Runnable {
+                    if (it) {
+                        val intent = Intent(this, ConnectedDroneActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        droneService.disconnect()
+                        showConnectionOptions()
+                        ToastHandler.showToastAsync(this, R.string.ip_connection_timeout)
+                    }
+                }
+
+                mainHandler.post(myRunnable)
             }
         } else {
             ToastHandler.showToastAsync(this, R.string.ip_format_invalid)
@@ -95,9 +103,7 @@ class DroneConnectActivity : AppCompatActivity() {
         showWaiting()
         droneService.setDrone()
 
-        runBlocking {
-            launch { checkIfDroneConnected() }
-        }
+        checkIfDroneConnected(50)
 
         if (droneService.isConnected()) {
             val intent = Intent(this, ConnectedDroneActivity::class.java)
@@ -138,11 +144,14 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Check if a drone was connected on the application after 5 seconds
      */
-    private suspend fun checkIfDroneConnected() {
-        var counter = 0
-        while (!droneService.isConnected() && counter < 50) {
-            delay(100L)
-            counter ++
+    private fun checkIfDroneConnected(counterMax: Int): CompletableFuture<Boolean> {
+        return CompletableFuture.supplyAsync {
+            var counter = 0
+            while (!droneService.isConnected() && counter < counterMax) {
+                Thread.sleep(100L)
+                counter++
+            }
+            droneService.isConnected()
         }
     }
 
