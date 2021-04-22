@@ -10,19 +10,17 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.area.AreaBuilder
-import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.map.area.PolygonBuilder
+import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -37,7 +35,8 @@ import javax.inject.Inject
  * The activity that allows the user to create itinerary using a map.
  */
 @AndroidEntryPoint
-class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
+    MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener {
     @Inject
     lateinit var authService: AuthenticationService
 
@@ -61,9 +60,7 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback, MapboxM
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
 
     // Drawer
-    private lateinit var missionDrawer : MapboxMissionDrawer
-
-
+    private lateinit var missionDrawer: MapboxMissionDrawer
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,17 +93,25 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback, MapboxM
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             locationComponentManager.enableLocationComponent(style)
 
-            areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
+            fun onLongClickConsumed(): Boolean {
+                longClickConsumed = true;
+                return false
+            }
+
+            areaBuilderDrawer =
+                MapboxAreaBuilderDrawer(mapView, mapboxMap, style) { onLongClickConsumed() }
             missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
 
             mapboxMap.addOnMapClickListener(this)
+            mapboxMap.addOnMapLongClickListener(this)
 
-            //areaBuilder = ParallelogramBuilder()
             areaBuilder = PolygonBuilder()
+            //areaBuilder = ParallelogramBuilder()
 
             //areaBuilder.onAreaChanged.add { missionBuilder.withSearchArea(it) }
-            areaBuilder.onVerticesChanged.add { areaBuilderDrawer.paint(areaBuilder) }
+            areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
+
         }
 
         this.mapboxMap = mapboxMap
@@ -140,8 +145,12 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback, MapboxM
 
     override fun onDestroy() {
         super.onDestroy()
+        if (isMapReady) {
+            areaBuilderDrawer.onDestroy()
+            areaBuilder.onDestroy()
+        }
         mapView.onDestroy()
-        areaBuilderDrawer.onDestroy()
+
         //missionDrawer.onDestroy()
     }
 
@@ -158,9 +167,16 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback, MapboxM
         try {
             areaBuilder.addVertex(position)
         } catch (e: IllegalArgumentException) {
-            Toast.makeText(baseContext, e.message,
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                baseContext, e.message,
+                Toast.LENGTH_SHORT
+            ).show()
         }
+        return true
+    }
+
+    override fun onMapLongClick(point: LatLng): Boolean {
+        longClickConsumed = false
         return true
     }
 

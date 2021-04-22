@@ -8,10 +8,9 @@ package ch.epfl.sdp.drone3d.map.area
 import androidx.annotation.VisibleForTesting
 import ch.epfl.sdp.drone3d.map.PaintableArea
 import com.mapbox.mapboxsdk.geometry.LatLng
-import java.lang.IllegalArgumentException
 import kotlin.properties.Delegates
 
-abstract class AreaBuilder: PaintableArea {
+abstract class AreaBuilder : PaintableArea {
 
     abstract val sizeLowerBound: Int?
     abstract val sizeUpperBound: Int?
@@ -34,9 +33,11 @@ abstract class AreaBuilder: PaintableArea {
                 else -> throw ex
             }
         }
+
         onVerticesChanged.forEach { it(vertices) }
         onAreaChanged.forEach { it(area) }
     }
+
 
     fun onDestroy() {
         reset()
@@ -58,8 +59,8 @@ abstract class AreaBuilder: PaintableArea {
     }
 
     fun moveVertex(old: LatLng, new: LatLng): AreaBuilder {
-        val oldIndex = vertices.withIndex().minByOrNull { it.value.distanceTo(old) }?.index
-        vertices[oldIndex!!] = new
+        val oldIndex = vertices.withIndex().minByOrNull { it.value.distanceTo(old) }?.index!!
+        this.vertices[oldIndex] = new
         orderVertices()
         this.vertices = this.vertices
         return this

@@ -13,13 +13,17 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.*
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
-// onLongClickConsumed: () -> Unit
+class MapboxAreaBuilderDrawer(
+    mapView: MapView,
+    mapboxMap: MapboxMap,
+    style: Style,
+    onLongClickConsumed: () -> Boolean
+) : MapboxDrawer {
 
-class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
 
     companion object {
         private const val REGION_FILL_OPACITY: Float = 0.5F
-        private const val WAYPOINT_RADIUS: Float = 8f
+        private const val WAYPOINT_RADIUS: Float = 20f
     }
 
     val onVertexMoved = mutableListOf<(old: LatLng, new: LatLng) -> Unit>()
@@ -37,7 +41,7 @@ class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Sty
         lateinit var previousLocation: LatLng
         override fun onAnnotationDragStarted(annotation: Circle) {
             previousLocation = annotation.latLng
-            //onLongClickConsumed()
+            onLongClickConsumed()
         }
 
         override fun onAnnotationDrag(annotation: Circle) {
@@ -45,12 +49,13 @@ class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Sty
             previousLocation = annotation.latLng
         }
 
-        override fun onAnnotationDragFinished(annotation: Circle?) {}
+        override fun onAnnotationDragFinished(annotation: Circle?) {
+        }
     }
 
     init {
         circleManager.addDragListener(dragListener)
-        //circleManager.addLongClickListener { onLongClickConsumed() }
+        circleManager.addLongClickListener { onLongClickConsumed() }
     }
 
     fun getUpperLayer(): String {
@@ -66,15 +71,19 @@ class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Sty
         circleManager.onDestroy()
     }
 
-    fun paint(pa: PaintableArea) {
+    fun draw(pa: PaintableArea) {
         val controlVertices = pa.getControlVertices()
         val shapeVertices = pa.getShapeVertices()
+
         if (controlVertices.size != nbVertices || reset) {
             drawControlVertices(controlVertices)
             nbVertices = controlVertices.size
         }
         drawShape(shapeVertices ?: listOf())
+
         reset = false
+
+
     }
 
     /**
@@ -83,17 +92,21 @@ class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Sty
      * Only the edges connecting them do
      */
     private fun drawShape(shapeOutline: List<LatLng>) {
+
         if (!::fillArea.isInitialized || reset) {
+
             fillManager.deleteAll()
             val fillOption = FillOptions()
-                    .withLatLngs(listOf(shapeOutline))
-                    .withFillColor(ColorUtils.colorToRgbaString(Color.WHITE))
-                    .withFillOpacity(REGION_FILL_OPACITY)
+                .withLatLngs(listOf(shapeOutline))
+                .withFillColor(ColorUtils.colorToRgbaString(Color.WHITE))
+                .withFillOpacity(REGION_FILL_OPACITY)
             fillArea = fillManager.create(fillOption)
         } else {
+
             fillArea.latLngs = listOf(shapeOutline)
             fillManager.update(fillArea)
         }
+
     }
 
     /**
@@ -105,9 +118,9 @@ class MapboxAreaBuilderDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Sty
 
         vertices.forEach {
             val circleOptions = CircleOptions()
-                    .withCircleRadius(WAYPOINT_RADIUS)
-                    .withLatLng(it)
-                    .withDraggable(true)
+                .withCircleRadius(WAYPOINT_RADIUS)
+                .withLatLng(it)
+                .withDraggable(true)
             circleManager.create(circleOptions)
         }
     }
