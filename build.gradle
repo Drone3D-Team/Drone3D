@@ -7,7 +7,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        mavenCentral()
 
     }
     dependencies {
@@ -25,9 +24,19 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenCentral()
 
-
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                // This should always be `mapbox` (not the real username).
+                username = 'mapbox'
+                //Use Mapbox's secret key
+                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
+            }
+        }
 
     }
 }
