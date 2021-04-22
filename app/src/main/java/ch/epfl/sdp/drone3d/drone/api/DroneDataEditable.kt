@@ -5,11 +5,16 @@
 
 package ch.epfl.sdp.drone3d.drone.api
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.mavsdk.mission.Mission
 import io.reactivex.disposables.Disposable
 
 interface DroneDataEditable : DroneData {
+
+    override fun getMission(): LiveData<List<Mission.MissionItem>> = getMutableMission()
+
+    override fun isMissionPaused(): LiveData<Boolean> = getMutableMissionPaused()
 
     /**
      * Returns the MutableLiveData of the mission plan

@@ -48,10 +48,6 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
-    init {
-        createDefaultSubs()
-    }
-
     /**
      * Setup the observers for the data of the drone we keep track of
      */
@@ -60,7 +56,17 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
         val droneInstance = provider.provideDrone()
 
         if (droneInstance == null) {
-            resetData()
+            // Reset
+            position.postValue(null)
+            batteryLevel.postValue(null)
+            absoluteAltitude.postValue(null)
+            speed.postValue(null)
+            homeLocation.postValue(null)
+            isFlying.postValue(false)
+            isConnected.postValue(false)
+            mission.postValue(null)
+            isMissionPaused.postValue(true)
+            cameraResolution.postValue(null)
         } else {
             addFlightModeSubscriptions(droneInstance)
             addArmedSubscriptions(droneInstance)
@@ -157,27 +163,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
         }
     }
 
-    private fun resetData() {
-        position.postValue(null)
-        batteryLevel.postValue(null)
-        absoluteAltitude.postValue(null)
-        speed.postValue(null)
-        homeLocation.postValue(null)
-        isFlying.postValue(false)
-        isConnected.postValue(false)
-        mission.postValue(null)
-        isMissionPaused.postValue(true)
-        cameraResolution.postValue(null)
-    }
-
     @Synchronized
     private fun disposeOfAll() {
         disposables.forEach(Disposable::dispose)
         disposables.clear()
-    }
-
-    protected fun finalize() {
-        disposeOfAll()
     }
 
     override fun getPosition(): LiveData<LatLng> = position
@@ -194,13 +183,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
 
     override fun isConnected(): LiveData<Boolean> = isConnected
 
-    override fun isMissionPaused(): LiveData<Boolean> = isMissionPaused
-
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
 
     override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
-
-    override fun getMission(): LiveData<List<Mission.MissionItem>> = mission
 
     override fun getFocalLength(): LiveData<Float> = focalLength
 
@@ -234,5 +219,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
         disposables.add(
                 disposable
         )
+    }
+
+    protected fun finalize() {
+        disposeOfAll()
     }
 }
