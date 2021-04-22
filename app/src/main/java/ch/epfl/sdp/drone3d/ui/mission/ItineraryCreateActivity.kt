@@ -75,6 +75,8 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
         mapView.onCreate(savedInstanceState)
 
         mapView.getMapAsync(this)
+        mapView.contentDescription = getString(R.string.map_not_ready)
+
 
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -121,6 +123,8 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
 
         }
+        // Used to detect when the map is ready in tests
+        mapView.contentDescription = getString(R.string.map_ready)
 
         this.mapboxMap = mapboxMap
         isMapReady = true
