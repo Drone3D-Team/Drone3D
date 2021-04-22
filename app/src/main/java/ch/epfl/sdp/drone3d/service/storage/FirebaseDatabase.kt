@@ -25,6 +25,7 @@ class FirebaseDatabase: Database {
         private const val TAG = "FirebaseDatabase"
         private const val PSEUDO_PATH = "pseudo"
     }
+
     private val pseudo: MutableLiveData<String> = MutableLiveData()
 
 

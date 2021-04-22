@@ -11,41 +11,71 @@
     android:layout_height="match_parent"
     tools:context=".ui.mission.MappingMissionSelectionActivity">
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="300dp"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top_left_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.12" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_start_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/header_end_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.68" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/private_mission_list_view"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toTopOf="@id/createMappingMissionButton"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mappingMissionToggleButton">
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
+    </androidx.recyclerview.widget.RecyclerView>
 
-        <LinearLayout
-            android:id="@+id/mappingMissionList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/shared_mission_list_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
+    </androidx.recyclerview.widget.RecyclerView>
 
     <Button
         android:id="@+id/createMappingMissionButton"
-        android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_margin="15dp"
+        android:onClick="createNewMission"
         android:text="@string/create_mapping_mission_button_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollView" />
+        app:layout_constraintTop_toBottomOf="@id/bottom_start_guideline" />
 
     <ToggleButton
-        android:id="@+id/mappingMissionToggleButton"
+        android:id="@+id/mapping_mission_state_toggle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:textOff="@string/shared_type_text"
         android:textOn="@string/private_type_text"
-        app:layout_constraintEnd_toEndOf="@id/scrollView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/top_left_guideline"
+        app:layout_constraintStart_toStartOf="@id/header_end_guideline"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

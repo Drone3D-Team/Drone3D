@@ -6,7 +6,6 @@
 package ch.epfl.sdp.drone3d.mission
 
 import ch.epfl.sdp.drone3d.mission.Point.Companion.distance
-import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Utility class to represent a parallelogram

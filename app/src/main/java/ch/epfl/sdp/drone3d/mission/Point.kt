@@ -5,8 +5,6 @@
 
 package ch.epfl.sdp.drone3d.mission
 
-import com.mapbox.mapboxsdk.geometry.LatLng
-
 /**
  * Utility class to represent a 2D point
  */
