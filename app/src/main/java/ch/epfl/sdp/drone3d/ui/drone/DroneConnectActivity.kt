@@ -41,12 +41,12 @@ class DroneConnectActivity : AppCompatActivity() {
     @Inject
     lateinit var droneService: DroneService
 
-    lateinit var droneConnectButton: Button
-    lateinit var simulationConnectButton: Button
-    lateinit var loadingProgressBar: ProgressBar
-    lateinit var ipText: EditText
-    lateinit var portText: EditText
-    lateinit var waitingText: TextView
+    private lateinit var droneConnectButton: Button
+    private lateinit var simulationConnectButton: Button
+    private lateinit var loadingProgressBar: ProgressBar
+    private lateinit var ipText: EditText
+    private lateinit var portText: EditText
+    private lateinit var waitingText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

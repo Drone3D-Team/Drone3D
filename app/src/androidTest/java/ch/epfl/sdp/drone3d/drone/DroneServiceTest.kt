@@ -52,8 +52,6 @@ class DroneServiceTest {
 
         verify(factory).createSimulation(ip, port)
 
-        // now stop isConnected to have to return true
-        `when`(drone.core.connectionState).thenCallRealMethod()
         service.disconnect()
 
         assertThat(service.isConnected(), `is`(false))
