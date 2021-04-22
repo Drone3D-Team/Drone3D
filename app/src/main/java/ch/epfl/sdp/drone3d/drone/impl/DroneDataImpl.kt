@@ -48,6 +48,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
+    init {
+        createDefaultSubs()
+    }
+
     /**
      * Setup the observers for the data of the drone we keep track of
      */

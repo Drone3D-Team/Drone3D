@@ -13,7 +13,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.telemetry.Telemetry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,13 +27,10 @@ class DroneDataTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Before
-    fun before() {
-        DroneInstanceMock.setupDefaultMocks()
-    }
-
     @Test
     fun expectedData() {
+        DroneInstanceMock.setupDefaultMocks()
+
         val droneData = DroneDataImpl(DroneInstanceMock.mockService())
 
         assertEquals(0f, droneData.getAbsoluteAltitude().value)
