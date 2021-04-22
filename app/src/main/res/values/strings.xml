@@ -52,6 +52,9 @@
 
     <!-- Itinerary Show Activity -->
     <string name="delete_mission">Delete</string>
+    <string name="confirm_delete">Delete</string>
+    <string name="cancel_delete">Cancel</string>
+    <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
 
     <!-- Mission In Progress Activity -->
     <string name="stop_mission_button">Stop Mission</string>

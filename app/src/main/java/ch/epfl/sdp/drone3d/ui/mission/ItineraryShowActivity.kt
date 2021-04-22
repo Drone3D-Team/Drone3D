@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -22,6 +23,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class ItineraryShowActivity : AppCompatActivity() {
@@ -92,9 +94,28 @@ class ItineraryShowActivity : AppCompatActivity() {
     }
 
     /**
-     * Delete this mapping mission and go back to the mission selection activity
+     * Show an alert asking for confirmation to delete the mission
      */
     fun deleteMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        val builder = Builder(this)
+        builder.setMessage(getString(R.string.delete_confirmation))
+        builder.setCancelable(true)
+
+        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, id ->
+            dialog.cancel()
+            confirmDelete()
+        }
+
+        builder.setNegativeButton(R.string.cancel_delete) { dialog, id ->
+            dialog.cancel()
+        }
+        builder.create()?.show()
+    }
+
+    /**
+     * Delete this mapping mission and go back to the mission selection activity
+     */
+    private fun confirmDelete() {
         mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
         val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)

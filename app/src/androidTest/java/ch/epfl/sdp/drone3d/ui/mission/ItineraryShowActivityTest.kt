@@ -11,8 +11,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
@@ -33,6 +32,7 @@ import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+
 
 @HiltAndroidTest
 @UninstallModules(DroneModule::class, AuthenticationModule::class)
@@ -94,7 +94,7 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any{it.hasExtra(MissionViewAdapter.MISSION_PATH)})
+        assert(intents.any { it.hasExtra(MissionViewAdapter.MISSION_PATH) })
     }
 
     @Test
@@ -105,6 +105,10 @@ class ItineraryShowActivityTest {
         `when`(authService.getCurrentSession()).thenReturn(userSession)
 
         onView(withId(R.id.mission_delete))
+            .perform(click())
+        onView(withText("Are you sure you want to delete this mission ?"))
+            .check(matches(isDisplayed()))
+        onView(withText("Delete"))
             .perform(click())
         Intents.intended(
             hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
