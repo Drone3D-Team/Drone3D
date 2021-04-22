@@ -52,6 +52,14 @@ class DroneConnectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drone_connect)
 
+        droneConnectButton = findViewById(R.id.connect_drone_button)
+        simulationConnectButton = findViewById(R.id.connect_simulation_button)
+        ipText = findViewById(R.id.text_IP_address)
+        portText = findViewById(R.id.text_port)
+
+        loadingProgressBar = findViewById(R.id.progress_bar_drone)
+        waitingText = findViewById(R.id.waiting_connection)
+
         showConnectionOptions()
     }
 
