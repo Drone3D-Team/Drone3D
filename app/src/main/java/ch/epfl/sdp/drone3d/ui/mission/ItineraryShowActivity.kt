@@ -13,6 +13,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -25,10 +26,18 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ItineraryShowActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var mappingMissionDao: MappingMissionDao
+
+
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private lateinit var mapView: MapView
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
+
+    private lateinit var ownerUid: String
+    private var privateId: String? = null
+    private var sharedId: String? = null
 
     @Inject
     lateinit var droneService: DroneService
@@ -48,6 +57,10 @@ class ItineraryShowActivity : AppCompatActivity() {
         @Suppress("UNCHECKED_CAST")
         currentMissionPath =
             intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        // Get the Intent that started this activity and extract user and ids
+        ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER).toString()
+        privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
+        sharedId = intent.getStringExtra(MissionViewAdapter.SHARED)
 
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
@@ -75,6 +88,15 @@ class ItineraryShowActivity : AppCompatActivity() {
     fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        startActivity(intent)
+    }
+
+    /**
+     * Delete this mapping mission and go back to the mission selection activity
+     */
+    fun deleteMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
+        val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)
     }
 

@@ -50,6 +50,9 @@
     <string name="private_type_text">Private</string>
     <string name="shared_type_text">Shared</string>
 
+    <!-- Itinerary Show Activity -->
+    <string name="delete_mission">Delete</string>
+
     <!-- Mission In Progress Activity -->
     <string name="stop_mission_button">Stop Mission</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->

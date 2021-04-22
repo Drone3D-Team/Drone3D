@@ -6,12 +6,13 @@
 package ch.epfl.sdp.drone3d.ui.mission
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.ComponentNameMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
@@ -32,8 +33,7 @@ import org.mockito.Mockito.`when`
 @UninstallModules(DroneModule::class)
 class ItineraryShowActivityTest {
 
-    @get:Rule
-    var activityRule = ActivityScenarioRule(ItineraryShowActivity::class.java)
+    private var activityRule = ActivityScenarioRule(ItineraryShowActivity::class.java)
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
@@ -65,8 +65,8 @@ class ItineraryShowActivityTest {
 
         activityRule.scenario.recreate()
 
-        onView(ViewMatchers.withId(R.id.buttonToMissionInProgressActivity))
-                .check(matches(Matchers.not(ViewMatchers.isEnabled())))
+        onView(withId(R.id.buttonToMissionInProgressActivity))
+                .check(matches(Matchers.not(isEnabled())))
     }
 
     @Test
@@ -75,19 +75,24 @@ class ItineraryShowActivityTest {
 
         activityRule.scenario.recreate()
 
-        onView(ViewMatchers.withId(R.id.buttonToMissionInProgressActivity))
-            .check(matches(ViewMatchers.isEnabled()))
-        onView(ViewMatchers.withId(R.id.buttonToMissionInProgressActivity)).perform(ViewActions.click())
+        onView(withId(R.id.buttonToMissionInProgressActivity))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
 
         Intents.intended(
-            IntentMatchers.hasComponent(
-                ComponentNameMatchers.hasClassName(
-                    MissionInProgressActivity::class.java.name
-                )
-            )
+            hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
         )
 
         val intents = Intents.getIntents()
         assert(intents.any{it.hasExtra(MissionViewAdapter.MISSION_PATH)})
+    }
+
+    @Test
+    fun deleteMissionBringBackToMissionSelection() {
+        onView(withId(R.id.mission_delete))
+            .perform(click())
+        Intents.intended(
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+        )
     }
 }
