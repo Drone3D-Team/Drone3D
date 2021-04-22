@@ -8,6 +8,8 @@ package ch.epfl.sdp.drone3d.drone
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.drone.api.DroneServerFactory
+import ch.epfl.sdp.drone3d.drone.impl.DroneServiceImpl
 import io.mavsdk.mavsdkserver.MavsdkServer
 import org.hamcrest.Matchers.`is`
 import org.junit.Rule

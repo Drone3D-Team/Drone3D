@@ -3,10 +3,14 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.impl
 
 import android.content.Context
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.drone.DroneUtils
+import ch.epfl.sdp.drone3d.drone.api.DroneDataEditable
+import ch.epfl.sdp.drone3d.drone.api.DroneExecutor
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
@@ -18,7 +22,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class DroneExecutorImpl(private val service: DroneService,
-                        private val data: DroneDataImpl): DroneExecutor {
+                        private val data: DroneDataEditable): DroneExecutor {
 
     private fun getConnectedInstance(): Completable? {
         return service.provideDrone()?.core?.connectionState

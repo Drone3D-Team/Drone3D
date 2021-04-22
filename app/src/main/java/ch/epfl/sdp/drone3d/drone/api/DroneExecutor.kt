@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.api
 
 import android.content.Context
 import io.mavsdk.mission.Mission

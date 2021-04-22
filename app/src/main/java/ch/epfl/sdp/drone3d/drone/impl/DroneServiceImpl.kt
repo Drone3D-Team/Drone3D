@@ -6,8 +6,12 @@
  * This class was taken from the project Fly2Find and adapted for our project
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.impl
 
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneExecutor
+import ch.epfl.sdp.drone3d.drone.api.DroneServerFactory
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 

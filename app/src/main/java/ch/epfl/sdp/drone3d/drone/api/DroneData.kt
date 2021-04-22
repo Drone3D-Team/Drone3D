@@ -3,7 +3,7 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.api
 
 import androidx.lifecycle.LiveData
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -104,4 +104,9 @@ interface DroneData {
      * will not be used anymore.
      */
     fun refresh()
+
+    /**
+     * Remove the disposed subscriptions from memory
+     */
+    fun purge()
 }

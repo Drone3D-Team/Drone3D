@@ -18,7 +18,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.auth.UserSession

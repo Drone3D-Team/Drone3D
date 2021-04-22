@@ -3,10 +3,13 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneDataEditable
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
@@ -27,7 +30,7 @@ import kotlin.math.sqrt
  *  - Convert certain types to our owns
  *  - Change from object to api/implementation
  */
-class DroneDataImpl constructor(val provider: DroneService) : DroneData {
+class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable {
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
@@ -167,6 +170,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         cameraResolution.postValue(null)
     }
 
+    @Synchronized
     private fun disposeOfAll() {
         disposables.forEach(Disposable::dispose)
         disposables.clear()
@@ -207,15 +211,14 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         createDefaultSubs()
     }
 
-    /**
-     * Returns the MutableLiveData of the mission plan
-     */
-    fun getMutableMission(): MutableLiveData<List<Mission.MissionItem>> = mission
+    @Synchronized
+    override fun purge() {
+        disposables.filter { !it.isDisposed }
+    }
 
-    /**
-     * Returns the MutableLiveData keeping the mission pause state
-     */
-    fun getMutableMissionPaused(): MutableLiveData<Boolean> = isMissionPaused
+    override fun getMutableMission(): MutableLiveData<List<Mission.MissionItem>> = mission
+
+    override fun getMutableMissionPaused(): MutableLiveData<Boolean> = isMissionPaused
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
         addSubscription(
@@ -226,7 +229,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         )
     }
 
-    fun addSubscription(disposable: Disposable) {
+    @Synchronized
+    override fun addSubscription(disposable: Disposable) {
         disposables.add(
                 disposable
         )

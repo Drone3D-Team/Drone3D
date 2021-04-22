@@ -17,7 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule

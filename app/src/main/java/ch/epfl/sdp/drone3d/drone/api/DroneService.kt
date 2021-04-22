@@ -3,8 +3,10 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.api
 
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneExecutor
 import io.mavsdk.System
 
 interface DroneService {

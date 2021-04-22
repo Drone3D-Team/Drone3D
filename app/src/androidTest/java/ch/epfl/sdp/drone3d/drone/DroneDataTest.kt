@@ -7,6 +7,8 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.impl.DroneDataImpl
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.telemetry.Telemetry
 import org.junit.Assert.assertEquals

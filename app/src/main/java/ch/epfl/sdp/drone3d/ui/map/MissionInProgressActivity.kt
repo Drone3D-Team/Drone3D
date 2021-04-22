@@ -14,7 +14,7 @@ import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
