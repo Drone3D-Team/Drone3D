@@ -10,7 +10,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.SystemClock
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
@@ -151,11 +151,24 @@ class ItineraryCreateActivityTest {
         var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
-
-        for (i in 1..4) {
-            onView(withId(R.id.mapView)).perform(click())
-            SystemClock.sleep(1000);
-        }
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeLeft())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeDown())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeRight())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(isEnabled()))
