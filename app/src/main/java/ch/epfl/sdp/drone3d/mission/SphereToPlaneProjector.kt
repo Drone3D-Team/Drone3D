@@ -10,18 +10,17 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 /**
  * This class can convert latlng to x,y coordinates in meters in a local area. This class only works well for
  * areas that are not too big and has some errors when the distance increases (maximum near the poles:
- * ~1.2 meters (0.000012°) for ~100km in longitude (1°), almost no error for latitude when we project
- * in plane and then back on sphere) due to approximation, since no isometric projection from a sphere
+ * ~1.2 meters (0.000013°) for ~100km in longitude (1°), almost no error for latitude when we project
+ * onto a plane and then back on sphere) due to approximation, since no isometric projection from a sphere
  * to a 2D plane exists. This class should not be used for areas near the poles, where the distance
- * passing on top of the pole is smaller than the distance around the earth.
- * The [origin] should be one of the point that will be projected or close to them.
+ * passing on top of the Earth is smaller than the distance around the earth.
+ *
+ * Longitude is projected along the x-axis and latitude along the y-axis.
+ *
+ * The [origin] should be one of the point that will be projected or close to them. It will be mapped
+ * to the point (0,0) in the projected space.
  */
 data class SphereToPlaneProjector(val origin: LatLng) {
-    //TODO:
-    //Deal with exceptions for points to close to poles (and points to far from origin)
-
-    //The origin will have coordinates (0,0) in the projected space.
-    //longitude will be projected along the x-axis and latitude along the y-axis
 
     private val CONVERSION_FACTOR_DEGREE = 0.0001 //~100m near the Equator
     private val MAX_LONGITUDE = 180

@@ -132,7 +132,7 @@ class SphereToPlaneProjectorTest {
     }
 
     @Test
-    fun toPointBeyond90LatitudeWrapAroundWorld(){
+    fun toLatLngBeyond90LatitudeWrapAroundWorld(){
 
         val origin = LatLng(89.0,0.0)
         val projector = SphereToPlaneProjector(origin)
