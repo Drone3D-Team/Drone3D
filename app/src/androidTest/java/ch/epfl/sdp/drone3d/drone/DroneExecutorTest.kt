@@ -5,13 +5,20 @@
 
 package ch.epfl.sdp.drone3d.drone
 
-import android.app.Instrumentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import ch.epfl.sdp.drone3d.drone.api.DroneDataEditable
+import ch.epfl.sdp.drone3d.drone.api.DroneService
+import ch.epfl.sdp.drone3d.drone.impl.DroneDataImpl
+import ch.epfl.sdp.drone3d.drone.impl.DroneExecutorImpl
 import com.mapbox.mapboxsdk.geometry.LatLng
+import io.mavsdk.mission.Mission
+import io.mavsdk.telemetry.Telemetry
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.Matchers.closeTo
 import org.hamcrest.Matchers.notNullValue
 import org.junit.Rule
 import org.junit.Test
@@ -54,5 +61,43 @@ class DroneExecutorTest {
         // This assert prevent the app to crash in case the mission has not been updated
         assertThat(droneData.getMutableMission().value, `is`(notNullValue()))
         assertThat(droneData.getMutableMission().value?.isEmpty(), `is`(false))
+    }
+
+    @Test
+    fun canStartMissionAndReturnHome() {
+        val expectedLatLng = LatLng(47.397428, 8.545369) //Position of the drone before take off
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        DroneInstanceMock.setupDefaultMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val droneData = mock(DroneDataEditable::class.java)
+        val missionLiveData = MutableLiveData<List<Mission.MissionItem>>()
+        `when`(droneData.getPosition()).thenReturn(MutableLiveData(expectedLatLng))
+        `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
+        `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
+                Telemetry.Position(expectedLatLng.latitude, expectedLatLng.longitude, 400f, 50f)))
+        `when`(droneData.getMission()).thenReturn(missionLiveData)
+        `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
+
+        val executor = DroneExecutorImpl(droneService, droneData)
+
+        executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+
+        executor.returnToHomeLocationAndLand(context)
+
+        assertThat(missionLiveData.value?.isEmpty(), `is`(false))
+        val returnToUserMission = missionLiveData.value?.get(0)
+        val currentLat = returnToUserMission?.latitudeDeg
+        val currentLong = returnToUserMission?.longitudeDeg
+
+        assertThat(currentLat, `is`(notNullValue()))
+        assertThat(currentLong, `is`(notNullValue()))
+
+        //compare both position
+        assertThat(currentLat, closeTo(expectedLatLng.latitude, EPSILON))
+        assertThat(currentLong, closeTo(expectedLatLng.longitude, EPSILON))
     }
 }
