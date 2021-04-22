@@ -7,5 +7,8 @@ package ch.epfl.sdp.drone3d.map.area
 
 import com.mapbox.mapboxsdk.geometry.LatLng
 
+/**
+ * Area with 4 vertices representing a Parallelogram
+ */
 class ParallelogramArea(override val vertices: List<LatLng>) : Area {
 }

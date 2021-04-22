@@ -10,11 +10,15 @@
 package ch.epfl.sdp.drone3d.map.area
 
 import androidx.annotation.VisibleForTesting
-import ch.epfl.sdp.drone3d.map.PaintableArea
+import ch.epfl.sdp.drone3d.map.DrawableArea
 import com.mapbox.mapboxsdk.geometry.LatLng
 import kotlin.properties.Delegates
 
-abstract class AreaBuilder : PaintableArea {
+/**
+ * Builder for an area that can be displayed on MapBox as it is constructed
+ */
+
+abstract class AreaBuilder : DrawableArea {
 
     abstract val sizeLowerBound: Int?
     abstract val sizeUpperBound: Int?

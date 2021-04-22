@@ -16,6 +16,9 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.*
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
+/**
+ * Drawer on MapBox for an AreaBuilder
+ */
 class MapboxAreaBuilderDrawer(
     mapView: MapView,
     mapboxMap: MapboxMap,
@@ -26,7 +29,7 @@ class MapboxAreaBuilderDrawer(
 
     companion object {
         private const val REGION_FILL_OPACITY: Float = 0.5F
-        private const val WAYPOINT_RADIUS: Float = 20f
+        private const val WAYPOINT_RADIUS: Float = 8f
     }
 
     val onVertexMoved = mutableListOf<(old: LatLng, new: LatLng) -> Unit>()
@@ -74,7 +77,7 @@ class MapboxAreaBuilderDrawer(
         circleManager.onDestroy()
     }
 
-    fun draw(pa: PaintableArea) {
+    fun draw(pa: DrawableArea) {
         val controlVertices = pa.getControlVertices()
         val shapeVertices = pa.getShapeVertices()
 

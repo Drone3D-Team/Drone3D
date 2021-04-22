@@ -11,6 +11,10 @@ package ch.epfl.sdp.drone3d.map.area
 
 import com.mapbox.mapboxsdk.geometry.LatLng
 
+// TODO To be deleted if no strategy is implemented for it
+/**
+ * Builder for PolygonArea, simplest form of Area, no mathematical rules
+ */
 class PolygonBuilder : AreaBuilder() {
     override val sizeLowerBound: Int? = 3
     override val sizeUpperBound: Int? = null

@@ -11,6 +11,9 @@ package ch.epfl.sdp.drone3d.map.area
 
 import com.mapbox.mapboxsdk.geometry.LatLng
 
+/**
+ * Represent an area delimited by [vertices]
+ */
 interface Area {
     val vertices: List<LatLng>
 }

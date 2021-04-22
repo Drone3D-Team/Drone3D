@@ -11,7 +11,10 @@ package ch.epfl.sdp.drone3d.map
 
 import com.mapbox.mapboxsdk.geometry.LatLng
 
-interface PaintableArea {
+/**
+ *
+ */
+interface DrawableArea {
     fun getControlVertices(): List<LatLng>
     fun getShapeVertices(): List<LatLng>?
 }
