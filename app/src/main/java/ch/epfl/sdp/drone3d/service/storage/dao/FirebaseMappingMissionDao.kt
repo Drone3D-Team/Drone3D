@@ -142,10 +142,12 @@ class FirebaseMappingMissionDao @Inject constructor(
     }
 
     override fun getPrivateFilteredMappingMissions(): LiveData<List<MappingMission>> {
+        privateFilteredMappingMissions.value = emptyList()
         return privateFilteredMappingMissions
     }
 
     override fun getSharedFilteredMappingMissions(): LiveData<List<MappingMission>> {
+        sharedFilteredMappingMissions.value = emptyList()
         return sharedFilteredMappingMissions
     }
 

@@ -732,4 +732,118 @@ class FirebaseMappingMissionDaoTest {
         database.getReference("mappingMissions/").removeEventListener(listenerShared)
     }
 
+    @Test
+    fun getPrivateFilteredMappingMissionsReturnsEmptyList() {
+        val counter = CountDownLatch(1)
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+        db.storeMappingMission(OWNERID, mappingMission1)
+
+        val live = db.getPrivateFilteredMappingMissions()
+
+        val observer = Observer<List<MappingMission>> {
+            assertThat(it, equalTo(listOf()))
+            counter.countDown()
+        }
+
+        live.observeForever(observer)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+        live.removeObserver(observer)
+    }
+
+    @Test
+    fun getSharedFilteredMappingMissionsReturnsEmptyList() {
+        val counter = CountDownLatch(1)
+
+        val mappingMission1 = MAPPING_MISSION_1.copy()
+        db.shareMappingMission(OWNERID, mappingMission1)
+
+        val live = db.getSharedFilteredMappingMissions()
+
+        val observer = Observer<List<MappingMission>> {
+            assertThat(it, equalTo(listOf()))
+            counter.countDown()
+        }
+
+        live.observeForever(observer)
+
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        live.removeObserver(observer)
+    }
+
+    @Test
+    fun updatePrivateFilteredMappingMissionsUpdatesLiveDataWithCorrectMissions() {
+        val counter = CountDownLatch(1)
+
+        val mappingMission1 = MappingMission("A_Mission")
+        val mappingMission2 = MappingMission("B_Mission")
+        db.storeMappingMission(OWNERID, mappingMission1)
+        db.storeMappingMission(OWNERID, mappingMission2)
+
+        val live = db.getPrivateFilteredMappingMissions()
+        db.updatePrivateFilteredMappingMissions(OWNERID, "A")
+
+        val observer = Observer<List<MappingMission>> {
+            if (it != null && it.isNotEmpty()) {
+                assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
+                assertThat(mappingMission1.state, equalTo(State.PRIVATE))
+                assertThat(mappingMission1.sharedId, nullValue())
+
+                assertThat(it.toSet(), equalTo(setOf(mappingMission1)))
+                counter.countDown()
+            }
+        }
+
+        live.observeForever(observer)
+
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        db.removePrivateMappingMission(OWNERID, mappingMission1.privateId!!)
+        db.removePrivateMappingMission(OWNERID, mappingMission2.privateId!!)
+        live.removeObserver(observer)
+    }
+
+    @Test
+    fun updateSharedFilteredMappingMissionsUpdatesLiveDataWithCorrectMissions() {
+        val counter = CountDownLatch(1)
+
+        val mappingMission1 = MappingMission("A_Mission")
+        val mappingMission2 = MappingMission("B_Mission")
+        db.shareMappingMission(OWNERID, mappingMission1)
+        db.shareMappingMission(OWNERID, mappingMission2)
+
+        val live = db.getSharedFilteredMappingMissions()
+        db.updateSharedFilteredMappingMissions("A")
+
+        val observer = Observer<List<MappingMission>> {
+            if (it != null && it.isNotEmpty()) {
+                assertThat(mappingMission1.ownerUid, equalTo(OWNERID))
+                assertThat(mappingMission1.state, equalTo(State.SHARED))
+                assertThat(mappingMission1.privateId, nullValue())
+
+                assertThat(it.toSet(), equalTo(setOf(mappingMission1)))
+                counter.countDown()
+            }
+        }
+
+        live.observeForever(observer)
+
+        counter.await(timeout, TimeUnit.SECONDS)
+        assertThat(counter.count, equalTo(0L))
+
+        db.removeSharedMappingMission(OWNERID, mappingMission1.sharedId!!)
+        db.removeSharedMappingMission(OWNERID, mappingMission2.sharedId!!)
+        live.removeObserver(observer)
+    }
+
 }
