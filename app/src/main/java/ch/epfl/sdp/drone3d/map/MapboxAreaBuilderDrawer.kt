@@ -88,8 +88,6 @@ class MapboxAreaBuilderDrawer(
         drawShape(shapeVertices ?: listOf())
 
         reset = false
-
-
     }
 
     /**
