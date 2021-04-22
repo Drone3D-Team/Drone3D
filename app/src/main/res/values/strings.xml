@@ -26,6 +26,7 @@
     <string name="register_fail">Registration failed</string>
     <string name="register_info_default">Enter your register information</string>
     <string name="login_info_default">Enter your login information</string>
+    <string name="email_or_password_empty">The email address and the password can\'t be empty</string>
 
     <!-- Connect/Disconnect Drone/Simulation Activities -->
     <string name="drone_connect_button">Connect a drone</string>
