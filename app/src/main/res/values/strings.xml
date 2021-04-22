@@ -37,6 +37,13 @@
     <string name="drone_disconnect_button">Disconnect</string>
     <string name="drone_simulated_ip">IP : %1$s</string>
     <string name="drone_simulated_port">Port : %1$s</string>
+    <string name="waiting_connection">Waiting for connection</string>
+    <!-- Message showed when ip with invalid format is written -->
+    <string name="ip_format_invalid">The IP address need to have a valid format</string>
+    <!-- Message showed when application can't connect to provided ip -->
+    <string name="ip_connection_timeout">An error occurred when trying to connect to the provided IP : timeout</string>
+    <!-- Message showed when application couldn't detect a drone -->
+    <string name="no_drone_detected">No drone was detected</string>
 
     <!-- Itinerary Create/Save Activities -->
     <string name="content_descriptor_save_icon">save icon</string>

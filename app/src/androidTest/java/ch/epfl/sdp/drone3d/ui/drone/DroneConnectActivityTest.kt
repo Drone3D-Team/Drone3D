@@ -12,12 +12,13 @@ import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
 import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -34,9 +35,11 @@ import org.mockito.Mockito.*
 @UninstallModules(DroneModule::class)
 class DroneConnectActivityTest {
 
+    private val activityRule = ActivityTestRule(DroneConnectActivity::class.java)
+
     @get:Rule
-    val activityRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(ActivityScenarioRule(DroneConnectActivity::class.java))
+    val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+            .around(activityRule)
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
@@ -71,6 +74,7 @@ class DroneConnectActivityTest {
                     assertEquals(ip, an.getArgument(0))
                     assertEquals(port, an.getArgument(1))
                 }
+        `when`(droneService.isConnected()).thenReturn(true)
 
         onView(withId(R.id.text_IP_address))
             .perform(typeText(ip))
@@ -90,10 +94,63 @@ class DroneConnectActivityTest {
     }
 
     @Test
+    fun connectSimulatedDroneShowToastWhenInvalidIp() {
+        onView(withId(R.id.connect_simulation_button))
+            .perform(click())
+
+        ToastMatcher.onToast(activityRule.activity, R.string.ip_format_invalid)
+    }
+
+    @Test
+    fun connectSimulatedDroneShowsToastWhenNonAcceptedId() {
+        val ip = "1.1.1.1"
+        val port = "1111"
+
+        `when`(droneService.setSimulation(anyString(), anyString()))
+            .then { an ->
+                assertEquals(ip, an.getArgument(0))
+                assertEquals(port, an.getArgument(1))
+            }
+        `when`(droneService.isConnected()).thenReturn(false)
+
+        onView(withId(R.id.text_IP_address))
+            .perform(typeText(ip))
+        onView(isRoot())
+            .perform(closeSoftKeyboard())
+        onView(withId(R.id.text_port))
+            .perform(typeText(port))
+        onView(isRoot())
+            .perform(closeSoftKeyboard())
+
+
+        onView(withId(R.id.connect_simulation_button))
+            .perform(click())
+
+        verify(droneService).setSimulation(anyString(), anyString())
+        ToastMatcher.onToast(activityRule.activity, R.string.ip_connection_timeout)
+    }
+
+    @Test
     fun connectDroneWorks() {
+        `when`(droneService.isConnected()).thenReturn(true)
+
         onView(withId(R.id.connect_drone_button))
             .perform(click())
 
         verify(droneService).setDrone()
+        Intents.intended(
+            hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun connectDroneShowsToastWhenNoDroneDetected() {
+        `when`(droneService.isConnected()).thenReturn(false)
+
+        onView(withId(R.id.connect_drone_button))
+            .perform(click())
+
+        verify(droneService).setDrone()
+        ToastMatcher.onToast(activityRule.activity, R.string.no_drone_detected)
     }
 }
