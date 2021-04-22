@@ -84,6 +84,12 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     }
 
     fun goToSaveActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+
+        // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
+        if (areaBuilder.getShapeVertices() != null){
+            flightPath = ArrayList(areaBuilder.getShapeVertices());
+        }
+
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
         intent.putExtra("flightPath", flightPath)
         startActivity(intent)
