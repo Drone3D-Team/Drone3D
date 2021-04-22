@@ -51,6 +51,8 @@
     <string name="save_mission_text">Save</string>
     <string name="private_repo">Private</string>
     <string name="share_repo">Share</string>
+    <string name="map_ready">MAP READY</string>
+    <string name="map_not_ready">MAP NOT READY</string>
 
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
