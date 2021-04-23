@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.mission
 
 import dagger.Binds
@@ -12,5 +17,5 @@ abstract class MappingMissionModule {
 
     @Singleton
     @Binds
-    abstract fun bindMappingMissionService(impl: MappingMissionService): MappingMissionService
+    abstract fun bindMappingMissionService(impl: ParallelogramMappingMissionService): ParallelogramMappingMissionService
 }
