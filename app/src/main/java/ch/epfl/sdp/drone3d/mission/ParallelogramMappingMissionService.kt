@@ -5,7 +5,7 @@
 
 package ch.epfl.sdp.drone3d.mission
 
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import java.lang.IllegalArgumentException
 import javax.inject.Inject

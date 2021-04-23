@@ -3,10 +3,13 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneDataEditable
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
@@ -27,14 +30,10 @@ import kotlin.math.sqrt
  *  - Convert certain types to our owns
  *  - Change from object to api/implementation
  */
-class DroneDataImpl constructor(val provider: DroneService) : DroneData {
-
-    // Drone instance
-    private lateinit var instance: System
+class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable {
 
     private val disposables: MutableList<Disposable> = ArrayList()
 
-    // The data of the drone we keep track of
     private val position: MutableLiveData<LatLng> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
@@ -45,7 +44,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     private val isMissionPaused: MutableLiveData<Boolean> = MutableLiveData(true)
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
     private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
-    private val missionPlan: MutableLiveData<Mission.MissionPlan> = MutableLiveData()
+    private val mission: MutableLiveData<List<Mission.MissionItem>> = MutableLiveData()
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
 
@@ -61,7 +60,17 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         val droneInstance = provider.provideDrone()
 
         if (droneInstance == null) {
-            resetData()
+            // Reset
+            position.postValue(null)
+            batteryLevel.postValue(null)
+            absoluteAltitude.postValue(null)
+            speed.postValue(null)
+            homeLocation.postValue(null)
+            isFlying.postValue(false)
+            isConnected.postValue(false)
+            mission.postValue(null)
+            isMissionPaused.postValue(true)
+            cameraResolution.postValue(null)
         } else {
             addFlightModeSubscriptions(droneInstance)
             addArmedSubscriptions(droneInstance)
@@ -158,34 +167,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
         }
     }
 
-    private fun resetData() {
-        position.postValue(null)
-        batteryLevel.postValue(null)
-        absoluteAltitude.postValue(null)
-        speed.postValue(null)
-        homeLocation.postValue(null)
-        isFlying.postValue(false)
-        isConnected.postValue(false)
-        isMissionPaused.postValue(true)
-        cameraResolution.postValue(null)
-    }
-
-    private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
-        disposables.add(
-            flow.distinctUntilChanged().subscribe(
-                onNext,
-                {error -> Timber.e(error,"Error $name : $error")}
-            )
-        )
-    }
-
+    @Synchronized
     private fun disposeOfAll() {
         disposables.forEach(Disposable::dispose)
         disposables.clear()
-    }
-
-    protected fun finalize() {
-        disposeOfAll()
     }
 
     override fun getPosition(): LiveData<LatLng> = position
@@ -202,13 +187,9 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
 
     override fun isConnected(): LiveData<Boolean> = isConnected
 
-    override fun isMissionPaused(): LiveData<Boolean> = isMissionPaused
-
     override fun getCameraResolution(): LiveData<DroneData.CameraResolution> = cameraResolution
 
     override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
-
-    override fun getMissionPlan(): LiveData<Mission.MissionPlan> = missionPlan
 
     override fun getFocalLength(): LiveData<Float> = focalLength
 
@@ -217,5 +198,34 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneData {
     override fun refresh() {
         disposeOfAll()
         createDefaultSubs()
+    }
+
+    @Synchronized
+    override fun purge() {
+        disposables.filter { !it.isDisposed }
+    }
+
+    override fun getMutableMission(): MutableLiveData<List<Mission.MissionItem>> = mission
+
+    override fun getMutableMissionPaused(): MutableLiveData<Boolean> = isMissionPaused
+
+    private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
+        addSubscription(
+                flow.distinctUntilChanged().subscribe(
+                    onNext,
+                    { error -> Timber.e(error,"Error $name : $error") }
+                )
+        )
+    }
+
+    @Synchronized
+    override fun addSubscription(disposable: Disposable) {
+        disposables.add(
+                disposable
+        )
+    }
+
+    protected fun finalize() {
+        disposeOfAll()
     }
 }

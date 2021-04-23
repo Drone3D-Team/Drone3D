@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.mission
 
-import ch.epfl.sdp.drone3d.drone.DroneService
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 interface MappingMissionService {

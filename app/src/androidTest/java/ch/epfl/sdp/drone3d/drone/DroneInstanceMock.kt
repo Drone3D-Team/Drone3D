@@ -8,6 +8,9 @@
 
 package ch.epfl.sdp.drone3d.drone
 
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneService
+import ch.epfl.sdp.drone3d.drone.impl.DroneDataImpl
 import io.mavsdk.System
 import io.mavsdk.action.Action
 import io.mavsdk.camera.Camera

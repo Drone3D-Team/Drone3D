@@ -7,11 +7,12 @@ package ch.epfl.sdp.drone3d.drone
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.impl.DroneDataImpl
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.telemetry.Telemetry
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,14 +27,11 @@ class DroneDataTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Before
-    fun before() {
-        DroneInstanceMock.setupDefaultMocks()
-    }
-
     @Test
     fun expectedData() {
-        val droneData = DroneDataImpl(DroneInstanceMock.mockService())
+        DroneInstanceMock.setupDefaultMocks()
+
+        val droneData: DroneData = DroneDataImpl(DroneInstanceMock.mockService())
 
         assertEquals(0f, droneData.getAbsoluteAltitude().value)
         assertEquals(10f, droneData.getBatteryLevel().value)

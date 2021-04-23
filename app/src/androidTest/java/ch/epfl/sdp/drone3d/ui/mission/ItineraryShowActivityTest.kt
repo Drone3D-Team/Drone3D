@@ -17,7 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.auth.UserSession
@@ -33,12 +33,11 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
-
 @HiltAndroidTest
 @UninstallModules(DroneModule::class, AuthenticationModule::class)
 class ItineraryShowActivityTest {
-    private val USER_UID = "asdfg"
 
+    private val USER_UID = "asdfg"
 
     private var activityRule = ActivityScenarioRule(ItineraryShowActivity::class.java)
 
