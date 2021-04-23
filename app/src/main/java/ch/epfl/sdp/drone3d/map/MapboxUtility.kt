@@ -5,12 +5,13 @@
 
 package ch.epfl.sdp.drone3d.map
 
-import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
 class MapboxUtility {
+
     companion object {
 
         private val ZOOM_VALUE = 14.0

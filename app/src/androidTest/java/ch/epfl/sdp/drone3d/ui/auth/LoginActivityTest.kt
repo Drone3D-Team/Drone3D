@@ -19,8 +19,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
-import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
-import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.AuthResult

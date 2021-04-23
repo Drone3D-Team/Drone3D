@@ -10,9 +10,9 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.drone.DroneModule
-import ch.epfl.sdp.drone3d.drone.api.DroneService
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
