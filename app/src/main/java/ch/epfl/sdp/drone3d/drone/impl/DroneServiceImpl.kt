@@ -32,6 +32,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
 
     override fun provideDrone(): System? = droneInstance
 
+    @Synchronized
     override fun setSimulation(IP: String, port: String) {
 
         disconnect()
@@ -48,6 +49,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
         droneData.refresh()
     }
 
+    @Synchronized
     override fun setDrone() {
 
         disconnect()
@@ -72,6 +74,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
         return simPort
     }
 
+    @Synchronized
     override fun isConnected(): Boolean {
         return droneData.isConnected().value ?: false
     }
@@ -80,6 +83,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
         return isSimulation
     }
 
+    @Synchronized
     override fun disconnect() {
         server?.stop()
         droneInstance?.dispose()

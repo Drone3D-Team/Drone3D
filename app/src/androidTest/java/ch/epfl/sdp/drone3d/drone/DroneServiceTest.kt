@@ -10,7 +10,9 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.sdp.drone3d.drone.api.DroneServerFactory
 import ch.epfl.sdp.drone3d.drone.impl.DroneServiceImpl
+import io.mavsdk.core.Core
 import io.mavsdk.mavsdkserver.MavsdkServer
+import io.reactivex.Flowable
 import org.hamcrest.Matchers.`is`
 import org.junit.Rule
 import org.junit.Test
@@ -30,6 +32,11 @@ class DroneServiceTest {
         val drone = DroneInstanceMock.droneSystem
 
         DroneInstanceMock.setupDefaultMocks()
+
+        // force isConnected() to be true during the simulation setup
+        `when`(drone.core.connectionState).thenReturn(Flowable.fromArray(
+            Core.ConnectionState(0L, true)
+        ))
 
         `when`(factory.createSimulation(anyString(), anyString()))
                 .thenReturn(DroneServerFactory.InstanceContainer(server, drone))

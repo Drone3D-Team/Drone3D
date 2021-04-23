@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,6 +14,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -22,13 +24,22 @@ import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class ItineraryShowActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var mappingMissionDao: MappingMissionDao
+
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private lateinit var mapView: MapView
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
+
+    private lateinit var ownerUid: String
+    private var privateId: String? = null
+    private var sharedId: String? = null
 
     @Inject
     lateinit var droneService: DroneService
@@ -48,6 +59,10 @@ class ItineraryShowActivity : AppCompatActivity() {
         @Suppress("UNCHECKED_CAST")
         currentMissionPath =
             intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        // Get the Intent that started this activity and extract user and ids
+        ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER).toString()
+        privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
+        sharedId = intent.getStringExtra(MissionViewAdapter.SHARED)
 
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
@@ -75,6 +90,34 @@ class ItineraryShowActivity : AppCompatActivity() {
     fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        startActivity(intent)
+    }
+
+    /**
+     * Show an alert asking for confirmation to delete the mission
+     */
+    fun deleteMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        val builder = Builder(this)
+        builder.setMessage(getString(R.string.delete_confirmation))
+        builder.setCancelable(true)
+
+        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, id ->
+            dialog.cancel()
+            confirmDelete()
+        }
+
+        builder.setNegativeButton(R.string.cancel_delete) { dialog, id ->
+            dialog.cancel()
+        }
+        builder.create()?.show()
+    }
+
+    /**
+     * Delete this mapping mission and go back to the mission selection activity
+     */
+    private fun confirmDelete() {
+        mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
+        val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)
     }
 
