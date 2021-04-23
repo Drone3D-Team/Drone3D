@@ -10,7 +10,6 @@ class SphereToPlaneProjectorTest {
     private val LATITUDE_ERROR_1_DEGREE = 0.0000001
     private val LONGITUDE_ERROR_1_DEGREE = 0.00002
 
-
     @Test
     fun originIsMappedToZeroZeroAsPoint(){
         val origin = LatLng(70.0,30.0)
