@@ -21,6 +21,11 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
+/**
+ * This class is an implementation of [DroneExecutor]. As such it is responsible of the mission management of the drone.
+ *
+ * Parts of this code were taken from the fly2find project and adapted to our needs.
+ */
 class DroneExecutorImpl(private val service: DroneService,
                         private val data: DroneDataEditable): DroneExecutor {
 

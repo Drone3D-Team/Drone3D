@@ -10,6 +10,9 @@ import androidx.lifecycle.MutableLiveData
 import io.mavsdk.mission.Mission
 import io.reactivex.disposables.Disposable
 
+/**
+ * An extension of [DroneData] that allows writing access to some of the live data
+ */
 interface DroneDataEditable : DroneData {
 
     override fun getMission(): LiveData<List<Mission.MissionItem>> = getMutableMission()

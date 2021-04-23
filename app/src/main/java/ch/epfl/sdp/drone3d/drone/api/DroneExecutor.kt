@@ -8,6 +8,9 @@ package ch.epfl.sdp.drone3d.drone.api
 import android.content.Context
 import io.mavsdk.mission.Mission
 
+/**
+ * An interface responsible of launching and controlling the missions of the drone
+ */
 interface DroneExecutor {
 
     /**
