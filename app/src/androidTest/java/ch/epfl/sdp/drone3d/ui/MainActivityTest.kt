@@ -60,6 +60,8 @@ class MainActivityTest {
         val liveData = MutableLiveData(listOf(MappingMission("name", listOf())))
         `when`(mappingMissionDao.getPrivateMappingMissions(anyString())).thenReturn(liveData)
         `when`(mappingMissionDao.getSharedMappingMissions()).thenReturn(liveData)
+        `when`(mappingMissionDao.getPrivateFilteredMappingMissions()).thenReturn(liveData)
+        `when`(mappingMissionDao.getSharedFilteredMappingMissions()).thenReturn(liveData)
     }
 
     @Before

@@ -7,22 +7,26 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 
 import android.app.Activity
+import android.content.Intent
+import android.os.SystemClock
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.MainActivity
+import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -137,5 +141,44 @@ class ItineraryCreateActivityTest {
 
         val intents = Intents.getIntents()
         assert(intents.any { it.hasExtra("flightPath") })
+    }
+
+    @Test
+    fun createBasicMissionWork() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+        activityRule.scenario.recreate()
+
+        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
+
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeLeft())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeDown())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(swipeRight())
+        SystemClock.sleep(500);
+        onView(withId(R.id.mapView)).perform(click())
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToSaveActivity)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra("flightPath") && (it.extras?.getSerializable("flightPath") as List<LatLng>).size == 4 })
     }
 }

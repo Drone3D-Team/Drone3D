@@ -12,16 +12,29 @@ import ch.epfl.sdp.drone3d.service.storage.data.State
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class FirebaseMappingMissionDao @Inject constructor(
-            private val database: FirebaseDatabase
-        ) : MappingMissionDao {
+    private val database: FirebaseDatabase
+) : MappingMissionDao {
 
     private val privateMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private var privateMappingMissionsIsInit: Boolean = false
     private val sharedMappingMissions: MutableLiveData<List<MappingMission>> = MutableLiveData()
     private var sharedMappingMissionsIsInit: Boolean = false
+
+    private val privateFilteredMappingMissions: MutableLiveData<List<MappingMission>> =
+        MutableLiveData()
+    private var privateFilteredMappingMissionsFilter: String? = null
+    private var privateFilteredMappingMissionsQuery: Query? = null
+    private var privateFilteredMappingMissionsListener: ValueEventListener? = null
+
+    private val sharedFilteredMappingMissions: MutableLiveData<List<MappingMission>> =
+        MutableLiveData()
+    private var sharedFilteredMappingMissionsFilter: String? = null
+    private var sharedFilteredMappingMissionsQuery: Query? = null
+    private var sharedFilteredMappingMissionsListener: ValueEventListener? = null
 
     companion object {
         private const val TAG = "FirebaseMappingMissionDao"
@@ -128,10 +141,78 @@ class FirebaseMappingMissionDao @Inject constructor(
         return getMappingMissions(null)
     }
 
+    override fun getPrivateFilteredMappingMissions(): LiveData<List<MappingMission>> {
+        privateFilteredMappingMissions.value = emptyList()
+        return privateFilteredMappingMissions
+    }
+
+    override fun getSharedFilteredMappingMissions(): LiveData<List<MappingMission>> {
+        sharedFilteredMappingMissions.value = emptyList()
+        return sharedFilteredMappingMissions
+    }
+
+    /**
+     * Update the list of mapping missions filtered by the new [filter]
+     * If the [ownerUid] is not null the missions are fetch from private repo of the owner
+     * Otherwise in the shared repo
+     */
+    private fun updateFilteredMappingMissions(ownerUid: String?, filter: String) {
+        val rootRef =
+            if (ownerUid != null) privateMappingMissionRef(ownerUid) else sharedMappingMissionRef()
+        val mappingMissions =
+            if (ownerUid != null) privateFilteredMappingMissions else sharedFilteredMappingMissions
+        val query =
+            if (ownerUid != null) privateFilteredMappingMissionsQuery else sharedFilteredMappingMissionsQuery
+        val listener =
+            if (ownerUid != null) privateFilteredMappingMissionsListener else sharedFilteredMappingMissionsListener
+
+        if (query != null && listener != null) {
+            query.removeEventListener(listener)
+        }
+
+        val missionsQuery = rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val missionsSnapshot = dataSnapshot.children.map { c ->
+                    c.getValue(MappingMission::class.java)!!
+                }
+                mappingMissions.value = missionsSnapshot
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.tag(TAG)
+                    .w(databaseError.toException(), "getFilteredMappingMissions:onCancelled")
+            }
+        })
+
+        if (ownerUid != null) {
+            privateFilteredMappingMissionsFilter = filter
+            privateFilteredMappingMissionsQuery = missionsQuery
+            privateFilteredMappingMissionsListener = missionsListener
+        } else {
+            sharedFilteredMappingMissionsFilter = filter
+            sharedFilteredMappingMissionsQuery = missionsQuery
+            sharedFilteredMappingMissionsListener = missionsListener
+        }
+    }
+
+    override fun updatePrivateFilteredMappingMissions(ownerUid: String, filter: String?) {
+        if (filter != null && privateFilteredMappingMissionsFilter != filter.toUpperCase(Locale.ROOT)) {
+            updateFilteredMappingMissions(ownerUid, filter.toUpperCase(Locale.ROOT))
+        }
+    }
+
+    override fun updateSharedFilteredMappingMissions(filter: String?) {
+        if (filter != null && sharedFilteredMappingMissionsFilter != filter.toUpperCase(Locale.ROOT)) {
+            updateFilteredMappingMissions(null, filter.toUpperCase(Locale.ROOT))
+        }
+    }
+
     override fun storeMappingMission(ownerUid: String, mappingMission: MappingMission) {
         val privateId = privateMappingMissionRef(ownerUid).push().key
         mappingMission.privateId = privateId
         mappingMission.ownerUid = ownerUid
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase(Locale.ROOT)
         when (mappingMission.state) {
             // Not already stored => only in private repo
             State.NOT_STORED -> mappingMission.state = State.PRIVATE
@@ -144,7 +225,8 @@ class FirebaseMappingMissionDao @Inject constructor(
                 refSharedMission.child(PRIVATE_ID_PATH).setValue(privateId)
                 refSharedMission.child(STATE_PATH).setValue(State.PRIVATE_AND_SHARED)
             }
-            else -> {}
+            else -> {
+            }
         }
         privateMappingMissionRef(ownerUid).child(privateId!!).setValue(mappingMission)
     }
@@ -153,6 +235,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         val sharedId = sharedMappingMissionRef().push().key
         mappingMission.sharedId = sharedId
         mappingMission.ownerUid = ownerUid
+        mappingMission.nameUpperCase = mappingMission.name.toUpperCase(Locale.ROOT)
         when (mappingMission.state) {
             // Not already stored => only in shared repo
             State.NOT_STORED -> mappingMission.state = State.SHARED
@@ -192,7 +275,8 @@ class FirebaseMappingMissionDao @Inject constructor(
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Timber.tag(TAG).w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
+                Timber.tag(TAG)
+                    .w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
             }
         }
 
@@ -221,7 +305,8 @@ class FirebaseMappingMissionDao @Inject constructor(
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                Timber.tag(TAG).w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
+                Timber.tag(TAG)
+                    .w(databaseError.toException(), "removePrivateMappingMission:onCancelled")
             }
         }
 

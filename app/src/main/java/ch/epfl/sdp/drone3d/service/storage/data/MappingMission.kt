@@ -33,4 +33,5 @@ data class MappingMission(
     var sharedId: String? = null,
     var state: State = State.NOT_STORED,
     var ownerUid: String? = null,
+    var nameUpperCase: String = "",
 )
