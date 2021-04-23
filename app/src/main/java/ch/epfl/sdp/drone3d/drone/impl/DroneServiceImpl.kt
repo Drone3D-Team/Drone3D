@@ -6,8 +6,12 @@
  * This class was taken from the project Fly2Find and adapted for our project
  */
 
-package ch.epfl.sdp.drone3d.drone
+package ch.epfl.sdp.drone3d.drone.impl
 
+import ch.epfl.sdp.drone3d.drone.api.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneExecutor
+import ch.epfl.sdp.drone3d.drone.api.DroneServerFactory
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
@@ -17,6 +21,7 @@ private const val DEFAULT_PORT = "-"
 class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneService {
 
     private val droneData = DroneDataImpl(this)
+    private val droneExectuor = DroneExecutorImpl(this, droneData)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
@@ -89,7 +94,7 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
         droneData.refresh()
     }
 
-    override fun getData(): DroneData {
-        return droneData
-    }
+    override fun getData(): DroneData = droneData
+
+    override fun getExecutor(): DroneExecutor = droneExectuor
 }

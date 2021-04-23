@@ -8,7 +8,7 @@ package ch.epfl.sdp.drone3d.mission
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import ch.epfl.sdp.drone3d.drone.DroneData
+import ch.epfl.sdp.drone3d.drone.api.DroneData
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import org.junit.Assert.assertEquals
 import org.junit.Before

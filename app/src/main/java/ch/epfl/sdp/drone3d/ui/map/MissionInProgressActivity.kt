@@ -14,7 +14,7 @@ import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
@@ -109,8 +109,8 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         centerCameraOnDrone(mapView)
 
-        Transformations.map(droneService.getData().getMissionPlan()) { mission ->
-            return@map mission.missionItems.map { item ->
+        Transformations.map(droneService.getData().getMission()) { mission ->
+            return@map mission.map { item ->
                 LatLng(item.latitudeDeg, item.longitudeDeg)
             }
         }.observe(this, { path ->

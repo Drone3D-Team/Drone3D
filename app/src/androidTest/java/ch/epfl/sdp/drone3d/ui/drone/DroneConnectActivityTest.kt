@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.drone
 
+import android.app.Activity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.intent.Intents
@@ -12,13 +13,13 @@ import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.drone.DroneModule
-import ch.epfl.sdp.drone3d.drone.DroneService
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -30,12 +31,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+import java.util.concurrent.CompletableFuture
 
 @HiltAndroidTest
 @UninstallModules(DroneModule::class)
 class DroneConnectActivityTest {
 
-    private val activityRule = ActivityTestRule(DroneConnectActivity::class.java)
+    private val activityRule = ActivityScenarioRule(DroneConnectActivity::class.java)
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
@@ -98,7 +100,12 @@ class DroneConnectActivityTest {
         onView(withId(R.id.connect_simulation_button))
             .perform(click())
 
-        ToastMatcher.onToast(activityRule.activity, R.string.ip_format_invalid)
+        val activity = CompletableFuture<Activity>()
+        activityRule.scenario.onActivity {
+            activity.complete(it)
+        }
+
+        ToastMatcher.onToast(activity.get(), R.string.ip_format_invalid)
     }
 
     @Test
@@ -127,7 +134,13 @@ class DroneConnectActivityTest {
             .perform(click())
 
         verify(droneService).setSimulation(anyString(), anyString())
-        ToastMatcher.onToast(activityRule.activity, R.string.ip_connection_timeout)
+
+        val activity = CompletableFuture<Activity>()
+        activityRule.scenario.onActivity {
+            activity.complete(it)
+        }
+
+        ToastMatcher.onToast(activity.get(), R.string.ip_connection_timeout)
     }
 
     @Test
@@ -151,6 +164,12 @@ class DroneConnectActivityTest {
             .perform(click())
 
         verify(droneService).setDrone()
-        ToastMatcher.onToast(activityRule.activity, R.string.no_drone_detected)
+
+        val activity = CompletableFuture<Activity>()
+        activityRule.scenario.onActivity {
+            activity.complete(it)
+        }
+
+        ToastMatcher.onToast(activity.get(), R.string.no_drone_detected)
     }
 }

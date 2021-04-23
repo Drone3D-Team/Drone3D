@@ -5,6 +5,9 @@
 
 package ch.epfl.sdp.drone3d.drone
 
+import ch.epfl.sdp.drone3d.drone.api.DroneService
+import ch.epfl.sdp.drone3d.drone.impl.DroneServerFactoryImpl
+import ch.epfl.sdp.drone3d.drone.impl.DroneServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

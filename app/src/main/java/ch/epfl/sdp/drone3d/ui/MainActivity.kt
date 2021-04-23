@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.drone.DroneService
+import ch.epfl.sdp.drone3d.drone.api.DroneService
 import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
