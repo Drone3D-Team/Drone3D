@@ -10,7 +10,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
-class ParallelogramMappingMissionService @Inject constructor(override val droneService: DroneService):MappingMissionService{
+class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService{
 
     private val cameraAngle = 0.0 // Suppose the drone is looking down
 
@@ -40,7 +40,10 @@ class ParallelogramMappingMissionService @Inject constructor(override val droneS
         ) -> List<Point>
     ): List<LatLng>? {
 
-        assert(vertices.size==3)
+        if(vertices.size!=3){
+            throw IllegalArgumentException("A parallelogram should be determined by 3 vertices")
+        }
+
 
         val groundImageDimension = computeGroundImageDimension(flightHeight)
 
@@ -60,7 +63,6 @@ class ParallelogramMappingMissionService @Inject constructor(override val droneS
      * and the camera properties provided by the drone
      * If a property is not provided by the drone, returns null
      */
-
     fun computeGroundImageDimension(flightHeight: Double): GroundImageDim? {
 
         val sensorWidth = droneService.getData().getSensorSize().value?.horizontalSize //millimeters

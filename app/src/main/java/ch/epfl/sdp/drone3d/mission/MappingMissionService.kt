@@ -1,11 +1,14 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.mission
 
 import ch.epfl.sdp.drone3d.drone.DroneService
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 interface MappingMissionService {
-
-    val droneService:DroneService
 
     /**
      * Returns the coordinates where the drone should take pictures on a single pass mapping mission of altitude [flightHeight] in meters.
