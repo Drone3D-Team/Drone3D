@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
-import ch.epfl.sdp.drone3d.service.storage.data.State
+import ch.epfl.sdp.drone3d.model.mission.MappingMission
+import ch.epfl.sdp.drone3d.model.mission.State
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**

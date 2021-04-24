@@ -26,7 +26,6 @@ class MapboxAreaBuilderDrawer(
     onLongClickConsumed: () -> Boolean
 ) : MapboxDrawer {
 
-
     companion object {
         private const val REGION_FILL_OPACITY: Float = 0.5F
         private const val WAYPOINT_RADIUS: Float = 8f

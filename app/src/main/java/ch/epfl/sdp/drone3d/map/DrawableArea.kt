@@ -17,6 +17,8 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  * - shape vertices used to draw the border of the area
  */
 interface DrawableArea {
+
     fun getControlVertices(): List<LatLng>
+
     fun getShapeVertices(): List<LatLng>?
 }

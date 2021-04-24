@@ -6,6 +6,7 @@
 package ch.epfl.sdp.drone3d.service.storage
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import ch.epfl.sdp.drone3d.service.impl.storage.FirebaseDatabase
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

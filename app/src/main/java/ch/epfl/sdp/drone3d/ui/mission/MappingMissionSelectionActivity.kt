@@ -19,9 +19,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.service.storage.dao.MappingMissionDao
-import ch.epfl.sdp.drone3d.service.storage.data.MappingMission
+import ch.epfl.sdp.drone3d.model.mission.MappingMission
+import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -52,8 +52,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         MutableLiveData(Pair<StorageType, String?>(StorageType.PRIVATE, null))
 
     private fun setupAdapter(
-        data: LiveData<List<MappingMission>>,
-        adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
+            data: LiveData<List<MappingMission>>,
+            adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
     ) = data.observe(this) {
         it.let { adapter.submitList(sortedList(it)) }
     }
