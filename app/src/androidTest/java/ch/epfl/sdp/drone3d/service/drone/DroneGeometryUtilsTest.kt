@@ -16,7 +16,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.random.Random.Default.nextDouble
 
-class DroneUtilsTest {
+class DroneGeometryUtilsTest {
 
     @Before
     fun before() {

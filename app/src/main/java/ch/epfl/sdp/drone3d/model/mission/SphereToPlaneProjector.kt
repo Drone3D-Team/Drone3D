@@ -50,6 +50,7 @@ data class SphereToPlaneProjector(val origin: LatLng) {
     fun toLatLng(point: Point): LatLng {
 
         var longitude = point.x * meterToLong + origin.longitude
+        //PBM: if origin at -179 and add lots of meters => it should go to 179 and not -177
         var latitude = point.y * meterToLat + origin.latitude
 
         if(latitude > MAX_LATITUDE){
