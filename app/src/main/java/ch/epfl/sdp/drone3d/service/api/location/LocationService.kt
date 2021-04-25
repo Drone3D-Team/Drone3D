@@ -40,7 +40,8 @@ interface LocationService {
 
     /**
      * Unsubscribe a previous consumer with [subscriptionId] from location updates.
+     * Returns true if something was unsubscribed.
      */
-    fun unsubscribeFromLocationUpdates(subscriptionId: Int)
+    fun unsubscribeFromLocationUpdates(subscriptionId: Int): Boolean
 
 }

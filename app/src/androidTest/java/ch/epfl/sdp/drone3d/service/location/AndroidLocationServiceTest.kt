@@ -15,7 +15,6 @@ import android.location.LocationManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.sdp.drone3d.service.impl.location.AndroidLocationService
-import ch.epfl.sdp.drone3d.service.mission.ParallelogramMappingMissionServiceTest
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.*
 import org.junit.Before
@@ -125,7 +124,36 @@ class AndroidLocationServiceTest {
         setLocation(CUSTOM_LOCATION, 10.0, 80.0)
         listener!!.onLocationChanged(CUSTOM_LOCATION)
 
-        androidLocationService.unsubscribeFromLocationUpdates(id!!)
+        assertTrue(androidLocationService.unsubscribeFromLocationUpdates(id!!))
+    }
+
+    @Test
+    fun unsubscribeFromLocationUpdatesWithoutValidIdDoesNotRaiseException() {
+        assertFalse(androidLocationService.unsubscribeFromLocationUpdates(10))
+    }
+
+    @Test
+    fun getCurrentLocationThrowsSecurityException() {
+        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
+            PackageManager.PERMISSION_GRANTED
+        )
+        `when`(locationManager.getLastKnownLocation(anyString())).thenThrow(SecurityException())
+        assertThrows(SecurityException::class.java) { androidLocationService.getCurrentLocation() }
+    }
+
+    @Test
+    fun subscribeToLocationUpdatesThrowsSecurityException() {
+        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
+            PackageManager.PERMISSION_GRANTED
+        )
+        `when`(locationManager.getLastKnownLocation(anyString())).thenThrow(SecurityException())
+        assertThrows(SecurityException::class.java) {
+            androidLocationService.subscribeToLocationUpdates(
+                {},
+                0,
+                0
+            )
+        }
     }
 
     private fun assertLocationEquals(expected: Location, actual: LatLng) {

@@ -37,7 +37,9 @@ class AndroidLocationService @Inject constructor(
     }
 
     override fun isLocationEnabled(): Boolean {
-        return context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && getMyLocationProvider() != null
+        val currentPermission =
+            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        return currentPermission == PackageManager.PERMISSION_GRANTED && getMyLocationProvider() != null
     }
 
     override fun getCurrentLocation(): LatLng? {
@@ -51,7 +53,7 @@ class AndroidLocationService @Inject constructor(
                     ?: return null
             LatLng(loc.latitude, loc.longitude)
         } catch (ex: SecurityException) {
-            // We need to explicitly catch this exception, even though we throw it again immediately
+            // We need to explicitly catch this exception that raises if permission is not granted
             throw ex
         }
     }
@@ -81,18 +83,20 @@ class AndroidLocationService @Inject constructor(
                 listener
             )
         } catch (ex: SecurityException) {
-            // We need to explicitly catch this exception, even though we throw it again immediately
+            // We need to explicitly catch this exception that raises if permission is not granted
             throw ex
         }
 
         return id
     }
 
-    override fun unsubscribeFromLocationUpdates(subscriptionId: Int) {
+    override fun unsubscribeFromLocationUpdates(subscriptionId: Int): Boolean {
         val listener: LocationListener? = listeners.remove(subscriptionId)
         if (listener != null) {
             locationManager.removeUpdates(listener)
+            return true
         }
+        return false
     }
 
 }
