@@ -13,6 +13,7 @@ class GeometryUtilsTest{
 
     @Test
     fun getFourthParallelogramPointOnSquareIsCorrect(){
+
         val origin = LatLng(0.0,0.0)
         val topAdjacent =  LatLng(1.0,0.0)
         val rightAdjacent =  LatLng(0.0,1.0)
@@ -38,8 +39,4 @@ class GeometryUtilsTest{
         assertEquals(expected.latitude,actual.latitude,0.0001)
 
     }
-
-
-
-
 }

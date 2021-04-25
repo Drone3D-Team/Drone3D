@@ -12,7 +12,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 object GeometryUtils {
 
     /**
-     * Returns the fourth point of a parallelogram opposite to [origin]. This method is meant to be
+     * Returns the fourth point of a parallelogram opposite to the [origin]. This method is meant to be
      * used for small enough parallelogram on the surface of the Earth, see "SphereToPlaneProjector"
      * for more details
      */
