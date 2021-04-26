@@ -171,7 +171,8 @@ class FirebaseMappingMissionDao @Inject constructor(
             query.removeEventListener(listener)
         }
 
-        val missionsQuery = rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
+        val missionsQuery =
+            rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
         val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val missionsSnapshot = dataSnapshot.children.map { c ->
@@ -209,7 +210,7 @@ class FirebaseMappingMissionDao @Inject constructor(
         }
     }
 
-    override fun storeMappingMission(ownerUid: String, mappingMission: MappingMission) {
+    override fun storeMappingMission(ownerUid: String, mappingMission: MappingMission): LiveData<Boolean> {
         val privateId = privateMappingMissionRef(ownerUid).push().key
         mappingMission.privateId = privateId
         mappingMission.ownerUid = ownerUid
@@ -229,10 +230,17 @@ class FirebaseMappingMissionDao @Inject constructor(
             else -> {
             }
         }
-        privateMappingMissionRef(ownerUid).child(privateId!!).setValue(mappingMission)
+        val result = MutableLiveData<Boolean>()
+        privateMappingMissionRef(ownerUid).child(privateId!!)
+            .setValue(mappingMission).addOnSuccessListener { result.value = true }
+            .addOnFailureListener { result.value = false }
+        return result
     }
 
-    override fun shareMappingMission(ownerUid: String, mappingMission: MappingMission) {
+    override fun shareMappingMission(
+        ownerUid: String,
+        mappingMission: MappingMission
+    ): LiveData<Boolean> {
         val sharedId = sharedMappingMissionRef().push().key
         mappingMission.sharedId = sharedId
         mappingMission.ownerUid = ownerUid
@@ -253,7 +261,11 @@ class FirebaseMappingMissionDao @Inject constructor(
             else -> {
             }
         }
+        val result = MutableLiveData<Boolean>()
         sharedMappingMissionRef().child(sharedId!!).setValue(mappingMission)
+            .addOnSuccessListener { result.value = true }
+            .addOnFailureListener { result.value = false }
+        return result
     }
 
     override fun removePrivateMappingMission(ownerUid: String, privateId: String) {
