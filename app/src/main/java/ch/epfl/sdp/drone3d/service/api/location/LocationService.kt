@@ -35,7 +35,7 @@ interface LocationService {
     fun subscribeToLocationUpdates(
         consumer: (LatLng) -> Unit,
         minTimeDelta: Long,
-        minDistanceDelta: Long
+        minDistanceDelta: Float
     ): Int?
 
     /**

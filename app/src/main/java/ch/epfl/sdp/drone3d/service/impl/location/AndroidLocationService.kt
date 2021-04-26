@@ -61,7 +61,7 @@ class AndroidLocationService @Inject constructor(
     override fun subscribeToLocationUpdates(
         consumer: (LatLng) -> Unit,
         minTimeDelta: Long,
-        minDistanceDelta: Long
+        minDistanceDelta: Float
     ): Int? {
         if (!isLocationEnabled()) {
             return null
@@ -79,7 +79,7 @@ class AndroidLocationService @Inject constructor(
             locationManager.requestLocationUpdates(
                 provider,
                 minTimeDelta,
-                minDistanceDelta.toFloat(),
+                minDistanceDelta,
                 listener
             )
         } catch (ex: SecurityException) {

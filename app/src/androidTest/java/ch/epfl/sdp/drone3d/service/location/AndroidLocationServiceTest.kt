@@ -89,7 +89,7 @@ class AndroidLocationServiceTest {
         `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
             PackageManager.PERMISSION_DENIED
         )
-        assertNull(androidLocationService.subscribeToLocationUpdates({}, 10, 10))
+        assertNull(androidLocationService.subscribeToLocationUpdates({}, 10, 10f))
     }
 
     @Test
@@ -109,7 +109,7 @@ class AndroidLocationServiceTest {
             listener
         }
         val consumer: (LatLng) -> Unit = { latLng -> assertLocationEquals(CUSTOM_LOCATION, latLng) }
-        val id: Int? = androidLocationService.subscribeToLocationUpdates(consumer, 10, 10)
+        val id: Int? = androidLocationService.subscribeToLocationUpdates(consumer, 10, 10f)
         assertNotNull(id)
         assertNotNull(listener)
 
@@ -151,7 +151,7 @@ class AndroidLocationServiceTest {
             androidLocationService.subscribeToLocationUpdates(
                 {},
                 0,
-                0
+                0f
             )
         }
     }
