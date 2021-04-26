@@ -23,7 +23,6 @@ class MapboxAreaBuilderDrawer(
     mapView: MapView,
     mapboxMap: MapboxMap,
     style: Style,
-    onLongClickConsumed: () -> Boolean
 ) : MapboxDrawer {
 
     companion object {
@@ -38,21 +37,17 @@ class MapboxAreaBuilderDrawer(
 
     private lateinit var fillArea: Fill
 
-    private var reset: Boolean = false
-
     private var nbVertices = 0
 
     private val dragListener = object : OnCircleDragListener {
         lateinit var previousLocation: LatLng
         override fun onAnnotationDragStarted(annotation: Circle) {
             previousLocation = annotation.latLng
-            onLongClickConsumed()
         }
 
         override fun onAnnotationDrag(annotation: Circle) {
             onVertexMoved.forEach { it(previousLocation, annotation.latLng) }
             previousLocation = annotation.latLng
-
         }
 
         override fun onAnnotationDragFinished(annotation: Circle?) {
@@ -61,11 +56,6 @@ class MapboxAreaBuilderDrawer(
 
     init {
         circleManager.addDragListener(dragListener)
-        //circleManager.addLongClickListener { onLongClickConsumed() }
-    }
-
-    fun getUpperLayer(): String {
-        return circleManager.layerId
     }
 
     override fun onDestroy() {
@@ -84,13 +74,11 @@ class MapboxAreaBuilderDrawer(
         val controlVertices = drawableArea.getControlVertices()
         val shapeVertices = drawableArea.getShapeVertices()
 
-        if (controlVertices.size != nbVertices || reset) {
+        if (controlVertices.size != nbVertices) {
             drawControlVertices(controlVertices)
             nbVertices = controlVertices.size
         }
         drawShape(shapeVertices ?: listOf())
-
-        reset = false
     }
 
     /**
@@ -100,8 +88,7 @@ class MapboxAreaBuilderDrawer(
      */
     private fun drawShape(shapeOutline: List<LatLng>) {
 
-        if (!::fillArea.isInitialized || reset) {
-
+        if (!::fillArea.isInitialized) {
             fillManager.deleteAll()
             val fillOption = FillOptions()
                 .withLatLngs(listOf(shapeOutline))
