@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.app.Activity
 import android.content.Intent
+import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -32,8 +33,8 @@ import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matchers.not
 import org.junit.*
 import org.junit.rules.RuleChain
+import org.mockito.Mockito
 import org.mockito.Mockito.*
-
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
@@ -53,7 +54,18 @@ class SaveMappingMissionActivityTest {
     val authService: AuthenticationService = mockAuthenticationService()
 
     @BindValue
-    val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
+    val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
+
+    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+
+    private fun mockMappingMissionDao(): MappingMissionDao {
+        val mappingMissionDao = mock(MappingMissionDao::class.java)
+
+        `when`(mappingMissionDao.shareMappingMission(anyString(), any(MappingMission::class.java))).thenReturn(MutableLiveData(true))
+        `when`(mappingMissionDao.storeMappingMission(anyString(), any(MappingMission::class.java))).thenReturn(MutableLiveData(true))
+
+        return mappingMissionDao
+    }
 
     private fun mockAuthenticationService(): AuthenticationService {
         val authService = mock(AuthenticationService::class.java)
