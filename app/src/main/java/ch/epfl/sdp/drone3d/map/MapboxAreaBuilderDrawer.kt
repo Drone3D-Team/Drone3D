@@ -9,7 +9,6 @@
 package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
-import android.util.Log
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -46,29 +45,23 @@ class MapboxAreaBuilderDrawer(
     private val dragListener = object : OnCircleDragListener {
         lateinit var previousLocation: LatLng
         override fun onAnnotationDragStarted(annotation: Circle) {
-            Log.e("debug-drag", "Start drag")
-
             previousLocation = annotation.latLng
             onLongClickConsumed()
         }
 
         override fun onAnnotationDrag(annotation: Circle) {
-            Log.e("debug-drag", "Dragging")
-
             onVertexMoved.forEach { it(previousLocation, annotation.latLng) }
             previousLocation = annotation.latLng
 
         }
 
         override fun onAnnotationDragFinished(annotation: Circle?) {
-            Log.e("debug-drag", "Stop dragging")
-
         }
     }
 
     init {
         circleManager.addDragListener(dragListener)
-        circleManager.addLongClickListener { onLongClickConsumed() }
+        //circleManager.addLongClickListener { onLongClickConsumed() }
     }
 
     fun getUpperLayer(): String {

@@ -17,11 +17,11 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.PolygonBuilder
+import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -56,14 +56,13 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     // Location
     lateinit var locationComponentManager: LocationComponentManager
 
+    // Drawer
+    private lateinit var missionDrawer: MapboxMissionDrawer
+
     // Area
     private var longClickConsumed = false
     private lateinit var areaBuilder: AreaBuilder
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
-
-    // Drawer
-    private lateinit var missionDrawer: MapboxMissionDrawer
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +87,7 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     fun goToSaveActivity(@Suppress("UNUSED_PARAMETER") view: View) {
 
         // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
-        if (areaBuilder.getShapeVertices() != null){
+        if (areaBuilder.getShapeVertices() != null) {
             flightPath = ArrayList(areaBuilder.getShapeVertices());
         }
 
@@ -108,15 +107,20 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
                 return false
             }
 
-            areaBuilderDrawer =
-                MapboxAreaBuilderDrawer(mapView, mapboxMap, style) { onLongClickConsumed() }
+
             missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
+
+
 
             mapboxMap.addOnMapClickListener(this)
             mapboxMap.addOnMapLongClickListener(this)
 
             areaBuilder = PolygonBuilder()
             //areaBuilder = ParallelogramBuilder()
+
+            // Need to be the last Drawer instanciated to allow draggable vertex
+            areaBuilderDrawer =
+                MapboxAreaBuilderDrawer(mapView, mapboxMap, style) { onLongClickConsumed() }
 
             //areaBuilder.onAreaChanged.add { missionBuilder.withSearchArea(it) }
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
