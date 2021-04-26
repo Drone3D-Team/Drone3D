@@ -28,7 +28,7 @@ class MapboxAreaBuilderDrawer(
 
     companion object {
         private const val REGION_FILL_OPACITY: Float = 0.5F
-        private const val WAYPOINT_RADIUS: Float = 20f
+        private const val WAYPOINT_RADIUS: Float = 8f
     }
 
     val onVertexMoved = mutableListOf<(old: LatLng, new: LatLng) -> Unit>()
