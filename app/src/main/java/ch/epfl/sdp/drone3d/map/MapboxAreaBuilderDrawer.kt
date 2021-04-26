@@ -9,6 +9,7 @@
 package ch.epfl.sdp.drone3d.map
 
 import android.graphics.Color
+import android.util.Log
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -28,7 +29,7 @@ class MapboxAreaBuilderDrawer(
 
     companion object {
         private const val REGION_FILL_OPACITY: Float = 0.5F
-        private const val WAYPOINT_RADIUS: Float = 8f
+        private const val WAYPOINT_RADIUS: Float = 20f
     }
 
     val onVertexMoved = mutableListOf<(old: LatLng, new: LatLng) -> Unit>()
@@ -45,16 +46,23 @@ class MapboxAreaBuilderDrawer(
     private val dragListener = object : OnCircleDragListener {
         lateinit var previousLocation: LatLng
         override fun onAnnotationDragStarted(annotation: Circle) {
+            Log.e("debug-drag", "Start drag")
+
             previousLocation = annotation.latLng
             onLongClickConsumed()
         }
 
         override fun onAnnotationDrag(annotation: Circle) {
+            Log.e("debug-drag", "Dragging")
+
             onVertexMoved.forEach { it(previousLocation, annotation.latLng) }
             previousLocation = annotation.latLng
+
         }
 
         override fun onAnnotationDragFinished(annotation: Circle?) {
+            Log.e("debug-drag", "Stop dragging")
+
         }
     }
 
