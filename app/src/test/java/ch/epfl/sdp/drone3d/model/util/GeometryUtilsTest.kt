@@ -32,7 +32,7 @@ class GeometryUtilsTest{
         val rightAdjacent = LatLng(0.0,179.0)
         val topAdjacent =  LatLng(1.0,-179.0)
 
-        val expected = LatLng(1.0,-177.0)
+        val expected = LatLng(1.0,179.0)
         val actual = GeometryUtils.getFourthParallelogramVertex(origin,topAdjacent,rightAdjacent)
 
         assertEquals(expected.longitude,actual.longitude,0.0001)
