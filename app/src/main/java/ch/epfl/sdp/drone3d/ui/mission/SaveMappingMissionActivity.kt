@@ -42,7 +42,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val bundle = intent.extras;
+        val bundle = intent.extras
         if (bundle != null) {
             flightPath = bundle.getSerializable("flightPath") as List<LatLng>
         }
