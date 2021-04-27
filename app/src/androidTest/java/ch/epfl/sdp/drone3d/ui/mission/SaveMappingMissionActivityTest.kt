@@ -102,11 +102,11 @@ class SaveMappingMissionActivityTest {
     /**
      * Check that the main activity is launched
      */
-    private fun checkLaunchMainActivity(){
+    private fun checkReturnItineraryCreateActivity(){
         Intents.intended(
             IntentMatchers.hasComponent(
                 ComponentNameMatchers.hasClassName(
-                    MainActivity::class.java.name
+                    ItineraryCreateActivity::class.java.name
                 )
             )
         )
@@ -144,7 +144,7 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkLaunchMainActivity()
+        checkReturnItineraryCreateActivity()
 
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
@@ -166,7 +166,7 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkLaunchMainActivity()
+        checkReturnItineraryCreateActivity()
 
         verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
     }
@@ -195,7 +195,7 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkLaunchMainActivity()
+        checkReturnItineraryCreateActivity()
         
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
