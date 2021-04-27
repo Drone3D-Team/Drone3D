@@ -87,10 +87,10 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
         fun onComplete(isSuccess: Boolean) {
             if (isSuccess) {
-                ToastHandler.showToast(this, "Mission saved")
+                ToastHandler.showToast(this, R.string.mission_saved)
                 startActivity(Intent(this, MainActivity::class.java))
             } else {
-                ToastHandler.showToast(this, "Error while saving mission")
+                ToastHandler.showToast(this, R.string.error_mission_saved)
                 saveButton.isEnabled = true;
             }
         }
