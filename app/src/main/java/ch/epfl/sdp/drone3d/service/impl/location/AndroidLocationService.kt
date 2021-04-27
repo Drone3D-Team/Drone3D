@@ -6,11 +6,13 @@
 package ch.epfl.sdp.drone3d.service.impl.location
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationListener
 import android.location.LocationManager
+import androidx.core.app.ActivityCompat
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.module.LocationModule.LocationProvider
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -21,7 +23,6 @@ import javax.inject.Singleton
 /**
  * Location service using android location functionalities
  */
-@Singleton
 class AndroidLocationService @Inject constructor(
     private val locationManager: LocationManager,
     @LocationProvider val locationProvider: String?,
@@ -38,26 +39,24 @@ class AndroidLocationService @Inject constructor(
 
     override fun isLocationEnabled(): Boolean {
         val currentPermission =
-            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
         return currentPermission == PackageManager.PERMISSION_GRANTED && getMyLocationProvider() != null
     }
 
+    // Permission is checked on isLocationEnabled()
+    @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): LatLng? {
         if (!isLocationEnabled()) {
             return null
         }
-        return try {
-            val provider = getMyLocationProvider() ?: return null
-            val loc =
-                locationManager.getLastKnownLocation(provider)
-                    ?: return null
-            LatLng(loc.latitude, loc.longitude)
-        } catch (ex: SecurityException) {
-            // We need to explicitly catch this exception that raises if permission is not granted
-            throw ex
-        }
+
+        val provider = getMyLocationProvider() ?: return null
+        val loc = locationManager.getLastKnownLocation(provider) ?: return null
+        return LatLng(loc.latitude, loc.longitude)
     }
 
+    // Permission is checked on isLocationEnabled()
+    @SuppressLint("MissingPermission")
     override fun subscribeToLocationUpdates(
         consumer: (LatLng) -> Unit,
         minTimeDelta: Long,
@@ -74,18 +73,14 @@ class AndroidLocationService @Inject constructor(
 
         listeners[id] = listener
         val provider = getMyLocationProvider() ?: return null
-        try {
-            consumer(getCurrentLocation()!!)
-            locationManager.requestLocationUpdates(
-                provider,
-                minTimeDelta,
-                minDistanceDelta,
-                listener
-            )
-        } catch (ex: SecurityException) {
-            // We need to explicitly catch this exception that raises if permission is not granted
-            throw ex
-        }
+
+        consumer(getCurrentLocation()!!)
+        locationManager.requestLocationUpdates(
+            provider,
+            minTimeDelta,
+            minDistanceDelta,
+            listener
+        )
 
         return id
     }
@@ -98,5 +93,4 @@ class AndroidLocationService @Inject constructor(
         }
         return false
     }
-
 }
