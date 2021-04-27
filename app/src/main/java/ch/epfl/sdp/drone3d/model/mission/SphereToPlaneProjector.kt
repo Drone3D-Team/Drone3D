@@ -37,7 +37,8 @@ data class SphereToPlaneProjector(val origin: LatLng) {
         val xDistance = LatLng(origin.latitude, latlng.longitude).distanceTo(origin)
         val yDistance = LatLng(latlng.latitude, origin.longitude).distanceTo(origin)
 
-        val x = if ((latlng.longitude >= origin.longitude && latlng.longitude - origin.longitude<=MAX_LONGITUDE) || (latlng.longitude < origin.longitude && origin.longitude - latlng.longitude > MAX_LONGITUDE)) xDistance else -xDistance
+        val x = if ((latlng.longitude >= origin.longitude && latlng.longitude - origin.longitude<=MAX_LONGITUDE)
+            || (latlng.longitude < origin.longitude && origin.longitude - latlng.longitude > MAX_LONGITUDE)) xDistance else -xDistance
         val y = if (latlng.latitude >= origin.latitude) yDistance else -yDistance
 
         return Point(x,y)
