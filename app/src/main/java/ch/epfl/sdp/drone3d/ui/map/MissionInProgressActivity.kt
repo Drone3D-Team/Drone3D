@@ -6,10 +6,9 @@
 package ch.epfl.sdp.drone3d.ui.map
 
 import android.os.Bundle
+import android.view.SurfaceView
 import android.view.View
-import android.widget.MediaController
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
@@ -47,8 +46,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     @Inject lateinit var droneService: DroneService
 
     private lateinit var mapboxMap: MapboxMap
-
-    private lateinit var cameraView: VideoView
+    private lateinit var cameraView: SurfaceView
 
     private lateinit var missionDrawer: MapboxMissionDrawer
     private lateinit var droneDrawer: MapboxDroneDrawer
@@ -75,9 +73,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private var videoStreamUriObserver = Observer<String> { streamUri ->
-        cameraView.setVideoPath(streamUri)
-        cameraView.requestFocus()
-        cameraView.start()
+        // TODO View stream
     }
 
     private lateinit var stopMissionButton: MaterialButton
@@ -96,7 +92,6 @@ class MissionInProgressActivity : BaseMapActivity() {
         }
 
         cameraView = findViewById(R.id.camera_mission_view)
-        cameraView.setMediaController(object : MediaController(this) {})
 
         stopMissionButton = findViewById(R.id.stopMissionButton)
     }

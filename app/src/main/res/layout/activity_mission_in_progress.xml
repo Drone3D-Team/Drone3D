@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         app:layout_constraintVertical_bias="0.0" />
 
-    <VideoView
+    <SurfaceView
         android:id="@+id/camera_mission_view"
         android:layout_width="204dp"
         android:layout_height="112dp"
