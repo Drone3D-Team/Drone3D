@@ -5,9 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -18,7 +16,6 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
-import ch.epfl.sdp.drone3d.ui.MainActivity
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
@@ -72,6 +69,53 @@ class SaveMappingMissionActivity : AppCompatActivity() {
     private fun updateSaveButton() {
         saveButton.isEnabled = privateCheckBox.isChecked || sharedCheckBox.isChecked
     }
+    
+    private fun onCompleteSaving(isSuccess: Boolean) {
+        if (isSuccess) {
+            ToastHandler.showToast(this, R.string.mission_saved)
+            finish()
+        } else {
+            ToastHandler.showToast(this, R.string.error_mission_saved)
+            saveButton.isEnabled = true;
+        }
+    }
+
+    private fun shareAndStoreMission(ownerId: String, newMappingMission: MappingMission) {
+        object : MediatorLiveData<Pair<Boolean, Boolean>>() {
+            var private: Boolean? = null
+            var shared: Boolean? = null
+
+            init {
+                addSource(
+                    mappingMissionDao.storeMappingMission(
+                        ownerId,
+                        newMappingMission
+                    )
+                ) { result ->
+                    this.private = result
+                    if (shared != null) {
+                        private?.let { value = result to it }
+
+                    }
+                }
+                addSource(
+                    mappingMissionDao.shareMappingMission(
+                        ownerId,
+                        newMappingMission
+                    )
+                ) { result ->
+                    this.shared = result
+                    if (private != null) {
+                        shared?.let { value = it to result }
+                    }
+                }
+            }
+        }.observe(this) { (privateResult, sharedResult) ->
+            onCompleteSaving(
+                privateResult && sharedResult
+            )
+        }
+    }
 
     /**
      * Store the mapping mission in the checked repo(s)
@@ -85,70 +129,22 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         // The user should be logged to access this page
         val ownerId = authService.getCurrentSession()!!.user.uid
 
-        fun onComplete(isSuccess: Boolean) {
-            Log.e("debug-intent", isSuccess.toString())
-            if (isSuccess) {
-                ToastHandler.showToast(this, R.string.mission_saved)
-                finish()
-            } else {
-                ToastHandler.showToast(this, R.string.error_mission_saved)
-                saveButton.isEnabled = true;
-            }
-        }
-
         if (privateCheckBox.isChecked && sharedCheckBox.isChecked) {
-
-
-            object : MediatorLiveData<Pair<Boolean, Boolean>>() {
-                var private: Boolean? = null
-                var shared: Boolean? = null
-
-                init {
-                    addSource(
-                        mappingMissionDao.storeMappingMission(
-                            ownerId,
-                            newMappingMission
-                        )
-                    ) { result ->
-                        this.private = result
-                        if(shared !=  null){
-                            private?.let { value = result to it }
-
-                        }
-                    }
-                    addSource(
-                        mappingMissionDao.shareMappingMission(
-                            ownerId,
-                            newMappingMission
-                        )
-                    ) { result ->
-                        this.shared = result
-                        if(private !=  null){
-                            shared?.let { value = it to result }
-                        }
-                    }
-                }
-            }.observe(this) { (privateResult, sharedResult) ->
-                onComplete(
-                    privateResult && sharedResult
-                )
-            }
+            shareAndStoreMission(ownerId, newMappingMission)
             return
         }
 
 
         if (privateCheckBox.isChecked) {
             mappingMissionDao.storeMappingMission(ownerId, newMappingMission).observe(this) {
-                onComplete(it)
+                onCompleteSaving(it)
             }
             return
         }
 
         if (sharedCheckBox.isChecked) {
             mappingMissionDao.shareMappingMission(ownerId, newMappingMission).observe(this) {
-                if (it) {
-                    onComplete(it)
-                }
+                onCompleteSaving(it)
             }
             return
         }
