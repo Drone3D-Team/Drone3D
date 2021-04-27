@@ -18,7 +18,6 @@ import ch.epfl.sdp.drone3d.service.module.LocationModule.LocationProvider
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Location service using android location functionalities
