@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.app.Activity
 import android.content.Intent
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -36,6 +37,8 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import junit.framework.Assert.assertTrue
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.not
 import org.junit.*
 import org.junit.rules.RuleChain
@@ -53,13 +56,9 @@ class SaveMappingMissionActivityTest {
 
     private val activityRule = ActivityScenarioRule(SaveMappingMissionActivity::class.java)
 
-    private val mainActivityRule = ActivityScenarioRule(MainActivity::class.java)
-
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
         .around(activityRule)
-
-
 
     @BindValue
     val authService: AuthenticationService = mockAuthenticationService()
@@ -100,20 +99,6 @@ class SaveMappingMissionActivityTest {
     }
 
     /**
-     * Check that the main activity is launched
-     */
-    private fun checkReturnItineraryCreateActivity(){
-        Intents.intended(
-            IntentMatchers.hasComponent(
-                ComponentNameMatchers.hasClassName(
-                    ItineraryCreateActivity::class.java.name
-                )
-            )
-        )
-    }
-
-
-    /**
      * Make sure the context of the app is the right one
      */
     @Test
@@ -144,7 +129,7 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkReturnItineraryCreateActivity()
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
 
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
@@ -166,9 +151,33 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkReturnItineraryCreateActivity()
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
 
         verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
+    }
+
+    @Test
+    fun saveMappingMissionToShareAndPrivateCallShareAndStore() {
+
+        val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
+
+        val expectedMappingMission = MappingMission("Unnamed mission", flightPath)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            SaveMappingMissionActivity::class.java
+        )
+        intent.putExtra("flightPath", flightPath)
+        ActivityScenario.launch<Activity>(intent)
+
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
+
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
+
+        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
 
     @Test
@@ -195,7 +204,7 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
-        checkReturnItineraryCreateActivity()
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
         
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }

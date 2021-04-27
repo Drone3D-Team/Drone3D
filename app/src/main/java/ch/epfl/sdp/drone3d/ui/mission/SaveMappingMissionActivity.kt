@@ -86,9 +86,10 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         val ownerId = authService.getCurrentSession()!!.user.uid
 
         fun onComplete(isSuccess: Boolean) {
+            Log.e("debug-intent", isSuccess.toString())
             if (isSuccess) {
                 ToastHandler.showToast(this, R.string.mission_saved)
-                startActivity(Intent(this, ItineraryCreateActivity::class.java))
+                finish()
             } else {
                 ToastHandler.showToast(this, R.string.error_mission_saved)
                 saveButton.isEnabled = true;
@@ -110,7 +111,10 @@ class SaveMappingMissionActivity : AppCompatActivity() {
                         )
                     ) { result ->
                         this.private = result
-                        private?.let { value = result to it }
+                        if(shared !=  null){
+                            private?.let { value = result to it }
+
+                        }
                     }
                     addSource(
                         mappingMissionDao.shareMappingMission(
@@ -119,8 +123,9 @@ class SaveMappingMissionActivity : AppCompatActivity() {
                         )
                     ) { result ->
                         this.shared = result
-                        shared?.let { value = it to result }
-
+                        if(private !=  null){
+                            shared?.let { value = it to result }
+                        }
                     }
                 }
             }.observe(this) { (privateResult, sharedResult) ->
