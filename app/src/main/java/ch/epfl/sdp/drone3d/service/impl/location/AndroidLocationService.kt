@@ -38,7 +38,7 @@ class AndroidLocationService @Inject constructor(
 
     override fun isLocationEnabled(): Boolean {
         val currentPermission =
-            ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
         return currentPermission == PackageManager.PERMISSION_GRANTED && getMyLocationProvider() != null
     }
 
