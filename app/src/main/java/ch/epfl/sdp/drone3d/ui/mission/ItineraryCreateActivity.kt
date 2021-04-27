@@ -17,12 +17,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.PolygonBuilder
+import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -37,13 +38,12 @@ import javax.inject.Inject
  * The activity that allows the user to create itinerary using a map.
  */
 @AndroidEntryPoint
-class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
-    MapboxMap.OnMapClickListener, MapboxMap.OnMapLongClickListener {
+class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
+    MapboxMap.OnMapClickListener {
     @Inject
     lateinit var authService: AuthenticationService
 
     // Map
-    private lateinit var mapView: MapView
     private var isMapReady = false
     private lateinit var mapboxMap: MapboxMap
 
@@ -56,24 +56,18 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     // Location
     lateinit var locationComponentManager: LocationComponentManager
 
-    // Area
-    private var longClickConsumed = false
-    private lateinit var areaBuilder: AreaBuilder
-    private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
-
     // Drawer
     private lateinit var missionDrawer: MapboxMissionDrawer
+    private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
 
+    // Area
+    private lateinit var areaBuilder: AreaBuilder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-        setContentView(R.layout.activity_itinerary_create)
-
-        mapView = findViewById(R.id.mapView)
-        mapView.onCreate(savedInstanceState)
-
+        super.initMapView(savedInstanceState,R.layout.activity_itinerary_create, R.id.mapView)
+        
         mapView.getMapAsync(this)
         mapView.contentDescription = getString(R.string.map_not_ready)
 
@@ -88,7 +82,7 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
     fun goToSaveActivity(@Suppress("UNUSED_PARAMETER") view: View) {
 
         // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
-        if (areaBuilder.getShapeVertices() != null){
+        if (areaBuilder.getShapeVertices() != null) {
             flightPath = ArrayList(areaBuilder.getShapeVertices());
         }
 
@@ -103,56 +97,27 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             locationComponentManager.enableLocationComponent(style)
 
-            fun onLongClickConsumed(): Boolean {
-                longClickConsumed = true;
-                return false
-            }
-
-            areaBuilderDrawer =
-                MapboxAreaBuilderDrawer(mapView, mapboxMap, style) { onLongClickConsumed() }
-            missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
-
-            mapboxMap.addOnMapClickListener(this)
-            mapboxMap.addOnMapLongClickListener(this)
-
             areaBuilder = PolygonBuilder()
             //areaBuilder = ParallelogramBuilder()
-
-            //areaBuilder.onAreaChanged.add { missionBuilder.withSearchArea(it) }
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
+            //areaBuilder.onAreaChanged.add { missionBuilder.withSearchArea(it) }
+
+
+            missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
+            // Need to be the last Drawer instanciated to allow draggable vertex
+            areaBuilderDrawer =
+                MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
 
+
+            mapboxMap.addOnMapClickListener(this)
         }
+
         // Used to detect when the map is ready in tests
         mapView.contentDescription = getString(R.string.map_ready)
 
         this.mapboxMap = mapboxMap
         isMapReady = true
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
     }
 
     override fun onDestroy() {
@@ -184,10 +149,4 @@ class ItineraryCreateActivity : AppCompatActivity(), OnMapReadyCallback,
         }
         return true
     }
-
-    override fun onMapLongClick(point: LatLng): Boolean {
-        longClickConsumed = false
-        return true
-    }
-
 }
