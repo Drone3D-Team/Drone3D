@@ -60,6 +60,24 @@ class FirebaseMappingMissionDao @Inject constructor(
     }
 
     /**
+     * Update the given [missionList] liveData from the dataSnapshot taken from the database
+     */
+    private fun createValueEventListenerForMissionList(missionList: MutableLiveData<List<MappingMission>>): ValueEventListener{
+        return object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val missionsSnapshot = dataSnapshot.children.map { c ->
+                    c.getValue(MappingMission::class.java)!!
+                }
+                missionList.value = missionsSnapshot
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Timber.tag(TAG).w(databaseError.toException(), "getMappingMissions:onCancelled")
+            }
+        }
+    }
+
+    /**
      * Return a the mapping mission specified by its [id]
      * If the [ownerUid] is not null the mission is fetch from private repo of the owner
      * Otherwise in the shared repo
@@ -109,18 +127,7 @@ class FirebaseMappingMissionDao @Inject constructor(
             if (ownerUid != null) privateMappingMissions else sharedMappingMissions
 
         if (!mappingMissionIsInit) {
-            val missionsListener = object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val missionsSnapshot = dataSnapshot.children.map { c ->
-                        c.getValue(MappingMission::class.java)!!
-                    }
-                    mappingMissions.value = missionsSnapshot
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    Timber.tag(TAG).w(databaseError.toException(), "getMappingMissions:onCancelled")
-                }
-            }
+            val missionsListener = createValueEventListenerForMissionList(mappingMissions)
 
             rootRef.addValueEventListener(missionsListener)
 
@@ -173,19 +180,7 @@ class FirebaseMappingMissionDao @Inject constructor(
 
         val missionsQuery =
             rootRef.orderByChild("nameUpperCase").startAt(filter).endAt(filter + "\uf8ff")
-        val missionsListener = missionsQuery.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val missionsSnapshot = dataSnapshot.children.map { c ->
-                    c.getValue(MappingMission::class.java)!!
-                }
-                mappingMissions.value = missionsSnapshot
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Timber.tag(TAG)
-                    .w(databaseError.toException(), "getFilteredMappingMissions:onCancelled")
-            }
-        })
+        val missionsListener = missionsQuery.addValueEventListener(createValueEventListenerForMissionList(mappingMissions))
 
         if (ownerUid != null) {
             privateFilteredMappingMissionsFilter = filter

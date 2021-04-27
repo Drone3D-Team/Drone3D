@@ -69,7 +69,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
     private fun updateSaveButton() {
         saveButton.isEnabled = privateCheckBox.isChecked || sharedCheckBox.isChecked
     }
-    
+
     private fun onCompleteSaving(isSuccess: Boolean) {
         if (isSuccess) {
             ToastHandler.showToast(this, R.string.mission_saved)
