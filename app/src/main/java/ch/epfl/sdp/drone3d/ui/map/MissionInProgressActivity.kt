@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.MediaController
@@ -14,8 +13,8 @@ import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.map.*
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -76,7 +75,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private var videoStreamUriObserver = Observer<String> { streamUri ->
-        cameraView.setVideoURI(Uri.parse(streamUri))
+        cameraView.setVideoPath(streamUri)
         cameraView.requestFocus()
         cameraView.start()
     }
@@ -110,11 +109,13 @@ class MissionInProgressActivity : BaseMapActivity() {
         centerCameraOnDrone(mapView)
 
         Transformations.map(droneService.getData().getMission()) { mission ->
-            return@map mission.map { item ->
-                LatLng(item.latitudeDeg, item.longitudeDeg)
+            return@map mission?.let {
+                it.map { item ->
+                    LatLng(item.latitudeDeg, item.longitudeDeg)
+                }
             }
         }.observe(this, { path ->
-            missionDrawer.showMission(path)
+            if(path != null) missionDrawer.showMission(path)
         })
     }
 
