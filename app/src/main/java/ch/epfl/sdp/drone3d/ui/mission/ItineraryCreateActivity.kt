@@ -65,10 +65,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        super.initMapView(savedInstanceState,R.layout.activity_itinerary_create, R.id.mapView)
-
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
+        super.initMapView(savedInstanceState,R.layout.activity_itinerary_create, R.id.mapView)
+        
         mapView.getMapAsync(this)
         mapView.contentDescription = getString(R.string.map_not_ready)
 
