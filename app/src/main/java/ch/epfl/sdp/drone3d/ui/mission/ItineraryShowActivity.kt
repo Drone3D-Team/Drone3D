@@ -90,12 +90,7 @@ class ItineraryShowActivity : AppCompatActivity() {
         goToMissionInProgressButton.isEnabled = droneService.isConnected()
 
         deleteButton = findViewById(R.id.mission_delete)
-        if (authService.getCurrentSession() != null &&
-            authService.getCurrentSession()!!.user.uid == ownerUid) {
-            deleteButton.visibility = View.VISIBLE
-        } else {
-            deleteButton.visibility = View.GONE
-        }
+        deleteButton.visibility = if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
     }
 
     /**
