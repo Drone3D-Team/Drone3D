@@ -12,7 +12,6 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
-import io.mavsdk.System
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
@@ -97,24 +96,17 @@ class DroneExecutorImpl(private val service: DroneService,
         )
     }
 
-    override fun returnToHomeLocationAndLand(context: Context) {
+    override fun returnToHomeLocationAndLand(context: Context): Completable {
         val returnLocation = data.getHomeLocation().value
                 ?: throw IllegalStateException(context.getString(R.string.drone_home_error))
 
-        val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
-        val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
-        goToLocation(context, completable, instance, returnLocation)
+        return goToLocation(context, returnLocation)
     }
 
-    override fun returnToUserLocationAndLand(context: Context) {
+    override fun returnToUserLocationAndLand(context: Context): Completable {
         // TODO Query user position
         val returnLocation = Telemetry.Position(.0, .0, 10f, 10f)
-
-        val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
-        val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
-        goToLocation(context, completable, instance, returnLocation)
+        return  goToLocation(context, returnLocation)
     }
 
     private fun distance(pos: Telemetry.Position, returnLocation: Telemetry.Position): Int {
@@ -123,11 +115,15 @@ class DroneExecutorImpl(private val service: DroneService,
                 .roundToInt()
     }
 
-    private fun goToLocation(context: Context, completable: Completable, instance: System, returnLocation: Telemetry.Position) {
-        val future = completable
-                .andThen(instance.mission.pauseMission())
-                .andThen(instance.mission.clearMission())
-                .andThen(instance.action.returnToLaunch())
+    private fun goToLocation(context: Context, returnLocation: Telemetry.Position): Completable {
+
+        val instanceCompletable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
+        val actualDroneInstance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
+
+        val future = instanceCompletable
+                .andThen(actualDroneInstance.mission.pauseMission())
+                .andThen(actualDroneInstance.mission.clearMission())
+                .andThen(actualDroneInstance.action.returnToLaunch())
 
         // Go to location
         data.addSubscription(
@@ -143,17 +139,25 @@ class DroneExecutorImpl(private val service: DroneService,
                 )
         )
 
+        val hasArrived = actualDroneInstance.telemetry.position.filter { pos ->
+            val isRightPos = distance(pos, returnLocation) == 0
+            val isStopped = data.getSpeed().value?.roundToInt() == 0
+            isRightPos && isStopped
+        }
+
         // Land when arrived
         data.addSubscription(
-                instance.telemetry.position.subscribe(
-                        { pos ->
-                            val isRightPos = distance(pos, returnLocation) == 0
-                            val isStopped = data.getSpeed().value?.roundToInt() == 0
-                            if (isRightPos.and(isStopped)) instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
+                hasArrived.subscribe(
+                        {
+                            actualDroneInstance.action.land().blockingAwait(1, TimeUnit.SECONDS)
                             data.getMutableMissionPaused().postValue(true)
                         },
-                        { e -> Timber.e("ERROR LANDING : $e") }
+                        { e ->
+                            Timber.e("ERROR LANDING : $e")
+                        }
                 )
         )
+
+        return Completable.fromFuture(hasArrived.toFuture())
     }
 }
