@@ -16,7 +16,9 @@ import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -27,7 +29,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
-import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -56,24 +57,29 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
 
+    private var missionPath: ArrayList<LatLng>? = null
+
     private var dronePositionObserver = Observer<LatLng> { newLatLng ->
         newLatLng?.let { if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
     }
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
         newPosition?.let {
-            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
+            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg,
+                newPosition.longitudeDeg))
         }
     }
 
     private var droneFlyingStatusObserver = Observer<Boolean> { flyStatus ->
-        stopMissionButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
+        backToHomeButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
+        backToUserButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
     }
 
     private var droneConnectionStatusObserver = Observer<Boolean> { connectionStatus ->
         if (!connectionStatus) {
             ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
         }
-        stopMissionButton.isEnabled = connectionStatus
+        backToHomeButton.isEnabled = connectionStatus
+        backToUserButton.isEnabled = connectionStatus
     }
 
     private var videoStreamUriObserver = Observer<String> { streamUri ->
@@ -82,14 +88,19 @@ class MissionInProgressActivity : BaseMapActivity() {
         cameraView.start()
     }
 
-    private lateinit var stopMissionButton: MaterialButton
+    private lateinit var backToHomeButton: MaterialButton
+    private lateinit var backToUserButton: MaterialButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
-        initMapView(savedInstanceState, R.layout.activity_mission_in_progress, R.id.map_in_mission_view)
+        initMapView(savedInstanceState,
+            R.layout.activity_mission_in_progress,
+            R.id.map_in_mission_view)
         mapView.getMapAsync { mapboxMap ->
             this.mapboxMap = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
@@ -100,7 +111,10 @@ class MissionInProgressActivity : BaseMapActivity() {
         cameraView = findViewById(R.id.camera_mission_view)
         cameraView.setMediaController(object : MediaController(this) {})
 
-        stopMissionButton = findViewById(R.id.stopMissionButton)
+        backToHomeButton = findViewById(R.id.backToHomeButton)
+        backToUserButton = findViewById(R.id.backToUserButton)
+
+        startMission()
     }
 
     private fun setupMapboxMap(mapView: MapView, style: Style) {
@@ -129,18 +143,31 @@ class MissionInProgressActivity : BaseMapActivity() {
             mapboxMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     droneService.getData().getPosition().value!!,
-                if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
+                    if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
                 ))
         }
     }
 
     /**
-     * Stop the mission and bring back the drone the its home
+     * Launch the mission
+     */
+    private fun startMission() {
+        val droneMission = missionPath?.let { DroneUtils.makeDroneMission(it, 20f) }
+        droneMission?.let { droneService.getExecutor().startMission(this, it) }
+    }
+
+    /**
+     * Stop the mission and bring back the drone to its home
      */
     fun backToHome(@Suppress("UNUSED_PARAMETER") view: View) {
-        val future = CompletableFuture<Boolean>()
+        droneService.getExecutor().returnToHomeLocationAndLand(this)
+    }
 
-        droneService.getExecutor().returnToHomeLocationAndLand(this, future)
+    /**
+     * Stop the mission and bring back the drone to the user
+     */
+    fun backToUser(@Suppress("UNUSED_PARAMETER") view: View) {
+        droneService.getExecutor().returnToUserLocationAndLand(this)
     }
 
     override fun onResume() {
