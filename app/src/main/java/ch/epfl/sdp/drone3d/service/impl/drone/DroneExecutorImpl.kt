@@ -17,6 +17,7 @@ import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import timber.log.Timber
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
@@ -97,7 +98,7 @@ class DroneExecutorImpl(private val service: DroneService,
         )
     }
 
-    override fun returnToHomeLocationAndLand(context: Context) {
+    override fun returnToHomeLocationAndLand(context: Context, future: CompletableFuture<Boolean>) {
         val returnLocation = data.getHomeLocation().value
                 ?: throw IllegalStateException(context.getString(R.string.drone_home_error))
 
@@ -107,7 +108,7 @@ class DroneExecutorImpl(private val service: DroneService,
         goToLocation(context, completable, instance, returnLocation)
     }
 
-    override fun returnToUserLocationAndLand(context: Context) {
+    override fun returnToUserLocationAndLand(context: Context, future: CompletableFuture<Boolean>) {
         // TODO Query user position
         val returnLocation = Telemetry.Position(.0, .0, 10f, 10f)
 

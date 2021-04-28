@@ -14,8 +14,8 @@ import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.map.*
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -27,6 +27,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
+import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -131,6 +132,15 @@ class MissionInProgressActivity : BaseMapActivity() {
                 if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
                 ))
         }
+    }
+
+    /**
+     * Stop the mission and bring back the drone the its home
+     */
+    fun backToHome(@Suppress("UNUSED_PARAMETER") view: View) {
+        val future = CompletableFuture<Boolean>()
+
+        droneService.getExecutor().returnToHomeLocationAndLand(this, future)
     }
 
     override fun onResume() {
