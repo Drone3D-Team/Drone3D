@@ -82,10 +82,11 @@
     <!-- Format to follow for the mission name in the list if they are also private while in the shared list-->
     <string name="mapping_mission_list_format_shared">%s - P</string>
 
+    <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
     <string name="drone_mission_error">An error occurred while dispatching missing to the drone</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_pause_error">Mission pause failed, try again later</string>
-    <string name="drone_home_error">Could\'t not launch mission to let the drone return home</string>
-    <string name="drone_home_success">The drone is returning home</string>
+    <string name="drone_return_error">Could not launch mission to let the drone come back</string>
+    <string name="drone_return_success">The drone is coming back</string>
 </resources>

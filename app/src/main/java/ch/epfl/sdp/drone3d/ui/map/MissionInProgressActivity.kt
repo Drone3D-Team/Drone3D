@@ -5,6 +5,8 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -18,6 +20,7 @@ import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -57,7 +60,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
 
-    private var missionPath: ArrayList<LatLng>? = null
+    private lateinit var missionPath: ArrayList<LatLng>
 
     private var dronePositionObserver = Observer<LatLng> { newLatLng ->
         newLatLng?.let { if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
@@ -94,7 +97,8 @@ class MissionInProgressActivity : BaseMapActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        @Suppress("UNCHECKED_CAST")
+        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
@@ -151,23 +155,50 @@ class MissionInProgressActivity : BaseMapActivity() {
     /**
      * Launch the mission
      */
+    @SuppressLint("CheckResult")
     private fun startMission() {
-        val droneMission = missionPath?.let { DroneUtils.makeDroneMission(it, 20f) }
-        droneMission?.let { droneService.getExecutor().startMission(this, it) }
+        val droneMission = DroneUtils.makeDroneMission(missionPath, 20f)
+        val completable = droneService.getExecutor().startMission(this, droneMission)
+
+        completable.subscribe({
+            val intent = Intent(this, ItineraryShowActivity::class.java)
+            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+            startActivity(intent)
+             }, {
+            //TODO: Move error here
+        })
     }
 
     /**
      * Stop the mission and bring back the drone to its home
      */
+    @SuppressLint("CheckResult")
     fun backToHome(@Suppress("UNUSED_PARAMETER") view: View) {
-        droneService.getExecutor().returnToHomeLocationAndLand(this)
+        val completable = droneService.getExecutor().returnToHomeLocationAndLand(this)
+
+        completable.subscribe({
+            val intent = Intent(this, ItineraryShowActivity::class.java)
+            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+            startActivity(intent)
+        }, {
+            //TODO: Move error here
+        })
     }
 
     /**
      * Stop the mission and bring back the drone to the user
      */
+    @SuppressLint("CheckResult")
     fun backToUser(@Suppress("UNUSED_PARAMETER") view: View) {
-        droneService.getExecutor().returnToUserLocationAndLand(this)
+        val completable = droneService.getExecutor().returnToUserLocationAndLand(this)
+
+        completable.subscribe({
+            val intent = Intent(this, ItineraryShowActivity::class.java)
+            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+            startActivity(intent)
+        }, {
+            //TODO: Move error here
+        })
     }
 
     override fun onResume() {

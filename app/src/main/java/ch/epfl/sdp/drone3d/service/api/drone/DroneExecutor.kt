@@ -20,7 +20,7 @@ interface DroneExecutor {
      *
      * Shows toasts of the [context]
      */
-    fun startMission(context: Context, missionPlan: Mission.MissionPlan)
+    fun startMission(context: Context, missionPlan: Mission.MissionPlan): Completable
 
     /**
      * Pause current mission.

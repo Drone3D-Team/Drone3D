@@ -12,6 +12,7 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
+import io.mavsdk.System
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
@@ -34,7 +35,7 @@ class DroneExecutorImpl(private val service: DroneService,
                     ?.toCompletable()
     }
 
-    override fun startMission(context: Context, missionPlan: Mission.MissionPlan) {
+    override fun startMission(context: Context, missionPlan: Mission.MissionPlan): Completable {
         val completable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
         val instance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
@@ -56,6 +57,52 @@ class DroneExecutorImpl(private val service: DroneService,
                         }
                 )
         )
+
+        return returnToLaunch(context, future, instance)
+    }
+
+    private fun returnToLaunch(context: Context, future: Completable, instance: System): Completable {
+
+        // Go to back to launch
+        val returnLocation = data.getHomeLocation().value
+            ?: throw IllegalStateException(context.getString(R.string.drone_return_error))
+
+        data.addSubscription(
+            future.subscribe(
+                {
+                    data.getMutableMission().postValue(listOf(DroneUtils.generateMissionItem(
+                        returnLocation.latitudeDeg,
+                        returnLocation.longitudeDeg,
+                        returnLocation.absoluteAltitudeM)))
+                    ToastHandler.showToastAsync(context, R.string.drone_return_success)
+                },
+                {
+                    data.getMutableMission().postValue(null)
+                    ToastHandler.showToastAsync(context, R.string.drone_return_error)
+                }
+            )
+        )
+
+        val hasArrived = instance.telemetry.position.filter { pos ->
+            val isRightPos = distance(pos, returnLocation) == 0
+            val isStopped = data.getSpeed().value?.roundToInt() == 0
+            isRightPos && isStopped
+        }
+
+        // Land when arrived
+        data.addSubscription(
+            hasArrived.subscribe(
+                {
+                    instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
+                    data.getMutableMissionPaused().postValue(true)
+                },
+                { e ->
+                    Timber.e("ERROR LANDING : $e")
+                }
+            )
+        )
+
+        return Completable.fromFuture(hasArrived.toFuture())
     }
 
     override fun pauseMission(context: Context) {
@@ -98,7 +145,7 @@ class DroneExecutorImpl(private val service: DroneService,
 
     override fun returnToHomeLocationAndLand(context: Context): Completable {
         val returnLocation = data.getHomeLocation().value
-                ?: throw IllegalStateException(context.getString(R.string.drone_home_error))
+                ?: throw IllegalStateException(context.getString(R.string.drone_return_error))
 
         return goToLocation(context, returnLocation)
     }
@@ -118,28 +165,36 @@ class DroneExecutorImpl(private val service: DroneService,
     private fun goToLocation(context: Context, returnLocation: Telemetry.Position): Completable {
 
         val instanceCompletable = getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
-        val actualDroneInstance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
+        val droneInstance = service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         val future = instanceCompletable
-                .andThen(actualDroneInstance.mission.pauseMission())
-                .andThen(actualDroneInstance.mission.clearMission())
-                .andThen(actualDroneInstance.action.returnToLaunch())
+                .andThen(droneInstance.mission.pauseMission())
+                .andThen(droneInstance.mission.clearMission())
+                .andThen(droneInstance.action.gotoLocation(
+                    returnLocation.latitudeDeg,
+                    returnLocation.longitudeDeg,
+                    returnLocation.absoluteAltitudeM,
+                    0f
+                ))
 
         // Go to location
         data.addSubscription(
                 future.subscribe(
                         {
-                            data.getMutableMission().postValue(listOf(DroneUtils.generateMissionItem(returnLocation.latitudeDeg, returnLocation.longitudeDeg, returnLocation.absoluteAltitudeM)))
-                            ToastHandler.showToastAsync(context, R.string.drone_home_success)
+                            data.getMutableMission().postValue(listOf(DroneUtils.generateMissionItem(
+                                returnLocation.latitudeDeg,
+                                returnLocation.longitudeDeg,
+                                returnLocation.absoluteAltitudeM)))
+                            ToastHandler.showToastAsync(context, R.string.drone_return_success)
                         },
                         {
                             data.getMutableMission().postValue(null)
-                            ToastHandler.showToastAsync(context, R.string.drone_home_error)
+                            ToastHandler.showToastAsync(context, R.string.drone_return_error)
                         }
                 )
         )
 
-        val hasArrived = actualDroneInstance.telemetry.position.filter { pos ->
+        val hasArrived = droneInstance.telemetry.position.filter { pos ->
             val isRightPos = distance(pos, returnLocation) == 0
             val isStopped = data.getSpeed().value?.roundToInt() == 0
             isRightPos && isStopped
@@ -149,7 +204,7 @@ class DroneExecutorImpl(private val service: DroneService,
         data.addSubscription(
                 hasArrived.subscribe(
                         {
-                            actualDroneInstance.action.land().blockingAwait(1, TimeUnit.SECONDS)
+                            droneInstance.action.land().blockingAwait(1, TimeUnit.SECONDS)
                             data.getMutableMissionPaused().postValue(true)
                         },
                         { e ->
