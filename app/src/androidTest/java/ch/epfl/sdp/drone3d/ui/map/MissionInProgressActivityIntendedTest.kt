@@ -1,8 +1,10 @@
 package ch.epfl.sdp.drone3d.ui.map
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
@@ -48,10 +50,13 @@ class MissionInProgressActivityIntendedTest {
         LatLng(47.397026, 8.543067)
     )
 
-    private val activityRule = ActivityScenarioRule(
-        MissionInProgressActivity::class.java,
-        Bundle().apply {
-            putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+    private val activityRule = ActivityScenarioRule<MissionInProgressActivity>(
+        Intent(ApplicationProvider.getApplicationContext(), MissionInProgressActivity::class.java).apply {
+            putExtras(
+                    Bundle().apply {
+                        putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+                    }
+            )
         }
     )
 
@@ -63,6 +68,14 @@ class MissionInProgressActivityIntendedTest {
     val droneService: DroneService = DroneInstanceMock.mockService()
 
     init {
+        val executor = mock(DroneExecutor::class.java)
+
+        `when`(droneService.getExecutor()).thenReturn(executor)
+        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
+                .thenReturn(Completable.never())
+        `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
+                .thenReturn(Completable.complete())
+
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
@@ -103,12 +116,6 @@ class MissionInProgressActivityIntendedTest {
 
         val dronePosition = MutableLiveData(LatLng(10.1, 10.1))
         val homePosition = MutableLiveData(LatLng(0.0, 0.0))
-
-        val executor = mock(DroneExecutor::class.java)
-
-        `when`(droneService.getExecutor()).thenReturn(executor)
-        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java))).thenReturn(Completable.complete())
-        `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java))).thenReturn(Completable.complete())
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
