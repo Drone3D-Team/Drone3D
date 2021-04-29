@@ -7,33 +7,44 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.app.Activity
 import android.content.Intent
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.ComponentNameMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
+import ch.epfl.sdp.drone3d.ui.MainActivity
+import ch.epfl.sdp.drone3d.ui.TempTestActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import junit.framework.Assert.assertTrue
+import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.not
 import org.junit.*
 import org.junit.rules.RuleChain
+import org.mockito.Mockito
 import org.mockito.Mockito.*
-
+import java.util.concurrent.CompletableFuture
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
@@ -53,7 +64,18 @@ class SaveMappingMissionActivityTest {
     val authService: AuthenticationService = mockAuthenticationService()
 
     @BindValue
-    val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
+    val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
+
+    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+
+    private fun mockMappingMissionDao(): MappingMissionDao {
+        val mappingMissionDao = mock(MappingMissionDao::class.java)
+
+        `when`(mappingMissionDao.shareMappingMission(anyString(), any(MappingMission::class.java))).thenReturn(MutableLiveData(true))
+        `when`(mappingMissionDao.storeMappingMission(anyString(), any(MappingMission::class.java))).thenReturn(MutableLiveData(true))
+
+        return mappingMissionDao
+    }
 
     private fun mockAuthenticationService(): AuthenticationService {
         val authService = mock(AuthenticationService::class.java)
@@ -107,6 +129,8 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
+
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
 
@@ -127,7 +151,33 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
+
         verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
+    }
+
+    @Test
+    fun saveMappingMissionToShareAndPrivateCallShareAndStore() {
+
+        val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
+
+        val expectedMappingMission = MappingMission("Unnamed mission", flightPath)
+
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            SaveMappingMissionActivity::class.java
+        )
+        intent.putExtra("flightPath", flightPath)
+        ActivityScenario.launch<Activity>(intent)
+
+        onView(withId(R.id.sharedCheckBox)).perform(click())
+        onView(withId(R.id.privateCheckBox)).perform(click())
+        onView(withId(R.id.saveButton)).perform(click())
+
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
+
+        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
 
     @Test
@@ -154,6 +204,8 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
+        assertThat(activityRule.scenario.state.toString(), equalTo(Lifecycle.State.DESTROYED.toString()))
+        
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
     }
 

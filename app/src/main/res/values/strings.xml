@@ -49,6 +49,8 @@
     <string name="content_descriptor_save_icon">save icon</string>
     <string name="name_mission_text">Mission name</string>
     <string name="save_mission_text">Save</string>
+    <string name="mission_saved">Mission saved</string>
+    <string name="error_mission_saved">Error while saving mission</string>
     <string name="private_repo">Private</string>
     <string name="share_repo">Share</string>
     <string name="map_ready">MAP READY</string>
