@@ -62,4 +62,12 @@ class ParallelogramTest {
         val actual = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0), Vector(0.0,1.0)).getClosestEquivalentParallelogram(Point(5.0,5.0))
         assertThat(actual, anyOf(equalTo(expected1),equalTo(expected2)))
     }
+
+    @Test
+    fun getFourthPointReturnsExpected(){
+        val expected = Point(1.0,1.0)
+        val actual = Parallelogram.getFourthPoint(Point(0.0,0.0),Point(1.0,0.0),Point(0.0,1.0))
+
+        assertEquals(actual,expected)
+    }
 }
