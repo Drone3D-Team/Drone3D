@@ -148,6 +148,11 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     }
 
     private fun setupListViews() {
+        /**
+         * Get the missions to show (shared if not connected, shared + private if user is connected)
+         * and make the list observe the currentListState to have the right visibility when we click
+         * on the toggle button
+         */
 
         val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
         val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
