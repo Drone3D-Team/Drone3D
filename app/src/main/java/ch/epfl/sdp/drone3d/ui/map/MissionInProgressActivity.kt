@@ -67,8 +67,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
     private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
         newPosition?.let {
-            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg,
-                newPosition.longitudeDeg))
+            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
         }
     }
 
