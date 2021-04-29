@@ -9,14 +9,14 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.SurfaceView
 import android.view.View
-import android.widget.MediaController
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.*
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
@@ -53,8 +53,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     @Inject lateinit var droneService: DroneService
 
     private lateinit var mapboxMap: MapboxMap
-
-    private lateinit var cameraView: VideoView
+    private lateinit var cameraView: SurfaceView
 
     private lateinit var missionDrawer: MapboxMissionDrawer
     private lateinit var droneDrawer: MapboxDroneDrawer
@@ -85,9 +84,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private var videoStreamUriObserver = Observer<String> { streamUri ->
-        cameraView.setVideoURI(Uri.parse(streamUri))
-        cameraView.requestFocus()
-        cameraView.start()
+        // TODO View stream
     }
 
     private lateinit var backToHomeButton: MaterialButton
@@ -112,7 +109,6 @@ class MissionInProgressActivity : BaseMapActivity() {
         }
 
         cameraView = findViewById(R.id.camera_mission_view)
-        cameraView.setMediaController(object : MediaController(this) {})
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
@@ -128,11 +124,13 @@ class MissionInProgressActivity : BaseMapActivity() {
         centerCameraOnDrone(mapView)
 
         Transformations.map(droneService.getData().getMission()) { mission ->
-            return@map mission.map { item ->
-                LatLng(item.latitudeDeg, item.longitudeDeg)
+            return@map mission?.let {
+                it.map { item ->
+                    LatLng(item.latitudeDeg, item.longitudeDeg)
+                }
             }
         }.observe(this, { path ->
-            missionDrawer.showMission(path)
+            if(path != null) missionDrawer.showMission(path)
         })
     }
 
