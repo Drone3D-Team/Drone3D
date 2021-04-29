@@ -15,7 +15,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
@@ -23,11 +22,11 @@ import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.PolygonBuilder
 import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
@@ -42,6 +41,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     MapboxMap.OnMapClickListener {
     @Inject
     lateinit var authService: AuthenticationService
+
+    @Inject
+    lateinit var locationService: LocationService
 
     // Map
     private var isMapReady = false
@@ -66,8 +68,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-        super.initMapView(savedInstanceState,R.layout.activity_itinerary_create, R.id.mapView)
-        
+        super.initMapView(savedInstanceState, R.layout.activity_itinerary_create, R.id.mapView)
+
         mapView.getMapAsync(this)
         mapView.contentDescription = getString(R.string.map_not_ready)
 
@@ -83,7 +85,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
         if (areaBuilder.getShapeVertices() != null) {
-            flightPath = ArrayList(areaBuilder.getShapeVertices());
+            flightPath = ArrayList(areaBuilder.getShapeVertices())
         }
 
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
@@ -92,7 +94,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        locationComponentManager = LocationComponentManager(this, mapboxMap)
+        locationComponentManager = LocationComponentManager(this, mapboxMap, locationService)
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             locationComponentManager.enableLocationComponent(style)
@@ -108,7 +110,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilderDrawer =
                 MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
-
 
             mapboxMap.addOnMapClickListener(this)
         }

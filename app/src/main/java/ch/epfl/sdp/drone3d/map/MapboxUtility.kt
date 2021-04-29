@@ -19,24 +19,31 @@ class MapboxUtility {
         /**
          * Zoom on the first step of a mission [mission] on the map [mapboxMap].
          */
-        fun zoomOnMission(mission: MappingMission, mapboxMap: MapboxMap){
+        fun zoomOnMission(mission: MappingMission, mapboxMap: MapboxMap) {
             zoomOnMission(mission.flightPath, mapboxMap)
         }
 
         /**
-         * Zoom on the first step of a  [missionPath] on the map [mapboxMap].
+         * Zoom on the first step of a [missionPath] on the map [mapboxMap].
          */
-        fun zoomOnMission(missionPath: List<LatLng>, mapboxMap: MapboxMap){
+        fun zoomOnMission(missionPath: List<LatLng>, mapboxMap: MapboxMap) {
 
-            if(missionPath.isNotEmpty()){
+            if (missionPath.isNotEmpty()) {
 
                 val firstCoordinates = LatLng(missionPath[0].latitude, missionPath[0].longitude)
 
-                mapboxMap.cameraPosition =  CameraPosition.Builder()
-                    .target(firstCoordinates)
-                    .zoom(ZOOM_VALUE)
-                    .build()
+                zoomOnCoordinate(firstCoordinates, mapboxMap)
             }
+        }
+
+        /**
+         * Zoom on [coordinate] on the map [mapboxMap]
+         */
+        fun zoomOnCoordinate(coordinate: LatLng, mapboxMap: MapboxMap) {
+            mapboxMap.cameraPosition = CameraPosition.Builder()
+                .target(coordinate)
+                .zoom(ZOOM_VALUE)
+                .build()
         }
     }
 }
