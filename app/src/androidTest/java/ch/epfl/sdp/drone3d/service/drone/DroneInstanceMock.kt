@@ -52,6 +52,8 @@ object DroneInstanceMock {
      * The [System] can be parametrised using the different values in [DroneInstanceMock]
      */
     fun mockService(): DroneService {
+        setupDefaultMocks()
+
         return mock(DroneService::class.java).apply {
             val mockData = mock(DroneData::class.java)
             `when`(this.getData()).thenReturn(mockData)
