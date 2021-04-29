@@ -46,6 +46,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
                     intent.putExtra(OWNER, mission.ownerUid)
                     intent.putExtra(PRIVATE, mission.privateId)
                     intent.putExtra(SHARED, mission.sharedId)
+
                     view.context.startActivity(intent)
                 }
             }
