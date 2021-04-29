@@ -11,7 +11,12 @@ import ch.epfl.sdp.drone3d.model.mission.Point.Companion.distance
  * Utility class to represent a parallelogram in meters
  */
 data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: Vector){
-
+    companion object{
+        fun getFourthPoint(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point):Point{
+            val parallelogram = Parallelogram(origin,adjacentPoint1,adjacentPoint2)
+            return parallelogram.origin+parallelogram.dir1Span+parallelogram.dir2Span
+        }
+    }
     constructor(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point): this(origin, Vector(origin,adjacentPoint1), Vector(origin,adjacentPoint2))
 
     /**
