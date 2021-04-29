@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.service.drone
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneServerFactoryImpl
+import junit.framework.Assert.assertEquals
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.notNullValue
 import org.junit.Rule
@@ -21,14 +22,14 @@ class DroneFactoryTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Test
-    fun createSimulationWorks() {
+    fun createSimulationWithWrongDataFails() {
         val factory = DroneServerFactoryImpl()
         val instance = factory.createSimulation("ip", "port")
 
-        assertThat(instance.server, notNullValue())
-        assertThat(instance.instance, notNullValue())
+        assertThat(instance?.server, notNullValue())
+        assertThat(instance?.instance, notNullValue())
 
-        instance.server.stop()
+        instance?.server?.stop()
     }
 
 

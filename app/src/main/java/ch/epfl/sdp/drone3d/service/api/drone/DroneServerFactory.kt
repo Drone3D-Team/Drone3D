@@ -12,7 +12,7 @@ interface DroneServerFactory {
 
     data class InstanceContainer(val server: MavsdkServer, val instance: System)
 
-    fun createSimulation(simIP: String, simPort: String): InstanceContainer
+    fun createSimulation(simIP: String, simPort: String): InstanceContainer?
 
     fun createDrone(): InstanceContainer
 }

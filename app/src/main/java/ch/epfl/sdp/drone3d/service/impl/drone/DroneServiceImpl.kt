@@ -37,16 +37,16 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
 
         disconnect()
 
-        droneFactory.createSimulation(IP, port).also {
-            server = it.server
-            droneInstance = it.instance
+        val instanceContainer = droneFactory.createSimulation(IP, port)
+
+        if(instanceContainer!=null) {
+            droneInstance = instanceContainer.instance
+            server = instanceContainer?.server
+            isSimulation = true
+            simIP = IP
+            simPort = port
+            droneData.refresh()
         }
-
-        isSimulation = true
-        simIP = IP
-        simPort = port
-
-        droneData.refresh()
     }
 
     @Synchronized
