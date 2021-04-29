@@ -151,62 +151,41 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private fun setupListViews() {
 
+        val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
+        val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
+        val sharedFilteredList = findViewById<RecyclerView>(R.id.shared_filtered_mission_list_view)
+        val privateFilteredList =
+                findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
+
+        setupListAdapter(sharedList, false, false)
+        setupListAdapter(sharedFilteredList, false, true)
+
+        // Link state with view visibility
+        currentListState.observe(this, androidx.lifecycle.Observer {
+            it.let {
+                sharedList.visibility = getVisibility(false, false, it)
+                privateList.visibility = getVisibility(true, false, it)
+                sharedFilteredList.visibility = getVisibility(false, true, it)
+                privateFilteredList.visibility = getVisibility(true, true, it)
+
+                mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
+            }
+        })
+
+
         if(authService.getCurrentSession() != null) {
             val ownerId = authService.getCurrentSession()!!.user.uid
 
-            val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
-            val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
-            val sharedFilteredList = findViewById<RecyclerView>(R.id.shared_filtered_mission_list_view)
-            val privateFilteredList =
-                    findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
-
-
-            setupListAdapter(sharedList, false, false)
             setupListAdapter(privateList, true, false)
-            setupListAdapter(sharedFilteredList, false, true)
             setupListAdapter(privateFilteredList, true, true)
 
             // Link state with view visibility
             currentListState.observe(this, androidx.lifecycle.Observer {
                 it.let {
-                    sharedList.visibility = getVisibility(false, false, it)
-                    privateList.visibility = getVisibility(true, false, it)
-                    sharedFilteredList.visibility = getVisibility(false, true, it)
-                    privateFilteredList.visibility = getVisibility(true, true, it)
-
-
-                    mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
                     mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
                 }
             })
 
-        }
-        else{
-
-            val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
-            val sharedFilteredList = findViewById<RecyclerView>(R.id.shared_filtered_mission_list_view)
-            val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
-            val privateFilteredList =
-                    findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
-
-            setupListAdapter(sharedList, false, false)
-            setupListAdapter(sharedFilteredList, false, true)
-
-            // Link state with view visibility
-            currentListState.observe(this, androidx.lifecycle.Observer {
-                it.let {
-                    sharedList.visibility = getVisibility(false, false, it)
-                    privateList.visibility = getVisibility(true, false, it)
-                    sharedFilteredList.visibility = getVisibility(false, true, it)
-                    privateFilteredList.visibility = getVisibility(true, true, it)
-
-                    mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
-                }
-            })
-
-            currentListState.observe(this, androidx.lifecycle.Observer {
-                mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
-            })
         }
 
     }
