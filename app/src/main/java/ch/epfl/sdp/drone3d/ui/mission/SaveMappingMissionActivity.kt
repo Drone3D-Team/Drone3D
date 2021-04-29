@@ -131,23 +131,22 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
         if (privateCheckBox.isChecked && sharedCheckBox.isChecked) {
             shareAndStoreMission(ownerId, newMappingMission)
-            return
-        }
-
-
-        if (privateCheckBox.isChecked) {
-            mappingMissionDao.storeMappingMission(ownerId, newMappingMission).observe(this) {
-                onCompleteSaving(it)
+        }else{
+            if (privateCheckBox.isChecked) {
+                mappingMissionDao.storeMappingMission(ownerId, newMappingMission).observe(this) {
+                    onCompleteSaving(it)
+                }
             }
-            return
+
+            if (sharedCheckBox.isChecked) {
+                mappingMissionDao.shareMappingMission(ownerId, newMappingMission).observe(this) {
+                    onCompleteSaving(it)
+                }
+            }
         }
 
-        if (sharedCheckBox.isChecked) {
-            mappingMissionDao.shareMappingMission(ownerId, newMappingMission).observe(this) {
-                onCompleteSaving(it)
-            }
-            return
-        }
+
+
     }
 
 }
