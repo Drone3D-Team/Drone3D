@@ -41,6 +41,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.not
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.rules.RuleChain
@@ -322,6 +323,50 @@ class MappingMissionSelectionActivityTest {
         // Reset LIVE DATA
         SHARED_FILTERED_LIVE_DATA.postValue(emptyList())
         PRIVATE_FILTERED_LIVE_DATA.postValue(emptyList())
+    }
+
+    @Test
+    fun toggleButtonIsDisabledWhenNoUserConnected() {
+
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.mapping_mission_state_toggle))
+            .check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun sharedMappingMissionLaunchShowItineraryWhenNoUserConnected() {
+
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
+
+        onView(
+            allOf(
+                withText(buttonName(true, SHARED_MAPPING_MISSION)),
+                isDisplayed()
+            )
+        ).perform(click())
+        Intents.intended(
+            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        )
+    }
+
+        @Test
+        fun privateMissionsAreNotShownWhenNoUserConnected() {
+
+            `when`(authService.hasActiveSession()).thenReturn(false)
+
+            // Recreate the activity to apply the update
+            activityRule.scenario.recreate()
+
+            onView(withId(R.id.private_mission_list_view))
+                .check(matches(not(isDisplayed())))
+
     }
 
     @Test

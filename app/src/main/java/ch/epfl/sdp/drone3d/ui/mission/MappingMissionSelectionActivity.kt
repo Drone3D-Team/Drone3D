@@ -126,8 +126,6 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
                             currentListState.value!!.second
                     )
 
-
-
             selectedStorageTypeToggleButton.isEnabled = false
 
         }
@@ -179,7 +177,6 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
             setupListAdapter(privateList, true, false)
             setupListAdapter(privateFilteredList, true, true)
 
-            // Link state with view visibility
             currentListState.observe(this, androidx.lifecycle.Observer {
                 it.let {
                     mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
