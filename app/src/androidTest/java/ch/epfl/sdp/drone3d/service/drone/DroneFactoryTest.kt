@@ -21,13 +21,25 @@ class DroneFactoryTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
+    //This test passes and I would like to know your thoughts on it
     @Test
-    fun createSimulationWithWrongDataFails() {
+    fun createSimulationWithWronglyParsedDataSucceeds() {
         val factory = DroneServerFactoryImpl()
-        val instance = factory.createSimulation("ip", "port")
+        val instance = factory.createSimulation("sim", "ip")
 
         assertThat(instance?.server, notNullValue())
         assertThat(instance?.instance, notNullValue())
+
+        instance?.server?.stop()
+    }
+
+    @Test
+    fun createSimulationWithWrongDataFails() {
+        val factory = DroneServerFactoryImpl()
+        val instance = factory.createSimulation("1.1.1.1", "90")
+
+        assertEquals(null,instance?.server)
+        assertEquals(null,instance?.instance)
 
         instance?.server?.stop()
     }
