@@ -6,9 +6,10 @@
 package ch.epfl.sdp.drone3d.ui.map
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.intent.Intents
@@ -41,11 +42,6 @@ import java.util.concurrent.CompletableFuture
 class MissionInProgressActivityTest {
 
     private val someLocationsList = ArrayList<LatLng>()
-        .addAll(listOf(LatLng(47.398979, 8.543434),
-            LatLng(47.398279, 8.543934),
-            LatLng(47.397426, 8.544867),
-            LatLng(47.397026, 8.543067)))
-
 
     private val activityRule = ActivityScenarioRule(MissionInProgressActivity::class.java)
 
@@ -101,14 +97,27 @@ class MissionInProgressActivityTest {
     fun loosingDroneConnectionShowsToast() {
         val isConnected = MutableLiveData(true)
 
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation()
-            .targetContext
-        val intent = Intent(targetContext, MissionInProgressActivity::class.java)
+        someLocationsList.addAll(listOf(LatLng(47.398979, 8.543434),
+            LatLng(47.398279, 8.543934),
+            LatLng(47.397426, 8.544867),
+            LatLng(47.397026, 8.543067)))
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(),
+            MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, someLocationsList)
 
         `when`(droneService.getData().isConnected()).thenReturn(isConnected)
 
-        activityRule.scenario.recreate()
+        ActivityScenario.launch<MissionInProgressActivity>(intent).use { scenario ->
+            // Test that the toast is displayed
+            val activity = CompletableFuture<MissionInProgressActivity>()
+            activityRule.scenario.onActivity {
+                isConnected.value = false
+                activity.complete(it)
+            }
+
+            ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
+        }
 
         // Test that the toast is displayed
         val activity = CompletableFuture<MissionInProgressActivity>()
@@ -125,9 +134,13 @@ class MissionInProgressActivityTest {
         val dronePosition = MutableLiveData(LatLng(10.1, 10.1))
         val homePosition = MutableLiveData(LatLng(0.0, 0.0))
 
-        val targetContext: Context = InstrumentationRegistry.getInstrumentation()
-            .targetContext
-        val intent = Intent(targetContext, MissionInProgressActivity::class.java)
+        someLocationsList.addAll(listOf(LatLng(47.398979, 8.543434),
+            LatLng(47.398279, 8.543934),
+            LatLng(47.397426, 8.544867),
+            LatLng(47.397026, 8.543067)))
+
+        val intent = Intent(ApplicationProvider.getApplicationContext(),
+            MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, someLocationsList)
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
@@ -139,19 +152,19 @@ class MissionInProgressActivityTest {
         `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
-        activityRule.scenario.recreate()
+        ActivityScenario.launch<MissionInProgressActivity>(intent).use { scenario ->
+            Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
+                .perform(ViewActions.click())
 
-        Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
-            .perform(ViewActions.click())
+            dronePosition.value = homePosition.value
 
-        dronePosition.value = homePosition.value
-
-        val activity = CompletableFuture<MissionInProgressActivity>()
-        activityRule.scenario.onActivity {
-            activity.complete(it)
+            val activity = CompletableFuture<MissionInProgressActivity>()
+            activityRule.scenario.onActivity {
+                activity.complete(it)
+            }
+            Intents.intended(
+                IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+            )
         }
-        Intents.intended(
-            IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
-        )
     }
 }

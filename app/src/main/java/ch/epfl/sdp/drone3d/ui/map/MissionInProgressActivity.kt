@@ -7,7 +7,6 @@ package ch.epfl.sdp.drone3d.ui.map
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.View
@@ -16,7 +15,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.*
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
