@@ -32,6 +32,7 @@ import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
+import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -72,9 +73,11 @@ class MappingMissionSelectionActivityTest {
         private val PRIVATE_FILTERED_LIVE_DATA = MutableLiveData(emptyList<MappingMission>())
     }
 
+    private val activityRule = ActivityScenarioRule(MappingMissionSelectionActivity::class.java)
+
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-        .around(ActivityScenarioRule(MappingMissionSelectionActivity::class.java))
+        .around(activityRule)
 
     @BindValue
     val authService: AuthenticationService = mock(AuthenticationService::class.java)
@@ -88,6 +91,8 @@ class MappingMissionSelectionActivityTest {
         `when`(user.uid).thenReturn(USER_UID)
         val userSession = UserSession(user)
         `when`(authService.getCurrentSession()).thenReturn(userSession)
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
 
         // Mock mapping mission dao
         `when`(mappingMissionDao.getPrivateMappingMissions(anyString()))
@@ -255,6 +260,7 @@ class MappingMissionSelectionActivityTest {
 
     @Test
     fun searchingChangesMissionsAndAreUpdatedWithLiveData() {
+
         // Semaphore used to wait for live data to be dispatched
         val mutex = Semaphore(0)
         // Make sure the current state is shared
@@ -320,6 +326,7 @@ class MappingMissionSelectionActivityTest {
 
     @Test
     fun clearTextInSearchBarShowsMissionWithoutFilter() {
+
         // Make sure the current state is shared
         var isPrivate = false
         // The filter that will be entered in the search bar
