@@ -86,7 +86,8 @@ class DroneExecutorImpl(private val service: DroneService,
         val hasArrived = instance.telemetry.position.filter { pos ->
             val isRightPos = distance(pos, returnLocation) == 0
             val isStopped = data.getSpeed().value?.roundToInt() == 0
-            isRightPos && isStopped
+            val isMissionFinished = data.getMutableMission().value?.isEmpty()!!
+            isRightPos && isStopped && isMissionFinished
         }
 
         // Land when arrived

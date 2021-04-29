@@ -152,6 +152,8 @@ class DroneExecutorTest {
         `when`(droneData.getPosition()).thenReturn(positionLiveData)
         `when`(droneData.getSpeed()).thenReturn(speedLiveData)
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
+        `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
+            Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
         val executor = DroneExecutorImpl(droneService, droneData)

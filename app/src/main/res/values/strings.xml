@@ -66,6 +66,7 @@
     <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
 
     <!-- Mission In Progress Activity -->
+    <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->

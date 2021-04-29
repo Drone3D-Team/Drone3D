@@ -60,7 +60,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
 
-    private lateinit var missionPath: ArrayList<LatLng>
+    private var missionPath: ArrayList<LatLng>? = null
 
     private var dronePositionObserver = Observer<LatLng> { newLatLng ->
         newLatLng?.let { if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
@@ -98,7 +98,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         super.onCreate(savedInstanceState)
 
         @Suppress("UNCHECKED_CAST")
-        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>
+        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
 
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
@@ -157,16 +157,20 @@ class MissionInProgressActivity : BaseMapActivity() {
      */
     @SuppressLint("CheckResult")
     private fun startMission() {
-        val droneMission = DroneUtils.makeDroneMission(missionPath, 20f)
-        val completable = droneService.getExecutor().startMission(this, droneMission)
+        if(missionPath == null) {
+            ToastHandler.showToastAsync(this, R.string.mission_null)
+        } else {
+            val droneMission = DroneUtils.makeDroneMission(missionPath!!, 20f)
+            val completable = droneService.getExecutor().startMission(this, droneMission)
 
-        completable.subscribe({
-            val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-            startActivity(intent)
-             }, {
-            //TODO: Move error here
-        })
+            completable.subscribe({
+                val intent = Intent(this, ItineraryShowActivity::class.java)
+                intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+                startActivity(intent)
+            }, {
+                //TODO: Move error here
+            })
+        }
     }
 
     /**
