@@ -179,14 +179,22 @@ class DroneExecutorImpl(
         data.addSubscription(
             instance.telemetry.position.subscribe(
                 { pos ->
-                    val isRightPos = distance(pos, returnLocation) == 0
-                    val isStopped = data.getSpeed().value?.roundToInt() == 0
-                    if (isRightPos.and(isStopped)) instance.action.land()
-                        .blockingAwait(1, TimeUnit.SECONDS)
-                    data.getMutableMissionPaused().postValue(true)
+                    performLanding(instance, pos, returnLocation)
                 },
                 { e -> Timber.e("ERROR LANDING : $e") }
             )
         )
+    }
+
+    private fun performLanding(
+        instance: System,
+        pos: Telemetry.Position,
+        returnLocation: Telemetry.Position
+    ) {
+        val isRightPos = distance(pos, returnLocation) == 0
+        val isStopped = data.getSpeed().value?.roundToInt() == 0
+        if (isRightPos.and(isStopped))
+            instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
+        data.getMutableMissionPaused().postValue(true)
     }
 }
