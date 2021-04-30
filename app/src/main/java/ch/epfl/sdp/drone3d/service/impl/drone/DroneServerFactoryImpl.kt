@@ -8,14 +8,30 @@ package ch.epfl.sdp.drone3d.service.impl.drone
 import ch.epfl.sdp.drone3d.service.api.drone.DroneServerFactory
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
+import kotlinx.coroutines.*
+import org.jetbrains.annotations.Async
+import kotlin.concurrent.thread
 
 class DroneServerFactoryImpl: DroneServerFactory {
 
-    override fun createSimulation(simIP: String, simPort: String): DroneServerFactory.InstanceContainer {
+    override fun createSimulation(simIP: String, simPort: String): DroneServerFactory.InstanceContainer? {
         val mavsdkServer = MavsdkServer()
         val cloudSimIPAndPort = "tcp://${simIP}:${simPort}"
-        val mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
-        return DroneServerFactory.InstanceContainer(mavsdkServer, System("localhost", mavsdkServerPort))
+        var mavsdkServerPort = 0
+
+        //Tries to setup the server for 3 seconds
+        GlobalScope.launch {
+            launch {
+                mavsdkServerPort = mavsdkServer.run(cloudSimIPAndPort)
+            }
+        }
+        Thread.sleep(3000)
+
+        return if(mavsdkServerPort!=0){
+            DroneServerFactory.InstanceContainer(mavsdkServer, System("localhost", mavsdkServerPort))
+        }else{
+            null
+        }
     }
 
     override fun createDrone(): DroneServerFactory.InstanceContainer {
