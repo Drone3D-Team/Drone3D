@@ -9,6 +9,8 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
@@ -21,7 +23,7 @@ import com.mapbox.mapboxsdk.maps.Style
 /**
  * The manager for map phone location
  */
-class LocationComponentManager(private val activity: Activity, val mapboxMap: MapboxMap) :
+class LocationComponentManager(private val activity: Activity, val mapboxMap: MapboxMap, val locationService: LocationService) :
     PermissionsListener {
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -61,6 +63,10 @@ class LocationComponentManager(private val activity: Activity, val mapboxMap: Ma
 
                 // Set the LocationComponent's render mode
                 renderMode = RenderMode.COMPASS
+            }
+
+            if (locationService.isLocationEnabled()) {
+                MapboxUtility.zoomOnCoordinate(locationService.getCurrentLocation()!!, mapboxMap)
             }
         }
     }

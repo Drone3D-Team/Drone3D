@@ -6,6 +6,7 @@
 package ch.epfl.sdp.drone3d.service.module
 
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneServerFactoryImpl
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneServiceImpl
 import dagger.Module
@@ -20,5 +21,6 @@ object DroneModule {
 
     @Singleton
     @Provides
-    fun provideDroneProvider() : DroneService = DroneServiceImpl(DroneServerFactoryImpl())
+    fun provideDroneProvider(locationService: LocationService): DroneService =
+        DroneServiceImpl(DroneServerFactoryImpl(), locationService)
 }
