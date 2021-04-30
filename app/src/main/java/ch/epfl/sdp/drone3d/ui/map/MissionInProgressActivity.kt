@@ -86,8 +86,6 @@ class MissionInProgressActivity : BaseMapActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
         initMapView(savedInstanceState, R.layout.activity_mission_in_progress, R.id.map_in_mission_view)
         mapView.getMapAsync { mapboxMap ->
             this.mapboxMap = mapboxMap

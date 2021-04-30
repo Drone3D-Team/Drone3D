@@ -22,9 +22,12 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  */
 data class SphereToPlaneProjector(val origin: LatLng) {
 
-    private val CONVERSION_FACTOR_DEGREE = 0.0001 //~100m near the Equator
-    private val MAX_LONGITUDE = 180
-    private val MAX_LATITUDE = 90
+    companion object{
+        private const val CONVERSION_FACTOR_DEGREE = 0.0001 //~100m near the Equator
+        private const val MAX_LONGITUDE = 180
+        private const  val MAX_LATITUDE = 90
+    }
+
     private val meterToLong = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude, origin.longitude + CONVERSION_FACTOR_DEGREE).distanceTo(origin)
     private val meterToLat = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude + CONVERSION_FACTOR_DEGREE, origin.longitude).distanceTo(origin)
 
