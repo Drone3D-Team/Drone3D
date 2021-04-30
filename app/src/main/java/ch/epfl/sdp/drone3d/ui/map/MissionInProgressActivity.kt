@@ -119,7 +119,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
         missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
 
-        centerCameraOnDrone(mapView)
+        centerCameraOnDrone()
 
         Transformations.map(droneService.getData().getMission()) { mission ->
             return@map mission?.let {
@@ -135,7 +135,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     /**
      * Centers the camera on the drone
      */
-    private fun centerCameraOnDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    private fun centerCameraOnDrone() {
         val currentZoom = mapboxMap.cameraPosition.zoom
 
         droneService.getData().getPosition().value?.let {
