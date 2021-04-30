@@ -42,6 +42,16 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
+
+        unitTests.all {
+            // All the usual Gradle options.
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+                exceptionFormat = 'full'
+            }
+        }
     }
 }
 
@@ -93,10 +103,6 @@ dependencies {
 }
 
 tasks.withType(Test) {
-    testLogging {
-        exceptionFormat = 'full'
-    }
-
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
