@@ -66,7 +66,10 @@ class LocationComponentManager(private val activity: Activity, val mapboxMap: Ma
             }
 
             if (locationService.isLocationEnabled()) {
-                MapboxUtility.zoomOnCoordinate(locationService.getCurrentLocation()!!, mapboxMap)
+                if(locationService.getCurrentLocation() != null){
+                    MapboxUtility.zoomOnCoordinate(locationService.getCurrentLocation()!!, mapboxMap)
+                }
+
             }
         }
     }

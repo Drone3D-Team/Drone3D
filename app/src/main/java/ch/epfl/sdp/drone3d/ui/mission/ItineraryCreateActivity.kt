@@ -14,18 +14,22 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.area.AreaBuilder
-import ch.epfl.sdp.drone3d.map.area.PolygonBuilder
+import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.mapbox.mapboxsdk.Mapbox
+import com.lukelorusso.verticalseekbar.VerticalSeekBar
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
@@ -42,32 +46,41 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     @Inject
     lateinit var authService: AuthenticationService
 
+    // Location
     @Inject
     lateinit var locationService: LocationService
+    lateinit var locationComponentManager: LocationComponentManager
+
+    @Inject
+    lateinit var droneService: DroneService
 
     // Map
     private var isMapReady = false
     private lateinit var mapboxMap: MapboxMap
 
+
     // Mission
+    private var isMissionDisplayed = false
     private var flightPath = arrayListOf<LatLng>()
-
-    // Button
-    private lateinit var goToSaveButton: FloatingActionButton
-
-    // Location
-    lateinit var locationComponentManager: LocationComponentManager
-
-    // Drawer
+    private var flightHeight = 50.0
+    private lateinit var missionBuilder: ParallelogramMappingMissionService
     private lateinit var missionDrawer: MapboxMissionDrawer
-    private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
 
     // Area
     private lateinit var areaBuilder: AreaBuilder
+    private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
+
+    // Button
+    private lateinit var goToSaveButton: FloatingActionButton
+    private lateinit var showMissionButton: FloatingActionButton
+    private lateinit var altitudeButton: VerticalSeekBar
+
+    // Text
+    private lateinit var altitudeText: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_itinerary_create, R.id.mapView)
 
         mapView.getMapAsync(this)
@@ -77,38 +90,51 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Button
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
         goToSaveButton.isEnabled = authService.hasActiveSession()
-    }
 
-    fun goToSaveActivity(@Suppress("UNUSED_PARAMETER") view: View) {
-
-        // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
-        if (areaBuilder.getShapeVertices() != null) {
-            flightPath = ArrayList(areaBuilder.getShapeVertices())
+        showMissionButton = findViewById(R.id.showMission)
+        showMissionButton.setOnClickListener {
+            isMissionDisplayed = !isMissionDisplayed
+            if (isMissionDisplayed) {
+                updateFlightPath()
+                showMissionButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_closed, null)
+                )
+            } else {
+                showMissionButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
+                )
+            }
         }
 
-        val intent = Intent(this, SaveMappingMissionActivity::class.java)
-        intent.putExtra("flightPath", flightPath)
-        startActivity(intent)
+        altitudeButton = findViewById(R.id.verticalBar)
+        altitudeButton.setOnProgressChangeListener { progressValue ->
+            flightHeight = progressValue.toDouble()
+            altitudeText.text = progressValue.toString()
+            updateFlightPath()
+        }
+        // TextView
+        altitudeText = findViewById(R.id.altitude)
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         locationComponentManager = LocationComponentManager(this, mapboxMap, locationService)
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+
             locationComponentManager.enableLocationComponent(style)
 
-            areaBuilder = PolygonBuilder()
-            //areaBuilder = ParallelogramBuilder()
-            areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
-            //areaBuilder.onAreaChanged.add { missionBuilder.withSearchArea(it) }
-
-
+            // Mission
+            missionBuilder = ParallelogramMappingMissionService(droneService)
             missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
-            // Need to be the last Drawer instanciated to allow draggable vertex
-            areaBuilderDrawer =
-                MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
+
+            // Area - Need to be the last Drawer instanciated to allow draggable vertex
+            areaBuilder = ParallelogramBuilder()
+            areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
+            areaBuilder.onAreaChanged.add { updateFlightPath() }
+            areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
 
             mapboxMap.addOnMapClickListener(this)
@@ -121,13 +147,19 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         isMapReady = true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isMapReady) {
-            areaBuilderDrawer.onDestroy()
-            areaBuilder.onDestroy()
+    /**
+     * Update the mapping mission flightPath and draw it on the map if the option is activated
+     */
+    private fun updateFlightPath() {
+        if (isMissionDisplayed && areaBuilder.isComplete()) {
+            val path =
+                missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
+
+            if (path != null) {
+                flightPath = ArrayList(path)
+                missionDrawer.showMission(flightPath)
+            }
         }
-        mapView.onDestroy()
     }
 
     @SuppressLint("MissingSuperCall")
@@ -149,5 +181,28 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             ).show()
         }
         return true
+    }
+
+    fun goToSaveActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+
+        updateFlightPath()
+        // TODO Replace by the actual MappingMission flight path once we are able to generate it from an area
+        if (flightPath.size == 0 && areaBuilder.getShapeVertices() != null) {
+            flightPath = ArrayList(areaBuilder.getShapeVertices())
+        }
+
+        val intent = Intent(this, SaveMappingMissionActivity::class.java)
+        intent.putExtra("flightPath", flightPath)
+        startActivity(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isMapReady) {
+            areaBuilderDrawer.onDestroy()
+            areaBuilder.onDestroy()
+        }
+        mapView.onDestroy()
+        missionDrawer.onDestroy()
     }
 }

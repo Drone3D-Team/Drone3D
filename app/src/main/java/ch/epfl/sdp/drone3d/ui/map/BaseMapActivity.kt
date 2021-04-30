@@ -7,6 +7,8 @@ package ch.epfl.sdp.drone3d.ui.map
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ch.epfl.sdp.drone3d.R
+import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 
 /**
@@ -18,11 +20,13 @@ open class BaseMapActivity : AppCompatActivity() {
     lateinit var mapView: MapView
 
     protected fun initMapView(savedInstanceState: Bundle?, contentViewId: Int, mapViewId: Int) {
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(contentViewId)
         // Set up the MapView
         mapView = findViewById(mapViewId)
         mapView.onCreate(savedInstanceState)
+
     }
 
     // Override Activity lifecycle methods
