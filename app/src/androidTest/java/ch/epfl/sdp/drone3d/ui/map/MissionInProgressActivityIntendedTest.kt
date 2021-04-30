@@ -75,6 +75,8 @@ class MissionInProgressActivityIntendedTest {
                 .thenReturn(Completable.never())
         `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
                 .thenReturn(Completable.complete())
+        `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
+            .thenReturn(Completable.complete())
 
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.3, 0.0)))
@@ -128,6 +130,31 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
+            .perform(ViewActions.click())
+
+        Intents.intended(
+            IntentMatchers.hasComponent(
+                ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun goBackToItineraryShowActivityWhenBackToUserPressed() {
+
+        val dronePosition = MutableLiveData(LatLng(10.1, 10.1))
+        val userPosition = MutableLiveData(LatLng(0.0, 0.0))
+
+        `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
+        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
+            Telemetry.Position(
+                userPosition.value?.latitude,
+                userPosition.value?.longitude,
+                10f,
+                10f)))
+        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+
+        Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
             .perform(ViewActions.click())
 
         Intents.intended(
