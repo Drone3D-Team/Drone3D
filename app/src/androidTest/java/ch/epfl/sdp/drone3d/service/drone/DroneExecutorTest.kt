@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
+import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneDataImpl
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneExecutorImpl
@@ -54,7 +55,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData)
 
         executor.startMission(InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
@@ -82,7 +83,7 @@ class DroneExecutorTest {
                 Telemetry.Position(expectedLatLng.latitude, expectedLatLng.longitude, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData)
 
         executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
 
@@ -111,7 +112,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData)
 
         executor.startMission(context,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
@@ -156,7 +157,7 @@ class DroneExecutorTest {
             Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData)
 
         executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
 
