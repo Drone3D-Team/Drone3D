@@ -93,6 +93,10 @@ dependencies {
 }
 
 tasks.withType(Test) {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
