@@ -37,6 +37,7 @@ class DroneConnectActivity : AppCompatActivity() {
             "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
             "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
     private val pattern: Pattern = Pattern.compile(regex)
+    private val connectionDelay = 3000L //in ms
 
     @Inject
     lateinit var droneService: DroneService
@@ -84,7 +85,7 @@ class DroneConnectActivity : AppCompatActivity() {
             //Launch this task asynchronously
             GlobalScope.launch {
 
-                checkIfDroneConnected(30)
+                checkIfDroneConnected(connectionDelay)
                 val mainHandler = Handler(applicationContext.mainLooper)
 
                 val myRunnable = Runnable {
@@ -114,7 +115,7 @@ class DroneConnectActivity : AppCompatActivity() {
 
         GlobalScope.launch {
 
-            checkIfDroneConnected(50)
+            checkIfDroneConnected(connectionDelay)
             val mainHandler = Handler(applicationContext.mainLooper)
 
             val myRunnable = Runnable {
@@ -162,11 +163,12 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Check if a drone was connected on the application after [counterMax]/10 seconds
      */
-    private suspend fun checkIfDroneConnected(counterMax: Int) {
-        var counter = 0
-        while (!droneService.isConnected() && counter < counterMax) {
-            delay(100L)
-            counter++
+    private suspend fun checkIfDroneConnected(waitingTime: Long) {
+        var remainingTime = waitingTime
+        val delay = 100L
+        while (!droneService.isConnected() && remainingTime>0) {
+            delay(delay)
+            remainingTime-=delay
         }
     }
 
