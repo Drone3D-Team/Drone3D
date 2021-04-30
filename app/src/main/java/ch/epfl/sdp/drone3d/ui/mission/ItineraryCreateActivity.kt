@@ -92,7 +92,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // Button
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
-        goToSaveButton.isEnabled = authService.hasActiveSession()
+        goToSaveButton.isEnabled = false
 
         showMissionButton = findViewById(R.id.showMission)
         showMissionButton.setOnClickListener {
@@ -151,15 +151,20 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Update the mapping mission flightPath and draw it on the map if the option is activated
      */
     private fun updateFlightPath() {
-        if (isMissionDisplayed && areaBuilder.isComplete()) {
-            val path =
-                missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
+        if(areaBuilder.isComplete()){
+            goToSaveButton.isEnabled = authService.hasActiveSession()
 
-            if (path != null) {
-                flightPath = ArrayList(path)
-                missionDrawer.showMission(flightPath)
+            if (isMissionDisplayed) {
+                val path =
+                    missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
+
+                if (path != null) {
+                    flightPath = ArrayList(path)
+                    missionDrawer.showMission(flightPath)
+                }
             }
         }
+
     }
 
     @SuppressLint("MissingSuperCall")

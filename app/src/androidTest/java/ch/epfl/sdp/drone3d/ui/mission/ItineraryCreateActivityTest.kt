@@ -124,11 +124,36 @@ class ItineraryCreateActivityTest {
             .check(matches(not(isEnabled())))
     }
 
+    private fun createMission(){
+        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
+
+        val sleepingTime = 100L
+
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        onView(withId(R.id.mapView)).perform(doubleClick())
+        SystemClock.sleep(sleepingTime);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(sleepingTime);
+        onView(withId(R.id.mapView)).perform(swipeLeft())
+        SystemClock.sleep(sleepingTime);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(sleepingTime);
+        onView(withId(R.id.mapView)).perform(swipeDown())
+        SystemClock.sleep(sleepingTime);
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(sleepingTime);
+    }
+
     @Test
     fun goToSaveActivityWork() {
         `when`(authService.hasActiveSession()).thenReturn(true)
 
         activityRule.scenario.recreate()
+
+        createMission()
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(isEnabled()))
@@ -147,27 +172,7 @@ class ItineraryCreateActivityTest {
         `when`(authService.hasActiveSession()).thenReturn(true)
         activityRule.scenario.recreate()
 
-        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
-
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(swipeLeft())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(swipeDown())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(swipeRight())
-        SystemClock.sleep(500);
-        onView(withId(R.id.mapView)).perform(click())
+        createMission()
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(isEnabled()))
