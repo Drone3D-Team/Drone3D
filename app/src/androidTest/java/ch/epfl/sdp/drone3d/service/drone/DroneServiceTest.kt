@@ -9,6 +9,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.sdp.drone3d.service.api.drone.DroneServerFactory
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneServiceImpl
 import io.mavsdk.core.Core
 import io.mavsdk.mavsdkserver.MavsdkServer
@@ -27,6 +28,7 @@ class DroneServiceTest {
 
     @Test
     fun setSimulationAndDisconnectWorks() {
+        val locationService = mock(LocationService::class.java)
         val factory = mock(DroneServerFactory::class.java)
         val server = mock(MavsdkServer::class.java)
         val drone = DroneInstanceMock.droneSystem
@@ -34,14 +36,16 @@ class DroneServiceTest {
         DroneInstanceMock.setupDefaultMocks()
 
         // force isConnected() to be true during the simulation setup
-        `when`(drone.core.connectionState).thenReturn(Flowable.fromArray(
-            Core.ConnectionState(0L, true)
-        ))
+        `when`(drone.core.connectionState).thenReturn(
+            Flowable.fromArray(
+                Core.ConnectionState(0L, true)
+            )
+        )
 
         `when`(factory.createSimulation(anyString(), anyString()))
-                .thenReturn(DroneServerFactory.InstanceContainer(server, drone))
+            .thenReturn(DroneServerFactory.InstanceContainer(server, drone))
 
-        val service = DroneServiceImpl(factory)
+        val service = DroneServiceImpl(factory, locationService)
 
         val ip = "ip"
         val port = "port"
@@ -61,6 +65,7 @@ class DroneServiceTest {
 
     @Test
     fun setDroneAndDisconnectWorks() {
+        val locationService = mock(LocationService::class.java)
         val factory = mock(DroneServerFactory::class.java)
         val server = mock(MavsdkServer::class.java)
         val drone = DroneInstanceMock.droneSystem
@@ -68,9 +73,9 @@ class DroneServiceTest {
         DroneInstanceMock.setupDefaultMocks()
 
         `when`(factory.createDrone())
-                .thenReturn(DroneServerFactory.InstanceContainer(server, drone))
+            .thenReturn(DroneServerFactory.InstanceContainer(server, drone))
 
-        val service = DroneServiceImpl(factory)
+        val service = DroneServiceImpl(factory, locationService)
 
         service.setDrone()
 

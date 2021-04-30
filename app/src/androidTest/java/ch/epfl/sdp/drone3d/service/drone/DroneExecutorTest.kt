@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneDataImpl
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneExecutorImpl
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
@@ -37,10 +38,10 @@ class DroneExecutorTest {
         private const val EPSILON = 1e-5
         private const val DEFAULT_ALTITUDE = 10f
         val someLocationsList = listOf(
-                LatLng(47.398979, 8.543434),
-                LatLng(47.398279, 8.543934),
-                LatLng(47.397426, 8.544867),
-                LatLng(47.397026, 8.543067)
+            LatLng(47.398979, 8.543434),
+            LatLng(47.398279, 8.543934),
+            LatLng(47.397426, 8.544867),
+            LatLng(47.397026, 8.543067)
         )
     }
 
@@ -49,15 +50,18 @@ class DroneExecutorTest {
 
         DroneInstanceMock.setupDefaultMocks()
 
+        val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor = DroneExecutorImpl(droneService, locationService, droneData)
 
-        executor.startMission(InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+        executor.startMission(
+            InstrumentationRegistry.getInstrumentation().targetContext,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        )
 
         // This assert prevent the app to crash in case the mission has not been updated
         assertThat(droneData.getMutableMission().value, `is`(notNullValue()))
@@ -71,6 +75,7 @@ class DroneExecutorTest {
 
         DroneInstanceMock.setupDefaultMocks()
 
+        val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
@@ -78,13 +83,19 @@ class DroneExecutorTest {
         val missionLiveData = MutableLiveData<List<Mission.MissionItem>>()
         `when`(droneData.getPosition()).thenReturn(MutableLiveData(expectedLatLng))
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
-        `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
-                Telemetry.Position(expectedLatLng.latitude, expectedLatLng.longitude, 400f, 50f)))
+        `when`(droneData.getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(expectedLatLng.latitude, expectedLatLng.longitude, 400f, 50f)
+            )
+        )
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor = DroneExecutorImpl(droneService, locationService, droneData)
 
-        executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+        executor.startMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        )
 
         executor.returnToHomeLocationAndLand(context)
 
@@ -105,16 +116,19 @@ class DroneExecutorTest {
     fun canPauseAndResumeMission() {
         DroneInstanceMock.setupDefaultMocks()
 
+        val locationService = mock(LocationService::class.java)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor = DroneExecutorImpl(droneService, locationService, droneData)
 
-        executor.startMission(context,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+        executor.startMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        )
 
         assertThat(droneData.getMutableMission().value, `is`(notNullValue()))
         assertThat(droneData.getMutableMission().value?.isEmpty(), `is`(false))
@@ -135,7 +149,11 @@ class DroneExecutorTest {
 
     @Test
     fun canStartMissionAndReturnToUser() {
-        val userPosition = LatLng(.0, .0) //TODO when User location service is up, change this
+        val locationService = mock(LocationService::class.java)
+        `when`(locationService.isLocationEnabled()).thenReturn(true)
+        `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
+
+        val userPosition = locationService.getCurrentLocation()!!
 
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -154,9 +172,12 @@ class DroneExecutorTest {
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, droneData)
+        val executor = DroneExecutorImpl(droneService, locationService, droneData)
 
-        executor.startMission(context, DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE))
+        executor.startMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        )
 
         executor.returnToUserLocationAndLand(context)
 

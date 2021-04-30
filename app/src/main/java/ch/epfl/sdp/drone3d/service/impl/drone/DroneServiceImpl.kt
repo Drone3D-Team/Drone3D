@@ -12,16 +12,20 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneServerFactory
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
 private const val DEFAULT_IP = "unknown"
 private const val DEFAULT_PORT = "-"
 
-class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneService {
+class DroneServiceImpl(
+    private val droneFactory: DroneServerFactory,
+    locationService: LocationService
+) : DroneService {
 
     private val droneData = DroneDataImpl(this)
-    private val droneExectuor = DroneExecutorImpl(this, droneData)
+    private val droneExectuor = DroneExecutorImpl(this, locationService, droneData)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
@@ -37,16 +41,16 @@ class DroneServiceImpl(private val droneFactory: DroneServerFactory) : DroneServ
 
         disconnect()
 
-        droneFactory.createSimulation(IP, port).also {
-            server = it.server
-            droneInstance = it.instance
+        val instanceContainer = droneFactory.createSimulation(IP, port)
+
+        if(instanceContainer!=null) {
+            droneInstance = instanceContainer.instance
+            server = instanceContainer?.server
+            isSimulation = true
+            simIP = IP
+            simPort = port
+            droneData.refresh()
         }
-
-        isSimulation = true
-        simIP = IP
-        simPort = port
-
-        droneData.refresh()
     }
 
     @Synchronized

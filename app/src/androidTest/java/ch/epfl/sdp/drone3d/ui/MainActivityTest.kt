@@ -149,7 +149,7 @@ class MainActivityTest {
         onView(withId(R.id.browse_itinerary_button))
                 .perform(click())
         Intents.intended(
-                hasComponent(hasClassName(LoginActivity::class.java.name))
+                hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 

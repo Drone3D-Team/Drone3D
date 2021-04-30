@@ -54,9 +54,9 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     private fun setupAdapter(
             data: LiveData<List<MappingMission>>,
             adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
-    ) = data.observe(this) {
+    ) = data.observe(this, androidx.lifecycle.Observer {
         it.let { adapter.submitList(sortedList(it)) }
-    }
+    })
 
 
     private fun sortedList(mappingMissions: List<MappingMission>?): List<MappingMission> {
@@ -111,18 +111,33 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapping_mission_selection)
 
+
+        val selectedStorageTypeToggleButton =
+                findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
+
+
         setupListViews()
 
-        // Setup toggle button
-        val selectedStorageTypeToggleButton =
-            findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
-        selectedStorageTypeToggleButton.isChecked = currentListState.value!!.first.checked
-        selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
+        if(!authService.hasActiveSession()){
+
             currentListState.value =
-                Pair(
-                    if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
-                    currentListState.value!!.second
-                )
+                    Pair(
+                            StorageType.SHARED,
+                            currentListState.value!!.second
+                    )
+
+            selectedStorageTypeToggleButton.isEnabled = false
+
+        } else{
+
+            selectedStorageTypeToggleButton.isChecked = currentListState.value!!.first.checked
+            selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
+                currentListState.value =
+                        Pair(
+                                if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
+                                currentListState.value!!.second
+                        )
+            }
         }
 
         val searchBar = findViewById<SearchView>(R.id.searchView)
@@ -131,22 +146,24 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Get the missions to show (shared if not connected, shared + private if user is connected)
+     * and make the list observe the currentListState to have the right visibility when we click
+     * on the toggle button
+     */
     private fun setupListViews() {
-        val ownerId = authService.getCurrentSession()!!.user.uid
 
         val sharedList = findViewById<RecyclerView>(R.id.shared_mission_list_view)
         val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
         val sharedFilteredList = findViewById<RecyclerView>(R.id.shared_filtered_mission_list_view)
         val privateFilteredList =
-            findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
+                findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
 
         setupListAdapter(sharedList, false, false)
-        setupListAdapter(privateList, true, false)
         setupListAdapter(sharedFilteredList, false, true)
-        setupListAdapter(privateFilteredList, true, true)
 
         // Link state with view visibility
-        currentListState.observe(this) {
+        currentListState.observe(this, androidx.lifecycle.Observer {
             it.let {
                 sharedList.visibility = getVisibility(false, false, it)
                 privateList.visibility = getVisibility(true, false, it)
@@ -154,9 +171,24 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
                 privateFilteredList.visibility = getVisibility(true, true, it)
 
                 mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
-                mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
             }
+        })
+
+
+        if(authService.getCurrentSession() != null) {
+            val ownerId = authService.getCurrentSession()!!.user.uid
+
+            setupListAdapter(privateList, true, false)
+            setupListAdapter(privateFilteredList, true, true)
+
+            currentListState.observe(this, androidx.lifecycle.Observer {
+                it.let {
+                    mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
+                }
+            })
+
         }
+
     }
 
     private fun getVisibility(
@@ -183,9 +215,8 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         private: Boolean,
         filter: Boolean
     ): LiveData<List<MappingMission>> {
-        val ownerId = authService.getCurrentSession()!!.user.uid
         return when {
-            private and !filter -> mappingMissionDao.getPrivateMappingMissions(ownerId)
+            private and !filter -> mappingMissionDao.getPrivateMappingMissions(authService.getCurrentSession()!!.user.uid)
             !private and !filter -> mappingMissionDao.getSharedMappingMissions()
             private and filter -> mappingMissionDao.getPrivateFilteredMappingMissions()
             else -> mappingMissionDao.getSharedFilteredMappingMissions()
