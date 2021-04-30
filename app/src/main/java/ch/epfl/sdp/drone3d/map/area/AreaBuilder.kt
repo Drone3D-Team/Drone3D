@@ -24,7 +24,7 @@ abstract class AreaBuilder : DrawableArea {
     abstract val sizeUpperBound: Int?
     abstract val shapeName: String
 
-    val onAreaChanged = mutableListOf<(Area?) -> Unit>()
+    val onAreaChanged = mutableListOf<() -> Unit>()
     val onVerticesChanged = mutableListOf<(MutableList<LatLng>) -> Unit>()
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -43,7 +43,9 @@ abstract class AreaBuilder : DrawableArea {
         }
 
         onVerticesChanged.forEach { it(vertices) }
-        onAreaChanged.forEach { it(area) }
+        if(area != null){
+            onAreaChanged.forEach { it() }
+        }
     }
 
 
