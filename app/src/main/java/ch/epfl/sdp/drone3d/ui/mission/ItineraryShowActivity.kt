@@ -9,12 +9,12 @@ import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -26,14 +26,13 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ItineraryShowActivity : AppCompatActivity() {
+class ItineraryShowActivity : BaseMapActivity() {
 
     @Inject
     lateinit var mappingMissionDao: MappingMissionDao
 
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
-    private lateinit var mapView: MapView
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
 
@@ -47,10 +46,8 @@ class ItineraryShowActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
-        setContentView(R.layout.activity_itinerary_show)
+        super.initMapView(savedInstanceState, R.layout.activity_itinerary_show, R.id.mapView)
 
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -64,8 +61,6 @@ class ItineraryShowActivity : AppCompatActivity() {
         privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
         sharedId = intent.getStringExtra(MissionViewAdapter.SHARED)
 
-        mapView = findViewById(R.id.mapView)
-        mapView.onCreate(savedInstanceState)
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
@@ -119,35 +114,5 @@ class ItineraryShowActivity : AppCompatActivity() {
         mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
         val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mapView.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        mapView.onStop()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
     }
 }
