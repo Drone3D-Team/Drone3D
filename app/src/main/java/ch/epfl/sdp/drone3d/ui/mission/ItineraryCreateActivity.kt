@@ -73,6 +73,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     // Button
     private lateinit var goToSaveButton: FloatingActionButton
     private lateinit var showMissionButton: FloatingActionButton
+    private lateinit var deleteButton: FloatingActionButton
     private lateinit var altitudeButton: VerticalSeekBar
 
     // Text
@@ -93,28 +94,10 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         // Button
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
         goToSaveButton.isEnabled = false
-
+        deleteButton = findViewById(R.id.delete_button)
         showMissionButton = findViewById(R.id.showMission)
-        showMissionButton.setOnClickListener {
-            isMissionDisplayed = !isMissionDisplayed
-            if (isMissionDisplayed) {
-                updateFlightPath()
-                showMissionButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_closed, null)
-                )
-            } else {
-                showMissionButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
-                )
-            }
-        }
-
         altitudeButton = findViewById(R.id.verticalBar)
-        altitudeButton.setOnProgressChangeListener { progressValue ->
-            flightHeight = progressValue.toDouble()
-            altitudeText.text = progressValue.toString()
-            updateFlightPath()
-        }
+
         // TextView
         altitudeText = findViewById(R.id.altitude)
     }
@@ -138,6 +121,32 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
 
             mapboxMap.addOnMapClickListener(this)
+
+            // Buttons
+            showMissionButton.setOnClickListener {
+                isMissionDisplayed = !isMissionDisplayed
+                if (isMissionDisplayed) {
+                    updateFlightPath()
+                    showMissionButton.setImageDrawable(
+                        ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_closed, null)
+                    )
+                } else {
+                    showMissionButton.setImageDrawable(
+                        ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
+                    )
+                }
+            }
+
+            altitudeButton.setOnProgressChangeListener { progressValue ->
+                flightHeight = progressValue.toDouble()
+                altitudeText.text = progressValue.toString()
+                updateFlightPath()
+            }
+
+            deleteButton.setOnClickListener{
+                areaBuilder.reset()
+                flightPath = ArrayList<LatLng>()
+            }
         }
 
         // Used to detect when the map is ready in tests

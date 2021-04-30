@@ -56,6 +56,7 @@
     <!-- Itinerary Create Activity -->
     <string name="content_descriptor_save_icon">save_icon</string>
     <string name="content_descriptor_view_mission_icon">view_mission_icon</string>
+    <string name="content_descriptor_delete_mission_icon">delete_mission_icon</string>
     <string name="map_ready">MAP READY</string>
     <string name="map_not_ready">MAP NOT READY</string>
 
