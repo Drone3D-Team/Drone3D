@@ -94,6 +94,9 @@ class MainActivityTest {
         onView(withId(R.id.log_in_button))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.log_in_button)).perform(click())
+
+        throw IllegalAccessError()
+
         Intents.intended(
                 hasComponent(hasClassName(LoginActivity::class.java.name))
         )

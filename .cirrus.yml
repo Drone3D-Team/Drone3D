@@ -28,7 +28,9 @@ check_android_task:
     curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
     chmod +x ./cc-test-reporter
     ./cc-test-reporter before-build
-  check_script: ./gradlew check connectedCheck
+  check_script: |
+    ./gradlew check connectedCheck
+    tar -cvf ./app/build/reports.tar ./app/build/reports/
   report_codeclimate_script: |
     export JACOCO_SOURCE_PATH=app/src/main/java/
     ./cc-test-reporter format-coverage ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
@@ -39,3 +41,4 @@ check_android_task:
       path: ./app/build/reports/lint-results-debug.xml
       type: text/xml
       format: android-lint
+    android-reports: ./app/build/reports.tar
