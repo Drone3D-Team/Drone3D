@@ -46,6 +46,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_itinerary_show, R.id.mapView)
 
         //Create a "back button" in the action bar up

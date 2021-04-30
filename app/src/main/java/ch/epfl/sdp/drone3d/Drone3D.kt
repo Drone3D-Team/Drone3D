@@ -9,7 +9,6 @@ import android.app.Application
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import com.mapbox.mapboxsdk.Mapbox
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -39,12 +38,5 @@ class Drone3D : Application() {
          */
         fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
                 HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
     }
 }
