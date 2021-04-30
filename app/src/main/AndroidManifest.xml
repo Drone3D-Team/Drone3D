@@ -32,11 +32,11 @@
             android:name=".ui.mission.MappingMissionSelectionActivity"
             android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name=".ui.mission.SaveMappingMissionActivity"
-            android:parentActivityName=".ui.MainActivity" />
-        <activity
             android:name=".ui.mission.ItineraryCreateActivity"
             android:parentActivityName=".ui.MainActivity" />
+        <activity
+            android:name=".ui.mission.SaveMappingMissionActivity"
+            android:parentActivityName=".ui.mission.ItineraryCreateActivity" />
         <activity
             android:name=".ui.drone.DroneConnectActivity"
             android:parentActivityName=".ui.MainActivity">

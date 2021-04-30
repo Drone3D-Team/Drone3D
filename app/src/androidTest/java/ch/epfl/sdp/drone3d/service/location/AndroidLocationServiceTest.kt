@@ -132,30 +132,6 @@ class AndroidLocationServiceTest {
         assertFalse(androidLocationService.unsubscribeFromLocationUpdates(10))
     }
 
-    @Test
-    fun getCurrentLocationThrowsSecurityException() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_GRANTED
-        )
-        `when`(locationManager.getLastKnownLocation(anyString())).thenThrow(SecurityException())
-        assertThrows(SecurityException::class.java) { androidLocationService.getCurrentLocation() }
-    }
-
-    @Test
-    fun subscribeToLocationUpdatesThrowsSecurityException() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_GRANTED
-        )
-        `when`(locationManager.getLastKnownLocation(anyString())).thenThrow(SecurityException())
-        assertThrows(SecurityException::class.java) {
-            androidLocationService.subscribeToLocationUpdates(
-                {},
-                0,
-                0f
-            )
-        }
-    }
-
     private fun assertLocationEquals(expected: Location, actual: LatLng) {
         assertEquals(expected.longitude, actual.longitude, 0.01)
         assertEquals(expected.latitude, actual.latitude, 0.01)

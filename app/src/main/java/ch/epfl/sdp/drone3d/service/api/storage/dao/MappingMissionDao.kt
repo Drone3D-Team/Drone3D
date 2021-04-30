@@ -64,13 +64,15 @@ interface MappingMissionDao {
 
     /**
      * Store the private [mappingMission] of owner [ownerUid]
+     * Return if the operation has been successful when it completes
      */
-    fun storeMappingMission(ownerUid: String, mappingMission: MappingMission)
+    fun storeMappingMission(ownerUid: String, mappingMission: MappingMission): LiveData<Boolean>
 
     /**
      * Share the [mappingMission] of owner [ownerUid]
+     * Return if the operation has been successful when it completes
      */
-    fun shareMappingMission(ownerUid: String, mappingMission: MappingMission)
+    fun shareMappingMission(ownerUid: String, mappingMission: MappingMission): LiveData<Boolean>
 
     /**
      * Remove the private mapping mission of owner [ownerUid], if it was private and shared,
