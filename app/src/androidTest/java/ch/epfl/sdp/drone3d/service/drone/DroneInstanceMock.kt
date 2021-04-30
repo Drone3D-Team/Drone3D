@@ -19,6 +19,7 @@ import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -143,6 +144,8 @@ object DroneInstanceMock {
                 Mission.MissionProgress(3, 4),
                 Mission.MissionProgress(4, 4)
             ))
+        `when`(droneMission.isMissionFinished)
+            .thenReturn(Single.just(true))
 
         //Action mocks
         `when`(droneAction.arm())
