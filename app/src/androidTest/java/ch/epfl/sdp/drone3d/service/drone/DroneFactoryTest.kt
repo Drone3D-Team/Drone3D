@@ -32,7 +32,6 @@ class DroneFactoryTest {
         instance?.server?.stop()
     }
 
-
     @Test
     fun createDroneWorks() {
         val factory = DroneServerFactoryImpl()
