@@ -38,7 +38,7 @@ data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: 
      * Returns the 4 vertices of the parallelogram
      */
     fun getVertices():List<Point>{
-        var vertices = mutableListOf<Point>()
+        val vertices = mutableListOf<Point>()
 
         vertices.add(origin)
         vertices.add(origin+dir1Span)
@@ -51,16 +51,10 @@ data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: 
      * Returns the equivalent parallelogram with base point closest to [point]
      */
     fun getClosestEquivalentParallelogram(point: Point): Parallelogram {
+
         val vertices = getVertices()
-        var closestOriginIndex = 0
-        var smallestDistance =  distance(point,vertices[0])
-        for (i in 1 until vertices.size){
-            val distance = distance(point,vertices[i])
-            if(distance<smallestDistance){
-                smallestDistance = distance
-                closestOriginIndex = i
-            }
-        }
+        val closestOriginIndex = vertices.withIndex().minByOrNull{ (_, vertex) -> distance(point, vertex) }?.index ?: 0
+
         return Parallelogram(vertices[closestOriginIndex],vertices[(closestOriginIndex-1+vertices.size)%vertices.size], vertices[(closestOriginIndex+1)%vertices.size])
     }
 
