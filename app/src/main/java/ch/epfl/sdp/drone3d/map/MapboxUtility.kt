@@ -30,7 +30,7 @@ class MapboxUtility {
 
             if (missionPath.isNotEmpty()) {
 
-                val firstCoordinates = LatLng(missionPath[0].latitude, missionPath[0].longitude)
+                val firstCoordinates = missionPath[0]
 
                 zoomOnCoordinate(firstCoordinates, mapboxMap)
             }

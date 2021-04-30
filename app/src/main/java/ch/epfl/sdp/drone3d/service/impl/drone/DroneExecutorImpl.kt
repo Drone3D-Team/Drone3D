@@ -121,12 +121,11 @@ class DroneExecutorImpl(
 
     override fun returnToUserLocationAndLand(context: Context) {
         if (!locationService.isLocationEnabled()) {
-            // What TODO when cant retrieve user location ?
-            return
+            throw IllegalStateException("Location is not enabled")
         }
         val userPosition = locationService.getCurrentLocation()!!
         val returnLocation =
-            Telemetry.Position(userPosition.latitude, userPosition.longitude, 10f, 10f)
+            Telemetry.Position(userPosition.latitude, userPosition.longitude, 0f, 0f)
 
         val completable =
             getConnectedInstance() ?: throw IllegalStateException("Could not query drone instance")
@@ -136,10 +135,9 @@ class DroneExecutorImpl(
         goToLocation(context, completable, instance, returnLocation)
     }
 
-    private fun distance(pos: Telemetry.Position, returnLocation: Telemetry.Position): Int {
+    private fun distance(pos: Telemetry.Position, returnLocation: Telemetry.Position): Double {
         return LatLng(pos.latitudeDeg, pos.longitudeDeg)
             .distanceTo(LatLng(returnLocation.latitudeDeg, returnLocation.longitudeDeg))
-            .roundToInt()
     }
 
     private fun goToLocation(
@@ -191,8 +189,10 @@ class DroneExecutorImpl(
         pos: Telemetry.Position,
         returnLocation: Telemetry.Position
     ) {
-        val isRightPos = distance(pos, returnLocation) == 0
-        val isStopped = data.getSpeed().value?.roundToInt() == 0
+        val landingErrorMargin = 0.5
+        val minSpeed = 0.2f
+        val isRightPos = distance(pos, returnLocation) < landingErrorMargin
+        val isStopped = data.getSpeed().value!! < minSpeed
         if (isRightPos.and(isStopped))
             instance.action.land().blockingAwait(1, TimeUnit.SECONDS)
         data.getMutableMissionPaused().postValue(true)
