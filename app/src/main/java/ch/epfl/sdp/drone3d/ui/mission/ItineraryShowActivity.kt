@@ -10,16 +10,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,9 +27,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ItineraryShowActivity : BaseMapActivity() {
 
+    companion object {
+        // max 1000 meters between the user/simulation and the start of the mission
+        private const val MAX_BEGINNING_DISTANCE = 1000
+    }
+
     @Inject
     lateinit var mappingMissionDao: MappingMissionDao
 
+    @Inject
+    lateinit var droneService: DroneService
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
@@ -39,9 +45,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     private lateinit var ownerUid: String
     private var privateId: String? = null
     private var sharedId: String? = null
-
-    @Inject
-    lateinit var droneService: DroneService
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -76,7 +79,18 @@ class ItineraryShowActivity : BaseMapActivity() {
         }
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        goToMissionInProgressButton.isEnabled = droneService.isConnected()
+        canMissionBeLaunched()
+    }
+
+    /**
+     * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
+     */
+    private fun canMissionBeLaunched() {
+        val beginningPoint = currentMissionPath!![0]
+        val distanceToMission =
+            beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
+        goToMissionInProgressButton.isEnabled =
+            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
     }
 
     /**
