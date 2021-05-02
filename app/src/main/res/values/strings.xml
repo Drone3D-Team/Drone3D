@@ -57,8 +57,14 @@
     <string name="content_descriptor_save_icon">save_icon</string>
     <string name="content_descriptor_view_mission_icon">view_mission_icon</string>
     <string name="content_descriptor_delete_mission_icon">delete_mission_icon</string>
+    <string name="content_descriptor_build_mission_icon">build_mission_icon</string>
+    <string name="content_descriptor_change_strategy_icon">change_strategy_icon</string>
     <string name="map_ready">MAP READY</string>
     <string name="map_not_ready">MAP NOT READY</string>
+    <string name="confirm_save_without_updating">Save anyway</string>
+    <string name="cancel_save_without_updating">Cancel</string>
+    <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want save without updating the mission ?</string>
+    <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
 
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>

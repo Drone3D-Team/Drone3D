@@ -32,7 +32,7 @@
             android:layout_margin="30sp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_save_icon"
-            android:onClick="goToSaveActivity"
+            android:onClick="onSaved"
             app:srcCompat="@android:drawable/ic_menu_save" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,9 +41,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="30sp"
-            android:layout_marginBottom="100sp"
+            android:layout_marginBottom="170sp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_view_mission_icon"
+            android:onClick="switchFlightPathVisibility"
             app:srcCompat="@drawable/ic_eye_open" />
 
         <com.lukelorusso.verticalseekbar.VerticalSeekBar
@@ -53,8 +54,7 @@
             android:layout_marginVertical="60dp"
             app:vsb_bar_width="10dp"
             app:vsb_max_value="100"
-            app:vsb_progress="50"
-            />
+            app:vsb_progress="50" />
 
         <TextView
             android:id="@+id/altitude"
@@ -70,10 +70,35 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="30dp"
-            android:layout_marginBottom="170dp"
+            android:layout_marginBottom="100dp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_delete_mission_icon"
+            android:onClick="eraseAll"
             app:srcCompat="@android:drawable/ic_menu_delete" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/buildFlightPath"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="240dp"
+            android:clickable="true"
+            android:contentDescription="@string/content_descriptor_build_mission_icon"
+            android:onClick="buildFlightPath"
+            app:srcCompat="@android:drawable/stat_notify_sync" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/changeStrategy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="310dp"
+            android:clickable="true"
+            android:contentDescription="@string/content_descriptor_change_strategy_icon"
+            android:onClick="switchStrategy"
+            app:srcCompat="@android:drawable/ic_menu_directions" />
     </com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
