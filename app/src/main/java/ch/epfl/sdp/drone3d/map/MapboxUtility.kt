@@ -10,11 +10,14 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
+/**
+ * Utility class that provides static methods used with mapbox.
+ */
 class MapboxUtility {
 
     companion object {
 
-        private val ZOOM_VALUE = 14.0
+        private const val ZOOM_VALUE = 14.0
 
         /**
          * Zoom on the first step of a mission [mission] on the map [mapboxMap].
