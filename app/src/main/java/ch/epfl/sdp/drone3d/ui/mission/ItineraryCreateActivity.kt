@@ -149,10 +149,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     private fun onMissionSettingModified() {
-        flightPathShouldBeReGenerated = true
-        deleteButton.isEnabled = true
         if (areaBuilder.isComplete()) {
             buildMissionButton.isEnabled = true
+            flightPathShouldBeReGenerated = true
+        }
+        if(areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()){
+            deleteButton.isEnabled = true
         }
     }
 
@@ -211,7 +213,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
                     Strategy.DOUBLE_PASS -> missionBuilder.buildDoublePassMappingMission(areaBuilder.vertices, flightHeight)
                 }
-                
+
                 if (path != null) {
                     flightPath = ArrayList(path)
                     if (isMissionDisplayed) {
