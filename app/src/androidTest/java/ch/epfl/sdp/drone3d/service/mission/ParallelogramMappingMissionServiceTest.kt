@@ -30,7 +30,6 @@ class ParallelogramMappingMissionServiceTest {
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
 
         val mappingMissionService = ParallelogramMappingMissionService(droneService)
-
     }
 
     @get:Rule

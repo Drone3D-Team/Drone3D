@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.app.Activity
 import android.os.SystemClock
+import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -24,6 +25,10 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
+import ch.epfl.sdp.drone3d.service.mission.ParallelogramMappingMissionServiceTest
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -42,6 +47,13 @@ import org.mockito.Mockito.mock
 @UninstallModules(AuthenticationModule::class)
 class ItineraryCreateActivityTest {
 
+    companion object {
+        val droneService = DroneInstanceMock.mockService()
+        val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
+        val focalLength = MutableLiveData(4f)
+        val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
+    }
+
     @get:Rule
     var activityRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
 
@@ -55,6 +67,15 @@ class ItineraryCreateActivityTest {
     @Before
     fun setUp() {
         Intents.init()
+        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getCameraResolution()).thenReturn(
+            cameraResolution
+        )
+        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getSensorSize()).thenReturn(
+            sensorSize
+        )
+        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getFocalLength()).thenReturn(
+            focalLength
+        )
     }
 
     @After
@@ -115,7 +136,7 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun goToSaveActivityButtonIsNotEnabledWhenUserNotLogin() {
+    fun goToSaveActivityButtonIsNotEnabledOnStart() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
@@ -129,11 +150,10 @@ class ItineraryCreateActivityTest {
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
         val sleepingTime = 100L
+        for(i in 0..10){
+            onView(withId(R.id.mapView)).perform(doubleClick())
+        }
 
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
-        onView(withId(R.id.mapView)).perform(doubleClick())
         SystemClock.sleep(sleepingTime);
         onView(withId(R.id.mapView)).perform(click())
         SystemClock.sleep(sleepingTime);
@@ -148,41 +168,68 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun goToSaveActivityWork() {
-        `when`(authService.hasActiveSession()).thenReturn(true)
-
+    fun buildButtonIsActivatedWhenAreaIsComplete() {
         activityRule.scenario.recreate()
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(not(isEnabled())))
 
         createMission()
 
-        onView(withId(R.id.buttonToSaveActivity))
+        onView(withId(R.id.buildFlightPath))
             .check(matches(isEnabled()))
-        onView(withId(R.id.buttonToSaveActivity)).perform(click())
-
-        Intents.intended(
-            hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
-        )
-
-        val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra("flightPath") })
     }
 
     @Test
-    fun createBasicMissionWork() {
-        `when`(authService.hasActiveSession()).thenReturn(true)
+    fun deleteButtonIsEnabledWhenThereIsSomethingToDelete() {
         activityRule.scenario.recreate()
 
-        createMission()
+        onView(withId(R.id.delete_button))
+            .check(matches(not(isEnabled())))
 
-        onView(withId(R.id.buttonToSaveActivity))
+        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
+        onView(withId(R.id.mapView)).perform(click())
+        SystemClock.sleep(100L);
+
+
+        onView(withId(R.id.delete_button))
             .check(matches(isEnabled()))
-        onView(withId(R.id.buttonToSaveActivity)).perform(click())
 
-        Intents.intended(
-            hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
-        )
+        onView(withId(R.id.delete_button))
+            .perform(click())
 
-        val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra("flightPath") && (it.extras?.getSerializable("flightPath") as List<LatLng>).size == 4 })
+        onView(withId(R.id.delete_button))
+            .check(matches(not(isEnabled())))
     }
+
+    @Test
+    fun changeFlightPathVisibilityButtonIsClickable() {
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.showMission))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.showMission)).perform(click())
+        onView(withId(R.id.showMission))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.showMission)).perform(click())
+        onView(withId(R.id.showMission))
+            .check(matches(isEnabled()))
+    }
+
+    @Test
+    fun switchStrategyButtonIsClickable() {
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.changeStrategy))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.changeStrategy)).perform(click())
+        onView(withId(R.id.changeStrategy))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.changeStrategy)).perform(click())
+        onView(withId(R.id.changeStrategy))
+            .check(matches(isEnabled()))
+    }
+
+
 }

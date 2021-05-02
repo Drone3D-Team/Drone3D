@@ -127,6 +127,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             // Area - Need to be the last Drawer instanciated to allow draggable vertex
             areaBuilder = ParallelogramBuilder()
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
+            areaBuilder.onVerticesChanged.add { deleteButton.isEnabled = true }
+
             areaBuilder.onAreaChanged.add { onMissionSettingModified() }
             areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
@@ -219,7 +221,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     if (isMissionDisplayed) {
                         missionDrawer.showMission(flightPath, false)
                     }
-                    goToSaveButton.isEnabled = true
+                    goToSaveButton.isEnabled = authService.hasActiveSession()
                 }else{
                     Toast.makeText(
                         baseContext, R.string.drone_should_be_connected,
