@@ -59,7 +59,7 @@ class ParallelogramMappingMissionServiceTest {
         val projector = SphereToPlaneProjector(LatLng(0.0,0.0))
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
-        val area = Parallelogram(vertices[0], vertices[1], vertices[2])
+        val area = Parallelogram(vertices[1], vertices[0], vertices[2])
         val cameraAngle = 0.0
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!
@@ -84,7 +84,7 @@ class ParallelogramMappingMissionServiceTest {
         val projector = SphereToPlaneProjector(LatLng(0.0, 0.0))
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
-        val area = Parallelogram(vertices[0], vertices[1], vertices[2])
+        val area = Parallelogram(vertices[1], vertices[0], vertices[2])
         val cameraAngle = 0.0
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!

@@ -51,7 +51,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
 
         return if (groundImageDimension != null) {
             val projector = SphereToPlaneProjector(vertices[0])
-            val parallelogram = Parallelogram(projector.toPoint(vertices[0]), projector.toPoint(vertices[1]),
+            val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
                 projector.toPoint(vertices[2]))
             projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
                 parallelogram, cameraAngle, flightHeight, groundImageDimension))
