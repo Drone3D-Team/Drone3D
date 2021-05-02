@@ -114,7 +114,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                 LatLng(item.latitudeDeg, item.longitudeDeg)
             }
         }.observe(this, { path ->
-            missionDrawer.showMission(path)
+            missionDrawer.showMission(path, false)
         })
     }
 

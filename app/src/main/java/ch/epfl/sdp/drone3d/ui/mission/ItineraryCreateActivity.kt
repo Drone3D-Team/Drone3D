@@ -134,6 +134,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     showMissionButton.setImageDrawable(
                         ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
                     )
+                    missionDrawer.showMission(listOf(), false)
                 }
             }
 
@@ -146,6 +147,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             deleteButton.setOnClickListener{
                 areaBuilder.reset()
                 flightPath = ArrayList<LatLng>()
+                missionDrawer.showMission(listOf(), false)
             }
         }
 
@@ -165,11 +167,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
             if (isMissionDisplayed) {
                 val path =
-                    missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
-
+                    //missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
+                    missionBuilder.buildDoublePassMappingMission(areaBuilder.vertices, flightHeight)
                 if (path != null) {
                     flightPath = ArrayList(path)
-                    missionDrawer.showMission(flightPath)
+                    missionDrawer.showMission(flightPath, false)
                 }
             }
         }

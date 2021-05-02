@@ -69,7 +69,7 @@ class ItineraryShowActivity : BaseMapActivity() {
                 }
 
                 if (currentMissionPath != null) {
-                    missionDrawer.showMission(currentMissionPath!!)
+                    missionDrawer.showMission(currentMissionPath!!, false)
                     MapboxUtility.zoomOnMission(currentMissionPath!!, mapboxMap)
                 }
             }
