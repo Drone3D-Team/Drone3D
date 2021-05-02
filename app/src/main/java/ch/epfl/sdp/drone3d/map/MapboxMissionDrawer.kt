@@ -53,6 +53,19 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
 
                     symbolManager.create(symbolOption)
                 }
+            }else{
+                // Draw first and last point
+                if(flightPath.isNotEmpty()) {
+                    val symbolOptionFirst = SymbolOptions()
+                        .withLatLng(LatLng(flightPath[0]))
+                        .withTextField("Start")
+                    val first = symbolManager.create(symbolOptionFirst)
+                    val symbolOptionLast = SymbolOptions()
+                        .withLatLng(LatLng(flightPath[flightPath.lastIndex]))
+                        .withTextField("End")
+                    val last = symbolManager.create(symbolOptionLast)
+                    mapSymbols = listOf(first, last)
+                }
             }
 
             if (!::mapLines.isInitialized || reset) {
