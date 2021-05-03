@@ -12,8 +12,8 @@ import android.view.View
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
@@ -95,11 +95,18 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
      */
     private fun canMissionBeLaunched() {
-        val beginningPoint = currentMissionPath!![0]
-        val distanceToMission =
-            beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-        goToMissionInProgressButton.isEnabled =
-            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+        if (currentMissionPath!!.isEmpty()) {
+            goToMissionInProgressButton.isEnabled = false
+        } else {
+            val beginningPoint = currentMissionPath!![0]
+            val distanceToMission =
+                beginningPoint.distanceTo(droneService
+                    .getData()
+                    .getPosition()
+                    .value!!)
+            goToMissionInProgressButton.isEnabled =
+                droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+        }
     }
 
     /**
