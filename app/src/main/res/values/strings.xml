@@ -10,6 +10,7 @@
     <string name="log_in">Log in</string>
     <string name="log_out">Logout</string>
     <string name="connect_a_drone">Connect a drone</string>
+    <string name="manage_offline_map">Manage offline map</string>
     <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
