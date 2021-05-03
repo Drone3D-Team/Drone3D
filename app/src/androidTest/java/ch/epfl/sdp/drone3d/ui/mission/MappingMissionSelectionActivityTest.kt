@@ -364,16 +364,16 @@ class MappingMissionSelectionActivityTest {
         )
     }
 
-        @Test
-        fun privateMissionsAreNotShownWhenNoUserConnected() {
+    @Test
+    fun privateMissionsAreNotShownWhenNoUserConnected() {
 
-            `when`(authService.hasActiveSession()).thenReturn(false)
+        `when`(authService.hasActiveSession()).thenReturn(false)
 
-            // Recreate the activity to apply the update
-            activityRule.scenario.recreate()
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
 
-            onView(withId(R.id.private_mission_list_view))
-                .check(matches(not(isDisplayed())))
+        onView(withId(R.id.private_mission_list_view))
+            .check(matches(not(isDisplayed())))
 
     }
 
@@ -491,7 +491,7 @@ class MappingMissionSelectionActivityTest {
     private fun liveDataShowsToUser(
         shared: Boolean,
         filter: Boolean,
-        currentData: List<MappingMission>?
+        currentData: List<MappingMission>?,
     ) {
         val id =
             if (shared && filter) R.id.shared_filtered_mission_list_view

@@ -85,7 +85,8 @@ class ItineraryShowActivity : BaseMapActivity() {
             }
         }
         deleteButton = findViewById(R.id.mission_delete)
-        deleteButton.visibility = if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+        deleteButton.visibility =
+            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
         canMissionBeLaunched()
@@ -100,10 +101,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         } else {
             val beginningPoint = currentMissionPath!![0]
             val distanceToMission =
-                beginningPoint.distanceTo(droneService
-                    .getData()
-                    .getPosition()
-                    .value!!)
+                beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
             goToMissionInProgressButton.isEnabled =
                 droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
         }
