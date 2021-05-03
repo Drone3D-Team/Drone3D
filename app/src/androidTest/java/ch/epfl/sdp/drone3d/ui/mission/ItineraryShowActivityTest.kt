@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
@@ -22,6 +23,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
@@ -33,6 +35,8 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import io.mavsdk.mission.Mission
+import io.reactivex.Completable
 import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
@@ -73,6 +77,15 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+
+        val executor = Mockito.mock(DroneExecutor::class.java)
+        `when`(droneService.getExecutor()).thenReturn(executor)
+        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
+            .thenReturn(Completable.never())
+        `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
+            .thenReturn(Completable.complete())
+        `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
+            .thenReturn(Completable.complete())
     }
 
     @Before
@@ -169,4 +182,6 @@ class ItineraryShowActivityTest {
             )
         }
     }
+
+    private fun <T> anyObj(type: Class<T>): T = Mockito.any<T>(type)
 }

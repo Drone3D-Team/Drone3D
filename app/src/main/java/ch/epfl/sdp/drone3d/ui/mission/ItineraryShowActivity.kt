@@ -96,7 +96,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
      */
     private fun canMissionBeLaunched() {
-        if (currentMissionPath!!.isEmpty()) {
+        if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
             goToMissionInProgressButton.isEnabled = false
         } else {
             val beginningPoint = currentMissionPath!![0]
