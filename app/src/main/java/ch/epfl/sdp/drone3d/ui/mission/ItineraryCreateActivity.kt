@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.ResourcesCompat
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
@@ -58,11 +59,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
     // Map
     private var isMapReady = false
-    private lateinit var mapboxMap: MapboxMap
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public lateinit var mapboxMap: MapboxMap
 
 
     // Mission
-    private var isMissionDisplayed = false
+    private var isMissionDisplayed = true
     private var flightPath = arrayListOf<LatLng>()
     private var flightHeight = 50.0
     private lateinit var missionBuilder: ParallelogramMappingMissionService
@@ -71,7 +73,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     private var strategy = Strategy.SINGLE_PASS
 
     // Area
-    private lateinit var areaBuilder: AreaBuilder
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public lateinit var areaBuilder: AreaBuilder
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
 
     // Button
@@ -180,11 +183,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         if (isMissionDisplayed) {
             missionDrawer.showMission(flightPath, false)
             showMissionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_closed, null)
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
             )
         } else {
             showMissionButton.setImageDrawable(
-                ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_open, null)
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_eye_desactivated, null)
             )
             missionDrawer.showMission(listOf(), false)
         }

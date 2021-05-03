@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 
 import android.app.Activity
 import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -22,13 +23,18 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.map.area.AreaBuilder
+import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.service.mission.ParallelogramMappingMissionServiceTest
+import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -44,11 +50,10 @@ import org.mockito.Mockito.mock
 
 
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class)
+@UninstallModules(AuthenticationModule::class, DroneModule::class)
 class ItineraryCreateActivityTest {
 
     companion object {
-        val droneService = DroneInstanceMock.mockService()
         val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
         val focalLength = MutableLiveData(4f)
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
@@ -63,6 +68,9 @@ class ItineraryCreateActivityTest {
 
     @BindValue
     val authService: AuthenticationService = mock(AuthenticationService::class.java)
+
+    @BindValue
+    val droneService = DroneInstanceMock.mockService()
 
     @Before
     fun setUp() {
@@ -149,22 +157,18 @@ class ItineraryCreateActivityTest {
         var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
-        val sleepingTime = 100L
-        for(i in 0..10){
-            onView(withId(R.id.mapView)).perform(doubleClick())
-        }
+        var hasBeenInit = false
 
-        SystemClock.sleep(sleepingTime);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(sleepingTime);
-        onView(withId(R.id.mapView)).perform(swipeLeft())
-        SystemClock.sleep(sleepingTime);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(sleepingTime);
-        onView(withId(R.id.mapView)).perform(swipeDown())
-        SystemClock.sleep(sleepingTime);
-        onView(withId(R.id.mapView)).perform(click())
-        SystemClock.sleep(sleepingTime);
+        activityRule.scenario.onActivity {
+            if(!hasBeenInit){
+                MapboxUtility.zoomOnCoordinate(LatLng(46.518732896473644, 6.5628454889064365), it.mapboxMap)
+                it.areaBuilder.addVertex(LatLng(46.518732896473644, 6.5628454889064365))
+                it.areaBuilder.addVertex(LatLng( 46.51874120200868, 6.563415458311842))
+                it.areaBuilder.addVertex(LatLng(46.518398828344715, 6.563442280401509))
+                hasBeenInit = true
+            }
+
+        }
     }
 
     @Test
@@ -231,5 +235,49 @@ class ItineraryCreateActivityTest {
             .check(matches(isEnabled()))
     }
 
+    @Test
+    fun buildButtonIsClickable() {
+        activityRule.scenario.recreate()
 
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(not(isEnabled())))
+
+        createMission()
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(isEnabled()))
+
+        onView(withId(R.id.buildFlightPath))
+            .perform(click())
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(not(isEnabled())))
+    }
+
+    @Test
+    fun goToSaveActivityWork() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        createMission()
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buildFlightPath))
+            .perform(click())
+
+        SystemClock.sleep(1000L);
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToSaveActivity)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra("flightPath") })
+    }
 }
