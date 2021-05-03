@@ -4,8 +4,7 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <uses-feature android:name="android.hardware.type.watch" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".Drone3D"
@@ -20,13 +19,6 @@
             android:name=".ui.map.ManageOfflineMapActivity"
             android:parentActivityName=".ui.MainActivity" />
         <activity android:name=".ui.map.MissionInProgressActivity" />
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
 
         <activity
             android:name=".ui.mission.ItineraryShowActivity"

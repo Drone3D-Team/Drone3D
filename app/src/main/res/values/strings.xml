@@ -69,7 +69,9 @@
     <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
 
     <!-- Mission In Progress Activity -->
-    <string name="stop_mission_button">Stop Mission</string>
+    <string name="mission_null">Cannot launch a null mission</string>
+    <string name="back_to_home_button">Back to Home</string>
+    <string name="back_to_user_button">Back to User</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
 
@@ -84,10 +86,11 @@
     <!-- Format to follow for the mission name in the list if they are also private while in the shared list-->
     <string name="mapping_mission_list_format_shared">%s - P</string>
 
+    <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
     <string name="drone_mission_error">An error occurred while dispatching missing to the drone</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_pause_error">Mission pause failed, try again later</string>
-    <string name="drone_home_error">Could\'t not launch mission to let the drone return home</string>
-    <string name="drone_home_success">The drone is returning home</string>
+    <string name="drone_return_error">Could not launch mission to let the drone come back</string>
+    <string name="drone_return_success">The drone is coming back</string>
 </resources>

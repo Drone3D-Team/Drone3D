@@ -15,9 +15,10 @@
         android:id="@+id/map_in_mission_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintVertical_bias="0.0" />
+        tools:layout_editor_absoluteX="-72dp"
+        tools:layout_editor_absoluteY="-71dp" />
 
-    <VideoView
+    <SurfaceView
         android:id="@+id/camera_mission_view"
         android:layout_width="204dp"
         android:layout_height="112dp"
@@ -29,14 +30,29 @@
         app:layout_constraintVertical_bias="0.974" />
 
     <Button
-        android:id="@+id/stopMissionButton"
+        android:id="@+id/backToHomeButton"
         android:layout_width="112dp"
         android:layout_height="58dp"
-        android:text="@string/stop_mission_button"
+        android:onClick="backToHome"
+        android:text="@string/back_to_home_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.859"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.939" />
+        app:layout_constraintVertical_bias="0.976" />
+
+    <Button
+        android:id="@+id/backToUserButton"
+        android:layout_width="112dp"
+        android:layout_height="58dp"
+        android:onClick="backToUser"
+        android:text="@string/back_to_user_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.859"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.891" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
