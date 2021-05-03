@@ -53,12 +53,6 @@ import org.mockito.Mockito.mock
 @UninstallModules(AuthenticationModule::class, DroneModule::class)
 class ItineraryCreateActivityTest {
 
-    companion object {
-        val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
-        val focalLength = MutableLiveData(4f)
-        val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
-    }
-
     @get:Rule
     var activityRule = ActivityScenarioRule(ItineraryCreateActivity::class.java)
 
@@ -70,20 +64,11 @@ class ItineraryCreateActivityTest {
     val authService: AuthenticationService = mock(AuthenticationService::class.java)
 
     @BindValue
-    val droneService = DroneInstanceMock.mockService()
+    val droneService = DroneInstanceMock.mockServiceWithDefaultData()
 
     @Before
     fun setUp() {
         Intents.init()
-        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getCameraResolution()).thenReturn(
-            cameraResolution
-        )
-        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getSensorSize()).thenReturn(
-            sensorSize
-        )
-        `when`(ParallelogramMappingMissionServiceTest.droneService.getData().getFocalLength()).thenReturn(
-            focalLength
-        )
     }
 
     @After
