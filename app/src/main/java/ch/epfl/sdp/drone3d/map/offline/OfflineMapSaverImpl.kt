@@ -91,8 +91,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      * name [regionName]. [callback] can be used to act when the region starts downloading and monitor the download's progress.
      */
     private fun downloadRegion(regionName:String,regionBounds:LatLngBounds,callback:OfflineManager.CreateOfflineRegionCallback){
-
-        val offlineManager = OfflineManager.getInstance(context)
+        
         map.getStyle { style ->
             //The regions properties
             val definition = OfflineTilePyramidRegionDefinition(
