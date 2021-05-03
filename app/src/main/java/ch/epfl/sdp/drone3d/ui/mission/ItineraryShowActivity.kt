@@ -10,12 +10,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -31,7 +33,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     @Inject
     lateinit var mappingMissionDao: MappingMissionDao
 
-
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
@@ -40,8 +41,13 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var privateId: String? = null
     private var sharedId: String? = null
 
+    private lateinit var deleteButton: MaterialButton
+
     @Inject
     lateinit var droneService: DroneService
+
+    @Inject
+    lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -77,6 +83,9 @@ class ItineraryShowActivity : BaseMapActivity() {
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
         goToMissionInProgressButton.isEnabled = droneService.isConnected()
+
+        deleteButton = findViewById(R.id.mission_delete)
+        deleteButton.visibility = if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
     }
 
     /**

@@ -5,15 +5,16 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
+import android.app.Activity
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.DroneModule
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
-import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -23,6 +24,9 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.`when`
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Test MissionInProgressActivity with no mission as input
+ */
 @HiltAndroidTest
 @UninstallModules(DroneModule::class)
 class MissionInProgressActivityTest {
@@ -30,7 +34,8 @@ class MissionInProgressActivityTest {
     private val activityRule = ActivityScenarioRule(MissionInProgressActivity::class.java)
 
     @get:Rule
-    val ruleChain: RuleChain = RuleChain.outerRule(HiltAndroidRule(this)).around(activityRule)
+    val ruleChain: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
+        .around(activityRule)
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
@@ -66,17 +71,10 @@ class MissionInProgressActivityTest {
     }
 
     @Test
-    fun loosingDroneConnectionShowsToast() {
-        val isConnected = MutableLiveData(true)
+    fun launchingNullMissionShowToast() {
 
-        `when`(droneService.getData().isConnected()).thenReturn(isConnected)
-
-        activityRule.scenario.recreate()
-
-        // Test that the toast is displayed
-        val activity = CompletableFuture<MissionInProgressActivity>()
+        val activity = CompletableFuture<Activity>()
         activityRule.scenario.onActivity {
-            isConnected.value = false
             activity.complete(it)
         }
 
