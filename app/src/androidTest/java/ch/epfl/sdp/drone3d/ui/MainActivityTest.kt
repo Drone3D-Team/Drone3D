@@ -28,6 +28,7 @@ import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
+import ch.epfl.sdp.drone3d.ui.map.ManageOfflineMapActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import com.google.firebase.auth.FirebaseUser
@@ -123,6 +124,15 @@ class MainActivityTest {
                 .perform(click())
         Intents.intended(
                 hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
+        )
+    }
+
+    @Test
+    fun goToManageOfflineMapWorks() {
+        onView(withId(R.id.manage_offline_map_button))
+            .perform(click())
+        Intents.intended(
+            hasComponent(hasClassName(ManageOfflineMapActivity::class.java.name))
         )
     }
 

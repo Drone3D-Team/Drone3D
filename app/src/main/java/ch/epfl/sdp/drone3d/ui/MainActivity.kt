@@ -17,6 +17,7 @@ import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
+import ch.epfl.sdp.drone3d.ui.map.ManageOfflineMapActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -108,6 +109,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             open(DroneConnectActivity::class)
         }
+    }
+
+    /**
+     * Go to ManageOfflineMapActivity when manage_offline_map_button is clicked
+     */
+    fun goToDroneManageOfflineMap(@Suppress("UNUSED_PARAMETER") view: View) {
+        open(ManageOfflineMapActivity::class)
     }
 
     private fun <T> open(activity: KClass<T>) where T : Activity {
