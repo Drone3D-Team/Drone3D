@@ -198,8 +198,14 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun switchStrategy(@Suppress("UNUSED_PARAMETER") view: View) {
         strategy = when (strategy) {
-            Strategy.SINGLE_PASS -> Strategy.DOUBLE_PASS
-            Strategy.DOUBLE_PASS -> Strategy.SINGLE_PASS
+            Strategy.SINGLE_PASS ->{
+                changeStrategyButton.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_double_path_strategy, null))
+                Strategy.DOUBLE_PASS
+            }
+            Strategy.DOUBLE_PASS -> {
+                changeStrategyButton.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_single_path_strategy, null))
+                Strategy.SINGLE_PASS
+            }
         }
         onMissionSettingModified()
     }

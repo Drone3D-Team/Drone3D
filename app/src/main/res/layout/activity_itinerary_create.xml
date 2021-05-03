@@ -98,7 +98,7 @@
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_change_strategy_icon"
             android:onClick="switchStrategy"
-            app:srcCompat="@android:drawable/ic_menu_directions" />
+            app:srcCompat="@drawable/ic_single_path_strategy" />
     </com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
