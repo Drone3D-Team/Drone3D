@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -135,20 +136,37 @@ class ItineraryShowActivityTest {
     }
 
     @Test
+    fun deleteButtonNotVisibleWhenWrongUser() {
+        val user = Mockito.mock(FirebaseUser::class.java)
+        `when`(user.uid).thenReturn(USER_UID)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.mission_delete))
+            .check(matches(withEffectiveVisibility(Visibility.GONE)))
+    }
+
+    @Test
     fun deleteMissionBringBackToMissionSelection() {
         val user = Mockito.mock(FirebaseUser::class.java)
         `when`(user.uid).thenReturn(USER_UID)
         val userSession = UserSession(user)
         `when`(authService.getCurrentSession()).thenReturn(userSession)
 
-        onView(withId(R.id.mission_delete))
-            .perform(click())
-        onView(withText("Are you sure you want to delete this mission ?"))
-            .check(matches(isDisplayed()))
-        onView(withText("Delete"))
-            .perform(click())
-        Intents.intended(
-            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
-        )
+        val intent = Intent(ApplicationProvider.getApplicationContext(),
+            ItineraryShowActivity::class.java)
+        intent.putExtra(MissionViewAdapter.OWNER, USER_UID)
+
+        ActivityScenario.launch<ItineraryShowActivity>(intent).use { scenario ->
+            onView(withId(R.id.mission_delete))
+                .perform(click())
+            onView(withText("Are you sure you want to delete this mission ?"))
+                .check(matches(isDisplayed()))
+            onView(withText("Delete"))
+                .perform(click())
+            Intents.intended(
+                hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+            )
+        }
     }
 }

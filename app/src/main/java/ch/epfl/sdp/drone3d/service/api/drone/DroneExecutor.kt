@@ -7,6 +7,8 @@ package ch.epfl.sdp.drone3d.service.api.drone
 
 import android.content.Context
 import io.mavsdk.mission.Mission
+import io.reactivex.Completable
+import java.util.concurrent.CompletableFuture
 
 /**
  * An interface responsible of launching and controlling the missions of the drone
@@ -18,7 +20,7 @@ interface DroneExecutor {
      *
      * Shows toasts of the [context]
      */
-    fun startMission(context: Context, missionPlan: Mission.MissionPlan)
+    fun startMission(context: Context, missionPlan: Mission.MissionPlan): Completable
 
     /**
      * Pause current mission.
@@ -42,13 +44,17 @@ interface DroneExecutor {
      * Start a mission where the drone goes back to home location and land
      *
      * Shows toasts of the [context]
+     *
+     * Returns a [CompletableFuture] then will complete once the drone has landed
      */
-    fun returnToHomeLocationAndLand(context: Context)
+    fun returnToHomeLocationAndLand(context: Context): Completable
 
     /**
      * Start a mission where the drone goes back to user location and land
      *
      * Shows toasts of the [context]
+     *
+     * Returns a [CompletableFuture] then will complete once the drone has landed
      */
-    fun returnToUserLocationAndLand(context: Context)
+    fun returnToUserLocationAndLand(context: Context): Completable
 }
