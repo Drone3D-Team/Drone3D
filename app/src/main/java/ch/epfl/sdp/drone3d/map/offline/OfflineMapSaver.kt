@@ -16,7 +16,7 @@ interface OfflineMapSaver {
     /**
      * Returns a completable future for the offline region [id]
      */
-    fun getOfflineRegion(id:Long): CompletableFuture<OfflineRegion>
+    fun getOfflineRegions(): CompletableFuture<Array<OfflineRegion>>
 
     /**
      * Returns the centered camera position of [offlineRegion]

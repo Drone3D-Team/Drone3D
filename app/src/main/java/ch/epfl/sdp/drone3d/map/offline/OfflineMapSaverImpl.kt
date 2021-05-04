@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 
 //TODO: pbm with kotlin imports
 //@Serializable
-data class OfflineRegionMetadata(val name:String,val center:LatLng,val zoom:Double)
+data class OfflineRegionMetadata(val name:String,val bounds:LatLngBounds,val zoom:Double)
 
 class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver {
 
@@ -31,7 +31,6 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         private fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
             return Json.decodeFromString(String(region.metadata))
         }
-
     }
 
     private val offlineManager = OfflineManager.getInstance(context)
@@ -64,9 +63,9 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
     /**
      * Returns a completable future for the offline region [id]
      */
-    override fun getOfflineRegion(id:Long):CompletableFuture<OfflineRegion>{
-        val futureRegion: CompletableFuture<OfflineRegion> = CompletableFuture()
-        actOnRegion(id){offlineRegion -> futureRegion.complete(offlineRegion)}
+    override fun getOfflineRegions():CompletableFuture<Array<OfflineRegion>>{
+        val futureRegion: CompletableFuture<Array<OfflineRegion>> = CompletableFuture()
+        actOnRegions{offlineRegions -> futureRegion.complete(offlineRegions)}
         return futureRegion
     }
 
@@ -75,7 +74,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      */
     override fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition {
         val metadata = getMetadata(offlineRegion)
-        return CameraPosition.Builder().target(metadata.center).zoom(metadata.zoom).build()
+        return CameraPosition.Builder().target(metadata.bounds.center).zoom(metadata.zoom).build()
     }
 
     /**
@@ -83,7 +82,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      * when it is finished. If the region does not exist, this method does nothing.
      */
     override fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback){
-        actOnRegion(id){region-> region?.delete(callback)}
+        actOnRegion(id){region -> region?.delete(callback)}
     }
 
     /**
@@ -103,11 +102,11 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
             )
 
             //Create metadata for this saved map instance that can be accessed later
-            val metadata = OfflineRegionMetadata(regionName, regionBounds.center,map.cameraPosition.zoom)
+            val metadata = OfflineRegionMetadata(regionName, regionBounds,map.cameraPosition.zoom)
             val metadataArray = Json.encodeToString(metadata).toByteArray(charset(JSON_CHARSET))
 
             //Starts the download (if offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE) is called in the callback)
-            // the callback can be used to monitor the download progress
+            //the callback can be used to monitor the download progress
             offlineManager.createOfflineRegion(definition, metadataArray, callback)
         }
     }
@@ -116,8 +115,8 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      * Apply [callback] on the region [regionName]
      */
     private fun actOnRegion(id:Long,callback:((OfflineRegion?) -> Unit)){
-        actOnOfflineRegions{ offlineRegions->
-            val region = offlineRegions.firstOrNull{ offlineRegion -> offlineRegion.id == id }
+        actOnRegions{ offlineRegions->
+            val region = offlineRegions.firstOrNull{offlineRegion -> offlineRegion.id == id}
             callback(region)
         }
     }
@@ -125,7 +124,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
     /**
      * Applies [callback] on the list of OfflineRegions
      */
-    private fun actOnOfflineRegions(callback: (regions:Array<OfflineRegion>) -> Unit){
+    private fun actOnRegions(callback: (regions:Array<OfflineRegion>) -> Unit){
         offlineManager.listOfflineRegions(object : OfflineManager.ListOfflineRegionsCallback {
 
             override fun onList(offlineRegions: Array<OfflineRegion>) {
@@ -181,7 +180,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         }
 
         override fun onError(error: String?) {
-            Log.e(TAG,"Error in oflline region callback create: $error")
+            Log.e(TAG,"Error in offline region callback create: $error")
         }
 
     }
