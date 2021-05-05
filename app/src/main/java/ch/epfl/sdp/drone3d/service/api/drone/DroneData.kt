@@ -26,6 +26,18 @@ interface DroneData {
     data class SensorSize(val horizontalSize: Float, val verticalSize: Float)
 
     /**
+     * An enum carrying the status of the drone during a mission
+     */
+    enum class DroneStatus {
+        LANDED,
+        ARMING,
+        TAKING_OFF,
+        PROCESSING_MISSION,
+        GOING_BACK,
+        LANDING
+    }
+
+    /**
      * Returns a [LiveData] containing the current position of the drone
      */
     fun getPosition(): LiveData<LatLng>
@@ -82,6 +94,11 @@ interface DroneData {
     fun getMission(): LiveData<List<Mission.MissionItem>>
 
     /**
+     * Returns a [LiveData] containing the mission progress in percentage
+     */
+    fun getMissionProgress(): LiveData<Float>
+
+    /**
      * Returns a [LiveData] containing the camera's focal length in millimeters
      */
     fun getFocalLength(): LiveData<Float>
@@ -90,6 +107,11 @@ interface DroneData {
      * Returns a [LiveData] containing the camera's sensor size in millimeters
      */
     fun getSensorSize(): LiveData<SensorSize>
+
+    /**
+     * Returns a [LiveData] containing the status of the drone related to the current mission
+     */
+    fun getDroneStatus(): LiveData<DroneStatus>
 
     /**
      * Refresh the drone instance and its subscriptions
