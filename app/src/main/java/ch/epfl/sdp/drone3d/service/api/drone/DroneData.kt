@@ -109,4 +109,5 @@ interface DroneData {
      * Remove the disposed subscriptions from memory
      */
     fun purge()
+    fun getRelativeAltitude(): LiveData<Float>
 }

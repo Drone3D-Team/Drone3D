@@ -21,9 +21,11 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.testing.BindValue
@@ -38,7 +40,7 @@ import org.mockito.Mockito.`when`
 
 
 @HiltAndroidTest
-@UninstallModules(DroneModule::class, AuthenticationModule::class)
+@UninstallModules(DroneModule::class, AuthenticationModule::class, LocationModule::class)
 class ItineraryShowActivityTest {
 
     private val USER_UID = "asdfg"
@@ -53,7 +55,8 @@ class ItineraryShowActivityTest {
     val droneService: DroneService = DroneInstanceMock.mockServiceWithDefaultData()
     @BindValue
     val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
-
+    @BindValue
+    val locationService: LocationService = Mockito.mock(LocationService::class.java)
 
     @Before
     fun setUp() {
@@ -85,6 +88,7 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
 
         activityRule.scenario.recreate()
 

@@ -10,12 +10,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
@@ -49,6 +51,7 @@ import kotlin.math.abs
 class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
+    @Inject lateinit var locationService: LocationService
 
     private lateinit var mapboxMap: MapboxMap
     private lateinit var cameraView: SurfaceView
@@ -85,8 +88,45 @@ class MissionInProgressActivity : BaseMapActivity() {
         // TODO View stream
     }
 
+    private var speedObserver = Observer<Float> { speed ->
+        speedLiveText.apply {
+            text = getString(R.string.live_speed, speed.toString())
+        }
+    }
+
+    private var altitudeObserver = Observer<Float> { altitude ->
+        altitudeLiveText.apply {
+            text = getString(R.string.live_altitude, altitude.toString())
+        }
+    }
+
+    private var batteryObserver = Observer<Float> { batteryLevel ->
+        batteryLiveText.apply {
+            text = getString(R.string.live_battery, batteryLevel.toString())
+        }
+    }
+
+    private var distanceUserObserver = Observer<LatLng> { position ->
+        if (locationService.isLocationEnabled()) {
+            val distanceUser = position.distanceTo(locationService.getCurrentLocation()!!)
+            distanceUserLiveText.apply {
+                text = getString(R.string.live_distance_user, distanceUser.toString())
+            }
+        } else {
+            distanceUserLiveText.apply {
+                text = getString(R.string.live_distance_user, getString(R.string.user_location_deactivated))
+            }
+        }
+    }
+
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
+
+    private lateinit var speedLiveText: TextView
+    private lateinit var altitudeLiveText: TextView
+    private lateinit var batteryLiveText: TextView
+    private lateinit var distanceUserLiveText: TextView
+    private lateinit var statusLiveText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,6 +150,12 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
+
+        speedLiveText = findViewById(R.id.speedLive)
+        altitudeLiveText = findViewById(R.id.altitudeLive)
+        batteryLiveText = findViewById(R.id.batteryLive)
+        distanceUserLiveText = findViewById(R.id.distanceUserLive)
+        statusLiveText = findViewById(R.id.statusLive)
 
         startMission()
     }
@@ -208,6 +254,12 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().isFlying().observe(this, droneFlyingStatusObserver)
         droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
         droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
+
+        // setup observers for live info given to user
+        droneService.getData().getSpeed().observe(this, speedObserver)
+        droneService.getData().getRelativeAltitude().observe(this, altitudeObserver)
+        droneService.getData().getBatteryLevel().observe(this, batteryObserver)
+        droneService.getData().getPosition().observe(this, distanceUserObserver)
     }
 
     override fun onPause() {
@@ -218,6 +270,12 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().isFlying().removeObserver(droneFlyingStatusObserver)
         droneService.getData().isConnected().removeObserver(droneConnectionStatusObserver)
         droneService.getData().getVideoStreamUri().removeObserver(videoStreamUriObserver)
+
+        // remove observers for live info given to user
+        droneService.getData().getSpeed().removeObserver(speedObserver)
+        droneService.getData().getRelativeAltitude().removeObserver(altitudeObserver)
+        droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
+        droneService.getData().getPosition().removeObserver(distanceUserObserver)
     }
 
     override fun onDestroy() {

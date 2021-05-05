@@ -37,6 +37,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     private val position: MutableLiveData<LatLng> = MutableLiveData()
     private val batteryLevel: MutableLiveData<Float> = MutableLiveData()
     private val absoluteAltitude: MutableLiveData<Float> = MutableLiveData()
+    private val relativeAltitude: MutableLiveData<Float> = MutableLiveData()
     private val speed: MutableLiveData<Float> = MutableLiveData()
     private val homeLocation: MutableLiveData<Telemetry.Position> = MutableLiveData()
     private val isFlying: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -104,6 +105,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
             this.position.postValue(latLng)
             //Absolute altitude is the altitude w.r. to the sea level
             absoluteAltitude.postValue(position.absoluteAltitudeM)
+            relativeAltitude.postValue(position.relativeAltitudeM)
         }
     }
 
@@ -178,6 +180,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     override fun getBatteryLevel(): LiveData<Float> = batteryLevel
 
     override fun getAbsoluteAltitude(): LiveData<Float> = absoluteAltitude
+
+    override fun getRelativeAltitude(): LiveData<Float> = relativeAltitude
 
     override fun getSpeed(): LiveData<Float> = speed
 
