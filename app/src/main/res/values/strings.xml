@@ -87,9 +87,10 @@
 
     <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
-    <string name="drone_mission_error">An error occurred while dispatching missing to the drone</string>
+    <string name="drone_mission_error">An error occurred while dispatching missing to the drone : %s</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_pause_error">Mission pause failed, try again later</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
     <string name="drone_return_success">The drone is coming back</string>
+    <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>
 </resources>

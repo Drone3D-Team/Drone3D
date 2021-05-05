@@ -29,12 +29,13 @@ interface DroneData {
      * An enum carrying the status of the drone during a mission
      */
     enum class DroneStatus {
-        LANDED,
-        ARMING,
-        TAKING_OFF,
-        PROCESSING_MISSION,
-        GOING_BACK,
-        LANDING
+        IDLE, // The drone is not armed
+        ARMING, // The drone is being armed
+        TAKING_OFF, // The drone is taking off
+        STARTING_MISSION, // The drone is receiving its mission
+        EXECUTING_MISSION, // The drone is executing its mission
+        GOING_BACK, // The drone is going back to its launch point
+        LANDING // the drone is landing
     }
 
     /**

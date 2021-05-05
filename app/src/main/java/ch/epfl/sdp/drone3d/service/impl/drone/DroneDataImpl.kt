@@ -48,7 +48,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     private val missionProgress: MutableLiveData<Float> = MutableLiveData()
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
-    private val droneStatus: MutableLiveData<DroneData.DroneStatus> = MutableLiveData(DroneData.DroneStatus.LANDED)
+    private val droneStatus: MutableLiveData<DroneData.DroneStatus> = MutableLiveData(DroneData.DroneStatus.ARMING)
 
     init {
         createDefaultSubs()
@@ -74,7 +74,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
             missionProgress.postValue(null)
             isMissionPaused.postValue(true)
             cameraResolution.postValue(null)
-            droneStatus.postValue(DroneData.DroneStatus.LANDED)
+            droneStatus.postValue(DroneData.DroneStatus.IDLE)
         } else {
             addFlightModeSubscriptions(droneInstance)
             addArmedSubscriptions(droneInstance)
