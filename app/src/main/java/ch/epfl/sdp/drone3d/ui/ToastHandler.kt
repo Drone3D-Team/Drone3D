@@ -12,6 +12,7 @@ import android.widget.Toast
 import android.widget.Toast.makeText
 import androidx.annotation.StringRes
 import ch.epfl.sdp.drone3d.Drone3D.Companion.getText
+import timber.log.Timber
 
 /**
  * This class centralize [Toast] creation. It allows lazy developers to show meaningful information
@@ -44,11 +45,11 @@ object ToastHandler {
                   text: String,
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
+
         // Make sure to not format texts that should not be formatted
-        if (args.isEmpty())
-            update(makeText(context, text, duration)).show()
-        else
-            update(makeText(context, text.format(*args), duration)).show()
+        val textF = if (args.isEmpty()) text else text.format(*args)
+        Timber.i("Showing toast with text : $textF")
+        update(makeText(context, textF, duration)).show()
     }
 
     /**
@@ -63,11 +64,12 @@ object ToastHandler {
                   @StringRes resId: Int,
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
+
         // Make sure to not format texts that should not be formatted
-        if (args.isEmpty())
-            update(makeText(context, context.getText(resId), duration)).show()
-        else
-            update(makeText(context, context.getText(resId, *args), duration)).show()
+        val textF = if (args.isEmpty()) context.getText(resId) else context.getText(resId, *args)
+
+        Timber.i("Showing toast with text : $textF")
+        update(makeText(context, textF, duration)).show()
     }
 
     /**
