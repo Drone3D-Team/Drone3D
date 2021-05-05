@@ -6,14 +6,17 @@
 package ch.epfl.sdp.drone3d.service.api.location
 
 import android.app.Activity
-import android.content.Context
 
 interface LocationPermissionService {
 
     fun isPermissionGranted(): Boolean
 
-    fun requestPermission(activity: Activity)
+    fun requestPermission(activity: Activity): Boolean
 
-    fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
+    fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    )
 
 }

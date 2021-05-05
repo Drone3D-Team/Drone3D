@@ -20,34 +20,37 @@ import javax.inject.Inject
 class AndroidLocationPermissionService @Inject constructor(@ApplicationContext private val context: Context) :
     LocationPermissionService {
 
-    private val permission = Manifest.permission.ACCESS_FINE_LOCATION
-    private val permissionRequestCode = 0
-    private var isPermissionGranted =
-        ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+    companion object {
+        const val PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
+        const val REQUEST_CODE = 0
+    }
+
     private var isPermissionDenied = false
 
     override fun isPermissionGranted(): Boolean {
-        return isPermissionGranted
+        return context.checkSelfPermission(PERMISSION) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun requestPermission(activity: Activity) {
-        if (!isPermissionGranted() && !isPermissionDenied) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                val askPermissionAlert: AlertDialog.Builder = AlertDialog.Builder(activity)
-                askPermissionAlert.setTitle(R.string.permission_location_enable)
-                    .setMessage(R.string.permission_location_rationale)
-                    .setPositiveButton(R.string.permission_accept_button) { _, _ ->
-                        requestPermissions(activity, arrayOf(permission), permissionRequestCode)
-                    }
-                    .setNegativeButton(R.string.permission_deny_button) { _, _ ->
-                        isPermissionDenied = true
-                    }
-
-                askPermissionAlert.show()
-            } else {
-                requestPermissions(activity, arrayOf(permission), permissionRequestCode)
-            }
+    override fun requestPermission(activity: Activity): Boolean {
+        if (isPermissionGranted() || isPermissionDenied) {
+            return false
         }
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, PERMISSION)) {
+            val askPermissionAlert: AlertDialog.Builder = AlertDialog.Builder(activity)
+            askPermissionAlert.setTitle(R.string.permission_location_enable)
+                .setMessage(R.string.permission_location_rationale)
+                .setPositiveButton(R.string.permission_accept_button) { _, _ ->
+                    requestPermissions(activity, arrayOf(PERMISSION), REQUEST_CODE)
+                }
+                .setNegativeButton(R.string.permission_deny_button) { _, _ ->
+                    isPermissionDenied = true
+                }
+
+            askPermissionAlert.show()
+        } else {
+            requestPermissions(activity, arrayOf(PERMISSION), REQUEST_CODE)
+        }
+        return true
     }
 
     override fun onRequestPermissionsResult(
@@ -55,9 +58,8 @@ class AndroidLocationPermissionService @Inject constructor(@ApplicationContext p
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == permissionRequestCode && permissions.size == 1 && permissions[0] == permission) {
+        if (requestCode == REQUEST_CODE && permissions.size == 1 && permissions[0] == PERMISSION) {
             when (grantResults[0]) {
-                PackageManager.PERMISSION_GRANTED -> isPermissionGranted = true
                 PackageManager.PERMISSION_DENIED -> isPermissionDenied = true
             }
         }
