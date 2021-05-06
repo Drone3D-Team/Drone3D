@@ -5,7 +5,10 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -20,22 +23,25 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.firebase.auth.FirebaseUser
+import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import io.mavsdk.mission.Mission
+import io.reactivex.Completable
 import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
-
 
 @HiltAndroidTest
 @UninstallModules(DroneModule::class, AuthenticationModule::class)
@@ -43,17 +49,44 @@ class ItineraryShowActivityTest {
 
     private val USER_UID = "asdfg"
 
-    private var activityRule = ActivityScenarioRule(ItineraryShowActivity::class.java)
+    private val someLocationsList = arrayListOf(LatLng(47.398979, 8.543434))
+
+    private val activityRule = ActivityScenarioRule<ItineraryShowActivity>(
+        Intent(ApplicationProvider.getApplicationContext(),
+            ItineraryShowActivity::class.java).apply {
+            putExtras(Bundle().apply {
+                putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+            })
+        }
+    )
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
         .around(activityRule)
 
     @BindValue
-    val droneService: DroneService = DroneInstanceMock.mockServiceWithDefaultData()
+    val droneService: DroneService = DroneInstanceMock.mockService()
+
     @BindValue
     val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
 
+    init {
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
+        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+
+        val executor = Mockito.mock(DroneExecutor::class.java)
+        `when`(droneService.getExecutor()).thenReturn(executor)
+        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
+            .thenReturn(Completable.never())
+        `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
+            .thenReturn(Completable.complete())
+        `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
+            .thenReturn(Completable.complete())
+    }
 
     @Before
     fun setUp() {
@@ -75,16 +108,31 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionInProgressActivityButtonIsNotEnabledWhenDroneIsNotConnected() {
         `when`(droneService.isConnected()).thenReturn(false)
+        `when`(droneService.getData()
+            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
 
         activityRule.scenario.recreate()
 
         onView(withId(R.id.buttonToMissionInProgressActivity))
-                .check(matches(Matchers.not(isEnabled())))
+            .check(matches(Matchers.not(isEnabled())))
+    }
+
+    @Test
+    fun goToMissionProgressActivityButtonIsNotEnabledWhenDroneTooFar() {
+        `when`(droneService.isConnected()).thenReturn(true)
+        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToMissionInProgressActivity))
+            .check(matches(Matchers.not(isEnabled())))
     }
 
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
+        `when`(droneService.getData()
+            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
 
         activityRule.scenario.recreate()
 
@@ -134,4 +182,6 @@ class ItineraryShowActivityTest {
             )
         }
     }
+
+    private fun <T> anyObj(type: Class<T>): T = Mockito.any<T>(type)
 }
