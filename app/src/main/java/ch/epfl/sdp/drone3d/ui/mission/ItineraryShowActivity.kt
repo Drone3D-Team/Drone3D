@@ -89,21 +89,20 @@ class ItineraryShowActivity : BaseMapActivity() {
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        canMissionBeLaunched()
+        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
     }
 
     /**
      * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
      */
-    private fun canMissionBeLaunched() {
-        if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
-            goToMissionInProgressButton.isEnabled = false
+    private fun canMissionBeLaunched(): Boolean {
+        return if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
+            false
         } else {
             val beginningPoint = currentMissionPath!![0]
             val distanceToMission =
                 beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-            goToMissionInProgressButton.isEnabled =
-                droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
         }
     }
 
