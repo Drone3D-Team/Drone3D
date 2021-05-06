@@ -19,6 +19,8 @@ interface DroneDataEditable : DroneData {
 
     override fun isMissionPaused(): LiveData<Boolean> = getMutableMissionPaused()
 
+    override fun getDroneStatus(): LiveData<DroneData.DroneStatus> = getMutableDroneStatus()
+
     /**
      * Returns the MutableLiveData of the mission plan
      */
@@ -28,6 +30,11 @@ interface DroneDataEditable : DroneData {
      * Returns the MutableLiveData keeping the mission pause state
      */
     fun getMutableMissionPaused(): MutableLiveData<Boolean>
+
+    /**
+     * Returns the MutableLiveData keeping the mission pause state
+     */
+    fun getMutableDroneStatus(): MutableLiveData<DroneData.DroneStatus>
 
     /**
      * Add a disposable to the subscription list
