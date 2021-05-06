@@ -44,7 +44,7 @@ class MissionInProgressActivityTest {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
-        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())

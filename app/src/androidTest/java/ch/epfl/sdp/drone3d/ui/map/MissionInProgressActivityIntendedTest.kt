@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
@@ -85,7 +86,7 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.3, 0.0)))
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
-        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
@@ -137,7 +138,7 @@ class MissionInProgressActivityIntendedTest {
             homePosition.value?.longitude,
             10f,
             10f)))
-        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData(DroneData.DroneStatus.EXECUTING_MISSION))
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
@@ -162,7 +163,7 @@ class MissionInProgressActivityIntendedTest {
                 userPosition.value?.longitude,
                 10f,
                 10f)))
-        `when`(droneService.getData().isFlying()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData(DroneData.DroneStatus.EXECUTING_MISSION))
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))

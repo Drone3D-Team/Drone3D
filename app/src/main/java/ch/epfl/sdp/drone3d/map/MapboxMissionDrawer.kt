@@ -28,29 +28,32 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
     /**
      * Show a [mission] on the map by linking all points with lines.
      */
-    fun showMission(mission: MappingMission) {
-        showMission(mission.flightPath)
+    fun showMission(mission: MappingMission, withIndex : Boolean) {
+        showMission(mission.flightPath, withIndex)
     }
 
     /**
      * Show a [flightPath] on the map by linking all points with lines.
      */
-    fun showMission(flightPath: List<LatLng>) {
+    fun showMission(flightPath: List<LatLng>, withIndex : Boolean) {
+        symbolManager.deleteAll()
 
         if(flightPath.isEmpty()){
             lineManager.deleteAll()
-            symbolManager.deleteAll()
             reset = true
         }
         else {
-            symbolManager.deleteAll()
-            mapSymbols = flightPath.mapIndexed() { index: Int, latlng: LatLng ->
+            if(withIndex){
+                mapSymbols = flightPath.mapIndexed() { index: Int, latlng: LatLng ->
 
-                val symbolOption = SymbolOptions()
-                    .withLatLng(LatLng(latlng))
-                    .withTextField(index.toString())
+                    val symbolOption = SymbolOptions()
+                        .withLatLng(LatLng(latlng))
+                        .withTextField(index.toString())
 
-                symbolManager.create(symbolOption)
+                    symbolManager.create(symbolOption)
+                }
+            }else{
+                displayStartAndEnd(flightPath)
             }
 
             if (!::mapLines.isInitialized || reset) {
@@ -66,6 +69,23 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
                 mapLines.latLngs = flightPath
                 lineManager.update(mapLines)
             }
+        }
+    }
+
+    /**
+     * Display a "Start" and a "End" tag for the first and the last point of the given [flightPath]
+     */
+    private fun displayStartAndEnd(flightPath: List<LatLng>){
+        if(flightPath.isNotEmpty()) {
+            val symbolOptionFirst = SymbolOptions()
+                .withLatLng(LatLng(flightPath[0]))
+                .withTextField("Start")
+            val first = symbolManager.create(symbolOptionFirst)
+            val symbolOptionLast = SymbolOptions()
+                .withLatLng(LatLng(flightPath[flightPath.lastIndex]))
+                .withTextField("End")
+            val last = symbolManager.create(symbolOptionLast)
+            mapSymbols = listOf(first, last)
         }
     }
 
