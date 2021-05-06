@@ -137,6 +137,8 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture.complete(Any())
 
+        Thread.sleep(500)
+
         Intents.intended(
             IntentMatchers.hasComponent(
                 ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
@@ -165,6 +167,8 @@ class MissionInProgressActivityIntendedTest {
             .perform(ViewActions.click())
 
         missionEndFuture.complete(Any())
+
+        Thread.sleep(500)
 
         Intents.intended(
             IntentMatchers.hasComponent(
