@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.map.offline
 
+import androidx.lifecycle.MutableLiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.offline.OfflineRegion
@@ -27,6 +28,11 @@ interface OfflineMapSaver {
      * Returns the centered camera position on [offlineRegion]
      */
     fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition
+
+    /**
+     * Returns a mutable live data that will be updated with the current tile count
+     */
+    fun getTotalTileCount():MutableLiveData<Long>
 
     /**
      * Asynchronously deletes the region identified by [id] and calls [callback]
