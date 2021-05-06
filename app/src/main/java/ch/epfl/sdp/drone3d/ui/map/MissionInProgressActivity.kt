@@ -119,8 +119,14 @@ class MissionInProgressActivity : BaseMapActivity() {
             }
         } else {
             distanceUserLiveText.apply {
-                text = getString(R.string.live_distance_user, getString(R.string.user_location_deactivated))
+                text = getString(R.string.user_location_deactivated)
             }
+        }
+    }
+
+    private var statusObserver = Observer<DroneStatus> { status ->
+        statusLiveText.apply {
+            text = getString(R.string.live_status, status.name)
         }
     }
 
@@ -274,6 +280,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getRelativeAltitude().observe(this, altitudeObserver)
         droneService.getData().getBatteryLevel().observe(this, batteryObserver)
         droneService.getData().getPosition().observe(this, distanceUserObserver)
+        droneService.getData().getDroneStatus().observe(this, statusObserver)
     }
 
     override fun onPause() {
@@ -290,6 +297,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getRelativeAltitude().removeObserver(altitudeObserver)
         droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
         droneService.getData().getPosition().removeObserver(distanceUserObserver)
+        droneService.getData().getDroneStatus().removeObserver(statusObserver)
     }
 
     override fun onDestroy() {

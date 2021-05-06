@@ -51,6 +51,7 @@ class MissionInProgressActivityTest {
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
     }
 
     @Before

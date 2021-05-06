@@ -16,8 +16,10 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -40,7 +42,7 @@ import java.util.concurrent.CompletableFuture
  * Test MissionInProgressActivity with a mission as input
  */
 @HiltAndroidTest
-@UninstallModules(DroneModule::class)
+@UninstallModules(DroneModule::class, LocationModule::class)
 class MissionInProgressActivityIntendedTest {
 
     private val someLocationsList = arrayListOf(
@@ -66,6 +68,8 @@ class MissionInProgressActivityIntendedTest {
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
+    @BindValue
+    val locationService: LocationService = mock(LocationService::class.java)
 
     init {
         val executor = mock(DroneExecutor::class.java)
@@ -85,6 +89,13 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
+
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
+        `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
     }
 
     @Before
