@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-
 import android.app.Activity
 import android.os.SystemClock
 import androidx.test.espresso.Espresso.onView
@@ -39,7 +38,6 @@ import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
-
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, DroneModule::class)

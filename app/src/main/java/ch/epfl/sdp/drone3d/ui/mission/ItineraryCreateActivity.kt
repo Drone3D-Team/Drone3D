@@ -274,12 +274,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             builder.setMessage(getString(R.string.save_without_updating_confirmation))
             builder.setCancelable(true)
 
-            builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, id ->
+            builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, _ ->
                 dialog.cancel()
                 goToSaveActivity()
             }
 
-            builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, id ->
+            builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, _ ->
                 dialog.cancel()
             }
             builder.create()?.show()
