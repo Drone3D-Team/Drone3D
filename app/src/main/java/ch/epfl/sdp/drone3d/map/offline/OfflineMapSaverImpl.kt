@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
@@ -7,14 +12,12 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.offline.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.CompletableFuture
 
-
-//TODO: pbm with kotlin imports
-//@Serializable
 data class OfflineRegionMetadata(val name:String,val bounds:LatLngBounds,val zoom:Double)
 
 class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver {
