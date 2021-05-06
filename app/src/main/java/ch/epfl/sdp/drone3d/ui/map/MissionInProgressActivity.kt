@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceView
@@ -31,6 +30,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
+import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
@@ -52,6 +52,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
 
+    private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
     private lateinit var cameraView: SurfaceView
 
@@ -155,7 +156,6 @@ class MissionInProgressActivity : BaseMapActivity() {
     /**
      * Launch the mission
      */
-    @SuppressLint("CheckResult")
     private fun startMission() {
         if(missionPath == null) {
             ToastHandler.showToastAsync(this, R.string.mission_null)
@@ -164,20 +164,22 @@ class MissionInProgressActivity : BaseMapActivity() {
             try {
                 val completable = droneService.getExecutor().startMission(this, droneMission)
 
-                completable.subscribe({
-                    /*val intent = Intent(this, ItineraryShowActivity::class.java)
-                    intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-                    startActivity(intent)*/
-                }, {
-                    throw it
-                })
+                disposables.add(
+                    completable.subscribe({
+                        val intent = Intent(this, ItineraryShowActivity::class.java)
+                        intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+                        startActivity(intent)
+                    }, {
+                        throw it
+                    })
+                )
             } catch (e: Exception) {
-                Timber.e(e)
                 ToastHandler.showToastAsync(
                         this,
                         R.string.drone_mission_error,
                         Toast.LENGTH_LONG,
                         e.message)
+                Timber.e(e)
             }
         }
     }
@@ -185,33 +187,41 @@ class MissionInProgressActivity : BaseMapActivity() {
     /**
      * Stop the mission and bring back the drone to its home
      */
-    @SuppressLint("CheckResult")
     fun backToHome(@Suppress("UNUSED_PARAMETER") view: View) {
         val completable = droneService.getExecutor().returnToHomeLocationAndLand(this)
 
-        completable.subscribe({
-            val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-            startActivity(intent)
-        }, {
-            //TODO: Move error here
-        })
+        disposables.add(
+            completable.subscribe({
+                ToastHandler.showToastAsync(this, "The drone is coming back to its launch location")
+            }, { e ->
+                ToastHandler.showToastAsync(
+                    this,
+                    R.string.drone_mission_error,
+                    Toast.LENGTH_LONG,
+                    e.message)
+                Timber.e(e)
+            })
+        )
     }
 
     /**
      * Stop the mission and bring back the drone to the user
      */
-    @SuppressLint("CheckResult")
     fun backToUser(@Suppress("UNUSED_PARAMETER") view: View) {
         val completable = droneService.getExecutor().returnToUserLocationAndLand(this)
 
-        completable.subscribe({
-            val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-            startActivity(intent)
-        }, {
-            //TODO: Move error here
-        })
+        disposables.add(
+            completable.subscribe({
+                ToastHandler.showToastAsync(this, "The drone is coming back to you")
+            }, { e ->
+                ToastHandler.showToastAsync(
+                    this,
+                    R.string.drone_mission_error,
+                    Toast.LENGTH_LONG,
+                    e.message)
+                Timber.e(e)
+            })
+        )
     }
 
     override fun onResume() {
@@ -240,6 +250,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
+
+        disposables.dispose()
     }
 
     companion object {
