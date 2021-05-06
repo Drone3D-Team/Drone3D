@@ -16,7 +16,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  * Builder for PolygonArea, simplest form of Area, no mathematical rules
  */
 class PolygonBuilder : AreaBuilder() {
-    override val sizeLowerBound: Int? = 3
+    override val sizeLowerBound: Int = 3
     override val sizeUpperBound: Int? = null
     override val shapeName: String = "Polygon"
     override fun buildGivenIsComplete(): PolygonArea = PolygonArea(vertices)

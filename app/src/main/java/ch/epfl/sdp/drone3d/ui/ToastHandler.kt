@@ -45,10 +45,11 @@ object ToastHandler {
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
         // Make sure to not format texts that should not be formatted
-        if (args.isEmpty())
+        if (args.isEmpty()) {
             update(makeText(context, text, duration)).show()
-        else
+        } else {
             update(makeText(context, text.format(*args), duration)).show()
+        }
     }
 
     /**
@@ -64,10 +65,11 @@ object ToastHandler {
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
         // Make sure to not format texts that should not be formatted
-        if (args.isEmpty())
+        if (args.isEmpty()) {
             update(makeText(context, context.getText(resId), duration)).show()
-        else
+        } else {
             update(makeText(context, context.getText(resId, *args), duration)).show()
+        }
     }
 
     /**

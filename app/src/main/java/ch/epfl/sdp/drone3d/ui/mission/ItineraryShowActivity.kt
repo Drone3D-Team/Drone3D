@@ -21,7 +21,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -105,12 +104,12 @@ class ItineraryShowActivity : BaseMapActivity() {
         builder.setMessage(getString(R.string.delete_confirmation))
         builder.setCancelable(true)
 
-        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, id ->
+        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, _ ->
             dialog.cancel()
             confirmDelete()
         }
 
-        builder.setNegativeButton(R.string.cancel_delete) { dialog, id ->
+        builder.setNegativeButton(R.string.cancel_delete) { dialog, _ ->
             dialog.cancel()
         }
         builder.create()?.show()

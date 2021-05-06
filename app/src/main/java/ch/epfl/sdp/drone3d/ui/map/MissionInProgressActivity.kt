@@ -14,7 +14,9 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.*
+import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
+import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
+import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
@@ -27,7 +29,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
 import javax.inject.Inject
@@ -122,7 +123,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         centerCameraOnDrone()
 
         Transformations.map(droneService.getData().getMission()) { mission ->
-            return@map mission?.let {
+            mission?.let {
                 it.map { item ->
                     LatLng(item.latitudeDeg, item.longitudeDeg)
                 }

@@ -7,4 +7,7 @@ package ch.epfl.sdp.drone3d.model.auth
 
 import com.google.firebase.auth.FirebaseUser
 
+/**
+ * The session of a logged in user
+ */
 data class UserSession(val user: FirebaseUser)
