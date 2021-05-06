@@ -175,8 +175,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     /**
-     * Hide or show the flight path
-     * Does not re build the flight path
+     * Hide or show the flightPath
+     * Does not rebuild the flightPath
      */
     fun switchFlightPathVisibility(@Suppress("UNUSED_PARAMETER") view: View) {
         isMissionDisplayed = !isMissionDisplayed

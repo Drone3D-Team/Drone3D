@@ -26,7 +26,6 @@ open class BaseMapActivity : AppCompatActivity() {
         // Set up the MapView
         mapView = findViewById(mapViewId)
         mapView.onCreate(savedInstanceState)
-
     }
 
     // Override Activity lifecycle methods

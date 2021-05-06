@@ -72,7 +72,9 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
         }
     }
 
-    // Draw tags for first and last point
+    /**
+     * Display a "Start" and a "End" tag for the first and the last point of the given [flightPath]
+     */
     private fun displayStartAndEnd(flightPath: List<LatLng>){
         if(flightPath.isNotEmpty()) {
             val symbolOptionFirst = SymbolOptions()

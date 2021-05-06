@@ -24,7 +24,7 @@ class ParallelogramBuilder: AreaBuilder() {
         val O = vertices[1]
         val A = vertices[0]
         val B = vertices[2]
-        val C  =  GeometryUtils.getFourthParallelogramVertex(O , A, B)
+        val C = GeometryUtils.getFourthParallelogramVertex(O, A, B)
         return listOf(A, O, B, C)
     }
 }
