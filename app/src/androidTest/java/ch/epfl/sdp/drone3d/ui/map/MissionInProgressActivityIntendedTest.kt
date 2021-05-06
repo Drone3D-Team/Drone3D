@@ -29,6 +29,7 @@ import dagger.hilt.android.testing.UninstallModules
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -44,6 +45,7 @@ import java.util.concurrent.CompletableFuture
 @UninstallModules(DroneModule::class)
 class MissionInProgressActivityIntendedTest {
 
+    private var missionEndFuture: CompletableFuture<Any> = CompletableFuture()
     private val someLocationsList = arrayListOf(
         LatLng(47.398979, 8.543434),
         LatLng(47.398279, 8.543934),
@@ -73,7 +75,7 @@ class MissionInProgressActivityIntendedTest {
 
         `when`(droneService.getExecutor()).thenReturn(executor)
         `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
-                .thenReturn(Completable.never())
+            .thenAnswer{ Completable.fromFuture(missionEndFuture).subscribeOn(Schedulers.io()) }
         `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
                 .thenReturn(Completable.complete())
         `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
@@ -133,6 +135,8 @@ class MissionInProgressActivityIntendedTest {
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
             .perform(ViewActions.click())
 
+        missionEndFuture.complete(Any())
+
         Intents.intended(
             IntentMatchers.hasComponent(
                 ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
@@ -158,10 +162,14 @@ class MissionInProgressActivityIntendedTest {
         Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
             .perform(ViewActions.click())
 
+        missionEndFuture.complete(Any())
+
         Intents.intended(
             IntentMatchers.hasComponent(
                 ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
+
+        missionEndFuture = CompletableFuture() //reset
     }
 
     private fun <T> anyObj(type: Class<T>): T = any<T>(type)
