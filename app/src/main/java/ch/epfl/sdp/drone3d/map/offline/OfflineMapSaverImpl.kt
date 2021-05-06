@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * Stores the metadata associated to a downloaded region
  */
-data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val zoom:Double)
+data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,val zoom:Double)
 
 
 /**
@@ -29,7 +29,7 @@ data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val z
  */
 @Serializable
 private data class SerializableRegionMetadata(val name:String, val latSouth:Double, val lonWest:Double,
-                                              val latNorth:Double, val lonEast:Double, val zoom:Double)
+                                              val latNorth:Double, val lonEast:Double,val tileCount:Long, val zoom:Double)
 
 class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver {
 
@@ -43,7 +43,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
          */
         fun serializeMetadata(metadata: OfflineRegionMetadata):ByteArray{
             val internalMetadata = SerializableRegionMetadata(metadata.name,metadata.bounds.latSouth,
-                metadata.bounds.lonWest,metadata.bounds.latNorth,metadata.bounds.lonEast,metadata.zoom)
+                metadata.bounds.lonWest,metadata.bounds.latNorth,metadata.bounds.lonEast,metadata.tileCount,metadata.zoom)
 
             return Json.encodeToString(internalMetadata).toByteArray(charset(JSON_CHARSET))
         }
@@ -58,7 +58,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                             .include(LatLng(metadata.latNorth, metadata.lonEast))
                             .build()
 
-            return OfflineRegionMetadata(metadata.name,bounds,metadata.zoom)
+            return OfflineRegionMetadata(metadata.name,bounds,metadata.tileCount,metadata.zoom)
         }
 
     }
@@ -82,6 +82,25 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
 
                 // Monitor the download progress using setObserver
                 offlineRegion.setObserver(callback)
+
+                //Used to update the metadata tile count at the end
+                offlineRegion.setObserver(object:OfflineRegion.OfflineRegionObserver{
+                    override fun onStatusChanged(status: OfflineRegionStatus) {
+                       if(status.isComplete){
+                           val tileCount = status.completedTileCount
+                           val oldMetadata = deserializeMetadata(offlineRegion.metadata)
+                           val newMetadata = OfflineRegionMetadata(oldMetadata.name,oldMetadata.bounds,tileCount,oldMetadata.zoom)
+                           offlineRegion.updateMetadata(serializeMetadata(newMetadata),object:OfflineRegion.OfflineRegionUpdateMetadataCallback{
+                               override fun onUpdate(metadata: ByteArray?) {}
+                               override fun onError(error: String?) {
+                                   Timber.e("Could not update metadata")
+                               }
+                           })
+                       }
+                    }
+                    override fun onError(error: OfflineRegionError) {}
+                    override fun mapboxTileCountLimitExceeded(limit: Long) {}
+                })
             }
 
             override fun onError(error: String?) {
@@ -132,7 +151,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
             )
 
             //Create metadata for this saved map instance that can be accessed later
-            val metadata = OfflineRegionMetadata(regionName, regionBounds,map.cameraPosition.zoom)
+            val metadata = OfflineRegionMetadata(regionName, regionBounds,0,map.cameraPosition.zoom)
             val metadataArray = serializeMetadata(metadata)
 
             //Starts the download (if offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE) is called in the callback)
