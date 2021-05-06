@@ -34,9 +34,7 @@ abstract class AreaBuilder : DrawableArea {
         } catch (ex: Exception) {
             when (ex) {
                 is AreaNotCompleteException -> null
-                is IllegalArgumentException -> {
-                    null
-                }
+                is IllegalArgumentException -> null
                 else -> throw ex
             }
         }
