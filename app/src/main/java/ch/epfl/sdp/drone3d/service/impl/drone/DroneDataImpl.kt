@@ -225,17 +225,12 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     override fun getMutableDroneStatus(): MutableLiveData<DroneData.DroneStatus> = droneStatus
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
-        addSubscription(
+        disposables.add(
                 flow.distinctUntilChanged().subscribe(
                     onNext,
                     { error -> Timber.e(error,"Error $name : $error") }
                 )
         )
-    }
-
-    @Synchronized
-    override fun addSubscription(disposable: Disposable) {
-        disposables.add(disposable)
     }
 
     protected fun finalize() {
