@@ -5,6 +5,8 @@
 
 package ch.epfl.sdp.drone3d.map.offline
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.offline.OfflineRegion
@@ -14,19 +16,34 @@ interface OfflineMapSaver {
 
     /**
      * Asynchronously downloads the region delimited by [regionBounds], it will be saved with the
-     * name [regionName]. [callback] can be used to monitor the download's progress.
+     * name [regionName]. The [callback] can be used to monitor the download's progress.
      */
     fun downloadRegion(regionName:String, regionBounds: LatLngBounds, callback: OfflineRegion.OfflineRegionObserver)
 
     /**
-     * Returns a completable future for the offline region [id]
+     * Returns a future for the offline region [id]
      */
-    fun getOfflineRegions(): CompletableFuture<Array<OfflineRegion>>
+    fun getOfflineRegions(): LiveData<Array<OfflineRegion>>
 
     /**
-     * Returns the centered camera position of [offlineRegion]
+     * Returns the centered camera position on [offlineRegion]
      */
     fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition
+
+    /**
+     * Returns a mutable live data that will be updated with the current tile count
+     */
+    fun getTotalTileCount():LiveData<Long>
+
+    /**
+     * Returns the maximum
+     */
+    fun getMaxTileCount():Long
+
+    /**
+     * Returns the metadata of [region]
+     */
+    fun getMetadata(region:OfflineRegion):OfflineRegionMetadata
 
     /**
      * Asynchronously deletes the region identified by [id] and calls [callback]
