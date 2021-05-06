@@ -141,6 +141,8 @@ class MissionInProgressActivityIntendedTest {
             IntentMatchers.hasComponent(
                 ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
+
+        missionEndFuture = CompletableFuture() //reset
     }
 
     @Test
