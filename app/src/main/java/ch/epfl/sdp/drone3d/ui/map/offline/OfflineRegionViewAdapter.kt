@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
+import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl.Companion.getMetadata
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.offline.OfflineRegion
@@ -37,7 +38,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
          */
         fun bind(offRegion: OfflineRegion, offlineMapSaver: OfflineMapSaver) {
             offlineRegion = offRegion
-            //textView.text = offlineRegion.me TODO use static public method
+            textView.text = getMetadata(offRegion).name
             deleteButton.setOnClickListener {
                 offlineMapSaver.deleteRegion(
                     offRegion.id,
