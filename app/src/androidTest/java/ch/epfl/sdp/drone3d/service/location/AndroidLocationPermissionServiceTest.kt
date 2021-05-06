@@ -10,9 +10,9 @@ import android.content.pm.PackageManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService.Companion.PERMISSION
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService.Companion.REQUEST_CODE
 import ch.epfl.sdp.drone3d.service.impl.location.AndroidLocationPermissionService
-import ch.epfl.sdp.drone3d.service.impl.location.AndroidLocationPermissionService.Companion.PERMISSION
-import ch.epfl.sdp.drone3d.service.impl.location.AndroidLocationPermissionService.Companion.REQUEST_CODE
 import ch.epfl.sdp.drone3d.ui.TempTestActivity
 import org.junit.Assert
 import org.junit.Rule
@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+
 
 @RunWith(AndroidJUnit4::class)
 class AndroidLocationPermissionServiceTest {
@@ -81,9 +82,8 @@ class AndroidLocationPermissionServiceTest {
         }
     }
 
-/*  // Tried to test permission request popup but test running fails because of keyDispatchingTimedOut
     @Test
-    fun requestPermissionShowsRequest() {
+    fun requestPermissionWorksOnActivity() {
         `when`(context.checkSelfPermission(PERMISSION))
             .thenReturn(
                 PackageManager.PERMISSION_DENIED
@@ -92,15 +92,8 @@ class AndroidLocationPermissionServiceTest {
         // Launch an activity and request permission
         ActivityScenario.launch(TempTestActivity::class.java).onActivity { activity ->
             Assert.assertTrue(permissionService.requestPermission(activity))
-
-            // Check that a button which denies the permission appeared
-            if (Build.VERSION.SDK_INT >= 23) {
-                val device = UiDevice.getInstance(getInstrumentation())
-                val denyPermission = device.findObject(UiSelector().text("Deny"))
-                Assert.assertTrue(denyPermission.exists())
-            }
         }
     }
-*/
+
 
 }

@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.service.impl.location
 
-import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -14,16 +13,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService.Companion.PERMISSION
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService.Companion.REQUEST_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+/**
+ * Location permission service using android permissions
+ */
 class AndroidLocationPermissionService @Inject constructor(@ApplicationContext private val context: Context) :
     LocationPermissionService {
-
-    companion object {
-        const val PERMISSION = Manifest.permission.ACCESS_FINE_LOCATION
-        const val REQUEST_CODE = 0
-    }
 
     private var isPermissionDenied = false
 
