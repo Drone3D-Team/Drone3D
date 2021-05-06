@@ -10,7 +10,6 @@
 package ch.epfl.sdp.drone3d.ui.mission
 
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -55,9 +54,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     // Button
     private lateinit var goToSaveButton: FloatingActionButton
 
-    // Location
-    lateinit var locationComponentManager: LocationComponentManager
-
     // Drawer
     private lateinit var missionDrawer: MapboxMissionDrawer
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
@@ -94,10 +90,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        locationComponentManager = LocationComponentManager(this, mapboxMap, locationService)
-
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-            locationComponentManager.enableLocationComponent(style)
+            LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
+            //configureLocationOptions(style)
 
             areaBuilder = PolygonBuilder()
             //areaBuilder = ParallelogramBuilder()
@@ -128,15 +123,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilder.onDestroy()
         }
         mapView.onDestroy()
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        locationComponentManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onMapClick(position: LatLng): Boolean {

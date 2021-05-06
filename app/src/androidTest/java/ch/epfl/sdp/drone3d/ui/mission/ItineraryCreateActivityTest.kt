@@ -88,33 +88,6 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun sendLocationPermissionAllowedEnablesLocation() {
-        var locationEnabled = true
-
-        activityRule.scenario.onActivity {
-            it.onRequestPermissionsResult(
-                0,
-                arrayOf("android.permission.ACCESS_FINE_LOCATION"),
-                intArrayOf(0)
-            )
-            locationEnabled =
-                it.locationComponentManager.mapboxMap.locationComponent.isLocationComponentEnabled
-        }
-        Assert.assertTrue(locationEnabled)
-    }
-
-    @Test
-    fun onExplanationNeededShowsToast() {
-        lateinit var activity: Activity
-        activityRule.scenario.onActivity {
-            activity = it
-            it.locationComponentManager.onExplanationNeeded(mutableListOf("android.permission.ACCESS_FINE_LOCATION"))
-        }
-        ToastMatcher.onToast(activity, R.string.user_location_permission_request)
-            .check(matches(isDisplayed()))
-    }
-
-    @Test
     fun goToSaveActivityButtonIsNotEnabledWhenUserNotLogin() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
