@@ -5,18 +5,14 @@
 
 package ch.epfl.sdp.drone3d.service.impl.location
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.core.app.ActivityCompat
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.module.LocationModule.LocationProvider
 import com.mapbox.mapboxsdk.geometry.LatLng
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 /**
@@ -26,7 +22,7 @@ class AndroidLocationService @Inject constructor(
     private val locationManager: LocationManager,
     @LocationProvider val locationProvider: String?,
     private val locationCriteria: Criteria,
-    @ApplicationContext private val context: Context
+    private val permissionService: LocationPermissionService
 ) : LocationService {
 
     private var listenerId = 1
@@ -37,9 +33,7 @@ class AndroidLocationService @Inject constructor(
     }
 
     override fun isLocationEnabled(): Boolean {
-        val currentPermission =
-            context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-        return currentPermission == PackageManager.PERMISSION_GRANTED && getMyLocationProvider() != null
+        return permissionService.isPermissionGranted() && getMyLocationProvider() != null
     }
 
     // Permission is checked on isLocationEnabled()
