@@ -11,6 +11,7 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
+import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneDataImpl
@@ -56,7 +57,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
 
         executor.startMission(
             InstrumentationRegistry.getInstrumentation().targetContext,
@@ -90,7 +91,7 @@ class DroneExecutorTest {
         )
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
 
         executor.startMission(
             context,
@@ -123,7 +124,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
 
         executor.startMission(
             context,
@@ -170,9 +171,11 @@ class DroneExecutorTest {
         `when`(droneData.getPosition()).thenReturn(positionLiveData)
         `when`(droneData.getSpeed()).thenReturn(speedLiveData)
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
+        `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
+            Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
 
         executor.startMission(
             context,
