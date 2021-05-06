@@ -19,11 +19,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
-/**
- * Stores the metadata associated to a downloaded region
- */
-data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,val zoom:Double)
-
 
 /**
  * Used internally to facilitate the serialization of the OfflineRegionMetadata data class
@@ -62,6 +57,21 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                             .build()
 
             return OfflineRegionMetadata(metadata.name,bounds,metadata.tileCount,metadata.zoom)
+        }
+
+        /**
+         * Returns the metadata of the region
+         */
+        fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
+            return deserializeMetadata(region.metadata)
+        }
+
+        /**
+         * Returns the centered camera position on [offlineRegion]
+         */
+        fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition {
+            val metadata = getMetadata(offlineRegion)
+            return CameraPosition.Builder().target(metadata.bounds.center).zoom(metadata.zoom).build()
         }
     }
 
@@ -111,18 +121,10 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         })
     }
 
-    override fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
-        return deserializeMetadata(region.metadata)
-    }
-
     override fun getOfflineRegions():LiveData<Array<OfflineRegion>>{
         return offlineRegions
     }
 
-    override fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition {
-        val metadata = deserializeMetadata(offlineRegion.metadata)
-        return CameraPosition.Builder().target(metadata.bounds.center).zoom(metadata.zoom).build()
-    }
 
     override fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback){
         actOnRegion(id){region ->
