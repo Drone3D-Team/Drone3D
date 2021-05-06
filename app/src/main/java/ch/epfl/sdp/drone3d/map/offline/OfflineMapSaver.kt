@@ -17,6 +17,9 @@ import java.util.concurrent.CompletableFuture
  */
 data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,val zoom:Double)
 
+/**
+ * Represents a class that offers the possibility to save a mapping region for later offline use.
+ */
 interface OfflineMapSaver {
 
     /**
@@ -24,6 +27,12 @@ interface OfflineMapSaver {
      * name [regionName]. The [callback] can be used to monitor the download's progress.
      */
     fun downloadRegion(regionName:String, regionBounds: LatLngBounds, callback: OfflineRegion.OfflineRegionObserver)
+
+    /**
+     * Asynchronously deletes the region identified by [id] and calls [callback]
+     * when it is finished. If the region does not exist, this method does nothing.
+     */
+    fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback)
 
     /**
      * Returns a future for the offline region [id]
@@ -40,9 +49,5 @@ interface OfflineMapSaver {
      */
     fun getMaxTileCount():Long
 
-    /**
-     * Asynchronously deletes the region identified by [id] and calls [callback]
-     * when it is finished. If the region does not exist, this method does nothing.
-     */
-    fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback)
+
 }
