@@ -1,7 +1,8 @@
-package ch.epfl.sdp.drone3d.ui.map
+package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.Style
 
