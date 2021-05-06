@@ -36,6 +36,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+import java.lang.Error
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -117,6 +118,27 @@ class MissionInProgressActivityIntendedTest {
     }
 
     @Test
+    fun goBackOnError() {
+
+        val activity = CompletableFuture<MissionInProgressActivity>()
+        activityRule.scenario.onActivity {
+             activity.complete(it)
+        }
+
+        missionEndFuture.completeExceptionally(Error("test"))
+
+        Thread.sleep(500)
+        ToastMatcher.onToast(activity.get(), activity.get().getString(R.string.drone_mission_error, "test"))
+
+        Intents.intended(
+                IntentMatchers.hasComponent(
+                        ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        )
+
+        missionEndFuture = CompletableFuture() //reset
+    }
+
+    @Test
     fun goBackToItineraryShowActivityWhenBackToHomePressed() {
 
         val dronePosition = MutableLiveData(LatLng(10.1, 10.1))
@@ -177,6 +199,7 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture = CompletableFuture() //reset
     }
+
 
     private fun <T> anyObj(type: Class<T>): T = any<T>(type)
 }
