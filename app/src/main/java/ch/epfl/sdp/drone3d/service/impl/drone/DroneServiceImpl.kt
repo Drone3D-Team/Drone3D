@@ -45,7 +45,7 @@ class DroneServiceImpl(
 
         if(instanceContainer!=null) {
             droneInstance = instanceContainer.instance
-            server = instanceContainer?.server
+            server = instanceContainer.server
             isSimulation = true
             simIP = IP
             simPort = port
