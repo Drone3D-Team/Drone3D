@@ -95,11 +95,10 @@ class MissionInProgressActivity : BaseMapActivity() {
         @Suppress("UNCHECKED_CAST")
         missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
 
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
-
         initMapView(savedInstanceState,
             R.layout.activity_mission_in_progress,
             R.id.map_in_mission_view)
+
         mapView.getMapAsync { mapboxMap ->
             this.mapboxMap = mapboxMap
             mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
@@ -129,7 +128,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                 }
             }
         }.observe(this, { path ->
-            if(path != null) missionDrawer.showMission(path)
+            if(path != null) missionDrawer.showMission(path, false)
         })
     }
 
