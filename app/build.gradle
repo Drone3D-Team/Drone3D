@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'jacoco'
+    id 'org.jetbrains.kotlin.plugin.serialization' version "1.4.32"
 }
 
 android {
@@ -50,15 +51,16 @@ repositories {
 }
 
 dependencies {
-    //TO REMOVE
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //Serialization
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
@@ -70,12 +72,8 @@ dependencies {
 
     // Import Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.8.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.8.0'
-
-    //Serialization
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.7.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
     // Import mavsdk to control the drone
     implementation 'io.mavsdk:mavsdk:0.8.0'
@@ -84,7 +82,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:3.8.0'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
 
     androidTestImplementation 'org.mockito:mockito-android:3.8.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
@@ -118,8 +115,6 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
         '**/Manifest*.*',
         '**/*Test*.*',
         'android/**/*.*',
-        // Exclude Hilt modules
-        "service/module/*Module.class",
         // Exclude Hilt generated classes
         '**/*Hilt*.*',
         'hilt_aggregated_deps/**',
