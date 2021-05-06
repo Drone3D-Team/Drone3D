@@ -25,7 +25,7 @@ class DroneServiceImpl(
 ) : DroneService {
 
     private val droneData = DroneDataImpl(this)
-    private val droneExectuor = DroneExecutorImpl(this, locationService, droneData)
+    private val droneExectuor = DroneExecutorImpl(this, droneData, locationService)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
@@ -45,7 +45,7 @@ class DroneServiceImpl(
 
         if(instanceContainer!=null) {
             droneInstance = instanceContainer.instance
-            server = instanceContainer?.server
+            server = instanceContainer.server
             isSimulation = true
             simIP = IP
             simPort = port

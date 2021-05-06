@@ -57,7 +57,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
         executor.startMission(
             InstrumentationRegistry.getInstrumentation().targetContext,
@@ -91,7 +91,7 @@ class DroneExecutorTest {
         )
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
         executor.startMission(
             context,
@@ -124,7 +124,7 @@ class DroneExecutorTest {
 
         val droneData = DroneDataImpl(droneService)
 
-        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
         executor.startMission(
             context,
@@ -175,7 +175,7 @@ class DroneExecutorTest {
             Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
 
-        val executor: DroneExecutor = DroneExecutorImpl(droneService, locationService, droneData)
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
         executor.startMission(
             context,
