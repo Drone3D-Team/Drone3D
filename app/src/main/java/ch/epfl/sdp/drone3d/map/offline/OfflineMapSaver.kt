@@ -12,6 +12,11 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Stores the metadata associated to a downloaded region
+ */
+data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,val zoom:Double)
+
 interface OfflineMapSaver {
 
     /**
@@ -26,11 +31,6 @@ interface OfflineMapSaver {
     fun getOfflineRegions(): LiveData<Array<OfflineRegion>>
 
     /**
-     * Returns the centered camera position on [offlineRegion]
-     */
-    fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition
-
-    /**
      * Returns a mutable live data that will be updated with the current tile count
      */
     fun getTotalTileCount():LiveData<Long>
@@ -39,11 +39,6 @@ interface OfflineMapSaver {
      * Returns the maximum
      */
     fun getMaxTileCount():Long
-
-    /**
-     * Returns the metadata of [region]
-     */
-    fun getMetadata(region:OfflineRegion):OfflineRegionMetadata
 
     /**
      * Asynchronously deletes the region identified by [id] and calls [callback]
