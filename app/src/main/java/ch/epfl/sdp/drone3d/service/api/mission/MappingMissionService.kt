@@ -9,6 +9,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 
 interface MappingMissionService {
 
+    enum class Strategy {
+        SINGLE_PASS, DOUBLE_PASS
+    }
     /**
      * Returns the coordinates where the drone should take pictures on a single pass mapping mission of altitude [flightHeight] in meters.
      * A single pass mapping mission is sufficient when the area to map has low terrain features such as a landscape or a field.
