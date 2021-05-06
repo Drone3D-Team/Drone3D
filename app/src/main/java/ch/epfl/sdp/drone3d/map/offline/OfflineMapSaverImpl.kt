@@ -53,10 +53,10 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
          */
          fun deserializeMetadata(serialized: ByteArray):OfflineRegionMetadata{
             val metadata:SerializableRegionMetadata = Json.decodeFromString(String(serialized))
-            val bounds =LatLngBounds.Builder()
-                .include(LatLng(metadata.latSouth, metadata.lonWest))
-                .include(LatLng(metadata.latNorth, metadata.lonEast))
-                .build()
+            val bounds = LatLngBounds.Builder()
+                            .include(LatLng(metadata.latSouth, metadata.lonWest))
+                            .include(LatLng(metadata.latNorth, metadata.lonEast))
+                            .build()
 
             return OfflineRegionMetadata(metadata.name,bounds,metadata.zoom)
         }
