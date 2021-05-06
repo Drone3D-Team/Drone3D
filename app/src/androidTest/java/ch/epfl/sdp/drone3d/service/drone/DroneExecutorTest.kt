@@ -200,11 +200,11 @@ class DroneExecutorTest {
     fun canStartMissionAndReturnHome() {
         val expectedLatLng = LatLng(47.397428, 8.545369) //Position of the drone before take off
         val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val future = CompletableFuture<Mission.MissionProgress>()
 
         DroneInstanceMock.setupDefaultMocks()
         `when`(DroneInstanceMock.droneMission.missionProgress)
-            .thenReturn(Flowable.fromArray(Mission.MissionProgress(0, 4))
-                .delay(10, TimeUnit.SECONDS))
+                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
 
         val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
@@ -255,11 +255,11 @@ class DroneExecutorTest {
 
     @Test
     fun canPauseAndResumeMission() {
-        DroneInstanceMock.setupDefaultMocks()
+        val future = CompletableFuture<Mission.MissionProgress>()
 
+        DroneInstanceMock.setupDefaultMocks()
         `when`(DroneInstanceMock.droneMission.missionProgress)
-            .thenReturn(Flowable.fromArray(Mission.MissionProgress(0, 4))
-                .delay(10, TimeUnit.SECONDS))
+                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
 
         val locationService = mock(LocationService::class.java)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
