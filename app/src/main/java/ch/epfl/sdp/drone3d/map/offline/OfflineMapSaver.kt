@@ -14,17 +14,17 @@ interface OfflineMapSaver {
 
     /**
      * Asynchronously downloads the region delimited by [regionBounds], it will be saved with the
-     * name [regionName]. [callback] can be used to monitor the download's progress.
+     * name [regionName]. The [callback] can be used to monitor the download's progress.
      */
     fun downloadRegion(regionName:String, regionBounds: LatLngBounds, callback: OfflineRegion.OfflineRegionObserver)
 
     /**
-     * Returns a completable future for the offline region [id]
+     * Returns a future for the offline region [id]
      */
     fun getOfflineRegions(): CompletableFuture<Array<OfflineRegion>>
 
     /**
-     * Returns the centered camera position of [offlineRegion]
+     * Returns the centered camera position on [offlineRegion]
      */
     fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition
 

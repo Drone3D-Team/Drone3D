@@ -6,7 +6,6 @@
 package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
-import android.util.Log
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
@@ -16,24 +15,52 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.util.concurrent.CompletableFuture
 
-data class OfflineRegionMetadata(val name:String,val bounds:LatLngBounds,val zoom:Double)
+/**
+ * Stores the metadata associated to a downloaded region
+ */
+data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val zoom:Double)
+
+
+/**
+ * Used internally to facilitate the serialization of the OfflineRegionMetadata data class
+ */
+@Serializable
+private data class SerializableRegionMetadata(val name:String, val latSouth:Double, val lonWest:Double,
+                                              val latNorth:Double, val lonEast:Double, val zoom:Double)
 
 class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver {
 
     companion object{
-        const val JSON_CHARSET = "UTF-8"
+        private const val JSON_CHARSET = "UTF-8"
         const val MAX_ZOOM = 20.0
         const val TILE_LIMIT = 6000L //6000 tiles corresponds to Greater London with zoom 0-15
-        private const val TAG = "OfflineDownload"
 
         /**
-         * Returns the metadata of the provided [region]
+         * Serialize the metadata of the provided [region]
          */
-        private fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
-            return Json.decodeFromString(String(region.metadata))
+        fun serializeMetadata(metadata: OfflineRegionMetadata):ByteArray{
+            val internalMetadata = SerializableRegionMetadata(metadata.name,metadata.bounds.latSouth,
+                metadata.bounds.lonWest,metadata.bounds.latNorth,metadata.bounds.lonEast,metadata.zoom)
+
+            return Json.encodeToString(internalMetadata).toByteArray(charset(JSON_CHARSET))
         }
+
+        /**
+         * Deserialize the metadata [serialized]
+         */
+         fun deserializeMetadata(serialized: ByteArray):OfflineRegionMetadata{
+            val metadata:SerializableRegionMetadata = Json.decodeFromString(String(serialized))
+            val bounds =LatLngBounds.Builder()
+                .include(LatLng(metadata.latSouth, metadata.lonWest))
+                .include(LatLng(metadata.latNorth, metadata.lonEast))
+                .build()
+
+            return OfflineRegionMetadata(metadata.name,bounds,metadata.zoom)
+        }
+
     }
 
     private val offlineManager = OfflineManager.getInstance(context)
@@ -58,7 +85,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
             }
 
             override fun onError(error: String?) {
-                Log.e(TAG,"Error in offline region callback create: $error")
+                Timber.e("Error in offline region callback create: $error")
             }
         })
     }
@@ -76,7 +103,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      * Returns the centered camera position of [offlineRegion]
      */
     override fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition {
-        val metadata = getMetadata(offlineRegion)
+        val metadata = deserializeMetadata(offlineRegion.metadata)
         return CameraPosition.Builder().target(metadata.bounds.center).zoom(metadata.zoom).build()
     }
 
@@ -95,7 +122,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
     private fun downloadRegion(regionName:String,regionBounds:LatLngBounds,callback:OfflineManager.CreateOfflineRegionCallback){
         
         map.getStyle { style ->
-            //The regions properties
+            //The region's properties
             val definition = OfflineTilePyramidRegionDefinition(
                 style.uri,
                 regionBounds,
@@ -106,7 +133,7 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
 
             //Create metadata for this saved map instance that can be accessed later
             val metadata = OfflineRegionMetadata(regionName, regionBounds,map.cameraPosition.zoom)
-            val metadataArray = Json.encodeToString(metadata).toByteArray(charset(JSON_CHARSET))
+            val metadataArray = serializeMetadata(metadata)
 
             //Starts the download (if offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE) is called in the callback)
             //the callback can be used to monitor the download progress
@@ -135,56 +162,8 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
             }
 
             override fun onError(error: String?) {
-                Log.e(TAG,"Error while querying for the list of downloaded regions")
+                Timber.e("Error while querying for the list of downloaded regions")
             }
         })
-    }
-
-
-
-    //For information purposes:
-
-    private val mapBounds: LatLngBounds = LatLngBounds.Builder()
-        .include(LatLng(0.0, 0.0))
-        .include(LatLng(0.0, 0.0))
-        .build()
-
-    val offline_callback = object: OfflineManager.CreateOfflineRegionCallback {
-        override fun onCreate(offlineRegion: OfflineRegion) {
-            //IMPORTANT: Starts the download
-            offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE)
-
-            // Monitor the download progress using setObserver
-            offlineRegion.setObserver(object : OfflineRegion.OfflineRegionObserver {
-                override fun onStatusChanged(status: OfflineRegionStatus) {
-
-                    // Calculate the download percentage
-                    val percentage = if (status.requiredResourceCount >= 0)
-                        100.0 * status.completedResourceCount / status.requiredResourceCount else 0.0
-
-                    // Download complete
-                    if (status.isComplete) {
-                        Log.d(TAG, "Region downloaded successfully.")
-                    } else if (status.isRequiredResourceCountPrecise) {
-                        Log.d(TAG, "Download percentage is: $percentage")
-                    }
-                }
-
-                override fun onError(error: OfflineRegionError) {
-                    // If an error occurs, print to logcat
-                    Log.e(TAG, "Error during offline map download: " + error.message)
-                }
-
-                override fun mapboxTileCountLimitExceeded(limit: Long) {
-                    // Notify if offline region exceeds maximum tile count:6000 tiles
-                    Log.e(TAG, "Mapbox tile count limit exceeded: $limit")
-                }
-            })
-        }
-
-        override fun onError(error: String?) {
-            Log.e(TAG,"Error in offline region callback create: $error")
-        }
-
     }
 }
