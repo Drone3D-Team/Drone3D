@@ -23,7 +23,6 @@ import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.material.button.MaterialButton
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -194,7 +193,6 @@ class MissionInProgressActivity : BaseMapActivity() {
      */
     private fun centerCameraOnDrone() {
         val currentZoom = mapboxMap.cameraPosition.zoom
-
         droneService.getData().getPosition().value?.let {
             mapboxMap.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
