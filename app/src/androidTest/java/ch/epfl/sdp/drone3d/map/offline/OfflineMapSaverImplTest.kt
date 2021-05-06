@@ -23,7 +23,7 @@ class OfflineMapSaverImplTest {
 
     @Test
     fun serializerAndDeserializerActAsIdentity(){
-        val expectedOfflineMetadata = OfflineRegionMetadata(rolexName, rolexBounds,defaultZoom)
+        val expectedOfflineMetadata = OfflineRegionMetadata(rolexName, rolexBounds,0,defaultZoom)
         val obtainedOfflineMetadata = OfflineMapSaverImpl.deserializeMetadata(OfflineMapSaverImpl.serializeMetadata(expectedOfflineMetadata))
         assertEquals(expectedOfflineMetadata,obtainedOfflineMetadata)
     }

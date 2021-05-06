@@ -18,7 +18,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
-import java.util.concurrent.CompletableFuture
 
 /**
  * Stores the metadata associated to a downloaded region
@@ -39,7 +38,8 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         private const val JSON_CHARSET = "UTF-8"
         const val MAX_ZOOM = 20.0
         const val TILE_LIMIT = 6000L //6000 tiles corresponds to Greater London with zoom 0-15
-        val totalTileCount = MutableLiveData<Long>(0)
+        private val totalTileCount = MutableLiveData<Long>(0)
+        private val offlineRegions = MutableLiveData<Array<OfflineRegion>>()
 
         /**
          * Serialize the metadata of the provided [region]
@@ -63,20 +63,13 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
 
             return OfflineRegionMetadata(metadata.name,bounds,metadata.tileCount,metadata.zoom)
         }
-
-        /**
-         * Returns the metadata of [region]
-         */
-        private fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
-            return deserializeMetadata(region.metadata)
-        }
-
     }
 
     private val offlineManager = OfflineManager.getInstance(context)
 
     init {
         offlineManager.setOfflineMapboxTileCountLimit(TILE_LIMIT)
+        refreshOfflineRegions()
     }
 
     override fun downloadRegion(regionName:String,regionBounds:LatLngBounds,callback:OfflineRegion.OfflineRegionObserver){
@@ -103,6 +96,8 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                                    Timber.e("Could not update metadata")
                                }
                            })
+
+                           refreshOfflineRegions()
                        }
                     }
                     override fun onError(error: OfflineRegionError) {}
@@ -116,10 +111,12 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         })
     }
 
-    override fun getOfflineRegions():CompletableFuture<Array<OfflineRegion>>{
-        val futureRegion: CompletableFuture<Array<OfflineRegion>> = CompletableFuture()
-        actOnRegions{offlineRegions -> futureRegion.complete(offlineRegions)}
-        return futureRegion
+    override fun getMetadata(region:OfflineRegion):OfflineRegionMetadata{
+        return deserializeMetadata(region.metadata)
+    }
+
+    override fun getOfflineRegions():LiveData<Array<OfflineRegion>>{
+        return offlineRegions
     }
 
     override fun getRegionLocation(offlineRegion: OfflineRegion): CameraPosition {
@@ -134,11 +131,16 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                 val tileCount = getMetadata(region).tileCount
                 totalTileCount.value?.minus(tileCount)
             }
+            refreshOfflineRegions()
         }
     }
 
     override fun getTotalTileCount(): MutableLiveData<Long> {
         return totalTileCount
+    }
+
+    override fun getMaxTileCount(): Long {
+        return TILE_LIMIT
     }
 
     /**
@@ -191,5 +193,14 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                 Timber.e("Error while querying for the list of downloaded regions")
             }
         })
+    }
+
+    /**
+     * Refreshes the list of offline regions by querying the offlineManager
+     */
+    private fun refreshOfflineRegions(){
+        actOnRegions {
+            regions -> offlineRegions.value = regions
+        }
     }
 }
