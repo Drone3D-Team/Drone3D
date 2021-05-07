@@ -7,20 +7,15 @@ package ch.epfl.sdp.drone3d.map.gps
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
-import com.mapbox.android.core.permissions.PermissionsListener
-import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 
 /**
  * The manager for showing the user location on a mapboxMap
@@ -30,7 +25,7 @@ class LocationComponentManager {
     companion object {
 
         /**
-         * Enables the location on the map given the loadedMapStyle
+         * Enables the location using a [locationService] on the [mapboxMap] in the [activity]
          */
         @SuppressLint("MissingPermission")
         fun enableLocationComponent(
@@ -39,7 +34,6 @@ class LocationComponentManager {
             locationService: LocationService
         ) {
             val style = mapboxMap.style
-            ActivityCompat.requestPermissions(activity, arrayOf(), 0)
             // Check if permissions are enabled and if not request
             if (locationService.isLocationEnabled() && style != null) {
 
