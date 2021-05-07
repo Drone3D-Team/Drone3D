@@ -1,25 +1,62 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
+import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
+import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.offline.OfflineRegion
 
-class ManageOfflineMapActivity : BaseMapActivity() {
+class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
+
+    private lateinit var offlineMapSaver: OfflineMapSaver
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_manage_offline_map, R.id.mapView)
 
-
-        mapView.getMapAsync { mapboxMap ->
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-                // Map is set up and the style has loaded. Now we can add data or make other map adjustments
-            }
-        }
+        mapView.contentDescription = getString(R.string.map_not_ready)
+        mapView.getMapAsync(this)
 
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap) {
+        // Used to detect when the map is ready in tests
+        mapView.contentDescription = getString(R.string.map_ready)
+
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+
+            offlineMapSaver = OfflineMapSaverImpl(this, mapboxMap)
+            bindOfflineRegionsToRecycler()
+
+        }
+
+
+    }
+
+
+    /**
+     * Get the recyclerView, create an adapter and bind it to the offlineRegions by displaying them.
+     */
+    private fun bindOfflineRegionsToRecycler() {
+        val savedRegionsRecycler = findViewById<RecyclerView>(R.id.saved_regions)
+        val offlineRegions = offlineMapSaver.getOfflineRegions()
+        val adapter = OfflineRegionViewAdapter(offlineMapSaver)
+        savedRegionsRecycler.adapter = adapter
+
+        offlineRegions.observe(this, androidx.lifecycle.Observer {
+            it.let {adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
+                OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name) }
+            )) }
+        })
     }
 }
