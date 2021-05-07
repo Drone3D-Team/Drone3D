@@ -46,7 +46,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            flightPath = bundle.getSerializable("flightPath") as List<LatLng>
+            flightPath = bundle.getParcelableArrayList("flightPath")!!
         }
 
         //Create a "back button" in the action bar up

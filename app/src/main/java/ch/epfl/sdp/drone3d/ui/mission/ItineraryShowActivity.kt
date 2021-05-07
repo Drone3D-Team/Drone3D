@@ -123,12 +123,12 @@ class ItineraryShowActivity : BaseMapActivity() {
         builder.setMessage(getString(R.string.delete_confirmation))
         builder.setCancelable(true)
 
-        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, id ->
+        builder.setPositiveButton(getString(R.string.confirm_delete)) { dialog, _ ->
             dialog.cancel()
             confirmDelete()
         }
 
-        builder.setNegativeButton(R.string.cancel_delete) { dialog, id ->
+        builder.setNegativeButton(R.string.cancel_delete) { dialog, _ ->
             dialog.cancel()
         }
         builder.create()?.show()

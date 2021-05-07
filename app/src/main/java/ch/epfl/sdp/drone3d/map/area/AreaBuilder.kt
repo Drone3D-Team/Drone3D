@@ -34,10 +34,7 @@ abstract class AreaBuilder : DrawableArea {
         } catch (ex: Exception) {
             when (ex) {
                 is AreaNotCompleteException -> null
-                is IllegalArgumentException -> {
-                    val message = ex.message
-                    null
-                }
+                is IllegalArgumentException -> null
                 else -> throw ex
             }
         }
