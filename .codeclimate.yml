@@ -14,7 +14,9 @@ checks:
   method-complexity:
     config:
       threshold: 25
-
+  file-line:
+    config:
+      threshold: 300
 exclude_patterns:
 - "**/test/"
 - "**/androidTest/"
