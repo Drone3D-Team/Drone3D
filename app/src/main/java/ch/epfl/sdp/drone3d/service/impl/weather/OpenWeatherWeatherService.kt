@@ -78,9 +78,7 @@ class OpenWeatherWeatherService(val context: Context) : WeatherService {
                 "&lon=" + location.longitude +
                 "&units=" + TEMP_UNIT +
                 "&appid=" + context.getString(R.secrets.open_weather_api_key)
-
-        val apiResponse = URL(queryUrl).readText()
-        return apiResponse
+        return URL(queryUrl).readText()
     }
 
 }
