@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
@@ -115,9 +114,15 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private var distanceUserObserver = Observer<LatLng> { position ->
         if (locationService.isLocationEnabled()) {
-            val distanceUser = position.distanceTo(locationService.getCurrentLocation()!!)
-            distanceUserLiveText.apply {
-                text = getString(R.string.live_distance_user, distanceUser.toString())
+            if (locationService.getCurrentLocation() == null) {
+                distanceUserLiveText.apply {
+                    text = getString(R.string.user_location_null)
+                }
+            } else {
+                val distanceUser = position.distanceTo(locationService.getCurrentLocation()!!)
+                distanceUserLiveText.apply {
+                    text = getString(R.string.live_distance_user, distanceUser.toString())
+                }
             }
         } else {
             distanceUserLiveText.apply {

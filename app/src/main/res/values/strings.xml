@@ -87,6 +87,7 @@
     <string name="live_battery">Battery : %1$s%%</string>
     <string name="live_distance_user">Distance to user : %1$s m</string>
     <string name="user_location_deactivated">Distance to user : Not allowed to access user\'s location</string>
+    <string name="user_location_null">Distance to user : Error, user\'s location is null</string>
     <string name="live_status">Mission status : %1$s</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
