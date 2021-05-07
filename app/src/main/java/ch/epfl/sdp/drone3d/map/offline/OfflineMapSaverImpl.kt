@@ -198,7 +198,7 @@ class OfflineMapSaverImpl(val context:Context,val style: Style):OfflineMapSaver 
         actOnRegions {
             regions ->
             offlineRegions.value = regions
-            totalTileCount.value = offlineRegions.value?.map{region->getMetadata(region).tileCount}?.reduce{acc,count->acc+count}
+            totalTileCount.value = offlineRegions.value?.map{region->getMetadata(region).tileCount}?.fold(0L){acc,count->acc+count}
         }
     }
 }

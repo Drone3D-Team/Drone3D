@@ -1,6 +1,8 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
@@ -11,6 +13,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
+import java.lang.StringBuilder
 
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
@@ -37,10 +40,9 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
             offlineMapSaver = OfflineMapSaverImpl(this, style)
             bindOfflineRegionsToRecycler()
+            bindTileCount()
 
         }
-
-
     }
 
 
@@ -59,4 +61,31 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             )) }
         })
     }
+
+    /**
+    * Add observer to the tileCount so that the progress bar and the text are updated on change.
+    */
+    private fun bindTileCount(){
+        val tilesUsedTextView = findViewById<TextView>(R.id.tiles_used)
+        val tilesBar = findViewById<ProgressBar>(R.id.tile_count_bar)
+
+        val maxTileCount = offlineMapSaver.getMaxTileCount()
+        val actualTileCount = offlineMapSaver.getTotalTileCount()
+
+        tilesBar.max = maxTileCount.toInt()
+
+        actualTileCount.observe(this, {
+            it.let{
+                assert(it<=maxTileCount)
+
+                val builder = StringBuilder()
+                builder.append(it).append("/").append(maxTileCount)
+                tilesUsedTextView.text = builder.toString()
+
+                tilesBar.setProgress(it.toInt(), true)
+            }
+        })
+
+    }
+
 }

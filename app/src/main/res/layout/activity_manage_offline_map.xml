@@ -45,7 +45,6 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <!--TODO change text to actual tile use / maximum by adding a listener instead of hardcode-->
     <TextView
         android:id="@+id/tiles_used"
         android:layout_width="wrap_content"
@@ -53,7 +52,6 @@
         android:background="@color/black"
         android:layout_margin="0dp"
         android:textColor="@color/white"
-        android:text="1800/6000"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/tile_count_bar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -61,14 +59,12 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <!--TODO change percent to actual tile use / maximum by adding a listener instead of hardcode-->
     <ProgressBar
         android:id="@+id/tile_count_bar"
         app:layout_constraintWidth_percent="0.6"
         android:layout_width="0dp"
         android:layout_height="5dp"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progress="30"
         android:progressBackgroundTint="@color/white"
         android:progressTint="@color/purple_200"
         app:layout_constraintBottom_toTopOf="@id/top_guideline"
