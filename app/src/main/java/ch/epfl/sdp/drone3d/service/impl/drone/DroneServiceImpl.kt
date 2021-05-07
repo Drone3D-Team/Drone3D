@@ -16,13 +16,15 @@ import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
 
-private const val DEFAULT_IP = "unknown"
-private const val DEFAULT_PORT = "-"
-
 class DroneServiceImpl(
     private val droneFactory: DroneServerFactory,
     locationService: LocationService
 ) : DroneService {
+
+    companion object {
+        private const val DEFAULT_IP = "unknown"
+        private const val DEFAULT_PORT = "-"
+    }
 
     private val droneData = DroneDataImpl(this)
     private val droneExecutor = DroneExecutorImpl(this, droneData, locationService)

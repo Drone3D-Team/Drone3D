@@ -12,11 +12,11 @@ import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.core.app.ActivityCompat
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.module.LocationModule.LocationProvider
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -64,7 +64,10 @@ class AndroidLocationService @Inject constructor(
         if (!isLocationEnabled()) {
             return null
         }
-        val id = ++listenerId
+        var id: Int
+        runBlocking {
+            id = ++listenerId
+        }
         val listener = LocationListener {
             val location = LatLng(it.latitude, it.longitude)
             consumer(location)
@@ -85,11 +88,9 @@ class AndroidLocationService @Inject constructor(
     }
 
     override fun unsubscribeFromLocationUpdates(subscriptionId: Int): Boolean {
-        val listener: LocationListener? = listeners.remove(subscriptionId)
-        if (listener != null) {
-            locationManager.removeUpdates(listener)
-            return true
-        }
-        return false
+        return listeners.remove(subscriptionId)?.run {
+            locationManager.removeUpdates(this)
+            true
+        } ?: false
     }
 }

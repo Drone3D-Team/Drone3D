@@ -266,14 +266,12 @@ class FirebaseMappingMissionDao @Inject constructor(
     override fun removePrivateMappingMission(ownerUid: String, privateId: String) {
         val missionListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val mission = dataSnapshot.getValue<MappingMission>()
-                if (mission != null) {
+                dataSnapshot.getValue<MappingMission>()?.run {
 
                     // We need to update the shared copy in case there is one
-                    if (mission.state == State.PRIVATE_AND_SHARED) {
-
+                    if (this.state == State.PRIVATE_AND_SHARED) {
                         // Remove privateId and change state
-                        val refSharedMission = sharedMappingMissionRef().child(mission.sharedId!!)
+                        val refSharedMission = sharedMappingMissionRef().child(this.sharedId!!)
                         refSharedMission.child(PRIVATE_ID_PATH).removeValue()
                         refSharedMission.child(STATE_PATH).setValue(State.SHARED)
                     }
@@ -295,15 +293,13 @@ class FirebaseMappingMissionDao @Inject constructor(
     override fun removeSharedMappingMission(ownerUid: String, sharedId: String) {
         val missionListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val mission = dataSnapshot.getValue<MappingMission>()
-                if (mission != null) {
+                dataSnapshot.getValue<MappingMission>()?.run {
 
                     // We need to update the private copy in case there is one
-                    if (mission.state == State.PRIVATE_AND_SHARED) {
-
+                    if (this.state == State.PRIVATE_AND_SHARED) {
                         // Remove sharedId and change state in private copy
                         val refPrivateMission =
-                            privateMappingMissionRef(ownerUid).child(mission.privateId!!)
+                            privateMappingMissionRef(ownerUid).child(this.privateId!!)
                         refPrivateMission.child(SHARED_ID_PATH).removeValue()
                         refPrivateMission.child(STATE_PATH).setValue(State.PRIVATE)
                     }
