@@ -17,8 +17,10 @@ import javax.inject.Singleton
  * Hilt module that provide the [WeatherService]
  */
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class WeatherModule {
 
+    @Singleton
     @Binds
     abstract fun bindWeatherService(impl: OpenWeatherWeatherService): WeatherService
 }

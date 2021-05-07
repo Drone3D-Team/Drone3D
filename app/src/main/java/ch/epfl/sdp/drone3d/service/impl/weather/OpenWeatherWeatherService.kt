@@ -1,22 +1,24 @@
 package ch.epfl.sdp.drone3d.service.impl.weather
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import com.mapbox.mapboxsdk.geometry.LatLng
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
 import java.net.URL
 import java.util.*
+import javax.inject.Inject
 import kotlin.concurrent.thread
 
 /**
  * WeatherService implementation using OpenWeather API
  */
-class OpenWeatherWeatherService(val context: Context) : WeatherService {
+class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val context: Context) :
+    WeatherService {
 
     companion object {
         private const val API_ENDPOINT = "https://api.openweathermap.org/data/2.5/weather?"
