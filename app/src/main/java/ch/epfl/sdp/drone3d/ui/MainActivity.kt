@@ -12,8 +12,9 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
 import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
@@ -28,6 +29,9 @@ import kotlin.reflect.KClass
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var permissionService: LocationPermissionService
 
     @Inject
     lateinit var authService: AuthenticationService
@@ -67,6 +71,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         refresh()
+        permissionService.requestPermission(this)
     }
 
     /**
@@ -103,7 +108,7 @@ class MainActivity : AppCompatActivity() {
      * depending of if a drone is connected or not
      */
     fun goToDroneConnect(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(droneService.isConnected()) {
+        if (droneService.isConnected()) {
             open(ConnectedDroneActivity::class)
         } else {
             open(DroneConnectActivity::class)
@@ -113,5 +118,18 @@ class MainActivity : AppCompatActivity() {
     private fun <T> open(activity: KClass<T>) where T : Activity {
         val intent = Intent(this, activity.java)
         startActivity(intent)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionService.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
     }
 }

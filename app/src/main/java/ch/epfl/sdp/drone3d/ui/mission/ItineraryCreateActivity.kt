@@ -9,8 +9,6 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -52,15 +50,15 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     // Location
     @Inject
     lateinit var locationService: LocationService
-    lateinit var locationComponentManager: LocationComponentManager
 
     @Inject
     lateinit var droneService: DroneService
 
     // Map
     private var isMapReady = false
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public lateinit var mapboxMap: MapboxMap
+    lateinit var mapboxMap: MapboxMap
 
 
     // Mission
@@ -69,12 +67,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     private var flightHeight = 50.0
     private lateinit var missionBuilder: ParallelogramMappingMissionService
     private lateinit var missionDrawer: MapboxMissionDrawer
-    private var flightPathShouldBeReGenerated = false;
+    private var flightPathShouldBeReGenerated = false
     private var strategy = Strategy.SINGLE_PASS
 
     // Area
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public lateinit var areaBuilder: AreaBuilder
+    lateinit var areaBuilder: AreaBuilder
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
 
     // Button
@@ -117,11 +115,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        locationComponentManager = LocationComponentManager(this, mapboxMap, locationService)
-
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-
-            locationComponentManager.enableLocationComponent(style)
+            //configureLocationOptions
+            LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
 
             // Mission
             missionBuilder = ParallelogramMappingMissionService(droneService)
@@ -158,7 +154,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             buildMissionButton.isEnabled = true
             flightPathShouldBeReGenerated = true
         }
-        if(areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()){
+        if (areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()) {
             deleteButton.isEnabled = true
         }
     }
@@ -166,7 +162,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     /**
      * Erase all drawing on the map and delete previously built flightPath
      */
-    fun eraseAll(@Suppress("UNUSED_PARAMETER") view: View){
+    fun eraseAll(@Suppress("UNUSED_PARAMETER") view: View) {
         areaBuilder.reset()
         flightPath = ArrayList<LatLng>()
         missionDrawer.showMission(listOf(), false)
@@ -198,12 +194,24 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun switchStrategy(@Suppress("UNUSED_PARAMETER") view: View) {
         strategy = when (strategy) {
-            Strategy.SINGLE_PASS ->{
-                changeStrategyButton.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_double_path_strategy, null))
+            Strategy.SINGLE_PASS -> {
+                changeStrategyButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_double_path_strategy,
+                        null
+                    )
+                )
                 Strategy.DOUBLE_PASS
             }
             Strategy.DOUBLE_PASS -> {
-                changeStrategyButton.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_single_path_strategy, null))
+                changeStrategyButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_single_path_strategy,
+                        null
+                    )
+                )
                 Strategy.SINGLE_PASS
             }
         }
@@ -221,8 +229,14 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             if (areaBuilder.isComplete()) {
 
                 val path = when (strategy) {
-                    Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(areaBuilder.vertices, flightHeight)
-                    Strategy.DOUBLE_PASS -> missionBuilder.buildDoublePassMappingMission(areaBuilder.vertices, flightHeight)
+                    Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(
+                        areaBuilder.vertices,
+                        flightHeight
+                    )
+                    Strategy.DOUBLE_PASS -> missionBuilder.buildDoublePassMappingMission(
+                        areaBuilder.vertices,
+                        flightHeight
+                    )
                 }
 
                 if (path != null) {
@@ -231,7 +245,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                         missionDrawer.showMission(flightPath, false)
                     }
                     goToSaveButton.isEnabled = authService.hasActiveSession()
-                }else{
+                } else {
                     Toast.makeText(
                         baseContext, R.string.drone_should_be_connected,
                         Toast.LENGTH_SHORT
@@ -241,18 +255,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         }
     }
 
-    @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        locationComponentManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    /**
-     * Add a vertex on the map or display a toast if all vertices have been placed already
-     */
     override fun onMapClick(position: LatLng): Boolean {
         try {
             areaBuilder.addVertex(position)
@@ -269,7 +271,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(flightPathShouldBeReGenerated){
+        if (flightPathShouldBeReGenerated) {
             val builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.save_without_updating_confirmation))
             builder.setCancelable(true)
@@ -283,7 +285,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                 dialog.cancel()
             }
             builder.create()?.show()
-        }else{
+        } else {
             goToSaveActivity()
         }
     }
@@ -291,7 +293,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     /**
      * Launch SaveMappingMissionActivity and transfer flightpath
      */
-    private fun goToSaveActivity(){
+    private fun goToSaveActivity() {
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
         intent.putExtra("flightPath", flightPath)
         startActivity(intent)

@@ -16,14 +16,16 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.service.module.DroneModule
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
-import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
-import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
+import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationPermissionModule
 import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.drone.ConnectedDroneActivity
@@ -40,22 +42,37 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class, DroneModule::class)
+@UninstallModules(
+    LocationPermissionModule::class,
+    AuthenticationModule::class,
+    MappingMissionDaoModule::class,
+    DroneModule::class
+)
 class MainActivityTest {
 
     private val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(activityRule)
+        .around(activityRule)
 
-    @BindValue val authService: AuthenticationService = mock(AuthenticationService::class.java)
-    @BindValue val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
-    @BindValue val droneService: DroneService = DroneInstanceMock.mockService()
+    @BindValue
+    val permissionService: LocationPermissionService = mock(LocationPermissionService::class.java)
+
+    @BindValue
+    val authService: AuthenticationService = mock(AuthenticationService::class.java)
+
+    @BindValue
+    val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
+
+    @BindValue
+    val droneService: DroneService = DroneInstanceMock.mockService()
 
     init {
         // Default mocks needed at creation of the activity
         `when`(authService.hasActiveSession()).thenReturn(false)
+        // If permission is true, it will not request permission
+        `when`(permissionService.isPermissionGranted()).thenReturn(true)
 
         val liveData = MutableLiveData(listOf(MappingMission("name", listOf())))
         `when`(mappingMissionDao.getPrivateMappingMissions(anyString())).thenReturn(liveData)
@@ -92,18 +109,18 @@ class MainActivityTest {
         activityRule.scenario.recreate()
 
         onView(withId(R.id.log_in_button))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.log_in_button)).perform(click())
 
         Intents.intended(
-                hasComponent(hasClassName(LoginActivity::class.java.name))
+            hasComponent(hasClassName(LoginActivity::class.java.name))
         )
     }
 
     @Test
     fun logoutWorks() {
         `when`(authService.hasActiveSession()).thenReturn(true)
-        `when`(authService.signOut()).thenAnswer{
+        `when`(authService.signOut()).thenAnswer {
             `when`(authService.hasActiveSession()).thenReturn(false)
         }
 
@@ -111,19 +128,19 @@ class MainActivityTest {
         activityRule.scenario.recreate()
 
         onView(withId(R.id.log_out_button))
-                    .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.log_out_button)).perform(click())
         onView(withId(R.id.log_in_button))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         verify(authService).signOut()
     }
 
     @Test
     fun goToItineraryCreateWorks() {
         onView(withId(R.id.create_itinerary_button))
-                .perform(click())
+            .perform(click())
         Intents.intended(
-                hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
+            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
         )
     }
 
@@ -136,9 +153,9 @@ class MainActivityTest {
         `when`(authService.getCurrentSession()).thenReturn(UserSession(user))
 
         onView(withId(R.id.browse_itinerary_button))
-                .perform(click())
+            .perform(click())
         Intents.intended(
-                hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 
@@ -148,9 +165,9 @@ class MainActivityTest {
 
         // Refresh
         onView(withId(R.id.browse_itinerary_button))
-                .perform(click())
+            .perform(click())
         Intents.intended(
-                hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
+            hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))
         )
     }
 
@@ -163,7 +180,7 @@ class MainActivityTest {
 
         onView(withId(R.id.go_connect_drone_button)).perform(click())
         Intents.intended(
-                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+            hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
     }
 
@@ -175,7 +192,7 @@ class MainActivityTest {
 
         onView(withId(R.id.go_disconnect_drone_button)).perform(click())
         Intents.intended(
-                hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
+            hasComponent(hasClassName(ConnectedDroneActivity::class.java.name))
         )
     }
 }

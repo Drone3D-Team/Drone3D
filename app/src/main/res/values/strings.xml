@@ -101,4 +101,10 @@
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
     <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>
+
+    <!-- Permission dialog -->
+    <string name="permission_accept_button">Accept</string>
+    <string name="permission_deny_button">Deny</string>
+    <string name="permission_location_enable">Enable location</string>
+    <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
 </resources>
