@@ -35,7 +35,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
-            offlineMapSaver = OfflineMapSaverImpl(this, mapboxMap)
+            offlineMapSaver = OfflineMapSaverImpl(this, style)
             bindOfflineRegionsToRecycler()
 
         }
