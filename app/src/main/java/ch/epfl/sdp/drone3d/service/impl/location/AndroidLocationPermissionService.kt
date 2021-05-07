@@ -54,7 +54,7 @@ class AndroidLocationPermissionService @Inject constructor(@ApplicationContext p
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String>,
+        permissions: Array<out String>,
         grantResults: IntArray
     ) {
         if (requestCode == REQUEST_CODE && permissions.size == 1 && permissions[0] == PERMISSION) {

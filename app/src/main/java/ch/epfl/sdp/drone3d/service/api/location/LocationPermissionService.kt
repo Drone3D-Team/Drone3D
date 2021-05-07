@@ -41,7 +41,7 @@ interface LocationPermissionService {
      */
     fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String>,
+        permissions: Array<out String>,
         grantResults: IntArray
     )
 
