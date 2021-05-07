@@ -35,7 +35,7 @@ interface OfflineMapSaver {
     fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback)
 
     /**
-     * Returns a future for the offline region [id]
+     * Returns a live data for the offline region [id]
      */
     fun getOfflineRegions(): LiveData<Array<OfflineRegion>>
 

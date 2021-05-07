@@ -59,6 +59,10 @@
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
+    <string name="content_descriptor_delete_icon">delete icon</string>
+    <string name="delete_successful">Delete successful</string>
+    <string name="delete_fail">Failed to delete</string>
+
 
 
     <!-- Mapping Mission Selection Activity -->
