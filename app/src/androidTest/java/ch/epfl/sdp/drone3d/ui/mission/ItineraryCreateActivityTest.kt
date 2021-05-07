@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-
 import android.os.SystemClock
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -22,9 +21,11 @@ import androidx.test.uiautomator.Until
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -38,9 +39,8 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
-
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, DroneModule::class)
+@UninstallModules(AuthenticationModule::class, DroneModule::class, LocationModule::class)
 class ItineraryCreateActivityTest {
 
     @get:Rule
@@ -55,6 +55,9 @@ class ItineraryCreateActivityTest {
 
     @BindValue
     val droneService = DroneInstanceMock.mockServiceWithDefaultData()
+
+    @BindValue
+    val locationService: LocationService = mock(LocationService::class.java)
 
     @Before
     fun setUp() {
