@@ -21,7 +21,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,8 +29,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ItineraryShowActivity : BaseMapActivity() {
 
+    companion object {
+        // max 1000 meters between the user/simulation and the start of the mission
+        private const val MAX_BEGINNING_DISTANCE = 1000
+    }
+
     @Inject
     lateinit var mappingMissionDao: MappingMissionDao
+
+    @Inject
+    lateinit var droneService: DroneService
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
@@ -42,9 +49,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var sharedId: String? = null
 
     private lateinit var deleteButton: MaterialButton
-
-    @Inject
-    lateinit var droneService: DroneService
 
     @Inject
     lateinit var authService: AuthenticationService
@@ -75,17 +79,31 @@ class ItineraryShowActivity : BaseMapActivity() {
                 }
 
                 if (currentMissionPath != null) {
-                    missionDrawer.showMission(currentMissionPath!!)
+                    missionDrawer.showMission(currentMissionPath!!, false)
                     MapboxUtility.zoomOnMission(currentMissionPath!!, mapboxMap)
                 }
             }
         }
+        deleteButton = findViewById(R.id.mission_delete)
+        deleteButton.visibility =
+            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        goToMissionInProgressButton.isEnabled = droneService.isConnected()
+        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
+    }
 
-        deleteButton = findViewById(R.id.mission_delete)
-        deleteButton.visibility = if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+    /**
+     * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
+     */
+    private fun canMissionBeLaunched(): Boolean {
+        return if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
+            false
+        } else {
+            val beginningPoint = currentMissionPath!![0]
+            val distanceToMission =
+                beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
+            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+        }
     }
 
     /**

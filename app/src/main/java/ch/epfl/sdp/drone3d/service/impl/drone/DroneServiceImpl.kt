@@ -25,7 +25,7 @@ class DroneServiceImpl(
 ) : DroneService {
 
     private val droneData = DroneDataImpl(this)
-    private val droneExectuor = DroneExecutorImpl(this, locationService, droneData)
+    private val droneExecutor = DroneExecutorImpl(this, locationService, droneData)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
@@ -100,5 +100,5 @@ class DroneServiceImpl(
 
     override fun getData(): DroneData = droneData
 
-    override fun getExecutor(): DroneExecutor = droneExectuor
+    override fun getExecutor(): DroneExecutor = droneExecutor
 }

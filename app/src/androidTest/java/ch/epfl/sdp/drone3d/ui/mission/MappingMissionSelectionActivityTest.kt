@@ -25,14 +25,16 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
-import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
+import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
-import ch.epfl.sdp.drone3d.ui.MainActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -54,7 +56,7 @@ import java.util.concurrent.TimeUnit
  * Test for the mapping mission selection activity
  */
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
+@UninstallModules(AuthenticationModule::class, DroneModule::class, MappingMissionDaoModule::class)
 class MappingMissionSelectionActivityTest {
 
     companion object {
@@ -82,6 +84,9 @@ class MappingMissionSelectionActivityTest {
 
     @BindValue
     val authService: AuthenticationService = mock(AuthenticationService::class.java)
+
+    @BindValue
+    val droneService: DroneService = DroneInstanceMock.mockService()
 
     @BindValue
     val mappingMissionDao: MappingMissionDao = mock(MappingMissionDao::class.java)
@@ -115,6 +120,9 @@ class MappingMissionSelectionActivityTest {
         `when`(mappingMissionDao.updateSharedFilteredMappingMissions(anyString())).thenAnswer {
             updateFilteredLiveData(true, it.getArgument(0))
         }
+
+        // Mock the position of the drone
+        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
     }
 
     @Before
@@ -356,16 +364,16 @@ class MappingMissionSelectionActivityTest {
         )
     }
 
-        @Test
-        fun privateMissionsAreNotShownWhenNoUserConnected() {
+    @Test
+    fun privateMissionsAreNotShownWhenNoUserConnected() {
 
-            `when`(authService.hasActiveSession()).thenReturn(false)
+        `when`(authService.hasActiveSession()).thenReturn(false)
 
-            // Recreate the activity to apply the update
-            activityRule.scenario.recreate()
+        // Recreate the activity to apply the update
+        activityRule.scenario.recreate()
 
-            onView(withId(R.id.private_mission_list_view))
-                .check(matches(not(isDisplayed())))
+        onView(withId(R.id.private_mission_list_view))
+            .check(matches(not(isDisplayed())))
 
     }
 
@@ -483,7 +491,7 @@ class MappingMissionSelectionActivityTest {
     private fun liveDataShowsToUser(
         shared: Boolean,
         filter: Boolean,
-        currentData: List<MappingMission>?
+        currentData: List<MappingMission>?,
     ) {
         val id =
             if (shared && filter) R.id.shared_filtered_mission_list_view
