@@ -26,7 +26,7 @@ interface OfflineMapSaver {
      * Asynchronously downloads the region delimited by [regionBounds], it will be saved with the
      * name [regionName]. The [callback] can be used to monitor the download's progress.
      */
-    fun downloadRegion(regionName:String, regionBounds: LatLngBounds, callback: OfflineRegion.OfflineRegionObserver)
+    fun downloadRegion(regionName:String, regionBounds: LatLngBounds,zoom:Double, callback: OfflineRegion.OfflineRegionObserver)
 
     /**
      * Asynchronously deletes the region identified by [id] and calls [callback]

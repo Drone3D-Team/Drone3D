@@ -12,6 +12,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
@@ -27,7 +28,7 @@ import timber.log.Timber
 private data class SerializableRegionMetadata(val name:String, val latSouth:Double, val lonWest:Double,
                                               val latNorth:Double, val lonEast:Double,val tileCount:Long, val zoom:Double)
 
-class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver {
+class OfflineMapSaverImpl(val context:Context,val style: Style):OfflineMapSaver {
 
     companion object{
         private const val JSON_CHARSET = "UTF-8"
@@ -82,9 +83,9 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
         refreshOfflineRegions()
     }
 
-    override fun downloadRegion(regionName:String,regionBounds:LatLngBounds,callback:OfflineRegion.OfflineRegionObserver){
+    override fun downloadRegion(regionName:String,regionBounds:LatLngBounds,zoom:Double,callback:OfflineRegion.OfflineRegionObserver){
 
-        downloadRegion(regionName,regionBounds,object: OfflineManager.CreateOfflineRegionCallback {
+        downloadRegion(regionName,regionBounds,zoom,object: OfflineManager.CreateOfflineRegionCallback {
 
             override fun onCreate(offlineRegion: OfflineRegion) {
                 offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE)
@@ -97,7 +98,6 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                     override fun onStatusChanged(status: OfflineRegionStatus) {
                        if(status.isComplete){
                            val tileCount = status.completedTileCount
-                           totalTileCount.value?.plus(tileCount)
                            val oldMetadata = getMetadata(offlineRegion)
                            val newMetadata = OfflineRegionMetadata(oldMetadata.name,oldMetadata.bounds,tileCount,oldMetadata.zoom)
                            offlineRegion.updateMetadata(serializeMetadata(newMetadata),object:OfflineRegion.OfflineRegionUpdateMetadataCallback{
@@ -106,7 +106,6 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
                                    Timber.e("Could not update metadata")
                                }
                            })
-
                            refreshOfflineRegions()
                        }
                     }
@@ -129,10 +128,6 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
     override fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback){
         actOnRegion(id){region ->
             region?.delete(callback)
-            if(region!=null) {
-                val tileCount = getMetadata(region).tileCount
-                totalTileCount.value?.minus(tileCount)
-            }
             refreshOfflineRegions()
         }
     }
@@ -149,26 +144,25 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      * Asynchronously downloads the region delimited by [regionBounds], it will be saved with the
      * name [regionName]. [callback] can be used to act when the region starts downloading and monitor the download's progress.
      */
-    private fun downloadRegion(regionName:String,regionBounds:LatLngBounds,callback:OfflineManager.CreateOfflineRegionCallback){
-        
-        map.getStyle { style ->
+    private fun downloadRegion(regionName:String,regionBounds:LatLngBounds,zoom: Double,callback:OfflineManager.CreateOfflineRegionCallback){
+
             //The region's properties
             val definition = OfflineTilePyramidRegionDefinition(
                 style.uri,
                 regionBounds,
-                map.cameraPosition.zoom,//The minimum zoom is the current camera zoom
+                zoom,//The minimum zoom is the current camera zoom
                 MAX_ZOOM,//Maximum resolution
                 context.resources.displayMetrics.density
             )
 
             //Create metadata for this saved map instance that can be accessed later, tile count is
             //unknown at this tine and is initialized to 0
-            val metadata = OfflineRegionMetadata(regionName, regionBounds,0,map.cameraPosition.zoom)
+            val metadata = OfflineRegionMetadata(regionName, regionBounds,0,zoom)
 
             //Starts the download (if offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE) is called in the callback)
             //the callback can be used to monitor the download progress
             offlineManager.createOfflineRegion(definition, serializeMetadata(metadata), callback)
-        }
+
     }
 
     /**
@@ -202,7 +196,9 @@ class OfflineMapSaverImpl(val context:Context,val map:MapboxMap):OfflineMapSaver
      */
     private fun refreshOfflineRegions(){
         actOnRegions {
-            regions -> offlineRegions.value = regions
+            regions ->
+            offlineRegions.value = regions
+            totalTileCount.value = offlineRegions.value?.map{region->getMetadata(region).tileCount}?.reduce{acc,count->acc+count}
         }
     }
 }
