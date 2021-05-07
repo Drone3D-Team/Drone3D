@@ -8,4 +8,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-/secret.xml
+**/*/res/values/secrets.xml
