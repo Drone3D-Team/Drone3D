@@ -45,8 +45,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
     private val cameraResolution: MutableLiveData<DroneData.CameraResolution> = MutableLiveData()
     private val videoStreamUri: MutableLiveData<String> = MutableLiveData()
     private val mission: MutableLiveData<List<Mission.MissionItem>> = MutableLiveData()
+    private val missionProgress: MutableLiveData<Float> = MutableLiveData()
     private val focalLength: MutableLiveData<Float> = MutableLiveData()
     private val sensorSize: MutableLiveData<DroneData.SensorSize> = MutableLiveData()
+    private val droneStatus: MutableLiveData<DroneData.DroneStatus> = MutableLiveData(DroneData.DroneStatus.ARMING)
 
     init {
         createDefaultSubs()
@@ -69,8 +71,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
             isFlying.postValue(false)
             isConnected.postValue(false)
             mission.postValue(null)
+            missionProgress.postValue(null)
             isMissionPaused.postValue(true)
             cameraResolution.postValue(null)
+            droneStatus.postValue(DroneData.DroneStatus.IDLE)
         } else {
             addFlightModeSubscriptions(droneInstance)
             addArmedSubscriptions(droneInstance)
@@ -79,6 +83,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
             addSpeedSubscriptions(droneInstance)
             addIsFlyingSubscriptions(droneInstance)
             addHomeSubscriptions(droneInstance)
+            addMissionProgressSubscriptions(droneInstance)
             addIsConnectedSubscriptions(droneInstance)
             addCameraSubscriptions(droneInstance)
             addVideoStreamSubscriptions(droneInstance)
@@ -144,6 +149,12 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
         }
     }
 
+    private fun addMissionProgressSubscriptions(droneInstance: System) {
+        addSubscription(droneInstance.mission.missionProgress, "progress") { progress ->
+            this.missionProgress.postValue(progress.current.toFloat() / progress.total)
+        }
+    }
+
     private fun addCameraSubscriptions(droneInstance: System) {
         addSubscription(droneInstance.camera.information, "cameraResolution") { i ->
             cameraResolution.postValue(
@@ -191,6 +202,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
 
     override fun getVideoStreamUri(): LiveData<String> = videoStreamUri
 
+    override fun getMissionProgress(): LiveData<Float> = missionProgress
+
     override fun getFocalLength(): LiveData<Float> = focalLength
 
     override fun getSensorSize(): LiveData<DroneData.SensorSize> = sensorSize
@@ -202,26 +215,21 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
 
     @Synchronized
     override fun purge() {
-        disposables.filter { !it.isDisposed }
+        disposables.removeAll { it.isDisposed }
     }
 
     override fun getMutableMission(): MutableLiveData<List<Mission.MissionItem>> = mission
 
     override fun getMutableMissionPaused(): MutableLiveData<Boolean> = isMissionPaused
 
+    override fun getMutableDroneStatus(): MutableLiveData<DroneData.DroneStatus> = droneStatus
+
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
-        addSubscription(
+        disposables.add(
                 flow.distinctUntilChanged().subscribe(
                     onNext,
                     { error -> Timber.e(error,"Error $name : $error") }
                 )
-        )
-    }
-
-    @Synchronized
-    override fun addSubscription(disposable: Disposable) {
-        disposables.add(
-                disposable
         )
     }
 

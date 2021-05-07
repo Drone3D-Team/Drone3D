@@ -304,6 +304,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilder.onDestroy()
             missionDrawer.onDestroy()
         }
+
         mapView.onDestroy()
     }
 }

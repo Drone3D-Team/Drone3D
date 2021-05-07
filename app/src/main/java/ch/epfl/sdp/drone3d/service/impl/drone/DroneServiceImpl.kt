@@ -27,7 +27,7 @@ class DroneServiceImpl(
     }
 
     private val droneData = DroneDataImpl(this)
-    private val droneExecutor = DroneExecutorImpl(this, locationService, droneData)
+    private val droneExecutor = DroneExecutorImpl(this, droneData, locationService)
 
     private var server: MavsdkServer? = null
     private var droneInstance: System? = null
