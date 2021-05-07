@@ -25,9 +25,11 @@ import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -44,7 +46,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 
 @HiltAndroidTest
-@UninstallModules(DroneModule::class, AuthenticationModule::class)
+@UninstallModules(DroneModule::class, AuthenticationModule::class, LocationModule::class)
 class ItineraryShowActivityTest {
 
     private val USER_UID = "asdfg"
@@ -70,6 +72,9 @@ class ItineraryShowActivityTest {
     @BindValue
     val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
 
+    @BindValue
+    val locationService: LocationService = Mockito.mock(LocationService::class.java)
+
     init {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
@@ -78,6 +83,9 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
 
         val executor = Mockito.mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
@@ -132,6 +140,7 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
         `when`(droneService.getData()
             .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
 
