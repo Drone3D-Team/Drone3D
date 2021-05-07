@@ -45,6 +45,7 @@ object ToastHandler {
                   text: String,
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
+
         // Make sure to not format texts that should not be formatted
         val textF = if (args.isEmpty()) text else text.format(*args)
         Timber.i("Showing toast with text : $textF")
@@ -63,6 +64,7 @@ object ToastHandler {
                   @StringRes resId: Int,
                   duration: Int = Toast.LENGTH_SHORT,
                   vararg args: Any?) {
+
         // Make sure to not format texts that should not be formatted
         val textF = if (args.isEmpty()) context.getText(resId) else context.getText(resId, *args)
 
