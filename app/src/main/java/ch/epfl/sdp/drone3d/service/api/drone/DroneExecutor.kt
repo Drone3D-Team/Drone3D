@@ -29,7 +29,7 @@ interface DroneExecutor {
      *
      * Shows toasts of the [context]
      */
-    fun pauseMission(context: Context)
+    fun pauseMission(context: Context): Completable
 
     /**
      * Resume current paused mission.
@@ -38,7 +38,7 @@ interface DroneExecutor {
      *
      * Shows toasts of the [context]
      */
-    fun resumeMission(context: Context)
+    fun resumeMission(context: Context): Completable
 
     /**
      * Start a mission where the drone goes back to home location and land

@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceView
@@ -15,13 +14,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.*
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.material.button.MaterialButton
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -30,6 +29,8 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
+import io.reactivex.disposables.CompositeDisposable
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -50,6 +51,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
 
+    private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
     private lateinit var cameraView: SurfaceView
 
@@ -68,9 +70,12 @@ class MissionInProgressActivity : BaseMapActivity() {
         }
     }
 
-    private var droneFlyingStatusObserver = Observer<Boolean> { flyStatus ->
-        backToHomeButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
-        backToUserButton.visibility = if (flyStatus) View.VISIBLE else View.GONE
+    private var droneStatusObserver = Observer<DroneStatus> { status ->
+        val visibility =
+                if (status == DroneStatus.EXECUTING_MISSION) View.VISIBLE else View.GONE
+
+        backToHomeButton.visibility = visibility
+        backToUserButton.visibility = visibility
     }
 
     private var droneConnectionStatusObserver = Observer<Boolean> { connectionStatus ->
@@ -149,54 +154,72 @@ class MissionInProgressActivity : BaseMapActivity() {
     /**
      * Launch the mission
      */
-    @SuppressLint("CheckResult")
     private fun startMission() {
         if(missionPath == null) {
             ToastHandler.showToastAsync(this, R.string.mission_null)
         } else {
             val droneMission = DroneUtils.makeDroneMission(missionPath!!, 20f)
-            val completable = droneService.getExecutor().startMission(this, droneMission)
+            try {
+                val completable = droneService.getExecutor().startMission(this, droneMission)
 
-            completable.subscribe({
-                val intent = Intent(this, ItineraryShowActivity::class.java)
-                intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-                startActivity(intent)
-            }, {
-                //TODO: Move error here
-            })
+                disposables.add(
+                    completable.subscribe(
+                            { openItineraryShow() },
+                            {
+                                showError(it)
+                                openItineraryShow()
+                            })
+                )
+            } catch (e: Exception) {
+                showError(e)
+                openItineraryShow()
+            }
         }
+    }
+
+    private fun openItineraryShow() {
+        val intent = Intent(this, ItineraryShowActivity::class.java)
+        intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
+        startActivity(intent)
     }
 
     /**
      * Stop the mission and bring back the drone to its home
      */
-    @SuppressLint("CheckResult")
     fun backToHome(@Suppress("UNUSED_PARAMETER") view: View) {
         val completable = droneService.getExecutor().returnToHomeLocationAndLand(this)
 
-        completable.subscribe({
-            val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-            startActivity(intent)
-        }, {
-            //TODO: Move error here
-        })
+        disposables.add(
+            completable.subscribe({
+                ToastHandler.showToastAsync(this, "The drone is coming back to its launch location")
+            }, {
+                showError(it)
+            })
+        )
     }
 
     /**
      * Stop the mission and bring back the drone to the user
      */
-    @SuppressLint("CheckResult")
     fun backToUser(@Suppress("UNUSED_PARAMETER") view: View) {
         val completable = droneService.getExecutor().returnToUserLocationAndLand(this)
 
-        completable.subscribe({
-            val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-            startActivity(intent)
-        }, {
-            //TODO: Move error here
-        })
+        disposables.add(
+            completable.subscribe({
+                ToastHandler.showToastAsync(this, "The drone is coming back to you")
+            }, {
+                showError(it)
+            })
+        )
+    }
+
+    private fun showError(ex: Throwable) {
+        ToastHandler.showToastAsync(
+                this,
+                R.string.drone_mission_error,
+                Toast.LENGTH_LONG,
+                ex.message)
+        Timber.e(ex)
     }
 
     override fun onResume() {
@@ -204,7 +227,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         droneService.getData().getPosition().observe(this, dronePositionObserver)
         droneService.getData().getHomeLocation().observe(this, homePositionObserver)
-        droneService.getData().isFlying().observe(this, droneFlyingStatusObserver)
+        droneService.getData().getDroneStatus().observe(this, droneStatusObserver)
         droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
         droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
     }
@@ -214,7 +237,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         droneService.getData().getPosition().removeObserver(dronePositionObserver)
         droneService.getData().getHomeLocation().removeObserver(homePositionObserver)
-        droneService.getData().isFlying().removeObserver(droneFlyingStatusObserver)
+        droneService.getData().getDroneStatus().removeObserver(droneStatusObserver)
         droneService.getData().isConnected().removeObserver(droneConnectionStatusObserver)
         droneService.getData().getVideoStreamUri().removeObserver(videoStreamUriObserver)
     }
@@ -225,6 +248,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
+
+        disposables.dispose()
     }
 
     companion object {
