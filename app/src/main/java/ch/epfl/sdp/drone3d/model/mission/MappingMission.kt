@@ -28,6 +28,7 @@ enum class State {
 data class MappingMission(
     //TODO: could be split into 2 substructure, one for the metadata and one for the
     // actual mission(flight path, flight height, camera pitch)
+    // Only a shape should know be stored and the mapping mission regenerated for every drone
     val name: String = "",
     val flightPath: List<LatLng> = listOf(),
     val flightHeight:Double = 0.0,
