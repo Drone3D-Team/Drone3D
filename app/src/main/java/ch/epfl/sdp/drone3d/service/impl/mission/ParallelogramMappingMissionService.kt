@@ -40,7 +40,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         mappingFunction: (
                 startingPoint: Point, area: Parallelogram, cameraAngle: Float,
                 flightHeight: Double, groundImageDimension: GroundImageDim
-        ) -> List<Point>
+        ) -> List<Pair<Point,Boolean>>
     ): List<LatLng>? {
 
         if(vertices.size!=3){
@@ -51,10 +51,12 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
 
         return if (groundImageDimension != null) {
             val projector = SphereToPlaneProjector(vertices[0])
-            val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
-                projector.toPoint(vertices[2]))
-            projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
-                parallelogram, cameraPitch, flightHeight, groundImageDimension))
+            val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]), projector.toPoint(vertices[2]))
+            //TODO: remove the last mapping function to know when photos must be taken
+            val flightPathMeters = mappingFunction(projector.toPoint(vertices[0]),
+                parallelogram, cameraPitch, flightHeight, groundImageDimension).map { pair-> pair.first }
+            val projectedFlightPath = projector.toLatLngs(flightPathMeters)
+            projectedFlightPath
         } else {
             null
         }

@@ -20,6 +20,7 @@ class ParallelogramMissionBuilderTest {
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
         val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+            .filter { pair -> pair.second }.map { pair -> pair.first }//Only keeps point where we take a picture
         val expectedMappingMission = listOf(Point(1.0,1.0),Point(1.0,0.0),Point(0.0,0.0),Point(0.0,1.0))
         for(i in actualMappingMission.indices){
             assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
@@ -35,6 +36,8 @@ class ParallelogramMissionBuilderTest {
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
         val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+                                    .filter { pair -> pair.second }.map { pair -> pair.first }//Only keeps point where we take a picture
+
         val expectedMappingMission = listOf(Point(0.0,0.0),Point(0.0,1.0),Point(1.0,1.0),Point(1.0,0.0))
         for(i in actualMappingMission.indices){
             assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
@@ -50,6 +53,7 @@ class ParallelogramMissionBuilderTest {
         val groundImageDimension = GroundImageDim(3.0,3.0)
 
         val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+            .filter { pair -> pair.second }.map { pair -> pair.first }//Only keeps point where we take a picture
         val expectedMappingMission =
             listOf(
                 Point(0.0,0.0),

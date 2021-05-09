@@ -15,21 +15,25 @@ class ParallelogramMissionBuilder {
     companion object{
         private val FRONTAL_OVERLAP = 0.8
         private val SIDE_OVERLAP = 0.7
+        //Overshoot Distance the drone take before making a turn to make sure the camera is oriented in the right direction
+        private val U_TURN_DISTANCE = 5.0
 
         /**
-         * Returns the coordinates where the drone should take pictures on a single pass mapping mission.
+         * Returns a pair of <coordinates,takePictures> indicating where the drone should go and
+         * take pictures on a single pass mapping mission.
          * All distances are in meters and angles are in radians
          */
-        fun buildSinglePassMappingMission(startingPoint: Point, area: Parallelogram, cameraAngle:Double, flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
+        fun buildSinglePassMappingMission(startingPoint: Point, area: Parallelogram, cameraAngle:Float, flightHeight:Double, groundImageDimension: GroundImageDim):List<Pair<Point,Boolean>>{
             val newArea = area.getClosestEquivalentParallelogram(startingPoint)
             return singlePassMappingMission(newArea,cameraAngle,flightHeight,groundImageDimension)
         }
 
         /**
-         * Returns the coordinates where the drone should take pictures on a double pass mapping mission.
+        Returns a pair of <coordinates,takePictures> indicating where the drone should go and
+         * take pictures on a double pass mapping mission.
          * All distances are in meters and angles are in radians
          */
-        fun buildDoublePassMappingMission(startingPoint: Point, area: Parallelogram, cameraAngle:Double, flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
+        fun buildDoublePassMappingMission(startingPoint: Point, area: Parallelogram, cameraAngle:Float, flightHeight:Double, groundImageDimension: GroundImageDim):List<Pair<Point,Boolean>>{
             val firstPassArea = area.getClosestEquivalentParallelogram(startingPoint)
             val mappingMissionFirst = singlePassMappingMission(firstPassArea,cameraAngle,flightHeight,groundImageDimension)
             val secondPassArea = firstPassArea.diagonalEquivalent()
@@ -41,7 +45,7 @@ class ParallelogramMissionBuilder {
          * Builds a single pass mapping mission on a parallelogram starting at the origin of the [area]
          * and compensating for the camera angle and drone height
          */
-        private fun singlePassMappingMission(area: Parallelogram, cameraAngle:Double, flightHeight:Double, groundImageDimension: GroundImageDim):List<Point>{
+        private fun singlePassMappingMission(area: Parallelogram, cameraAngle:Float, flightHeight:Double, groundImageDimension: GroundImageDim):List<Pair<Point,Boolean>>{
             val distanceToPictureCenterStart = flightHeight*tan(cameraAngle)
             val direction1CameraCompensation = (area.dir1Span.normalized()*distanceToPictureCenterStart).reverse()
             val direction2CameraCompensation = (area.dir2Span.normalized()*distanceToPictureCenterStart).reverse()
@@ -55,7 +59,7 @@ class ParallelogramMissionBuilder {
         /**
          * Builds a single pass mapping mission on a parallelogram starting at the origin of the [area]
          */
-        private fun singlePassMappingMission(area: Parallelogram, groundImageDimension: GroundImageDim):List<Point>{
+        private fun singlePassMappingMission(area: Parallelogram, groundImageDimension: GroundImageDim):List<Pair<Point,Boolean>>{
 
             val direction1Increment = area.dir1Span.normalized()*groundImageDimension.width*(1- FRONTAL_OVERLAP)
             val direction2Increment = area.dir2Span.normalized()*groundImageDimension.height*(1- SIDE_OVERLAP)
@@ -63,7 +67,7 @@ class ParallelogramMissionBuilder {
             val direction2IncrementCount:Double = area.dir2Span.norm()/direction2Increment.norm()
 
             var currentPoint = area.origin
-            val resultList = mutableListOf(currentPoint)
+            val resultList:MutableList<Pair<Point,Boolean>> = mutableListOf(Pair(currentPoint,true))
 
             var currentDirection1Increment = direction1Increment
             var remainingDir2IncrementCount = direction2IncrementCount
@@ -73,12 +77,20 @@ class ParallelogramMissionBuilder {
                 while (remainingDir1IncrementCount>0){
                     currentPoint += currentDirection1Increment*min(1.0,remainingDir1IncrementCount)
                     remainingDir1IncrementCount-=1
-                    resultList.add(currentPoint)
+                    resultList.add(Pair(currentPoint,true))
                 }
+                //To do the U-turn
+                currentPoint += currentDirection1Increment.normalized()*U_TURN_DISTANCE
+                resultList.add(Pair(currentPoint,false))//No photos taken for the U-turn
 
+                //To do the U-turn
                 currentPoint += direction2Increment*min(1.0,remainingDir2IncrementCount)
+                resultList.add(Pair(currentPoint,false))//No photos taken for the U-turn
+
+                currentPoint -= currentDirection1Increment.normalized()*U_TURN_DISTANCE
+                resultList.add(Pair(currentPoint,true))
+
                 remainingDir2IncrementCount-=1
-                resultList.add(currentPoint)
                 currentDirection1Increment = currentDirection1Increment.reverse()
             }
             //Last round
@@ -86,7 +98,7 @@ class ParallelogramMissionBuilder {
             while (remainingDir1IncrementCount>0){
                 currentPoint += currentDirection1Increment*min(1.0,remainingDir1IncrementCount)
                 remainingDir1IncrementCount-=1
-                resultList.add(currentPoint)
+                resultList.add(Pair(currentPoint,true))
             }
             return resultList.toList()
         }

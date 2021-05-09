@@ -26,6 +26,8 @@ enum class State {
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */
 data class MappingMission(
+    //TODO: could be split into 2 substructure, one for the metadata and one for the
+    // actual mission(flight path, flight height, camera pitch)
     val name: String = "",
     val flightPath: List<LatLng> = listOf(),
     val flightHeight:Double = 0.0,
