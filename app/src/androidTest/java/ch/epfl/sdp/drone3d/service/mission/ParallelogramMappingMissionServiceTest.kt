@@ -69,7 +69,7 @@ class ParallelogramMappingMissionServiceTest {
             cameraAngle,
             flightHeight,
             groundImageDim
-        ))
+        ).map { pair-> pair.first })
         val obtained = mappingMissionService.buildSinglePassMappingMission(latLngVertices, flightHeight)!!
         for (i in expected.indices){
             assertEquals(expected[i].latitude,obtained[i].latitude,0.0001)
@@ -95,7 +95,7 @@ class ParallelogramMappingMissionServiceTest {
                 cameraAngle,
                 flightHeight,
                 groundImageDim
-            )
+            ).map { pair-> pair.first }
         )
         val obtained =
             mappingMissionService.buildDoublePassMappingMission(latLngVertices, flightHeight)!!
