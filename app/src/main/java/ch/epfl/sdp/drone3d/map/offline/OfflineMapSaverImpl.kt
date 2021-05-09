@@ -89,7 +89,7 @@ class OfflineMapSaverImpl(val context:Context,val style: Style):OfflineMapSaver 
             override fun onCreate(offlineRegion: OfflineRegion) {
 
                 offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE)
-                
+
                 // Monitor the download progress using setObserver
                 offlineRegion.setObserver(callback)
 

@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
