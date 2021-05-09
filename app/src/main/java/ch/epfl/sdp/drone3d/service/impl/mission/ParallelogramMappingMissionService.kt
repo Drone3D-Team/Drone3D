@@ -11,10 +11,11 @@ import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
+import kotlin.math.PI
 
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
-    private val cameraAngle = 0.0 // Suppose the drone is looking down
+    val cameraAngle = 30.0/(2*PI) // Look forward with angle of 30 degrees in radians
 
     override fun buildSinglePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng>? {
 
@@ -45,7 +46,6 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         if(vertices.size!=3){
             throw IllegalArgumentException("A parallelogram should be determined by 3 vertices")
         }
-
 
         val groundImageDimension = computeGroundImageDimension(flightHeight)
 

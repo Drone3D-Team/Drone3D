@@ -19,6 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
+import kotlin.math.PI
 
 @RunWith(AndroidJUnit4::class)
 class ParallelogramMappingMissionServiceTest {
@@ -59,7 +60,7 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraAngle = mappingMissionService.cameraAngle
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!
 
@@ -84,7 +85,7 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraAngle =mappingMissionService.cameraAngle
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!
 
