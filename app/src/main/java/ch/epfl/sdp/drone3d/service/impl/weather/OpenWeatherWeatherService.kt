@@ -79,7 +79,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
                 "lat=" + location.latitude +
                 "&lon=" + location.longitude +
                 "&units=" + TEMP_UNIT +
-                "&appid=" + context.getString(R.secrets.open_weather_api_key)
+                "&appid=" + context.getString(R.string.open_weather_api_key)
         return URL(queryUrl).readText()
     }
 
