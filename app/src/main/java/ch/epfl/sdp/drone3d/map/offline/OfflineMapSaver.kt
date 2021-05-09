@@ -6,11 +6,8 @@
 package ch.epfl.sdp.drone3d.map.offline
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.offline.OfflineRegion
-import java.util.concurrent.CompletableFuture
 
 /**
  * Stores the metadata associated to a downloaded region
