@@ -21,7 +21,7 @@ enum class State {
 }
 
 /**
- * A MappingMission is instantiated with a [name], a [flightPath], a [flightHeight] and a [forwardCameraAngle].
+ * A MappingMission is instantiated with a [name], a [flightPath], a [flightHeight] and a [cameraPitch].
  * The [privateId], [sharedId] and [state] are updated according to where the MappingMission are stored.
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */
@@ -29,7 +29,7 @@ data class MappingMission(
     val name: String = "",
     val flightPath: List<LatLng> = listOf(),
     val flightHeight:Double = 0.0,
-    val forwardCameraAngle:Double = 0.0,
+    val cameraPitch:Float = 0f,
     var privateId: String? = null,
     var sharedId: String? = null,
     var state: State = State.NOT_STORED,

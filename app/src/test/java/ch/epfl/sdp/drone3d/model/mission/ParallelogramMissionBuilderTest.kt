@@ -15,7 +15,7 @@ class ParallelogramMissionBuilderTest {
     fun verifyUnitSquareSingleMappingMissionBuilderUpperCorner(){
         val startingPoint = Point(6.0,6.0)
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val cameraAngle = 0.0
+        val cameraAngle = 0f
         val droneHeight = 1.0
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
@@ -30,7 +30,7 @@ class ParallelogramMissionBuilderTest {
     fun verifyUnitSquareSingleMappingMissionBuilderLowerCorner(){
         val startingPoint = Point(-4.0,-4.0)
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val cameraAngle = 0.0
+        val cameraAngle = 0f
         val droneHeight = 1.0
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
@@ -45,7 +45,7 @@ class ParallelogramMissionBuilderTest {
     fun verifyDoubleMappingMissionBuilderUnitSquare(){
         val startingPoint = Point(0.0,0.0)
         val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val cameraAngle = 0.0
+        val cameraAngle = 0f
         val droneHeight = 5.0
         val groundImageDimension = GroundImageDim(3.0,3.0)
 

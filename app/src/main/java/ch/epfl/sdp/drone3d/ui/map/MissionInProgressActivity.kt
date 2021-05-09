@@ -52,6 +52,10 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class MissionInProgressActivity : BaseMapActivity() {
 
+    //TODO: change
+    val MOCK_ALTITUDE = 20f
+    val MOCK_CAMERA_ANGLE = 0f
+
     @Inject lateinit var droneService: DroneService
     @Inject lateinit var locationService: LocationService
 
@@ -216,7 +220,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         if(missionPath == null) {
             ToastHandler.showToastAsync(this, R.string.mission_null)
         } else {
-            val droneMission = DroneUtils.makeDroneMission(missionPath!!, 20f)
+            val droneMission = DroneUtils.makeDroneMission(missionPath!!, MOCK_ALTITUDE,MOCK_CAMERA_ANGLE)
             try {
                 val completable = droneService.getExecutor().startMission(this, droneMission)
 

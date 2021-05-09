@@ -33,6 +33,7 @@ class DroneExecutorImpl(
 
     companion object {
         private const val MAX_RETRIES: Int = 5
+        //TODO: CHANGE
         private const val DEFAULT_ALTITUDE: Float = 20f
     }
 
@@ -84,7 +85,7 @@ class DroneExecutorImpl(
     private fun goToLocation(context: Context, returnLocation: LatLng, altitude: Float): Completable {
 
         val droneInstance = getInstance()
-        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude)
+        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude,0f)
 
         return droneInstance.mission.pauseMission()
             .doOnComplete {

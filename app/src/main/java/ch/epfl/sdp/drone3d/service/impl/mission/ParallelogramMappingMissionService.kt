@@ -15,7 +15,7 @@ import kotlin.math.PI
 
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
-    val cameraAngle = 30.0/(2*PI) // Look forward with angle of 30 degrees in radians
+    val cameraPitch = (30.0/(2*PI)).toFloat() // Look forward with angle of 30 degrees in radians
 
     override fun buildSinglePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng>? {
 
@@ -38,7 +38,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         vertices: List<LatLng>,
         flightHeight: Double,
         mappingFunction: (
-                startingPoint: Point, area: Parallelogram, cameraAngle: Double,
+                startingPoint: Point, area: Parallelogram, cameraAngle: Float,
                 flightHeight: Double, groundImageDimension: GroundImageDim
         ) -> List<Point>
     ): List<LatLng>? {
@@ -54,7 +54,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
             val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
                 projector.toPoint(vertices[2]))
             projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
-                parallelogram, cameraAngle, flightHeight, groundImageDimension))
+                parallelogram, cameraPitch, flightHeight, groundImageDimension))
         } else {
             null
         }
