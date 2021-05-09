@@ -62,6 +62,9 @@
     <string name="content_descriptor_delete_icon">delete icon</string>
     <string name="delete_successful">Delete successful</string>
     <string name="delete_fail">Failed to delete</string>
+    <string name="download_failed">An error occurred during the download</string>
+    <string name="download_succeeded">The download of: %1$s has succeeded</string>
+    <string name="tile_limit_exceeded">Download aborted, the tile limit has been exceeded</string>
 
 
 

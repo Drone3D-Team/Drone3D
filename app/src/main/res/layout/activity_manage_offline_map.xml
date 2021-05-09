@@ -104,7 +104,7 @@
         app:layout_constraintTop_toBottomOf="@id/bottom_guideline">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/buttonToSaveActivity"
+            android:id="@+id/buttonToSaveOfflineMap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -113,7 +113,8 @@
             android:layout_margin="30sp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_save_icon"
-            app:srcCompat="@android:drawable/ic_menu_save"/>
+            android:onClick="downloadOfflineMap"
+            app:srcCompat="@android:drawable/ic_menu_save" />
         <!--TODO add: android:onClick="..."-->
 
     </com.mapbox.mapboxsdk.maps.MapView>
