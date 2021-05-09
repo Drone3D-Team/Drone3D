@@ -47,7 +47,9 @@ class DroneExecutorImpl(
             DroneUtils.generateMissionItem(
                 home.latitudeDeg,
                 home.longitudeDeg,
-                home.relativeAltitudeM))
+                home.relativeAltitudeM,
+                missionPlan.missionItems[0].gimbalPitchDeg,
+                false))
 
         // Allowed start states are Landed, arming, taking off. Starting a mission on other states
         // is dangerous and might break things

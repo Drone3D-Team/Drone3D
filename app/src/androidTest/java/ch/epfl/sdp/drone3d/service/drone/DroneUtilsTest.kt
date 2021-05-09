@@ -14,6 +14,8 @@ import io.mavsdk.mission.Mission
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import kotlin.math.PI
+import kotlin.random.Random.Default.nextBoolean
 import kotlin.random.Random.Default.nextDouble
 
 class DroneUtilsTest {
@@ -29,15 +31,18 @@ class DroneUtilsTest {
         repeat(n) {
             val randomLatitude = nextDouble(-90.0, 90.0)
             val randomLongitude = nextDouble(0.0, 180.0)
+            val randomPitch =  nextDouble(0.0, 60.0/(2*PI)).toFloat()
+            val takePhoto = nextBoolean()
+            val cameraAction = if(takePhoto) Mission.MissionItem.CameraAction.TAKE_PHOTO else Mission.MissionItem.CameraAction.NONE
             val mission = Mission.MissionItem(
                 randomLatitude,
                 randomLongitude,
                 10f,
                 10f,
-                true, Float.NaN, Float.NaN,
-                Mission.MissionItem.CameraAction.TAKE_PHOTO, Float.NaN,
+                true, randomPitch, Float.NaN,
+                cameraAction, Float.NaN,
                 1.0)
-            val expectedMission = DroneUtils.generateMissionItem(randomLatitude, randomLongitude, 10f)
+            val expectedMission = DroneUtils.generateMissionItem(randomLatitude, randomLongitude, 10f,randomPitch,takePhoto)
             Assert.assertTrue(missionEquality(expectedMission, mission))
         }
     }
@@ -51,12 +56,15 @@ class DroneUtilsTest {
             LatLng(47.397832880000003, 8.5455939999999995)
         )
 
+        val altitude = 10f
+
+        val pitch = 30/(2*PI).toFloat()
+
         val expectedMissionItems = positions.map { pos ->
-            DroneUtils.generateMissionItem(pos.latitude, pos.longitude, 10f)
+            DroneUtils.generateMissionItem(pos.latitude, pos.longitude, altitude,pitch.toFloat(),true)
         }
 
-        val missionPlan = DroneUtils
-            .makeDroneMission(positions, 10f)
+        val missionPlan = DroneUtils.makeDroneMission(positions, altitude,pitch)
 
         expectedMissionItems.zip(missionPlan.missionItems).forEach { (expected, observed) ->
             Assert.assertTrue(missionEquality(expected, observed))
