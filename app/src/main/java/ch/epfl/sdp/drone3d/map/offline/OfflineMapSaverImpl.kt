@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.*
 import kotlinx.serialization.Serializable
@@ -88,6 +87,7 @@ class OfflineMapSaverImpl(val context:Context,val style: Style):OfflineMapSaver 
         downloadRegion(regionName,regionBounds,zoom,object: OfflineManager.CreateOfflineRegionCallback {
 
             override fun onCreate(offlineRegion: OfflineRegion) {
+
                 offlineRegion.setDownloadState(OfflineRegion.STATE_ACTIVE)
 
                 // Monitor the download progress using setObserver
@@ -112,6 +112,7 @@ class OfflineMapSaverImpl(val context:Context,val style: Style):OfflineMapSaver 
                     override fun onError(error: OfflineRegionError) {}
                     override fun mapboxTileCountLimitExceeded(limit: Long) {}
                 })
+
             }
 
             override fun onError(error: String?) {
