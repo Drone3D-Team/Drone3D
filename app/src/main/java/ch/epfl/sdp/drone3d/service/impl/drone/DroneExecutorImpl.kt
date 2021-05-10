@@ -17,6 +17,7 @@ import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
+import io.mavsdk.telemetry.Telemetry
 import io.mavsdk.telemetry.Telemetry.FlightMode.*
 import io.reactivex.Completable
 import timber.log.Timber
@@ -57,37 +58,41 @@ class DroneExecutorImpl(
                 .andThen(instance.telemetry.armed.firstOrError()
                         .flatMapCompletable { if(it) armed(ctx) else arm(ctx, instance) })
                 // now, the drone is armed for sure. Do what we should based on the flight mode
-                .andThen(instance.telemetry.flightMode.firstOrError()
-                        .flatMapCompletable { curFlightMode ->
-                            when(curFlightMode) {
-                                // Ready -> takeoff
-                                READY -> takeoff(ctx, instance, missionPlan)
-                                // taking off -> wait until it ends to upload the mission
-                                TAKEOFF -> {
-                                    data.getMutableDroneStatus().postValue(ARMING)
-                                    instance.telemetry.flightMode.filter { it == HOLD }
-                                            .firstOrError().toCompletable()
-                                    .andThen(start(ctx, instance, missionPlan))
-                                }
-                                // Holding position, start mission
-                                HOLD -> start(ctx, instance, missionPlan)
-                                // A mission is already in progress, cannot start a new one
-                                MISSION -> {
-                                    ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
-                                    data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                                    finish(ctx, instance)
-                                }
-                                LAND -> {
-                                    ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
-                                    data.getMutableDroneStatus().postValue(LANDING)
-                                    instance.telemetry.flightMode.filter { it == READY }
-                                            .firstOrError().toCompletable()
-                                    .andThen(end(instance))
-                                }
-                                else -> throw IllegalStateException("Unknown state : $curFlightMode")
-                            }
-                        })
+                .andThen(instance.telemetry.flightMode.firstOrError())
+                        .flatMapCompletable { executeMissionStartingAt(it, ctx, instance, missionPlan) }
     }
+
+    private fun executeMissionStartingAt(flightMode: Telemetry.FlightMode,
+                                         ctx: Context,
+                                         instance: System,
+                                         missionPlan: Mission.MissionPlan): Completable =
+        when(flightMode) {
+            // Ready -> takeoff
+            READY -> takeoff(ctx, instance, missionPlan)
+            // taking off -> wait until it ends to upload the mission
+            TAKEOFF -> {
+                data.getMutableDroneStatus().postValue(ARMING)
+                instance.telemetry.flightMode.filter { it == HOLD }
+                        .firstOrError().toCompletable()
+                        .andThen(start(ctx, instance, missionPlan))
+            }
+            // Holding position, start mission
+            HOLD -> start(ctx, instance, missionPlan)
+            // A mission is already in progress, cannot start a new one
+            MISSION -> {
+                ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
+                data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                finish(ctx, instance)
+            }
+            LAND -> {
+                ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
+                data.getMutableDroneStatus().postValue(LANDING)
+                instance.telemetry.flightMode.filter { it == READY }
+                        .firstOrError().toCompletable()
+                        .andThen(end(instance))
+            }
+            else -> throw IllegalStateException("Unknown state : $flightMode")
+        }
 
     private fun armed(ctx: Context): Completable =
             Completable.fromCallable { ToastHandler.showToastAsync(ctx, "Drone already armed") }
