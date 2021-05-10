@@ -53,7 +53,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
             val humidity = main.getInt("humidity")
             val windSpeed = wind.getDouble("speed")
             val description = weather.getString("description")
-            val keywordDescription = weather.getString("description")
+            val keywordDescription = weather.getString("main")
             val visibility = jsonObj.getInt("visibility")
 
 
