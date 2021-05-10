@@ -98,11 +98,13 @@ class ItineraryShowActivity : BaseMapActivity() {
     private fun canMissionBeLaunched(): Boolean {
         return if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
             false
+        } else if (!droneService.isConnected()) {
+            false
         } else {
             val beginningPoint = currentMissionPath!![0]
             val distanceToMission =
                 beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+            distanceToMission < MAX_BEGINNING_DISTANCE
         }
     }
 
