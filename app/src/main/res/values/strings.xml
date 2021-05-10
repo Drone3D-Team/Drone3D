@@ -115,4 +115,5 @@
     <string name="permission_deny_button">Deny</string>
     <string name="permission_location_enable">Enable location</string>
     <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
+    <string name="mission_already_in_progress">A mission is already in progress. Wait of it to end or cancel it before starting a new one.</string>
 </resources>
