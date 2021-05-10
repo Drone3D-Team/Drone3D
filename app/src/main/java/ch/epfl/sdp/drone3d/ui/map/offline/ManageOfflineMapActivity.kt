@@ -41,7 +41,6 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             offlineMapSaver = OfflineMapSaverImpl(this, style)
             bindOfflineRegionsToRecycler()
             bindTileCount()
-
         }
     }
 
@@ -59,6 +58,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             it.let {adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
                 OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name) }
             )) }
+        })
+
+        offlineRegions.observe(this, {
+            it.forEach {offlineRegion -> (display(offlineRegion))}
         })
     }
 
@@ -85,7 +88,13 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
                 tilesBar.setProgress(it.toInt(), true)
             }
         })
+    }
 
+    /**
+     * Display the [offlineRegion] on the map by putting a square surrounding the region on the map
+     */
+    private fun display(offlineRegion: OfflineRegion){
+        TODO("Implement")
     }
 
 }
