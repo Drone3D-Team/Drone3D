@@ -55,8 +55,8 @@ class DroneExecutorImpl(
                     .firstOrError().toCompletable()
                 .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
                 // Arm the drone if not already
-                .andThen(instance.telemetry.armed.firstOrError()
-                        .flatMapCompletable { if(it) armed(ctx) else arm(ctx, instance) })
+                .andThen(instance.telemetry.armed.firstOrError())
+                        .flatMapCompletable { if(it) armed(ctx) else arm(ctx, instance) }
                 // now, the drone is armed for sure. Do what we should based on the flight mode
                 .andThen(instance.telemetry.flightMode.firstOrError())
                         .flatMapCompletable { executeMissionStartingAt(it, ctx, instance, missionPlan) }
@@ -135,7 +135,7 @@ class DroneExecutorImpl(
         return droneInstance.mission.pauseMission()
             .doOnComplete {
                 data.getMutableMissionPaused().postValue(true)
-                data.getMutableDroneStatus().postValue(STARTING_MISSION)
+                data.getMutableDroneStatus().postValue(SENDING_ORDER)
             }.andThen(droneInstance.mission.setReturnToLaunchAfterMission(false))
             .andThen(droneInstance.mission.uploadMission(missionPlan)
             .andThen(droneInstance.mission.startMission())
@@ -150,8 +150,10 @@ class DroneExecutorImpl(
     override fun pauseMission(ctx: Context): Completable {
         val instance = getInstance()
 
+        data.getMutableDroneStatus().postValue(SENDING_ORDER)
         return instance.mission.pauseMission().doOnComplete {
             data.getMutableMissionPaused().postValue(true)
+            data.getMutableDroneStatus().postValue(PAUSED)
             ToastHandler.showToastAsync(ctx, R.string.drone_pause_success)
         }
     }
@@ -159,8 +161,10 @@ class DroneExecutorImpl(
     override fun resumeMission(ctx: Context): Completable {
         val instance = getInstance()
 
+        data.getMutableDroneStatus().postValue(SENDING_ORDER)
         return instance.mission.startMission().doOnComplete {
             data.getMutableMissionPaused().postValue(false)
+            data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
             ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
         }
     }
@@ -172,7 +176,7 @@ class DroneExecutorImpl(
                     .andThen(start(ctx, instance, missionPlan))
 
     private fun start(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable = 
-            Completable.fromCallable { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
+            Completable.fromCallable { data.getMutableDroneStatus().postValue(SENDING_ORDER) }
                     .andThen(instance.mission.setReturnToLaunchAfterMission(false))
                     .andThen(instance.mission.uploadMission(missionPlan)
                             .andThen(instance.mission.startMission())
