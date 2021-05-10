@@ -1,6 +1,7 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.view.View
@@ -20,17 +21,22 @@ import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
 import timber.log.Timber
 import java.lang.StringBuilder
+import java.lang.System.currentTimeMillis
 
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     private lateinit var offlineMapSaver: OfflineMapSaver
     private lateinit var mapboxMap: MapboxMap
     private lateinit var downloadButton: FloatingActionButton
+    private val TAG = "Test"
+    private var timeOfLastDownloadToast = 0L
+    private val DOWNLOAD_STATUS_TIME_DELAY = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_manage_offline_map, R.id.mapView)
+        //Timber.d("Start download")
 
         mapView.contentDescription = getString(R.string.map_not_ready)
         mapView.getMapAsync(this)
@@ -51,7 +57,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
-            offlineMapSaver = OfflineMapSaverImpl(this@ManageOfflineMapActivity, style)
+            offlineMapSaver = OfflineMapSaverImpl(this@ManageOfflineMapActivity, style.uri)
             bindOfflineRegionsToRecycler()
             downloadButton.isEnabled = true
             bindTileCount()
@@ -62,29 +68,31 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     fun downloadOfflineMap(@Suppress("UNUSED_PARAMETER") view:View){
         val bounds = mapboxMap.projection.visibleRegion.latLngBounds
         val zoom = mapboxMap.cameraPosition.zoom
-        val regionName = "Temp"
-        ToastHandler.showToast(applicationContext,"Hello")
-        Timber.d("Start download")
-//        offlineMapSaver.downloadRegion(regionName,bounds,zoom,object:OfflineRegion.OfflineRegionObserver{
-//            override fun onStatusChanged(status: OfflineRegionStatus) {
-////                val percentage = if (status.requiredResourceCount >= 0) 100.0 * status.completedResourceCount / status.requiredResourceCount else 0.0
-////                Timber.d("Status is $percentage complete")
-//                if(status.isComplete){
-//                    //TODO: check that it is correct
-//                    ToastHandler.showToast(applicationContext, getString(R.string.download_succeeded,regionName))
-//                }
-//            }
-//
-//            override fun onError(error: OfflineRegionError) {
-//                ToastHandler.showToast(applicationContext, R.string.download_failed)
-//            }
-//
-//            override fun mapboxTileCountLimitExceeded(limit: Long) {
-//                ToastHandler.showToast(applicationContext, R.string.tile_limit_exceeded)
-//            }
-//        })
-    }
+        val regionName = "TO_REPLACE"
 
+        offlineMapSaver.downloadRegion(regionName,bounds,zoom,object:OfflineRegion.OfflineRegionObserver{
+            override fun onStatusChanged(status: OfflineRegionStatus) {
+
+                if(status.isComplete){
+                    ToastHandler.showToast(applicationContext, getString(R.string.download_succeeded,regionName))
+                }
+                else if(currentTimeMillis()-timeOfLastDownloadToast>DOWNLOAD_STATUS_TIME_DELAY){
+                    timeOfLastDownloadToast = currentTimeMillis()
+                    val percentage = if (status.requiredResourceCount >= 0) 100.0 * status.completedResourceCount/status.requiredResourceCount else 0.0
+                    ToastHandler.showToast(applicationContext, getString(R.string.download_progress,"%.2f%".format(percentage)))
+                }
+            }
+
+            override fun onError(error: OfflineRegionError) {
+                Timber.e("DownloadError $error")
+            }
+
+            override fun mapboxTileCountLimitExceeded(limit: Long) {
+                Timber.e("mapboxTileCountLimitExceeded")
+                ToastHandler.showToast(applicationContext, R.string.tile_limit_exceeded)
+            }
+        })
+    }
     /**
      * Get the recyclerView, create an adapter and bind it to the offlineRegions by displaying them.
      */
