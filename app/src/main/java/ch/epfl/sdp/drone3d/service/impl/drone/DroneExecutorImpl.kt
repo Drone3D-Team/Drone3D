@@ -53,46 +53,18 @@ class DroneExecutorImpl(
 
         return instance.core.connectionState.filter{ it.isConnected } // The drone must be connected
                     .firstOrError().toCompletable()
-                .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
                 // Arm the drone if not already
+                    .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
                 .andThen(instance.telemetry.armed.firstOrError())
                         .flatMapCompletable { if(it) armed(ctx) else arm(ctx, instance) }
+                // Takeoff if the drone isn't flying
+                    .doOnComplete{ data.getMutableDroneStatus().postValue(TAKING_OFF) }
+                .andThen(instance.telemetry.inAir.firstOrError())
+                        .flatMapCompletable { if(it) flying(ctx) else takeoff(ctx, instance) }
                 // now, the drone is armed for sure. Do what we should based on the flight mode
                 .andThen(instance.telemetry.flightMode.firstOrError())
                         .flatMapCompletable { executeMissionStartingAt(it, ctx, instance, missionPlan) }
     }
-
-    private fun executeMissionStartingAt(flightMode: Telemetry.FlightMode,
-                                         ctx: Context,
-                                         instance: System,
-                                         missionPlan: Mission.MissionPlan): Completable =
-        when(flightMode) {
-            // Ready -> takeoff
-            READY -> takeoff(ctx, instance, missionPlan)
-            // taking off -> wait until it ends to upload the mission
-            TAKEOFF -> {
-                data.getMutableDroneStatus().postValue(ARMING)
-                instance.telemetry.flightMode.filter { it == HOLD }
-                        .firstOrError().toCompletable()
-                        .andThen(start(ctx, instance, missionPlan))
-            }
-            // Holding position, start mission
-            HOLD -> start(ctx, instance, missionPlan)
-            // A mission is already in progress, cannot start a new one
-            MISSION -> {
-                ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
-                data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                finish(ctx, instance)
-            }
-            LAND -> {
-                ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
-                data.getMutableDroneStatus().postValue(LANDING)
-                instance.telemetry.flightMode.filter { it == READY }
-                        .firstOrError().toCompletable()
-                        .andThen(end(instance))
-            }
-            else -> throw IllegalStateException("Unknown state : $flightMode")
-        }
 
     private fun armed(ctx: Context): Completable =
             Completable.fromCallable { ToastHandler.showToastAsync(ctx, "Drone already armed") }
@@ -105,7 +77,37 @@ class DroneExecutorImpl(
                                 ex, attempt, MAX_RETRIES)
                         attempt < MAX_RETRIES
                     }
-            .doOnComplete { ToastHandler.showToastAsync(ctx, "Drone armed") }
+                    .doOnComplete { ToastHandler.showToastAsync(ctx, "Drone armed") }
+
+    private fun flying(ctx: Context): Completable =
+        Completable.fromCallable { ToastHandler.showToastAsync(ctx, "Drone already flying") }
+
+    private fun takeoff(ctx: Context, instance: System): Completable =
+            instance.action.takeoff()
+                    .doOnComplete{ ToastHandler.showToastAsync(ctx, "Drone took off") }
+
+    private fun executeMissionStartingAt(flightMode: Telemetry.FlightMode,
+                                         ctx: Context,
+                                         instance: System,
+                                         missionPlan: Mission.MissionPlan): Completable =
+        when(flightMode) {
+            // Ready to start the mission
+            READY, HOLD, LAND -> start(ctx, instance, missionPlan)
+            // taking off -> wait until it ends to start
+            TAKEOFF -> {
+                data.getMutableDroneStatus().postValue(ARMING)
+                instance.telemetry.flightMode.filter { it == HOLD }
+                        .firstOrError().toCompletable()
+                        .andThen(start(ctx, instance, missionPlan))
+            }
+            // A mission is already in progress, cannot start a new one
+            MISSION -> {
+                ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
+                data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                finish(ctx, instance)
+            }
+            else -> throw IllegalStateException("Unknown state : $flightMode")
+        }
 
     override fun returnToHomeLocationAndLand(ctx: Context): Completable {
         val returnLocation = data.getHomeLocation().value
@@ -169,12 +171,6 @@ class DroneExecutorImpl(
         }
     }
 
-    private fun takeoff(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable =
-            Completable.fromCallable { data.getMutableDroneStatus().postValue(TAKING_OFF) } 
-                    .andThen(instance.action.takeoff())
-                        .doOnComplete{ ToastHandler.showToastAsync(ctx, "Drone took off") }
-                    .andThen(start(ctx, instance, missionPlan))
-
     private fun start(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable = 
             Completable.fromCallable { data.getMutableDroneStatus().postValue(SENDING_ORDER) }
                     .andThen(instance.mission.setReturnToLaunchAfterMission(false))
@@ -189,16 +185,17 @@ class DroneExecutorImpl(
                     .andThen(finish(ctx, instance))
 
     private fun finish(ctx: Context, instance: System): Completable = 
-            instance.mission.missionProgress.distinctUntilChanged()
+            instance.mission.missionProgress
                             .filter{ it.current >= it.total - 1 }.firstOrError().toCompletable()
                             .doOnComplete{
                                 ToastHandler.showToastAsync(ctx, "Mission done, returning to launch point")
                                 data.getMutableDroneStatus().postValue(GOING_BACK)
                             }
-                    .andThen(instance.mission.missionProgress).distinctUntilChanged()
+                    .andThen(instance.mission.missionProgress)
                             .filter{ it.current == it.total }.firstOrError().toCompletable()
                             .doOnComplete{ data.getMutableDroneStatus().postValue(LANDING) }
                     .andThen(instance.action.land())
+                    .andThen(instance.telemetry.inAir.filter { !it }.firstOrError().toCompletable() )
                     .andThen(end(instance))
     
     private fun end(instance: System) = 

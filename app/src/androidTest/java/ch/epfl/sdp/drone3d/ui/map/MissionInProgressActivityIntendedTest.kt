@@ -39,7 +39,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
-import java.lang.Error
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Semaphore
 
@@ -248,5 +247,5 @@ class MissionInProgressActivityIntendedTest {
         }
     }
 
-    private fun <T> anyObj(type: Class<T>): T = any<T>(type)
+    private fun <T> anyObj(type: Class<T>): T = any(type)
 }

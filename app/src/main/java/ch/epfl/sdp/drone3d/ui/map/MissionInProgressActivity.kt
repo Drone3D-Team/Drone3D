@@ -33,6 +33,8 @@ import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
@@ -312,6 +314,12 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
         droneService.getData().getPosition().removeObserver(distanceUserObserver)
         droneService.getData().getDroneStatus().removeObserver(statusObserver)
+
+        disposables.dispose()
+
+        GlobalScope.launch {
+            droneService.reconnect()
+        }
     }
 
     override fun onDestroy() {
@@ -320,8 +328,6 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
-
-        disposables.dispose()
     }
 
     companion object {
