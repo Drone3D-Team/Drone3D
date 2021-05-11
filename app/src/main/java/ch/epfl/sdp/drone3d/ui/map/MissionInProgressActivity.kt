@@ -9,17 +9,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.*
 import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
+import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
@@ -52,6 +56,8 @@ import kotlin.math.abs
 class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
+
+    @Inject lateinit var weatherService: WeatherService
 
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
@@ -92,8 +98,16 @@ class MissionInProgressActivity : BaseMapActivity() {
         // TODO View stream
     }
 
+    private lateinit var weatherReport: LiveData<WeatherReport>
+    private var weatherReportObserver = Observer<WeatherReport> { report ->
+        val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
+        warningBadWeather.visibility = visibility
+    }
+
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
+
+    private lateinit var warningBadWeather: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,6 +130,9 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
+
+        warningBadWeather = findViewById(R.id.warningBadWeather)
+        weatherReport = weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
 
         startMission()
     }
@@ -232,6 +249,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getDroneStatus().observe(this, droneStatusObserver)
         droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
         droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
+
+
     }
 
     override fun onPause() {

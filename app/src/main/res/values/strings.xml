@@ -83,6 +83,8 @@
     <string name="back_to_user_button">Back to User</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
+    <!-- Warning showed if the weather is dangerous for the drone -->
+    <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone and you should recall it !</string>
 
     <!-- Utilities -->
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
