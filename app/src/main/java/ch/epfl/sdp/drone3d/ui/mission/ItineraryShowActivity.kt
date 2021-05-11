@@ -9,12 +9,16 @@ import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.button.MaterialButton
@@ -32,6 +36,16 @@ class ItineraryShowActivity : BaseMapActivity() {
     companion object {
         // max 1000 meters between the user/simulation and the start of the mission
         private const val MAX_BEGINNING_DISTANCE = 1000
+
+        // limit values for the weather
+        // min 100 meters of visibility
+        private const val MIN_VISIBILITY_DISTANCE = 100
+        // temperature min 0 degree Celsius
+        private const val MIN_TEMPERATURE = 0
+        // wind speed max = 8.8 m/s
+        private const val MAX_WIND_SPEED = 8.8
+        // set containing the keyword where it is dangerous for the drone to be launched
+        private val SAFE_CONDITIONS = setOf("Clear", "Clouds")
     }
 
     @Inject
@@ -39,6 +53,9 @@ class ItineraryShowActivity : BaseMapActivity() {
 
     @Inject
     lateinit var droneService: DroneService
+
+    @Inject
+    lateinit var  weatherService: WeatherService
 
     private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
@@ -49,6 +66,16 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var sharedId: String? = null
 
     private lateinit var deleteButton: MaterialButton
+
+    // true if the weather is good enough to launch the mission
+    private var isWeatherGoodEnough: Boolean = false
+    private lateinit var weatherReport: LiveData<WeatherReport>
+    private var weatherReportObserver = Observer<WeatherReport> { report ->
+        isWeatherGoodEnough = report.visibility >= MIN_VISIBILITY_DISTANCE
+                && report.temperature >= MIN_TEMPERATURE
+                && report.windSpeed <= MAX_WIND_SPEED
+                && SAFE_CONDITIONS.contains(report.keywordDescription)
+    }
 
     @Inject
     lateinit var authService: AuthenticationService
@@ -84,6 +111,12 @@ class ItineraryShowActivity : BaseMapActivity() {
                 }
             }
         }
+
+        if (currentMissionPath != null && currentMissionPath!!.isEmpty()) {
+            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
+            weatherReport.observe(this, weatherReportObserver)
+        }
+
         deleteButton = findViewById(R.id.mission_delete)
         deleteButton.visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
@@ -102,7 +135,7 @@ class ItineraryShowActivity : BaseMapActivity() {
             val beginningPoint = currentMissionPath!![0]
             val distanceToMission =
                 beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+            isWeatherGoodEnough && distanceToMission < MAX_BEGINNING_DISTANCE
         }
     }
 
@@ -110,6 +143,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Start an intent to go to the mission in progress activity
      */
     fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
@@ -138,6 +172,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Delete this mapping mission and go back to the mission selection activity
      */
     private fun confirmDelete() {
+        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
         mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
         val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)
