@@ -2,9 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/black"
+    android:background="@color/purple_500"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    >
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_vertical_guideline"
@@ -17,13 +19,13 @@
         android:id="@+id/offline_region_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@color/black"
+        android:layout_margin="0dp"
+        android:background="@color/purple_500"
         android:textColor="@color/white"
         android:fontFamily="sans-serif"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textSize="24sp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/top_vertical_guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,9 +36,10 @@
         android:id="@+id/deleteRegionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="15sp"
+        android:layout_margin="0sp"
         android:clickable="true"
         android:contentDescription="@string/content_descriptor_delete_icon"
+        app:fabCustomSize="37sp"
         app:srcCompat="@android:drawable/ic_menu_delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

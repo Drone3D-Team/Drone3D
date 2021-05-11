@@ -20,7 +20,7 @@ import timber.log.Timber
  * the missions when we click on the delete button.
  */
 class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
-    ListAdapter<OfflineRegion, OfflineRegionViewAdapter.OfflineRegionViewHolder>(OfflineRegionViewAdapter.RegionDiff) {
+    ListAdapter<OfflineRegion, OfflineRegionViewAdapter.OfflineRegionViewHolder>(RegionDiff) {
 
     /**
      * ViewHolder for the RecyclerView holding OfflineRegions. Contains a textView with the name of
@@ -39,6 +39,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
         fun bind(offRegion: OfflineRegion, offlineMapSaver: OfflineMapSaver) {
             offlineRegion = offRegion
             textView.text = getMetadata(offRegion).name
+
             deleteButton.setOnClickListener {
                 offlineMapSaver.deleteRegion(
                     offRegion.id,
@@ -56,15 +57,15 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfflineRegionViewAdapter.OfflineRegionViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfflineRegionViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.offline_region_item, parent, false)
 
-        return OfflineRegionViewAdapter.OfflineRegionViewHolder(view)
+        return OfflineRegionViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: OfflineRegionViewAdapter.OfflineRegionViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: OfflineRegionViewHolder, position: Int) {
         holder.bind(getItem(position), offlineMapSaver)
     }
 
@@ -73,11 +74,11 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
      */
     object RegionDiff : DiffUtil.ItemCallback<OfflineRegion>() {
 
-        override fun areItemsTheSame(oldItem: OfflineRegion, newItem: OfflineRegion): kotlin.Boolean {
+        override fun areItemsTheSame(oldItem: OfflineRegion, newItem: OfflineRegion): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: OfflineRegion, newItem: OfflineRegion): kotlin.Boolean {
+        override fun areContentsTheSame(oldItem: OfflineRegion, newItem: OfflineRegion): Boolean {
             return oldItem.id == newItem.id
         }
     }

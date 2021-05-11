@@ -22,6 +22,7 @@ import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
 import timber.log.Timber
 import java.lang.StringBuilder
 import java.lang.System.currentTimeMillis
+import kotlin.math.min
 
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
@@ -78,7 +79,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
                 else if(currentTimeMillis()-timeOfLastDownloadToast>DOWNLOAD_STATUS_TIME_DELAY){
                     timeOfLastDownloadToast = currentTimeMillis()
                     val percentage = if (status.requiredResourceCount >= 0) 100.0 * status.completedResourceCount/status.requiredResourceCount else 0.0
-                    ToastHandler.showToast(applicationContext, getString(R.string.download_progress,"%.2f%".format(percentage)))
+                    ToastHandler.showToast(applicationContext, getString(R.string.download_progress,"%.2f".format(percentage)+"%"))
                 }
             }
 
@@ -102,9 +103,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         savedRegionsRecycler.adapter = adapter
 
         offlineRegions.observe(this, androidx.lifecycle.Observer {
-            it.let {adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
-                OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name) }
-            )) }
+            it.let {
+                adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
+                    OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name)}))
+            }
         })
 
         offlineRegions.observe(this, {
@@ -126,13 +128,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
         actualTileCount.observe(this, {
             it.let{
-                assert(it<=maxTileCount)
-
                 val builder = StringBuilder()
-                builder.append(it).append("/").append(maxTileCount)
+                builder.append(min(it, maxTileCount)).append("/").append(maxTileCount)
                 tilesUsedTextView.text = builder.toString()
 
-                tilesBar.setProgress(it.toInt(), true)
+                tilesBar.setProgress(min(it, maxTileCount).toInt(), true)
             }
         })
     }
@@ -141,7 +141,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
      * Display the [offlineRegion] on the map by putting a square surrounding the region on the map
      */
     private fun display(offlineRegion: OfflineRegion){
-        TODO("Implement")
+        //TODO("Implement")
     }
 
 }

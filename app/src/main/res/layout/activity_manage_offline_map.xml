@@ -80,12 +80,12 @@
         android:layout_margin="10dp"
         android:background="@color/black"
         android:textColor="@color/white"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        app:layout_constraintVertical_bias="1.0">
+        >
 
     </androidx.recyclerview.widget.RecyclerView>
 
