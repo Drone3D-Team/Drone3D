@@ -19,6 +19,7 @@ import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
+import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.android.material.button.MaterialButton
@@ -36,16 +37,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     companion object {
         // max 1000 meters between the user/simulation and the start of the mission
         private const val MAX_BEGINNING_DISTANCE = 1000
-
-        // limit values for the weather
-        // min 100 meters of visibility
-        private const val MIN_VISIBILITY_DISTANCE = 100
-        // temperature min 0 degree Celsius
-        private const val MIN_TEMPERATURE = 0
-        // wind speed max = 8.8 m/s
-        private const val MAX_WIND_SPEED = 8.8
-        // set containing the keyword where it is dangerous for the drone to be launched
-        private val SAFE_CONDITIONS = setOf("Clear", "Clouds")
     }
 
     @Inject
@@ -71,10 +62,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var isWeatherGoodEnough: Boolean = false
     private lateinit var weatherReport: LiveData<WeatherReport>
     private var weatherReportObserver = Observer<WeatherReport> { report ->
-        isWeatherGoodEnough = report.visibility >= MIN_VISIBILITY_DISTANCE
-                && report.temperature >= MIN_TEMPERATURE
-                && report.windSpeed <= MAX_WIND_SPEED
-                && SAFE_CONDITIONS.contains(report.keywordDescription)
+        isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(report)
     }
 
     @Inject
