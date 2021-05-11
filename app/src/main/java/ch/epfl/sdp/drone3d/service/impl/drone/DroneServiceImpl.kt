@@ -103,4 +103,11 @@ class DroneServiceImpl(
     override fun getData(): DroneData = droneData
 
     override fun getExecutor(): DroneExecutor = droneExecutor
+
+    override fun reconnect() {
+        if (isSimulation)
+            setSimulation(simIP, simPort)
+        else
+            setDrone()
+    }
 }
