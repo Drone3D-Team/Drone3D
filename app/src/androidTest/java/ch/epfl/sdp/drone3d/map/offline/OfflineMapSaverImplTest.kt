@@ -39,7 +39,7 @@ class OfflineMapSaverImplTest {
 
     }
 
-
+    /*
     @Test
     fun testDownload(){
         val context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -65,9 +65,11 @@ class OfflineMapSaverImplTest {
 
     }
 
+     */
+
     @Test
     fun serializerAndDeserializerActAsIdentity(){
-        val expectedOfflineMetadata = OfflineRegionMetadata(rolexName, rolexBounds,0,defaultZoom)
+        val expectedOfflineMetadata = OfflineRegionMetadata(rolexName, rolexBounds,0,defaultZoom, true)
         val obtainedOfflineMetadata = OfflineMapSaverImpl.deserializeMetadata(OfflineMapSaverImpl.serializeMetadata(expectedOfflineMetadata))
         assertEquals(expectedOfflineMetadata,obtainedOfflineMetadata)
     }
