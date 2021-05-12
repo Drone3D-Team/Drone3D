@@ -184,8 +184,6 @@ class DroneExecutorImpl(
     }
 
     private fun finish(context: Context, instance: System, before: Completable): Completable {
-        val serv = DronePhotosImpl(service)
-
         return before.andThen(instance.mission.missionProgress).distinctUntilChanged()
             .filter { it.current >= it.total - 1 }.firstOrError().toCompletable()
             .doOnComplete {
@@ -193,7 +191,7 @@ class DroneExecutorImpl(
                 data.getMutableDroneStatus().postValue(GOING_BACK)
             }
             .andThen(instance.camera.takePhoto())
-            .andThen(serv.printAllPhotos())
+            .andThen(photosService.printAllPhotos())
             .andThen(instance.mission.missionProgress).distinctUntilChanged()
             .filter { it.current == it.total }.firstOrError().toCompletable()
             .doOnComplete { data.getMutableDroneStatus().postValue(LANDING) }
