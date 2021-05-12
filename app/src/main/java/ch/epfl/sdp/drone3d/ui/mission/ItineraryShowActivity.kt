@@ -100,7 +100,7 @@ class ItineraryShowActivity : BaseMapActivity() {
             }
         }
 
-        if (currentMissionPath != null && currentMissionPath!!.isEmpty()) {
+        if (currentMissionPath != null) {
             weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
             weatherReport.observe(this, weatherReportObserver)
         }

@@ -22,9 +22,9 @@ import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
-import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
@@ -312,6 +312,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getBatteryLevel().observe(this, batteryObserver)
         droneService.getData().getPosition().observe(this, distanceUserObserver)
         droneService.getData().getDroneStatus().observe(this, statusObserver)
+
+        weatherReport.observe(this, weatherReportObserver)
     }
 
     override fun onPause() {
@@ -329,6 +331,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
         droneService.getData().getPosition().removeObserver(distanceUserObserver)
         droneService.getData().getDroneStatus().removeObserver(statusObserver)
+
+        weatherReport.removeObserver(weatherReportObserver)
     }
 
     override fun onDestroy() {

@@ -22,14 +22,17 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.auth.UserSession
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
+import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -44,10 +47,17 @@ import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import java.util.*
 
 @HiltAndroidTest
-@UninstallModules(DroneModule::class, AuthenticationModule::class, LocationModule::class)
+@UninstallModules(DroneModule::class, AuthenticationModule::class, LocationModule::class, WeatherModule::class)
 class ItineraryShowActivityTest {
+
+    private val GOOD_WEATHER_REPORT = WeatherReport("Clear", "description",
+        20.0, 20, 5.0, 500, Date(12903))
+
+    private val BAD_WEATHER_REPORT = WeatherReport("RAIN", "description",
+        -1.0, 20, 10.0, 500, Date(12903))
 
     private val USER_UID = "asdfg"
 
@@ -73,6 +83,9 @@ class ItineraryShowActivityTest {
     val authService: AuthenticationService = Mockito.mock(AuthenticationService::class.java)
 
     @BindValue
+    val weatherService: WeatherService = Mockito.mock(WeatherService::class.java)
+
+    @BindValue
     val locationService: LocationService = Mockito.mock(LocationService::class.java)
 
     init {
@@ -86,6 +99,8 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
 
         val executor = Mockito.mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
