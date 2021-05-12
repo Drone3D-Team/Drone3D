@@ -81,6 +81,14 @@
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
+    <!-- Live values during the flight -->
+    <string name="live_speed">Speed : %1$s m/s</string>
+    <string name="live_altitude">Altitude : %1$s m</string>
+    <string name="live_battery">Battery : %1$s%%</string>
+    <string name="live_distance_user">Distance to user : %1$s m</string>
+    <string name="user_location_deactivated">Distance to user : Not allowed to access user\'s location</string>
+    <string name="user_location_null">Distance to user : Error, user\'s location is null</string>
+    <string name="live_status">Mission status : %1$s</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
     <!-- Warning showed if the weather is dangerous for the drone -->
@@ -103,4 +111,10 @@
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
     <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>
+
+    <!-- Permission dialog -->
+    <string name="permission_accept_button">Accept</string>
+    <string name="permission_deny_button">Deny</string>
+    <string name="permission_location_enable">Enable location</string>
+    <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
 </resources>

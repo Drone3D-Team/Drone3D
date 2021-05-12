@@ -46,16 +46,18 @@ class MissionInProgressActivityTest {
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
 
-    private val statusLiveData = MutableLiveData<DroneData.DroneStatus>()
-
     init {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
-        `when`(droneService.getData().getDroneStatus()).thenReturn(statusLiveData)
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
     }
 
     @Before
@@ -87,23 +89,5 @@ class MissionInProgressActivityTest {
         }
 
         ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
-    }
-
-    @Test
-    fun buttonsBecomeVisibleWhenMissionIsExecuted() {
-        statusLiveData.postValue(DroneData.DroneStatus.IDLE)
-
-        onView(withId(R.id.backToHomeButton))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-        onView(withId(R.id.backToUserButton))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-
-
-        statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
-
-        onView(withId(R.id.backToHomeButton))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-        onView(withId(R.id.backToUserButton))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 }

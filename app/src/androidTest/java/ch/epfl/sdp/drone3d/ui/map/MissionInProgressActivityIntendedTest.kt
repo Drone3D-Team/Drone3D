@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -17,8 +18,10 @@ import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.DroneModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -38,14 +41,16 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 import java.lang.Error
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Semaphore
 
 /**
  * Test MissionInProgressActivity with a mission as input
  */
 @HiltAndroidTest
-@UninstallModules(DroneModule::class)
+@UninstallModules(DroneModule::class, LocationModule::class)
 class MissionInProgressActivityIntendedTest {
 
+    private val statusLiveData = MutableLiveData<DroneData.DroneStatus>()
     private var missionEndFuture: CompletableFuture<Any> = CompletableFuture()
     private val someLocationsList = arrayListOf(
         LatLng(47.398979, 8.543434),
@@ -70,6 +75,8 @@ class MissionInProgressActivityIntendedTest {
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
+    @BindValue
+    val locationService: LocationService = mock(LocationService::class.java)
 
     init {
         val executor = mock(DroneExecutor::class.java)
@@ -85,10 +92,16 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.3, 0.0)))
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
-        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getDroneStatus()).thenReturn(statusLiveData)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
+        `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
     }
 
     @Before
@@ -151,7 +164,7 @@ class MissionInProgressActivityIntendedTest {
             homePosition.value?.longitude,
             10f,
             10f)))
-        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData(DroneData.DroneStatus.EXECUTING_MISSION))
+        statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
@@ -182,7 +195,7 @@ class MissionInProgressActivityIntendedTest {
                 userPosition.value?.longitude,
                 10f,
                 10f)))
-        `when`(droneService.getData().getDroneStatus()).thenReturn(MutableLiveData(DroneData.DroneStatus.EXECUTING_MISSION))
+        statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
         Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
@@ -200,6 +213,40 @@ class MissionInProgressActivityIntendedTest {
         missionEndFuture = CompletableFuture() //reset
     }
 
+    @Test
+    fun buttonsBecomeVisibleWhenMissionIsExecuted() {
+        val mutex = Semaphore(0)
+
+        activityRule.scenario.onActivity {
+            statusLiveData.value = DroneData.DroneStatus.IDLE
+            statusLiveData.value = DroneData.DroneStatus.ARMING
+            mutex.release()
+        }
+
+        mutex.acquire()
+
+        Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+        Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+
+        activityRule.scenario.onActivity {
+            statusLiveData.value = DroneData.DroneStatus.EXECUTING_MISSION
+            mutex.release()
+        }
+
+        mutex.acquire()
+
+        Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+        Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+
+        activityRule.scenario.onActivity {
+            statusLiveData.value = DroneData.DroneStatus.IDLE
+            mutex.release()
+        }
+    }
 
     private fun <T> anyObj(type: Class<T>): T = any<T>(type)
 }
