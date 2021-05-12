@@ -248,7 +248,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                         if (locationService.getCurrentLocation() == null)
                             getString(R.string.user_location_null)
                         else {
-                            val distanceUser = it.distanceTo(locationService.getCurrentLocation()!!)
+                            val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
                             getString(R.string.live_distance_user, distanceUser)
                         }
                     else
