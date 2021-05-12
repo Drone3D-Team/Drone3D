@@ -6,7 +6,6 @@
 package ch.epfl.sdp.drone3d.service.impl.drone
 
 import android.util.Log
-import ch.epfl.sdp.drone3d.service.api.drone.DronePhotos
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import io.mavsdk.camera.Camera
 import io.reactivex.Completable
