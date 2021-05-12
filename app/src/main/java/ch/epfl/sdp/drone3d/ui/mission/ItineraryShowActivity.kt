@@ -8,10 +8,8 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
@@ -98,19 +96,19 @@ class ItineraryShowActivity : BaseMapActivity() {
             }
         }
 
-        if (currentMissionPath != null) {
-            weatherReport = weatherService.getWeatherReport(currentMissionPath!![0])
-            weatherReport.observe(this){
-                isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-            }
-        }
-
         deleteButton = findViewById(R.id.mission_delete)
         deleteButton.visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
+
+        if (currentMissionPath != null) {
+            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
+            weatherReport.observe(this){
+                isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
+                goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
+            }
+        }
     }
 
     /**
@@ -122,7 +120,7 @@ class ItineraryShowActivity : BaseMapActivity() {
             false
         else {
             val beginningPoint = currentMissionPath!![0]
-            isWeatherGoodEnough && dronePos.distanceTo(beginningPoint)  < MAX_BEGINNING_DISTANCE
+            isWeatherGoodEnough && dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
         }
     }
 

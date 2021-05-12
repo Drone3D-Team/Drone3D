@@ -134,6 +134,7 @@ class ItineraryShowActivityTest {
         `when`(droneService.isConnected()).thenReturn(false)
         `when`(droneService.getData()
             .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
 
         activityRule.scenario.recreate()
 
@@ -145,6 +146,20 @@ class ItineraryShowActivityTest {
     fun goToMissionProgressActivityButtonIsNotEnabledWhenDroneTooFar() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToMissionInProgressActivity))
+            .check(matches(Matchers.not(isEnabled())))
+    }
+
+    @Test
+    fun goToMissionProgressActivityButtonIsNotEnabledWhenWeatherTooBad() {
+        `when`(droneService.isConnected()).thenReturn(true)
+        `when`(droneService.getData()
+            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
 
         activityRule.scenario.recreate()
 
@@ -158,6 +173,7 @@ class ItineraryShowActivityTest {
         `when`(locationService.isLocationEnabled()).thenReturn(false)
         `when`(droneService.getData()
             .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
 
         activityRule.scenario.recreate()
 

@@ -58,7 +58,6 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
     @Inject lateinit var locationService: LocationService
-
     @Inject lateinit var weatherService: WeatherService
 
     private val disposables = CompositeDisposable()
@@ -183,7 +182,12 @@ class MissionInProgressActivity : BaseMapActivity() {
         backToUserButton = findViewById(R.id.backToUserButton)
 
         warningBadWeather = findViewById(R.id.warningBadWeather)
-        weatherReport = weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+        if (missionPath == null) {
+            warningBadWeather.visibility = View.GONE
+        } else {
+            weatherReport =
+                weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+        }
 
         speedLiveText = findViewById(R.id.speedLive)
         altitudeLiveText = findViewById(R.id.altitudeLive)
@@ -313,7 +317,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getPosition().observe(this, distanceUserObserver)
         droneService.getData().getDroneStatus().observe(this, statusObserver)
 
-        weatherReport.observe(this, weatherReportObserver)
+        if (this::weatherReport.isInitialized) { weatherReport.observe(this, weatherReportObserver) }
     }
 
     override fun onPause() {
@@ -332,7 +336,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getPosition().removeObserver(distanceUserObserver)
         droneService.getData().getDroneStatus().removeObserver(statusObserver)
 
-        weatherReport.removeObserver(weatherReportObserver)
+        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
     }
 
     override fun onDestroy() {
