@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -61,9 +62,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     // true if the weather is good enough to launch the mission
     private var isWeatherGoodEnough: Boolean = false
     private lateinit var weatherReport: LiveData<WeatherReport>
-    private var weatherReportObserver = Observer<WeatherReport> { report ->
-        isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(report)
-    }
 
     @Inject
     lateinit var authService: AuthenticationService
@@ -101,8 +99,10 @@ class ItineraryShowActivity : BaseMapActivity() {
         }
 
         if (currentMissionPath != null) {
-            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
-            weatherReport.observe(this, weatherReportObserver)
+            weatherReport = weatherService.getWeatherReport(currentMissionPath!![0])
+            weatherReport.observe(this){
+                isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
+            }
         }
 
         deleteButton = findViewById(R.id.mission_delete)
@@ -130,7 +130,6 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Start an intent to go to the mission in progress activity
      */
     fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
@@ -159,7 +158,6 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Delete this mapping mission and go back to the mission selection activity
      */
     private fun confirmDelete() {
-        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
         mappingMissionDao.removeMappingMission(ownerUid, privateId, sharedId)
         val intent = Intent(this, MappingMissionSelectionActivity::class.java)
         startActivity(intent)
