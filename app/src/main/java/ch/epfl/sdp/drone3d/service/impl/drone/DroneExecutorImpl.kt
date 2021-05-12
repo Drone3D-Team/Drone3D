@@ -58,10 +58,9 @@ class DroneExecutorImpl(
                 .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
                 .andThen(armedAndFlying(ctx, instance))
                 .andThen(sendMissionAndStart(ctx, instance, missionPlan))
-                .andThen(finish(ctx, instance))
 
         return Completable.ambArray(mission, disarmed)
-                .andThen(end(instance))
+                .andThen(finish(ctx, instance))
     }
 
     private fun connected(instance: System): Completable =
@@ -143,14 +142,14 @@ class DroneExecutorImpl(
             .doOnComplete {
                 data.getMutableMissionPaused().postValue(true)
                 data.getMutableDroneStatus().postValue(SENDING_ORDER)
-            }.andThen(droneInstance.mission.setReturnToLaunchAfterMission(false))
+            }
             .andThen(droneInstance.mission.uploadMission(missionPlan)
             .andThen(droneInstance.mission.startMission())
                 .doOnComplete {
                     data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
                     data.getMutableMission().postValue(null)
                     data.getMutableMissionPaused().postValue(false)
-                    ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
+                    ToastHandler.showToastAsync(ctx, "Drone coming back")
                 })
     }
 
@@ -199,10 +198,7 @@ class DroneExecutorImpl(
                             .filter{ it.current == it.total }.firstOrError().toCompletable()
                             .doOnComplete{ data.getMutableDroneStatus().postValue(LANDING) }
                     .andThen(instance.action.land())
-                    .andThen(instance.telemetry.inAir.filter { !it }.firstOrError().toCompletable() )
-    
-    private fun end(instance: System) = 
-            instance.action.disarm()
+                    .andThen(instance.telemetry.inAir).filter { !it }.firstOrError().toCompletable()
                     .doOnComplete{
                         // Completion
                         data.getMutableDroneStatus().postValue(IDLE)
@@ -212,9 +208,9 @@ class DroneExecutorImpl(
 
 
     private fun changeFromTo(flow: Flowable<Boolean>): Completable {
-        var last = true
+        var last = false
         return flow.distinctUntilChanged().filter { current ->
-            if(current && !last)
+            if(!current && last)
                 true
             else {
                 last = current
