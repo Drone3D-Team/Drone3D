@@ -81,6 +81,15 @@
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
+
+    <string name="mission_already_in_progress">A mission is already in progress. Wait of it to end or cancel it before starting a new one.</string>
+    <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
+    <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
+    <string name="drone_took_off">Drone took off</string>
+    <string name="drone_already_flying">Drone already flying</string>
+    <string name="drone_armed">Drone armed</string>
+    <string name="drone_already_armed">Drone already armed</string>
+    <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
     <!-- Live values during the flight -->
     <string name="live_speed">Speed : %1$.2f m/s</string>
     <string name="live_altitude">Altitude : %1$.2f m</string>
@@ -115,5 +124,4 @@
     <string name="permission_deny_button">Deny</string>
     <string name="permission_location_enable">Enable location</string>
     <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
-    <string name="mission_already_in_progress">A mission is already in progress. Wait of it to end or cancel it before starting a new one.</string>
 </resources>

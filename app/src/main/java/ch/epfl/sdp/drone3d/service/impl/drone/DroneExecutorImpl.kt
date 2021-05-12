@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.service.impl.drone
 
 import android.content.Context
 import android.widget.Toast
+import androidx.annotation.StringRes
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
@@ -25,7 +26,7 @@ import timber.log.Timber
 /**
  * This class is an implementation of [DroneExecutor]. As such it is responsible of the mission management of the drone.
  *
- * Parts of this code were taken from the fly2find project and adapted to our needs.
+ * This code was inspired by the fly2find project.
  */
 class DroneExecutorImpl(
     private val service: DroneService,
@@ -52,7 +53,7 @@ class DroneExecutorImpl(
                 missionPlan.missionItems[0].relativeAltitudeM))
 
         val disarmed = changeFromTo(instance.telemetry.armed)
-                .doOnComplete { throw Error("Drone disarmed during the flight") }
+                .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
 
         val mission = connected(instance)
                 .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
@@ -75,7 +76,7 @@ class DroneExecutorImpl(
                     .flatMapCompletable { if(it) flying(ctx) else takeoff(ctx, instance) }
 
     private fun armed(ctx: Context): Completable =
-            Completable.fromCallable { ToastHandler.showToastAsync(ctx, "Drone already armed") }
+            Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_armed) }
 
     private fun arm(ctx: Context, instance: System): Completable =
             instance.action.arm()
@@ -85,14 +86,14 @@ class DroneExecutorImpl(
                                 ex, attempt, MAX_RETRIES)
                         attempt < MAX_RETRIES
                     }
-                    .doOnComplete { ToastHandler.showToastAsync(ctx, "Drone armed") }
+                    .doOnComplete { ToastHandler.showToastAsync(ctx, R.string.drone_armed) }
 
     private fun flying(ctx: Context): Completable =
-        Completable.fromCallable { ToastHandler.showToastAsync(ctx, "Drone already flying") }
+        Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_flying) }
 
     private fun takeoff(ctx: Context, instance: System): Completable =
             instance.action.takeoff()
-                    .doOnComplete{ ToastHandler.showToastAsync(ctx, "Drone took off") }
+                    .doOnComplete{ ToastHandler.showToastAsync(ctx, R.string.drone_took_off) }
 
     private fun sendMissionAndStart(ctx: Context,
                                     instance: System,
@@ -120,7 +121,7 @@ class DroneExecutorImpl(
         val location = LatLng(returnLocation.latitudeDeg, returnLocation.longitudeDeg)
         val altitude = returnLocation.relativeAltitudeM
 
-        return goToLocation(ctx, location, altitude)
+        return goToLocation(ctx, location, altitude, R.string.drone_mission_return_launch)
     }
 
     override fun returnToUserLocationAndLand(ctx: Context): Completable {
@@ -130,10 +131,10 @@ class DroneExecutorImpl(
         val userPosition = locationService.getCurrentLocation()!!
         val altitude = data.getPosition().value?.altitude?.toFloat() ?: DEFAULT_ALTITUDE
 
-        return goToLocation(ctx, userPosition, altitude)
+        return goToLocation(ctx, userPosition, altitude, R.string.drone_mission_to_user)
     }
 
-    private fun goToLocation(ctx: Context, returnLocation: LatLng, altitude: Float): Completable {
+    private fun goToLocation(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
 
         val droneInstance = getInstance()
         val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude)
@@ -149,7 +150,7 @@ class DroneExecutorImpl(
                     data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
                     data.getMutableMission().postValue(null)
                     data.getMutableMissionPaused().postValue(false)
-                    ToastHandler.showToastAsync(ctx, "Drone coming back")
+                    ToastHandler.showToastAsync(ctx, msg)
                 })
     }
 
@@ -191,7 +192,7 @@ class DroneExecutorImpl(
             instance.mission.missionProgress
                             .filter{ it.current >= it.total - 1 }.firstOrError().toCompletable()
                             .doOnComplete{
-                                ToastHandler.showToastAsync(ctx, "Mission done, returning to launch point")
+                                ToastHandler.showToastAsync(ctx, R.string.drone_mission_return_launch)
                                 data.getMutableDroneStatus().postValue(GOING_BACK)
                             }
                     .andThen(instance.mission.missionProgress)
