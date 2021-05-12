@@ -17,8 +17,6 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
@@ -40,7 +38,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     @Inject
     lateinit var droneService: DroneService
 
-    private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
 
@@ -48,14 +45,12 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var privateId: String? = null
     private var sharedId: String? = null
 
-    private lateinit var deleteButton: MaterialButton
-
     @Inject
     lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_itinerary_show, R.id.mapView)
 
@@ -63,9 +58,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Get the Intent that started this activity and extract the missionPath
-        @Suppress("UNCHECKED_CAST")
-        currentMissionPath =
-            intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        currentMissionPath = intent.getParcelableArrayListExtra(MissionViewAdapter.MISSION_PATH)
         // Get the Intent that started this activity and extract user and ids
         ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER).toString()
         privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
@@ -84,27 +77,33 @@ class ItineraryShowActivity : BaseMapActivity() {
                 }
             }
         }
-        deleteButton = findViewById(R.id.mission_delete)
-        deleteButton.visibility =
-            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
-        goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
+        findViewById<View>(R.id.mission_delete).visibility =
+            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        droneService.getData().isConnected().observe(this) {
+            findViewById<View>(R.id.buttonToMissionInProgressActivity).isEnabled = canMissionBeLaunched()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        droneService.getData().isConnected().removeObservers(this)
     }
 
     /**
      * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
      */
     private fun canMissionBeLaunched(): Boolean {
-        return if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
-            false
-        } else if (!droneService.isConnected()) {
+        return if (!droneService.isConnected() || currentMissionPath == null || currentMissionPath!!.isEmpty()) {
             false
         } else {
             val beginningPoint = currentMissionPath!![0]
-            val distanceToMission =
-                beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-            distanceToMission < MAX_BEGINNING_DISTANCE
+            beginningPoint.distanceTo(droneService.getData().getPosition().value!!) < MAX_BEGINNING_DISTANCE
         }
     }
 
@@ -115,6 +114,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
+        finish()
     }
 
     /**

@@ -34,8 +34,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.abs
@@ -97,6 +95,8 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
+
+        setupObservers()
 
         startMission()
     }
@@ -163,6 +163,29 @@ class MissionInProgressActivity : BaseMapActivity() {
         val intent = Intent(this, ItineraryShowActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
         startActivity(intent)
+        finish()
+    }
+
+    private fun setupObservers() {
+        val droneData = droneService.getData()
+
+        createObserver(droneData.getPosition()) {
+            it?.let { newLatLng -> if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
+        }
+
+        createObserver(droneData.getHomeLocation()) {
+            it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
+        }
+
+        createDroneStatusObserver(droneData)
+        createTextObserver(droneData.getSpeed(), R.id.speedLive, R.string.live_speed) { it }
+        createTextObserver(droneData.getRelativeAltitude(), R.id.altitudeLive, R.string.live_altitude) { it }
+        createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
+        createPositionObserver(droneData)
+        createConnectionObserver(droneData)
+        createObserver(droneData.getVideoStreamUri()) {
+            //TODO
+        }
     }
 
     /**
@@ -204,49 +227,17 @@ class MissionInProgressActivity : BaseMapActivity() {
         Timber.e(ex)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        val droneData = droneService.getData()
-
-        createObserver(droneData.getPosition()) {
-            it?.let { newLatLng -> if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
-        }
-
-        createObserver(droneData.getHomeLocation()) {
-            it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
-        }
-
-        createDroneStatusObserver(droneData)
-        createTextObserver(droneData.getSpeed(), R.id.speedLive, R.string.live_speed) { it }
-        createTextObserver(droneData.getRelativeAltitude(), R.id.altitudeLive, R.string.live_altitude) { it }
-        createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
-        createPositionObserver(droneData)
-        createConnectionObserver(droneData)
-        createObserver(droneData.getVideoStreamUri()) {
-            //TODO
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        observedData.forEach { data -> data.removeObservers(this) }
-        observedData.clear()
-
-        disposables.dispose()
-
-        GlobalScope.launch {
-            droneService.reconnect()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
 
         if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
+
+        observedData.forEach { data -> data.removeObservers(this) }
+        observedData.clear()
+
+        disposables.dispose()
     }
 
     private fun createPositionObserver(droneData: DroneData) {
@@ -282,12 +273,9 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private fun createConnectionObserver(droneData: DroneData) {
         createObserver(droneData.isConnected()) {
-            it?.let { connectionStatus ->
-                if (!connectionStatus)
-                    ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
-
-                backToHomeButton.isEnabled = connectionStatus
-                backToUserButton.isEnabled = connectionStatus
+            if (it == null || !it) {
+                ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
+                openItineraryShow()
             }
         }
     }
