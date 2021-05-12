@@ -96,13 +96,12 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
      */
     private fun canMissionBeLaunched(): Boolean {
-        return if (currentMissionPath == null || currentMissionPath!!.isEmpty()) {
+        val dronePos = droneService.getData().getPosition().value
+        return if (currentMissionPath?.isEmpty() == true || !droneService.isConnected() || dronePos == null)
             false
-        } else {
+        else {
             val beginningPoint = currentMissionPath!![0]
-            val distanceToMission =
-                beginningPoint.distanceTo(droneService.getData().getPosition().value!!)
-            droneService.isConnected() && distanceToMission < MAX_BEGINNING_DISTANCE
+            dronePos.distanceTo(beginningPoint)  < MAX_BEGINNING_DISTANCE
         }
     }
 
