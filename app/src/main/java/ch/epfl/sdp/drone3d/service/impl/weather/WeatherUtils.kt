@@ -19,7 +19,7 @@ object WeatherUtils {
     const val MAX_WIND_SPEED = 8.8
     // visibility min = 300 m
     const val MIN_VISIBILITY = 300.0
-    // set containing the keyword where it is dangerous for the drone to be launched
+    // set containing the keyword where it is safe for the drone to be launched
     val SAFE_CONDITIONS = setOf("Clear", "Clouds")
 
     /**

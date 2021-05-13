@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
- * And activity showing information about the weather for a mapping mission
+ * An activity showing information about the weather for a mapping mission
  */
 @AndroidEntryPoint
 class WeatherInfoActivity : AppCompatActivity() {

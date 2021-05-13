@@ -9,6 +9,7 @@ import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.json.JSONObject
+import timber.log.Timber
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
@@ -67,6 +68,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
                 updatedAt
             )
         } catch (e: Exception) {
+            Timber.e(e, "Error when getting the weather : $e")
         }
         return report
     }

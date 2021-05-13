@@ -105,7 +105,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
 
         if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
-            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
+            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0]))
             weatherReport.observe(this) {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
             }
