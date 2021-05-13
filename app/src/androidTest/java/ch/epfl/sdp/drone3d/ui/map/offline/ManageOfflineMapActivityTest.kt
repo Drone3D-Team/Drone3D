@@ -67,11 +67,16 @@ class ManageOfflineMapActivityTest {
         }
     }
 
-    /**
-     * This method clears the database that stores the OfflineRegions in Mapbox
-     */
-    private fun clearOfflineMapDatabase(){
+    @Before
+    fun setUp() {
+        Intents.init()
+    }
 
+    /**
+     * This method clears the database that stores the OfflineRegions in Mapbox before every test.
+     */
+    @Before
+    fun clearOfflineMapDatabaseBefore(){
         val counter = CountDownLatch(1)
         val offlineManager = OfflineManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
         offlineManager.resetDatabase(object : OfflineManager.FileSourceCallback {
@@ -86,17 +91,6 @@ class ManageOfflineMapActivityTest {
         })
 
         assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-    }
-
-    @Before
-    fun setUp() {
-        Intents.init()
-    }
-
-    //Clear the database for offline tiles before starting the tests
-    @Before
-    fun clearOfflineMapDatabaseBefore(){
-        clearOfflineMapDatabase()
     }
 
     @After
@@ -188,10 +182,5 @@ class ManageOfflineMapActivityTest {
         onView(withId(R.id.tiles_used))
             .check(matches(withText("0/6000")))
 
-
-        //Let the database in a cleared state so that it doesn't influence other tests in other classes
-        clearOfflineMapDatabase()
     }
-
-
 }
