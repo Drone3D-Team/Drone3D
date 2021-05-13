@@ -6,7 +6,6 @@
 package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
-import android.os.SystemClock
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
@@ -18,9 +17,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,6 +32,7 @@ class OfflineMapSaverImplTest {
                             .include(LatLng(46.517804, 6.567261))
                             .include(LatLng(46.518907783162064, 6.569428157806775))
                             .build()
+
         const val defaultZoom = 14.0
         const val style = Style.MAPBOX_STREETS
         const val TAG = "OfflineMapSaverImplTest"
@@ -115,8 +113,6 @@ class OfflineMapSaverImplTest {
         })
     }
 
-
-
     @Test
     fun downloadAddsCorrectRegion(){
 
@@ -128,9 +124,9 @@ class OfflineMapSaverImplTest {
         regions.observeForever { regions ->
             if (regions.isNotEmpty()) {
                 val metadata = OfflineMapSaverImpl.getMetadata(regions.first())
-                assertEquals(metadata.name, rolexName)
-                assertEquals(metadata.bounds, rolexBounds)
-                assertEquals(metadata.zoom, defaultZoom, DOUBLE_PRECISION)
+                assertEquals(rolexName,metadata.name)
+                assertEquals(rolexBounds,metadata.bounds)
+                assertEquals(defaultZoom,metadata.zoom, DOUBLE_PRECISION)
                 counter.countDown()
                 deleteRegionAsync(regions.first().id)
             }
