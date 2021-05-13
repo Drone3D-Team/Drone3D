@@ -3,9 +3,6 @@
  * The license can be found in LICENSE at root of the repository
  */
 
-/*
- * This class was taken from the project Fly2Find and adapted for our project
- */
 
 package ch.epfl.sdp.drone3d.map.area
 
@@ -20,15 +17,15 @@ import org.junit.runner.RunWith
 import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
-class PolygonAreaBuilderTest {
+class ParallelAreaBuilderTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Test
-    fun canAddHundredAngles() {
-        val size = 100
-        val area = PolygonBuilder()
+    fun canAddThreeCorners() {
+        val size = 3
+        val area = ParallelogramBuilder()
         repeat(size) {
             area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
         }
@@ -36,8 +33,8 @@ class PolygonAreaBuilderTest {
     }
 
     @Test
-    fun isCompleteWhenAtLeastThreeAngle() {
-        val area = PolygonBuilder()
+    fun isCompleteWhenThreeCorner() {
+        val area = ParallelogramBuilder()
         assertThat(area.isComplete(), equalTo(false))
 
         area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
@@ -45,17 +42,14 @@ class PolygonAreaBuilderTest {
 
         area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
         assertThat(area.isComplete(), equalTo(false))
-
-        area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
-        assertThat(area.isComplete(), equalTo(true))
 
         area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
         assertThat(area.isComplete(), equalTo(true))
     }
 
     @Test
-    fun polygonAreaBuilderResetIsEffective() {
-        val area = PolygonBuilder()
+    fun resetIsEffective() {
+        val area = ParallelogramBuilder()
 
         area.addVertex(LatLng(Random.nextDouble(), Random.nextDouble()))
         assertThat(area.vertices.size, equalTo(1))

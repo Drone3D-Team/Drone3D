@@ -5,15 +5,13 @@
 
 package ch.epfl.sdp.drone3d.service.location
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.service.api.location.LocationPermissionService
 import ch.epfl.sdp.drone3d.service.impl.location.AndroidLocationService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.*
@@ -31,10 +29,15 @@ class AndroidLocationServiceTest {
 
     private val locationManager = mock(LocationManager::class.java)
     private val locationCriteria = mock(Criteria::class.java)
-    private val context = mock(Context::class.java)
+    private val locationPermission = mock(LocationPermissionService::class.java)
 
     private val androidLocationService =
-        AndroidLocationService(locationManager, LOCATION_PROVIDER, locationCriteria, context)
+        AndroidLocationService(
+            locationManager,
+            LOCATION_PROVIDER,
+            locationCriteria,
+            locationPermission
+        )
 
     companion object {
         private const val LOCATION_PROVIDER = "provider"
@@ -51,33 +54,25 @@ class AndroidLocationServiceTest {
 
     @Test
     fun isLocationEnabledReturnsFalseIfPermissionNotGranted() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_DENIED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(false)
         assertFalse(androidLocationService.isLocationEnabled())
     }
 
     @Test
     fun isLocationEnabledReturnsTrueIfPermissionIsGranted() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_GRANTED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(true)
         assertTrue(androidLocationService.isLocationEnabled())
     }
 
     @Test
     fun getCurrentLocationIsNullIfPermissionNotGranted() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_DENIED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(false)
         assertNull(androidLocationService.getCurrentLocation())
     }
 
     @Test
     fun getCurrentLocationReturnsCorrectLocationIfPermissionGranted() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_GRANTED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(true)
 
         val loc = androidLocationService.getCurrentLocation()
         assertNotNull(loc)
@@ -86,17 +81,13 @@ class AndroidLocationServiceTest {
 
     @Test
     fun subscribeToLocationUpdatesIsNullIfPermissionNotGranted() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_DENIED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(false)
         assertNull(androidLocationService.subscribeToLocationUpdates({}, 10, 10f))
     }
 
     @Test
     fun subscribeToLocationUpdatesIfLocationChanges() {
-        `when`(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)).thenReturn(
-            PackageManager.PERMISSION_GRANTED
-        )
+        `when`(locationPermission.isPermissionGranted()).thenReturn(true)
         var listener: LocationListener? = null
         `when`(
             locationManager.requestLocationUpdates(

@@ -8,7 +8,6 @@ package ch.epfl.sdp.drone3d.ui.drone
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -24,20 +23,21 @@ import java.lang.Runnable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
-import kotlin.concurrent.thread
 
 @AndroidEntryPoint
 class DroneConnectActivity : AppCompatActivity() {
 
-    /**
-     * Values used to check if an ip has a valid format or not
-     */
-    private val regex = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
-            "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-    private val pattern: Pattern = Pattern.compile(regex)
-    private val connectionDelay = 3000L //in ms
+    companion object {
+        /**
+         * Values used to check if an ip has a valid format or not
+         */
+        private const val REGEX = "^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\." +
+                "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+        private val pattern: Pattern = Pattern.compile(REGEX)
+        private const val CONNECTION_DELAY = 3000L //in ms
+    }
 
     @Inject
     lateinit var droneService: DroneService
@@ -85,7 +85,7 @@ class DroneConnectActivity : AppCompatActivity() {
             //Launch this task asynchronously
             GlobalScope.launch {
 
-                checkIfDroneConnected(connectionDelay)
+                checkIfDroneConnected(CONNECTION_DELAY)
                 val mainHandler = Handler(applicationContext.mainLooper)
 
                 val myRunnable = Runnable {
@@ -115,7 +115,7 @@ class DroneConnectActivity : AppCompatActivity() {
 
         GlobalScope.launch {
 
-            checkIfDroneConnected(connectionDelay)
+            checkIfDroneConnected(CONNECTION_DELAY)
             val mainHandler = Handler(applicationContext.mainLooper)
 
             val myRunnable = Runnable {
