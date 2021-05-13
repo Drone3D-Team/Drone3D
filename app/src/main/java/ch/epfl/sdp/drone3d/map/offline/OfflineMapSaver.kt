@@ -11,12 +11,6 @@ import com.mapbox.mapboxsdk.offline.OfflineManager
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 
 /**
- * Stores the metadata associated to a downloaded region
- */
-data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,
-                                 val zoom:Double,val isDownloading:Boolean)
-
-/**
  * Represents a class that offers the possibility to save a mapping region for later offline use.
  */
 interface OfflineMapSaver {

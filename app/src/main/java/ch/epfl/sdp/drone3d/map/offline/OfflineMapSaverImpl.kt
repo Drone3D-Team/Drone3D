@@ -12,11 +12,18 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.offline.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import timber.log.Timber
 
+
+/**
+ * Stores the metadata associated to a downloaded region
+ */
+data class OfflineRegionMetadata(val name:String, val bounds:LatLngBounds, val tileCount:Long,
+                                 val zoom:Double,val isDownloading:Boolean)
 
 /**
  * Used internally to facilitate the serialization of the OfflineRegionMetadata data class
