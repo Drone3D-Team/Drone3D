@@ -21,6 +21,7 @@ import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
+import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
@@ -102,9 +103,9 @@ class ItineraryShowActivity : BaseMapActivity() {
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
 
-        if (currentMissionPath != null) {
+        if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
             weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
-            weatherReport.observe(this){
+            weatherReport.observe(this) {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
                 goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
             }
@@ -150,6 +151,15 @@ class ItineraryShowActivity : BaseMapActivity() {
             dialog.cancel()
         }
         builder.create()?.show()
+    }
+
+    /**
+     * Go to WeatherInfoActivity
+     */
+    fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER")view: View) {
+        val intent = Intent(this, WeatherInfoActivity::class.java)
+        intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        startActivity(intent)
     }
 
     /**

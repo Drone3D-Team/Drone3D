@@ -34,6 +34,7 @@ import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
+import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -224,5 +225,14 @@ class ItineraryShowActivityTest {
         }
     }
 
-    private fun <T> anyObj(type: Class<T>): T = Mockito.any<T>(type)
+    @Test
+    fun goToWeatherInfoWorks() {
+        onView(withId(R.id.weatherInfoButton))
+            .perform(click())
+        Intents.intended(
+            hasComponent(hasClassName(WeatherInfoActivity::class.java.name))
+        )
+    }
+
+    private fun <T> anyObj(type: Class<T>): T = Mockito.any(type)
 }

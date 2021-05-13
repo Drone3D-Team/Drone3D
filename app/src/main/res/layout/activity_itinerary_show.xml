@@ -25,23 +25,42 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.95" />
 
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <Button
+        android:id="@+id/weatherInfoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToWeatherInfo"
+        android:text="@string/weather_info"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.932"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/buttonToMissionInProgressActivity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="30sp"
-            android:clickable="true"
-            android:onClick="goToMissionInProgressActivity"
-            app:srcCompat="@drawable/drone" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/buttonToMissionInProgressActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="30sp"
+        android:clickable="true"
+        android:onClick="goToMissionInProgressActivity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.997"
+        app:srcCompat="@drawable/drone" />
 
-    </com.mapbox.mapboxsdk.maps.MapView>
+     <com.mapbox.mapboxsdk.maps.MapView
+         android:id="@+id/mapView"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+
+     </com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
