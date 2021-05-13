@@ -47,6 +47,7 @@ class DroneExecutorTest {
     private val armedPublisher: PublishSubject<Boolean> = PublishSubject.create()
     private val flightModePublisher: PublishSubject<Telemetry.FlightMode> = PublishSubject.create()
     private val missionProgressPublisher: PublishSubject<Mission.MissionProgress> = PublishSubject.create()
+    private val inAirPublisher: PublishSubject<Boolean> = PublishSubject.create()
 
     companion object {
         private const val EPSILON = 1e-5
@@ -63,11 +64,17 @@ class DroneExecutorTest {
         DroneInstanceMock.setupDefaultMocks()
 
         `when`(DroneInstanceMock.droneTelemetry.armed)
-                .thenReturn(armedPublisher.toFlowable(BackpressureStrategy.BUFFER))
+                .thenReturn(armedPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
         `when`(DroneInstanceMock.droneTelemetry.flightMode)
-                .thenReturn(flightModePublisher.toFlowable(BackpressureStrategy.BUFFER))
+                .thenReturn(flightModePublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
         `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(missionProgressPublisher.toFlowable(BackpressureStrategy.BUFFER))
+                .thenReturn(missionProgressPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
+        `when`(DroneInstanceMock.droneTelemetry.inAir)
+                .thenReturn(inAirPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
     }
 
     @Test
@@ -87,6 +94,10 @@ class DroneExecutorTest {
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
         val mutex = Semaphore(0)
 
+        armedPublisher.onNext(false)
+        inAirPublisher.onNext(false)
+        flightModePublisher.onNext(Telemetry.FlightMode.TAKEOFF)
+
         executor.startMission(
             InstrumentationRegistry.getInstrumentation().targetContext,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -97,8 +108,6 @@ class DroneExecutorTest {
             throw it
         })
 
-        armedPublisher.onNext(false)
-        flightModePublisher.onNext(Telemetry.FlightMode.READY)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
@@ -106,6 +115,7 @@ class DroneExecutorTest {
 
         //End mission
         missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
 
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
@@ -113,7 +123,6 @@ class DroneExecutorTest {
         verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
 
@@ -134,6 +143,10 @@ class DroneExecutorTest {
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
         val mutex = Semaphore(0)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(false)
+        flightModePublisher.onNext(Telemetry.FlightMode.LAND)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -144,8 +157,6 @@ class DroneExecutorTest {
             throw it
         })
 
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.READY)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
@@ -153,6 +164,7 @@ class DroneExecutorTest {
 
         //End mission
         missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
 
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
@@ -160,7 +172,6 @@ class DroneExecutorTest {
         verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
     @Test
@@ -180,6 +191,10 @@ class DroneExecutorTest {
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
         val mutex = Semaphore(0)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.READY)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -190,9 +205,6 @@ class DroneExecutorTest {
             throw it
         })
 
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.TAKEOFF)
-        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
@@ -200,6 +212,7 @@ class DroneExecutorTest {
 
         //End mission
         missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
 
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
@@ -207,7 +220,6 @@ class DroneExecutorTest {
         verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
     @Test
@@ -227,6 +239,10 @@ class DroneExecutorTest {
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
         val mutex = Semaphore(0)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -237,8 +253,6 @@ class DroneExecutorTest {
             throw it
         })
 
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
@@ -246,6 +260,7 @@ class DroneExecutorTest {
 
         //End mission
         missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
 
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
@@ -253,7 +268,6 @@ class DroneExecutorTest {
         verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
     @Test
@@ -273,6 +287,10 @@ class DroneExecutorTest {
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
         val mutex = Semaphore(0)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -283,8 +301,6 @@ class DroneExecutorTest {
             throw it
         })
 
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
@@ -292,6 +308,7 @@ class DroneExecutorTest {
 
         //End mission
         missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
 
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
@@ -299,7 +316,6 @@ class DroneExecutorTest {
         verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, never()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
 
@@ -320,6 +336,9 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
+        armedPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.UNKNOWN)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -328,9 +347,6 @@ class DroneExecutorTest {
         }, {
             assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
         })
-
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.UNKNOWN)
     }
 
     @Test
@@ -407,6 +423,10 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
+
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
@@ -416,9 +436,6 @@ class DroneExecutorTest {
             throw it
         })
 
-
-        armedPublisher.onNext(true)
-        flightModePublisher.onNext(Telemetry.FlightMode.READY)
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
 
         assertThat(droneData.getMutableMission().value?.isEmpty(), `is`(false))
@@ -516,6 +533,7 @@ class DroneExecutorTest {
         `when`(DroneInstanceMock.droneAction.takeoff()).thenAnswer {
             Completable.fromCallable {
                 dataBecomes(droneData.getDroneStatus(), TAKING_OFF)
+                inAirPublisher.onNext(true)
                 flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
             }
         }
@@ -531,13 +549,6 @@ class DroneExecutorTest {
             Completable.fromCallable {
                 dataBecomes(droneData.getDroneStatus(), LANDING)
                 flightModePublisher.onNext(Telemetry.FlightMode.LAND)
-            }
-        }
-
-        `when`(DroneInstanceMock.droneAction.disarm()).thenAnswer {
-            Completable.fromCallable {
-                dataBecomes(droneData.getDroneStatus(), LANDING)
-                flightModePublisher.onNext(Telemetry.FlightMode.READY)
             }
         }
     }
