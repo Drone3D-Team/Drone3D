@@ -98,50 +98,50 @@ class ManageOfflineMapActivityTest {
             .check(matches(withText("0/6000")))
     }
 
-    @Test
-    fun DownloadTilesMakesTileCountGrowAndRecyclerViewNotEmpty() {
-
-        SystemClock.sleep(2000) //Need to wait for the map to be downloaded. Doesn't work with later callback only
-
-        //Zoom to make the download happens faster so that we don't have to wait to sleep for too long
-        var counter = CountDownLatch(1)
-
-        activityRule.scenario.onActivity { activity ->
-                activity.mapView.getMapAsync { mapboxMap ->
-                    mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
-                        MapboxUtility.zoomOnCoordinate(ZOOM_LOCATION, mapboxMap, ZOOM_VALUE)
-                        counter.countDown()
-
-                    }
-                }
-            }
-
-        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-
-        onView(withId(R.id.buttonToSaveOfflineMap))
-            .perform(click())
-
-        SystemClock.sleep(10000) //Need to wait for the map to be downloaded. Cannot use counter
-                                    //since the callback is inside the activity
-
-        onView(withId(R.id.tiles_used))
-            .check(matches(not(withText("0/6000"))))
-
-
-        //Check that the recyclerView has an element
-
-        counter = CountDownLatch(1)
-        var size = 0
-        activityRule.scenario.onActivity { activity ->
-            val recyclerAdapter = activity.findViewById<RecyclerView>(R.id.saved_regions).adapter
-            size = recyclerAdapter?.itemCount ?: 0
-            counter.countDown()
-        }
-
-        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-
-        assert(size==1)
-    }
+//    @Test
+//    fun DownloadTilesMakesTileCountGrowAndRecyclerViewNotEmpty() {
+//
+//        SystemClock.sleep(2000) //Need to wait for the map to be downloaded. Doesn't work with later callback only
+//
+//        //Zoom to make the download happens faster so that we don't have to wait to sleep for too long
+//        var counter = CountDownLatch(1)
+//
+//        activityRule.scenario.onActivity { activity ->
+//                activity.mapView.getMapAsync { mapboxMap ->
+//                    mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
+//                        MapboxUtility.zoomOnCoordinate(ZOOM_LOCATION, mapboxMap, ZOOM_VALUE)
+//                        counter.countDown()
+//
+//                    }
+//                }
+//            }
+//
+//        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
+//
+//        onView(withId(R.id.buttonToSaveOfflineMap))
+//            .perform(click())
+//
+//        SystemClock.sleep(10000) //Need to wait for the map to be downloaded. Cannot use counter
+//                                    //since the callback is inside the activity
+//
+//        onView(withId(R.id.tiles_used))
+//            .check(matches(not(withText("0/6000"))))
+//
+//
+//        //Check that the recyclerView has an element
+//
+//        counter = CountDownLatch(1)
+//        var size = 0
+//        activityRule.scenario.onActivity { activity ->
+//            val recyclerAdapter = activity.findViewById<RecyclerView>(R.id.saved_regions).adapter
+//            size = recyclerAdapter?.itemCount ?: 0
+//            counter.countDown()
+//        }
+//
+//        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
+//
+//        assert(size==1)
+//    }
 
 
 }
