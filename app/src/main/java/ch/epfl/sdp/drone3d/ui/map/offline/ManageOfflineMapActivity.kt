@@ -23,6 +23,10 @@ import java.lang.StringBuilder
 import java.lang.System.currentTimeMillis
 import kotlin.math.min
 
+/**
+ * Activity which allow a user to select regions on the map to download/remove when he's online so
+ * that he can use them in offline mode.
+ */
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     companion object{
@@ -45,10 +49,6 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         downloadButton = findViewById(R.id.buttonToSaveOfflineMap)
         //We must wait for the map to be available to download
         downloadButton.isEnabled = false
-
-
-        //Create a "back button" in the action bar up
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -65,6 +65,9 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         }
     }
 
+    /**
+     * Download the offlineRegion delimited with the current view of the map
+     */
     fun downloadOfflineMap(@Suppress("UNUSED_PARAMETER") view:View){
         val bounds = mapboxMap.projection.visibleRegion.latLngBounds
         val zoom = mapboxMap.cameraPosition.zoom
