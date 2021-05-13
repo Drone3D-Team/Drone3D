@@ -1,7 +1,6 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.view.View
@@ -26,18 +25,19 @@ import kotlin.math.min
 
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
+    companion object{
+        private const val DOWNLOAD_STATUS_TIME_DELAY = 1000
+    }
+
     private lateinit var offlineMapSaver: OfflineMapSaver
     private lateinit var mapboxMap: MapboxMap
     private lateinit var downloadButton: FloatingActionButton
-    private val TAG = "Test"
     private var timeOfLastDownloadToast = 0L
-    private val DOWNLOAD_STATUS_TIME_DELAY = 1000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_manage_offline_map, R.id.mapView)
-        //Timber.d("Start download")
 
         mapView.contentDescription = getString(R.string.map_not_ready)
         mapView.getMapAsync(this)
