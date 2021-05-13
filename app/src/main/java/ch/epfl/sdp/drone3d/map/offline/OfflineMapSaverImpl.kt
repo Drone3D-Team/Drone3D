@@ -40,7 +40,6 @@ class OfflineMapSaverImpl(val context:Context, private val styleUri:String):Offl
         private val offlineRegions = MutableLiveData<Array<OfflineRegion>>()
         //Stores the ids of the regions currently downloading
         private val ongoingDownloads = mutableSetOf<Long>()
-        private val TAG = "Test"
         /**
          * Serialize the metadata of the provided [region]
          */

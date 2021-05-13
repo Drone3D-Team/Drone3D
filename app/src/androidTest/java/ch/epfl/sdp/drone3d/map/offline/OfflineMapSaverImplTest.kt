@@ -29,7 +29,6 @@ import java.util.concurrent.locks.ReentrantLock
 class OfflineMapSaverImplTest {
 
     companion object{
-        val lock = ReentrantLock()
         const val rolexName = "Rolex"
         val rolexBounds: LatLngBounds =  LatLngBounds.Builder()
                             .include(LatLng(46.517804, 6.567261))
