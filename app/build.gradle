@@ -63,6 +63,8 @@ dependencies {
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Import the Firebase BoM
@@ -78,6 +80,9 @@ dependencies {
     // Import mavsdk to control the drone
     implementation 'io.mavsdk:mavsdk:0.8.0'
     implementation 'io.mavsdk:mavsdk-server:0.8.1'
+
+    // Video stream
+    implementation fileTree(dir: 'libs', include: '*.aar')
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
