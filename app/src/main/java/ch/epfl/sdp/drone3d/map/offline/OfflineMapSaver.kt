@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.map.offline
 
 import androidx.lifecycle.LiveData
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import com.mapbox.mapboxsdk.offline.OfflineManager
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 
 /**
@@ -46,6 +47,4 @@ interface OfflineMapSaver {
      * Returns the maximum
      */
     fun getMaxTileCount():Long
-
-
 }
