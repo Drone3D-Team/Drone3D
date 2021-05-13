@@ -42,10 +42,10 @@ class MapboxUtility {
         /**
          * Zoom on [coordinate] on the map [mapboxMap]
          */
-        fun zoomOnCoordinate(coordinate: LatLng, mapboxMap: MapboxMap) {
+        fun zoomOnCoordinate(coordinate: LatLng, mapboxMap: MapboxMap, zoomValue: Double = ZOOM_VALUE) {
             mapboxMap.cameraPosition = CameraPosition.Builder()
                 .target(coordinate)
-                .zoom(ZOOM_VALUE)
+                .zoom(zoomValue)
                 .build()
         }
     }

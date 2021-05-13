@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D">
         <activity
+            android:name=".ui.map.offline.ManageOfflineMapActivity"
+            android:parentActivityName=".ui.MainActivity" />
+        <activity
             android:name=".ui.weather.WeatherInfoActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity"/>
         <activity android:name=".ui.map.MissionInProgressActivity" />
