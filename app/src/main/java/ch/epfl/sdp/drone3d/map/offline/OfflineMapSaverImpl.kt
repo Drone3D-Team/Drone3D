@@ -6,15 +6,12 @@
 package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -33,8 +30,8 @@ class OfflineMapSaverImpl(val context:Context, private val styleUri:String):Offl
 
     companion object{
         private const val JSON_CHARSET = "UTF-8"
-        const val MAX_ZOOM = 20.0
-        const val MAX_ZOOM_DISCREPANCY = 6.0 //Maximum difference between max zoom and min zoom
+        private const val MAX_ZOOM = 20.0
+        private const val MAX_ZOOM_DISCREPANCY = 6.0 //Maximum difference between max zoom and min zoom
         const val TILE_LIMIT = 6000L //6000 tiles corresponds to Greater London with zoom 0-15
         private val totalTileCount = MutableLiveData<Long>(0)
         private val offlineRegions = MutableLiveData<Array<OfflineRegion>>()

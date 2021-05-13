@@ -44,7 +44,8 @@ interface OfflineMapSaver {
     fun getTotalTileCount():LiveData<Long>
 
     /**
-     * Returns the maximum
+     * Returns the maximum number of tiles a user can store
+     * A tile can be seen as a unit of storage for a region on the map
      */
     fun getMaxTileCount():Long
 }
