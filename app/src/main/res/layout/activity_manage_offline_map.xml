@@ -111,7 +111,6 @@
             android:contentDescription="@string/content_descriptor_save_icon"
             android:onClick="downloadOfflineMap"
             app:srcCompat="@android:drawable/ic_menu_save" />
-        <!--TODO add: android:onClick="..."-->
 
     </com.mapbox.mapboxsdk.maps.MapView>
 

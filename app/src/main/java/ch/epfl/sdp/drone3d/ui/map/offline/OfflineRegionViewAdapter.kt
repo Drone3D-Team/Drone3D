@@ -69,6 +69,10 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
         holder.bind(getItem(position), offlineMapSaver)
     }
 
+    override fun getItemCount(): Int {
+        return offlineMapSaver.getOfflineRegions().value?.size ?: 0
+    }
+
     /**
      * Used by the OfflineRegionViewAdapter which implements ListAdapter.
      */
