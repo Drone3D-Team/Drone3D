@@ -156,7 +156,7 @@ class ItineraryShowActivityTest {
     }
 
     @Test
-    fun goToMissionProgressActivityButtonIsNotEnabledWhenWeatherTooBad() {
+    fun goToMissionProgressActivityButtonIsEnabledWhenWeatherTooBad() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(droneService.getData()
             .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
@@ -165,7 +165,7 @@ class ItineraryShowActivityTest {
         activityRule.scenario.recreate()
 
         onView(withId(R.id.buttonToMissionInProgressActivity))
-            .check(matches(Matchers.not(isEnabled())))
+            .check(matches(isEnabled()))
     }
 
     @Test

@@ -5,9 +5,11 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.app.AlertDialog
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
@@ -102,12 +104,13 @@ class ItineraryShowActivity : BaseMapActivity() {
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
         goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
+        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
 
         if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
             weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
             weatherReport.observe(this) {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-                goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
+                isWeatherGoodEnough = false
             }
         }
     }
@@ -121,14 +124,35 @@ class ItineraryShowActivity : BaseMapActivity() {
             false
         else {
             val beginningPoint = currentMissionPath!![0]
-            isWeatherGoodEnough && dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
+            dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
         }
     }
 
     /**
      * Start an intent to go to the mission in progress activity
      */
-    fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun launchMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        if(!isWeatherGoodEnough){
+            val builder = Builder(this)
+            builder.setMessage(getString(R.string.launch_mission_confirmation))
+            builder.setCancelable(true)
+
+            builder.setPositiveButton(getString(R.string.confirm_launch)) { dialog, _ ->
+                dialog.cancel()
+                goToMissionInProgressActivity()
+            }
+
+            builder.setNegativeButton(R.string.cancel_launch) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.create()?.show()
+        }else{
+            goToMissionInProgressActivity()
+        }
+
+    }
+
+    private fun goToMissionInProgressActivity(){
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
