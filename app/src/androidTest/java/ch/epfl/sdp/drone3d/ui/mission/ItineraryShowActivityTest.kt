@@ -191,6 +191,34 @@ class ItineraryShowActivityTest {
     }
 
     @Test
+    fun goToMissionInProgressWorksWhenBadWeather() {
+        `when`(droneService.isConnected()).thenReturn(true)
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
+        `when`(droneService.getData()
+            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
+        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToMissionInProgressActivity))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
+
+        onView(withText(R.string.launch_mission_confirmation))
+            .check(matches(isDisplayed()))
+        onView(withText(R.string.confirm_launch))
+            .perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra(MissionViewAdapter.MISSION_PATH) })
+
+    }
+
+    @Test
     fun deleteButtonNotVisibleWhenWrongUser() {
         val user = Mockito.mock(FirebaseUser::class.java)
         `when`(user.uid).thenReturn(USER_UID)
@@ -212,12 +240,12 @@ class ItineraryShowActivityTest {
             ItineraryShowActivity::class.java)
         intent.putExtra(MissionViewAdapter.OWNER, USER_UID)
 
-        ActivityScenario.launch<ItineraryShowActivity>(intent).use { scenario ->
+        ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
             onView(withId(R.id.mission_delete))
                 .perform(click())
-            onView(withText("Are you sure you want to delete this mission ?"))
+            onView(withText(R.string.delete_confirmation))
                 .check(matches(isDisplayed()))
-            onView(withText("Delete"))
+            onView(withText(R.string.confirm_delete))
                 .perform(click())
             Intents.intended(
                 hasComponent(hasClassName(MappingMissionSelectionActivity::class.java.name))

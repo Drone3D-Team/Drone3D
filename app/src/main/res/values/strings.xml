@@ -77,13 +77,10 @@
     <string name="cancel_delete">Cancel</string>
     <string name="weather_info">Weather Details</string>
     <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
-    <string name="launch_mission_confirmation">Alert bad weather ! Are you sure you want to launch the mission in these weather conditions ?</string>
+    <string name="launch_mission_confirmation">Alert bad weather ! Are you sure you want to launch the mission in these weather conditions ? The drone risks to break.</string>
     <string name="confirm_launch">Launch at my own risk</string>
     <string name="cancel_launch">Cancel</string>
     <string name="content_descriptor_drone_icon">drone_icon</string>
-
-
-
 
     <!-- Mission In Progress Activity -->
     <string name="mission_null">Cannot launch a null mission</string>
@@ -100,7 +97,7 @@
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
     <!-- Warning showed if the weather is dangerous for the drone -->
-    <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone and you should recall it !</string>
+    <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
 
     <!-- Weather Info Activity -->
     <string name="updated_on">Weather on %1$s</string>

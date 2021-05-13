@@ -5,11 +5,9 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
-import android.app.AlertDialog
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
@@ -110,7 +108,6 @@ class ItineraryShowActivity : BaseMapActivity() {
             weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0].latitude, currentMissionPath!![0].longitude))
             weatherReport.observe(this) {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-                isWeatherGoodEnough = false
             }
         }
     }
