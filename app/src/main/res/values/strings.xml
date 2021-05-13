@@ -10,6 +10,7 @@
     <string name="log_in">Log in</string>
     <string name="log_out">Logout</string>
     <string name="connect_a_drone">Connect a drone</string>
+    <string name="manage_offline_map">Manage offline map</string>
     <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
@@ -65,6 +66,18 @@
     <string name="cancel_save_without_updating">Cancel</string>
     <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want to save without updating the mission ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
+
+    <!--Manage offline map activity-->
+    <string name="tile_count">Tile count:</string>
+    <string name="content_descriptor_delete_icon">delete icon</string>
+    <string name="delete_successful">Delete successful</string>
+    <string name="delete_fail">Failed to delete</string>
+    <string name="download_failed">An error occurred during the download</string>
+    <string name="download_succeeded">The download of: %1$s has succeeded</string>
+    <string name="download_progress">The download is at: %1$s completion</string>
+    <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
+
+
 
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
