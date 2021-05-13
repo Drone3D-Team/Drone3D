@@ -1,27 +1,32 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.SystemClock
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.mapboxsdk.geometry.LatLng
-
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineManager
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.not
+import org.hamcrest.Matcher
 import org.junit.*
 import org.junit.rules.RuleChain
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+
 
 @HiltAndroidTest
 class ManageOfflineMapActivityTest {
@@ -38,27 +43,34 @@ class ManageOfflineMapActivityTest {
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
         .around(activityRule)
 
-    /*
-    @BindValue
-    val offlineMapSaver: OfflineMapSaver = Mockito.mock(OfflineMapSaver::class.java)
 
-    init {
-        // Mock OfflineMapSaver
-        Mockito.`when`(offlineMapSaver.getMaxTileCount()).thenReturn(6000L)
-        Mockito.`when`(offlineMapSaver.getTotalTileCount()).thenReturn(MutableLiveData<Long>(3000L))
-        Mockito.`when`(offlineMapSaver.getTotalTileCount()).
-    }
+    /**
+     * This object is used to click on a specific element with a given id inside a recyclerView.
+     * It is taken from https://stackoverflow.com/questions/28476507/using-espresso-to-click-view-inside-recyclerview-item
      */
+    object MyViewAction {
+        fun clickChildViewWithId(id: Int): ViewAction {
+            return object : ViewAction {
+                override fun getConstraints(): Matcher<View>? {
+                    return null
+                }
 
-    @Before
-    fun setUp() {
-        Intents.init()
+                override fun getDescription(): String {
+                    return "Click on a child view with specified id."
+                }
+
+                override fun perform(uiController: UiController?, view: View) {
+                    val v: View = view.findViewById(id)
+                    v.performClick()
+                }
+            }
+        }
     }
 
-
-    //Clear the database for offline tiles before starting the tests
-    @Before
-    fun clearOfflineMapDatabase(){
+    /**
+     * This method clears the database that stores the OfflineRegions in Mapbox
+     */
+    private fun clearOfflineMapDatabase(){
 
         val counter = CountDownLatch(1)
         val offlineManager = OfflineManager.getInstance(InstrumentationRegistry.getInstrumentation().targetContext)
@@ -76,6 +88,17 @@ class ManageOfflineMapActivityTest {
         assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
     }
 
+    @Before
+    fun setUp() {
+        Intents.init()
+    }
+
+    //Clear the database for offline tiles before starting the tests
+    @Before
+    fun clearOfflineMapDatabaseBefore(){
+        clearOfflineMapDatabase()
+    }
+
     @After
     fun tearDown() {
         Intents.release()
@@ -91,6 +114,9 @@ class ManageOfflineMapActivityTest {
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
+    /**
+     * Make sure the tile count is initialized to 0
+     */
     @Test
     fun tileCountIsInitializedTo0() {
         SystemClock.sleep(2000) //Because the view is a observer and we need some time to make it get the value
@@ -98,8 +124,15 @@ class ManageOfflineMapActivityTest {
             .check(matches(withText("0/6000")))
     }
 
+    /**
+     * This test tests most of the UI functionality at once. The reason is that the downloading takes
+     * quite a long time and that it is done asynchronously, thus it makes the testing faster if we don't
+     * have to wait for most of the tests to download some tiles. Furthermore, mocking the OfflineMapSaverImpl
+     * is not possible either, because Mapbox's OfflineRegion cannot be instantiated since its constructor
+     * is private.
+     */
     @Test
-    fun DownloadTilesMakesTileCountGrowAndRecyclerViewNotEmpty() {
+    fun userBehaviorTest() {
 
         SystemClock.sleep(2000) //Need to wait for the map to be downloaded. Doesn't work with later callback only
 
@@ -129,18 +162,35 @@ class ManageOfflineMapActivityTest {
 
 
         //Check that the recyclerView has an element
-
         counter = CountDownLatch(1)
         var size = 0
+        var recyclerView: RecyclerView? = null
         activityRule.scenario.onActivity { activity ->
-            val recyclerAdapter = activity.findViewById<RecyclerView>(R.id.saved_regions).adapter
-            size = recyclerAdapter?.itemCount ?: 0
+            recyclerView = activity.findViewById<RecyclerView>(R.id.saved_regions)
+            size = recyclerView?.adapter?.itemCount ?: 0
             counter.countDown()
         }
 
         assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
 
         assert(size==1)
+
+        //Click to remove the element and check that the recyclerView has no more elements
+        onView(withId(R.id.saved_regions)).perform(
+           RecyclerViewActions.actionOnItemAtPosition<OfflineRegionViewAdapter.OfflineRegionViewHolder>(
+               0, MyViewAction.clickChildViewWithId(R.id.deleteRegionButton)))
+
+        SystemClock.sleep(2000) // Make sure the region had enough time to be deleted
+
+        size = recyclerView?.adapter?.itemCount ?: 1
+        assert(size==0)
+
+        onView(withId(R.id.tiles_used))
+            .check(matches(withText("0/6000")))
+
+
+        //Let the database in a cleared state so that it doesn't influence other tests in other classes
+        clearOfflineMapDatabase()
     }
 
 
