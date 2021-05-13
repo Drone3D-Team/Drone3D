@@ -11,16 +11,20 @@ import android.view.SurfaceView
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
+import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
@@ -54,6 +58,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
     @Inject lateinit var locationService: LocationService
+    @Inject lateinit var weatherService: WeatherService
 
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
@@ -137,8 +142,16 @@ class MissionInProgressActivity : BaseMapActivity() {
         }
     }
 
+    private lateinit var weatherReport: LiveData<WeatherReport>
+    private var weatherReportObserver = Observer<WeatherReport> { report ->
+        val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
+        warningBadWeather.visibility = visibility
+    }
+
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
+
+    private lateinit var warningBadWeather: TextView
 
     private lateinit var speedLiveText: TextView
     private lateinit var altitudeLiveText: TextView
@@ -167,6 +180,14 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
+
+        warningBadWeather = findViewById(R.id.warningBadWeather)
+        if (missionPath == null) {
+            warningBadWeather.visibility = View.GONE
+        } else {
+            weatherReport =
+                weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+        }
 
         speedLiveText = findViewById(R.id.speedLive)
         altitudeLiveText = findViewById(R.id.altitudeLive)
@@ -295,6 +316,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getBatteryLevel().observe(this, batteryObserver)
         droneService.getData().getPosition().observe(this, distanceUserObserver)
         droneService.getData().getDroneStatus().observe(this, statusObserver)
+
+        if (this::weatherReport.isInitialized) { weatherReport.observe(this, weatherReportObserver) }
     }
 
     override fun onPause() {
@@ -312,6 +335,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
         droneService.getData().getPosition().removeObserver(distanceUserObserver)
         droneService.getData().getDroneStatus().removeObserver(statusObserver)
+
+        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
     }
 
     override fun onDestroy() {
