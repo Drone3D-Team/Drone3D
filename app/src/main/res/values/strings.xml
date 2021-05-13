@@ -46,16 +46,26 @@
     <!-- Message showed when application couldn't detect a drone -->
     <string name="no_drone_detected">No drone was detected</string>
 
-    <!-- Itinerary Create/Save Activities -->
-    <string name="content_descriptor_save_icon">save icon</string>
+    <!-- Itinerary Save Activity -->
     <string name="name_mission_text">Mission name</string>
     <string name="save_mission_text">Save</string>
     <string name="mission_saved">Mission saved</string>
     <string name="error_mission_saved">Error while saving mission</string>
     <string name="private_repo">Private</string>
     <string name="share_repo">Share</string>
+
+    <!-- Itinerary Create Activity -->
+    <string name="content_descriptor_save_icon">save_icon</string>
+    <string name="content_descriptor_view_mission_icon">view_mission_icon</string>
+    <string name="content_descriptor_delete_mission_icon">delete_mission_icon</string>
+    <string name="content_descriptor_build_mission_icon">build_mission_icon</string>
+    <string name="content_descriptor_change_strategy_icon">change_strategy_icon</string>
     <string name="map_ready">MAP READY</string>
     <string name="map_not_ready">MAP NOT READY</string>
+    <string name="confirm_save_without_updating">Save anyway</string>
+    <string name="cancel_save_without_updating">Cancel</string>
+    <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want to save without updating the mission ?</string>
+    <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
@@ -84,6 +94,14 @@
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
+    <!-- Live values during the flight -->
+    <string name="live_speed">Speed : %1$s m/s</string>
+    <string name="live_altitude">Altitude : %1$s m</string>
+    <string name="live_battery">Battery : %1$s%%</string>
+    <string name="live_distance_user">Distance to user : %1$s m</string>
+    <string name="user_location_deactivated">Distance to user : Not allowed to access user\'s location</string>
+    <string name="user_location_null">Distance to user : Error, user\'s location is null</string>
+    <string name="live_status">Mission status : %1$s</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
 
@@ -100,9 +118,14 @@
 
     <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
-    <string name="drone_mission_error">An error occurred while dispatching missing to the drone</string>
+    <string name="drone_mission_error">An error occurred while dispatching missing to the drone : %s</string>
     <string name="drone_pause_success">Mission paused</string>
-    <string name="drone_pause_error">Mission pause failed, try again later</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
-    <string name="drone_return_success">The drone is coming back</string>
+    <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>
+
+    <!-- Permission dialog -->
+    <string name="permission_accept_button">Accept</string>
+    <string name="permission_deny_button">Deny</string>
+    <string name="permission_location_enable">Enable location</string>
+    <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
 </resources>

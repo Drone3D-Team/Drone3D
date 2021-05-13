@@ -150,6 +150,8 @@ object DroneInstanceMock {
         //Action mocks
         `when`(droneAction.arm())
             .thenReturn(Completable.complete())
+        `when`(droneAction.takeoff())
+            .thenReturn(Completable.complete())
         `when`(droneAction.gotoLocation(
             ArgumentMatchers.anyDouble(),
             ArgumentMatchers.anyDouble(),
@@ -159,6 +161,8 @@ object DroneInstanceMock {
         `when`(droneAction.returnToLaunch())
             .thenReturn(Completable.complete())
         `when`(droneAction.land())
+            .thenReturn(Completable.complete())
+        `when`(droneAction.disarm())
             .thenReturn(Completable.complete())
 
         // Camera

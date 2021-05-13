@@ -8,7 +8,6 @@ package ch.epfl.sdp.drone3d.service.api.drone
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.mavsdk.mission.Mission
-import io.reactivex.disposables.Disposable
 
 /**
  * An extension of [DroneData] that allows writing access to some of the live data
@@ -18,6 +17,8 @@ interface DroneDataEditable : DroneData {
     override fun getMission(): LiveData<List<Mission.MissionItem>> = getMutableMission()
 
     override fun isMissionPaused(): LiveData<Boolean> = getMutableMissionPaused()
+
+    override fun getDroneStatus(): LiveData<DroneData.DroneStatus> = getMutableDroneStatus()
 
     /**
      * Returns the MutableLiveData of the mission plan
@@ -30,7 +31,7 @@ interface DroneDataEditable : DroneData {
     fun getMutableMissionPaused(): MutableLiveData<Boolean>
 
     /**
-     * Add a disposable to the subscription list
+     * Returns the MutableLiveData keeping the mission pause state
      */
-    fun addSubscription(disposable: Disposable)
+    fun getMutableDroneStatus(): MutableLiveData<DroneData.DroneStatus>
 }
