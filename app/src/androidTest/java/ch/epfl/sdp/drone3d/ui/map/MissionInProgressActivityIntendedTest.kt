@@ -15,13 +15,16 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
+import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -39,6 +42,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Semaphore
 
@@ -46,8 +50,14 @@ import java.util.concurrent.Semaphore
  * Test MissionInProgressActivity with a mission as input
  */
 @HiltAndroidTest
-@UninstallModules(DroneModule::class, LocationModule::class)
+@UninstallModules(DroneModule::class, LocationModule::class, WeatherModule::class)
 class MissionInProgressActivityIntendedTest {
+
+    private val GOOD_WEATHER_REPORT = WeatherReport("Clear", "description",
+        20.0, 20, 5.0, 500, Date(12903))
+
+    private val BAD_WEATHER_REPORT = WeatherReport("RAIN", "description",
+        -1.0, 20, 10.0, 500, Date(12903))
 
     private val statusLiveData = MutableLiveData<DroneData.DroneStatus>()
     private var missionEndFuture: CompletableFuture<Any> = CompletableFuture()
@@ -76,6 +86,8 @@ class MissionInProgressActivityIntendedTest {
     val droneService: DroneService = DroneInstanceMock.mockService()
     @BindValue
     val locationService: LocationService = mock(LocationService::class.java)
+    @BindValue
+    val weatherService: WeatherService = mock(WeatherService::class.java)
 
     init {
         val executor = mock(DroneExecutor::class.java)
@@ -101,6 +113,11 @@ class MissionInProgressActivityIntendedTest {
 
         `when`(locationService.isLocationEnabled()).thenReturn(false)
         `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
+
+        `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
+            .thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+        `when`(weatherService.getWeatherReport(someLocationsList[0]))
+            .thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
     }
 
     @Before
@@ -127,6 +144,19 @@ class MissionInProgressActivityIntendedTest {
         }
 
         ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
+    }
+
+    @Test
+    fun warningMessageVisibleInBadWeather() {
+        Espresso.onView(ViewMatchers.withId(R.id.warningBadWeather))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+
+        `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
+            .thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
+        activityRule.scenario.recreate()
+
+        Espresso.onView(ViewMatchers.withId(R.id.warningBadWeather))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test

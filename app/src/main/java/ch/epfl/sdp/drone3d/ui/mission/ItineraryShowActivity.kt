@@ -9,14 +9,21 @@ import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
+import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
+import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
@@ -38,12 +45,19 @@ class ItineraryShowActivity : BaseMapActivity() {
     @Inject
     lateinit var droneService: DroneService
 
+    @Inject
+    lateinit var  weatherService: WeatherService
+
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
 
     private lateinit var ownerUid: String
     private var privateId: String? = null
     private var sharedId: String? = null
+
+    // true if the weather is good enough to launch the mission
+    private var isWeatherGoodEnough: Boolean = false
+    private lateinit var weatherReport: LiveData<WeatherReport>
 
     @Inject
     lateinit var authService: AuthenticationService
@@ -80,6 +94,13 @@ class ItineraryShowActivity : BaseMapActivity() {
 
         findViewById<View>(R.id.mission_delete).visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+
+        if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
+            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0]))
+            weatherReport.observe(this) {
+                isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
+            }
+        }
     }
 
     override fun onResume() {
@@ -104,18 +125,37 @@ class ItineraryShowActivity : BaseMapActivity() {
             false
         else {
             val beginningPoint = currentMissionPath!![0]
-            dronePos.distanceTo(beginningPoint)  < MAX_BEGINNING_DISTANCE
+            dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
         }
     }
 
     /**
      * Start an intent to go to the mission in progress activity
      */
-    fun goToMissionInProgressActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun launchMission(@Suppress("UNUSED_PARAMETER") view: View) {
+        if(!isWeatherGoodEnough){
+            val builder = Builder(this)
+            builder.setMessage(getString(R.string.launch_mission_confirmation))
+            builder.setCancelable(true)
+
+            builder.setPositiveButton(getString(R.string.confirm_launch)) { dialog, _ ->
+                dialog.cancel()
+                goToMissionInProgressActivity()
+            }
+
+            builder.setNegativeButton(R.string.cancel_launch) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.create()?.show()
+        }else{
+            goToMissionInProgressActivity()
+        }
+    }
+
+    private fun goToMissionInProgressActivity(){
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
         startActivity(intent)
-        finish()
     }
 
     /**
@@ -135,6 +175,15 @@ class ItineraryShowActivity : BaseMapActivity() {
             dialog.cancel()
         }
         builder.create()?.show()
+    }
+
+    /**
+     * Go to WeatherInfoActivity
+     */
+    fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER")view: View) {
+        val intent = Intent(this, WeatherInfoActivity::class.java)
+        intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        startActivity(intent)
     }
 
     /**

@@ -18,11 +18,14 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
+import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
@@ -60,6 +63,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     @Inject lateinit var droneService: DroneService
     @Inject lateinit var locationService: LocationService
+    @Inject lateinit var weatherService: WeatherService
 
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
@@ -74,6 +78,9 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
+
+    private lateinit var warningBadWeather: TextView
+    private lateinit var weatherReport: LiveData<WeatherReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +104,13 @@ class MissionInProgressActivity : BaseMapActivity() {
         backToUserButton = findViewById(R.id.backToUserButton)
 
         setupObservers()
+        warningBadWeather = findViewById(R.id.warningBadWeather)
+        if (missionPath == null) {
+            warningBadWeather.visibility = View.GONE
+        } else {
+            weatherReport =
+                weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+        }
 
         startMission()
     }
@@ -175,6 +189,13 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         createObserver(droneData.getHomeLocation()) {
             it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
+        }
+
+        if (this::weatherReport.isInitialized) {
+            createObserver(weatherReport) { report ->
+                val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
+                warningBadWeather.visibility = visibility
+            }
         }
 
         createDroneStatusObserver(droneData)
