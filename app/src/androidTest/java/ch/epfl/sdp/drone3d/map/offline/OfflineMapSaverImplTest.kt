@@ -37,7 +37,7 @@ class OfflineMapSaverImplTest {
         const val style = Style.MAPBOX_STREETS
         const val TAG = "OfflineMapSaverImplTest"
         const val API_KEY = "pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw"
-        const val TIMEOUT = 5L
+        const val TIMEOUT = 60L
         const val DOUBLE_PRECISION = 0.0001
 
         val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
