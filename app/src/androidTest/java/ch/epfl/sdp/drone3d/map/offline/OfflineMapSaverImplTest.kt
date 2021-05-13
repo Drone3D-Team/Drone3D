@@ -6,6 +6,7 @@
 package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
+import android.os.SystemClock
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
@@ -35,9 +36,8 @@ class OfflineMapSaverImplTest {
 
         const val defaultZoom = 14.0
         const val style = Style.MAPBOX_STREETS
-        const val TAG = "OfflineMapSaverImplTest"
         const val API_KEY = "pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw"
-        const val TIMEOUT = 60L
+        const val TIMEOUT = 10L
         const val DOUBLE_PRECISION = 0.0001
 
         val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -60,17 +60,12 @@ class OfflineMapSaverImplTest {
     }
 
     private fun clearOfflineMapDatabase() {
-        val counterLiveDataInit = CountDownLatch(1)
         val liveRegions = offlineSaver.getOfflineRegions()
-        var regions:Array<OfflineRegion>? = null
-        liveRegions.observeForever {
-            regions = it
-            counterLiveDataInit.countDown()
-        }
 
-        //Wait until live data is init
-        counterLiveDataInit.await(TIMEOUT, TimeUnit.SECONDS)
+        //Wait for live regions to be updated
+        SystemClock.sleep(1000L)
 
+        val regions:Array<OfflineRegion> = liveRegions.value!!
         val counterRegionsDelete = CountDownLatch(regions!!.size)
 
         regions!!.forEach {region->
@@ -82,7 +77,7 @@ class OfflineMapSaverImplTest {
             })
         }
 
-        counterRegionsDelete.await(TIMEOUT, TimeUnit.SECONDS)
+        assert(counterRegionsDelete.await(TIMEOUT, TimeUnit.SECONDS))
     }
 
     /**
@@ -144,14 +139,14 @@ class OfflineMapSaverImplTest {
         val liveRegions = offlineSaver.getOfflineRegions()
         var regions:Array<OfflineRegion>? = null
         liveRegions.observeForever {
-            regions = it
             if(it.isNotEmpty()){
+                regions = it
                 counterLiveDataInit.countDown()
             }
         }
 
         //Wait until live data is init
-        counterLiveDataInit.await(TIMEOUT, TimeUnit.SECONDS)
+        assert(counterLiveDataInit.await(TIMEOUT, TimeUnit.SECONDS))
 
         val counterDeleteComplete = CountDownLatch(1)
         offlineSaver.deleteRegion(regions!!.first().id,object:OfflineRegion.OfflineRegionDeleteCallback {
