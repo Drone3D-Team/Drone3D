@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:text="@string/non_existent_mission"
         android:textAlignment="center"
-        android:textColor="#FF0000"
+        android:textColor="@color/red"
         android:textSize="34sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -98,7 +98,7 @@
         android:lineSpacingExtra="14sp"
         android:text="@string/warning_bad_weather"
         android:textAlignment="center"
-        android:textColor="#FF0000"
+        android:textColor="@color/red"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
