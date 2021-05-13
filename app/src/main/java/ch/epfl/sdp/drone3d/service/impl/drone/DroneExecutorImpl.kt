@@ -121,7 +121,7 @@ class DroneExecutorImpl(
         val location = LatLng(returnLocation.latitudeDeg, returnLocation.longitudeDeg)
         val altitude = returnLocation.relativeAltitudeM
 
-        return goToLocation(ctx, location, altitude, R.string.drone_mission_return_launch)
+        return returnTo(ctx, location, altitude, R.string.drone_mission_return_launch)
     }
 
     override fun returnToUserLocationAndLand(ctx: Context): Completable {
@@ -131,10 +131,10 @@ class DroneExecutorImpl(
         val userPosition = locationService.getCurrentLocation()!!
         val altitude = data.getPosition().value?.altitude?.toFloat() ?: DEFAULT_ALTITUDE
 
-        return goToLocation(ctx, userPosition, altitude, R.string.drone_mission_to_user)
+        return returnTo(ctx, userPosition, altitude, R.string.drone_mission_to_user)
     }
 
-    private fun goToLocation(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
+    private fun returnTo(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
 
         val droneInstance = getInstance()
         val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude)

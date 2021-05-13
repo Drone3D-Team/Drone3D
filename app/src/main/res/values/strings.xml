@@ -82,7 +82,7 @@
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
 
-    <string name="mission_already_in_progress">A mission is already in progress. Wait of it to end or cancel it before starting a new one.</string>
+    <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
     <string name="drone_took_off">Drone took off</string>
