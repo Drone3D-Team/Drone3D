@@ -30,6 +30,7 @@ import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
@@ -61,10 +62,24 @@ class MappingMissionSelectionActivityTest {
 
     companion object {
         private const val USER_UID = "asdfg"
-
+        private val bayland_area = listOf(
+            LatLng(37.41253570576311, -121.99694775011824),
+            LatLng(37.412496825414046, -121.99683107403213),
+            LatLng(37.41243024942702, -121.99686795440418)
+        )
         private val SHARED_MAPPING_MISSION =
-            MappingMission("shared1")
-        private val PRIVATE_MAPPING_MISSION = MappingMission("private1")
+            MappingMission(
+                "shared1",
+                50.0,
+                MappingMissionService.Strategy.SINGLE_PASS,
+                bayland_area
+            )
+        private val PRIVATE_MAPPING_MISSION = MappingMission(
+            "private1",
+            50.0,
+            MappingMissionService.Strategy.SINGLE_PASS,
+            bayland_area
+        )
         private val PRIVATE_AND_SHARED_MAPPING_MISSION =
             MappingMission("private2").apply {
                 state = State.PRIVATE_AND_SHARED
@@ -124,6 +139,9 @@ class MappingMissionSelectionActivityTest {
         // Mock the position of the drone
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().getSensorSize()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getFocalLength()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getCameraResolution()).thenReturn(MutableLiveData())
     }
 
     @Before

@@ -45,12 +45,10 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import io.mavsdk.mission.Mission
 import io.reactivex.Completable
-import org.hamcrest.Matchers
 import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
-import java.lang.Thread.sleep
 import java.util.*
 
 @HiltAndroidTest

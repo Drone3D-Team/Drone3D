@@ -8,7 +8,6 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
