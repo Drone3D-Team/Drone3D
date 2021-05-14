@@ -52,8 +52,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         val bundle = intent.extras
         if (bundle != null) {
             flightHeight = bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH)
-            strategy = bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy
-            //strategy = MappingMissionService.Strategy.valueOf(bundle.getString(ItineraryCreateActivity.STRATEGY_INTENT_PATH)!!)
+            strategy = (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)!!
             area = bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!
         }
 

@@ -27,6 +27,7 @@ import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
 import ch.epfl.sdp.drone3d.ui.MainActivity
@@ -111,8 +112,7 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun saveMappingMissionToPrivateCallStore() {
-
-        val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
+        activityRule.scenario.recreate()
 
         val expectedMappingMission = MappingMission(
             "Unnamed mission"
@@ -122,7 +122,6 @@ class SaveMappingMissionActivityTest {
             ApplicationProvider.getApplicationContext(),
             SaveMappingMissionActivity::class.java
         )
-        intent.putExtra("flightPath", flightPath)
         ActivityScenario.launch<Activity>(intent)
 
         onView(withId(R.id.privateCheckBox)).perform(click())
@@ -135,17 +134,10 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun saveMappingMissionToShareCallShare() {
+        activityRule.scenario.recreate()
 
-        val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
 
         val expectedMappingMission = MappingMission("Unnamed mission")
-
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            SaveMappingMissionActivity::class.java
-        )
-        intent.putExtra("flightPath", flightPath)
-        ActivityScenario.launch<Activity>(intent)
 
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
@@ -157,17 +149,9 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun saveMappingMissionToShareAndPrivateCallShareAndStore() {
-
-        val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
+        activityRule.scenario.recreate()
 
         val expectedMappingMission = MappingMission("Unnamed mission")
-
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            SaveMappingMissionActivity::class.java
-        )
-        intent.putExtra("flightPath", flightPath)
-        ActivityScenario.launch<Activity>(intent)
 
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.privateCheckBox)).perform(click())
@@ -181,8 +165,8 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun nameIsCorrect() {
+        activityRule.scenario.recreate()
 
-        val flightPath = arrayListOf<LatLng>()
         val name = "My mission"
 
         val expectedMappingMission = MappingMission(name)
@@ -191,7 +175,9 @@ class SaveMappingMissionActivityTest {
             ApplicationProvider.getApplicationContext(),
             SaveMappingMissionActivity::class.java
         )
-        intent.putExtra("flightPath", flightPath)
+        intent.putExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, 0.0)
+        intent.putExtra(ItineraryCreateActivity.AREA_INTENT_PATH, arrayListOf<LatLng>())
+        intent.putExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH, MappingMissionService.Strategy.SINGLE_PASS)
         ActivityScenario.launch<Activity>(intent)
 
         onView(withId(R.id.missionName)).perform(click()).perform(
@@ -211,6 +197,8 @@ class SaveMappingMissionActivityTest {
 
     @Test
     fun checkBoxesEnableSaveButton() {
+        activityRule.scenario.recreate()
+
         onView(withId(R.id.privateCheckBox))
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         onView(withId(R.id.sharedCheckBox))
