@@ -1,9 +1,17 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
+import android.app.AlertDialog
+import android.graphics.LightingColorFilter
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
@@ -19,9 +27,9 @@ import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
 import timber.log.Timber
-import java.lang.StringBuilder
 import java.lang.System.currentTimeMillis
 import kotlin.math.min
+
 
 /**
  * Activity which allow a user to select regions on the map to download/remove when he's online so
@@ -31,6 +39,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     companion object{
         private const val DOWNLOAD_STATUS_TIME_DELAY = 1000
+        private const val BACKGROUND_COLOR_MULTIPLIER = -0x1000000
     }
 
     private lateinit var offlineMapSaver: OfflineMapSaver
@@ -66,12 +75,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Download the offlineRegion delimited with the current view of the map
+     * Download the offlineRegion delimited with the current view of the map and call it [regionName]
      */
-    fun downloadOfflineMap(@Suppress("UNUSED_PARAMETER") view:View){
+    private fun downloadOfflineMap(regionName: String){
         val bounds = mapboxMap.projection.visibleRegion.latLngBounds
         val zoom = mapboxMap.cameraPosition.zoom
-        val regionName = "TO_REPLACE"
 
         offlineMapSaver.downloadRegion(regionName,bounds,zoom,object:OfflineRegion.OfflineRegionObserver{
             override fun onStatusChanged(status: OfflineRegionStatus) {
@@ -138,6 +146,56 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
                 tilesBar.setProgress(min(it, maxTileCount).toInt(), true)
             }
         })
+    }
+
+    /**
+     * Show a dialog which let the user enter the name of the region he wants to download.
+     */
+    fun showDialog(@Suppress("UNUSED_PARAMETER") view:View){
+
+        val viewInflated: View = LayoutInflater.from(this)
+            .inflate(R.layout.enter_offline_region_name_dialog, parent as ViewGroup?, false)
+        val inputText = viewInflated.findViewById<View>(R.id.input_text) as EditText
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+
+        val dialog: AlertDialog= builder.setView(viewInflated)
+            .setTitle("New offline region")
+            .setPositiveButton(R.string.download, null) //Set to null, will be overridden to add check that not empty
+            .setNegativeButton(android.R.string.cancel
+            ) { dialog, _ -> dialog.cancel() }
+            .create()
+
+        dialog.setOnShowListener {
+            val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+            button.setOnClickListener{
+
+                val regionName = inputText.text.toString()
+
+                if(regionName == ""){
+
+                    //Close the keyboard if it's open so that we can see the toast
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    if (imm.isAcceptingText) {
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+                    }
+
+                    ToastHandler.showToast(applicationContext, R.string.empty)
+                }
+
+                else{
+                    downloadOfflineMap(regionName)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
+
+        //Set backgroundColor for the dialog
+        dialog.window?.decorView?.background?.colorFilter =
+            LightingColorFilter(BACKGROUND_COLOR_MULTIPLIER, ContextCompat.getColor(this, R.color.white))
     }
 
     /**
