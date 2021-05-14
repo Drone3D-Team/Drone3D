@@ -21,6 +21,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
@@ -49,6 +50,7 @@ import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
+import java.lang.Thread.sleep
 import java.util.*
 
 @HiltAndroidTest
@@ -122,6 +124,9 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getSensorSize()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getFocalLength()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getCameraResolution()).thenReturn(MutableLiveData())
 
         `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
             MutableLiveData(
@@ -162,7 +167,7 @@ class ItineraryShowActivityTest {
     }
 
     @Test
-    fun goToMissionInProgressActivityButtonIsNotEnabledWhenDroneIsNotConnected() {
+    fun goToMissionInProgressActivityShowToastWhenDroneIsNotConnected() {
         `when`(droneService.isConnected()).thenReturn(false)
         `when`(
             droneService.getData()
@@ -175,13 +180,19 @@ class ItineraryShowActivityTest {
         )
 
         activityRule.scenario.recreate()
+        activityRule.scenario.onActivity {
+            ToastMatcher.onToast(it, R.string.launch_no_drone)
+        }
 
-        onView(withId(R.id.buttonToMissionInProgressActivity))
-            .check(matches(Matchers.not(isEnabled())))
+        onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
+
+
+
     }
 
+
     @Test
-    fun goToMissionProgressActivityButtonIsNotEnabledWhenDroneTooFar() {
+    fun goToMissionProgressActivityShowToastWhenDroneTooFar() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
         `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
@@ -191,9 +202,13 @@ class ItineraryShowActivityTest {
         )
 
         activityRule.scenario.recreate()
+        activityRule.scenario.onActivity {
+            ToastMatcher.onToast(it, R.string.drone_too_far_from_start)
+        }
 
-        onView(withId(R.id.buttonToMissionInProgressActivity))
-            .check(matches(Matchers.not(isEnabled())))
+        onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
+
+
     }
 
     @Test
@@ -218,6 +233,7 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(locationService.isLocationEnabled()).thenReturn(false)
         `when`(
             droneService.getData()
@@ -234,7 +250,7 @@ class ItineraryShowActivityTest {
         onView(withId(R.id.buttonToMissionInProgressActivity))
             .check(matches(isEnabled()))
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
-
+        
         Intents.intended(
             hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
         )
@@ -300,6 +316,9 @@ class ItineraryShowActivityTest {
             ItineraryShowActivity::class.java
         )
         intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH, USER_UID)
+        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
+        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, 50.0)
+        intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, MappingMissionService.Strategy.SINGLE_PASS)
 
         ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
             onView(withId(R.id.mission_delete))

@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
@@ -21,11 +22,10 @@ import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
+import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
@@ -49,9 +49,11 @@ class ItineraryShowActivity : BaseMapActivity() {
     lateinit var droneService: DroneService
 
     @Inject
-    lateinit var  weatherService: WeatherService
+    lateinit var weatherService: WeatherService
 
-    // TODO remove
+    @Inject
+    lateinit var authService: AuthenticationService
+
     private var flightPath = listOf<LatLng>()
     private lateinit var missionDrawer: MapboxMissionDrawer
 
@@ -66,9 +68,6 @@ class ItineraryShowActivity : BaseMapActivity() {
     private var isWeatherGoodEnough: Boolean = false
     private lateinit var weatherReport: LiveData<WeatherReport>
 
-    @Inject
-    lateinit var authService: AuthenticationService
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,13 +78,14 @@ class ItineraryShowActivity : BaseMapActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val bundle = intent.extras
-        if(bundle != null){
+        if (bundle != null) {
             // Get the Intent that started this activity and extract user and ids
             ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH).toString()
             privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE_ID_INTENT_PATH)
             sharedId = intent.getStringExtra(MissionViewAdapter.SHARED_ID_INTENT_PATH)
-            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)!!
-            strategy = (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
+            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)
+            strategy =
+                (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
             area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
         }
 
@@ -108,44 +108,17 @@ class ItineraryShowActivity : BaseMapActivity() {
                     )
                 }!!
                 missionDrawer.showMission(flightPath, false)
-                    MapboxUtility.zoomOnMission(flightPath, mapboxMap)
+                MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
         }
 
         findViewById<View>(R.id.mission_delete).visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
-        if (flightPath.isNotEmpty()) {
-            weatherReport = weatherService.getWeatherReport(LatLng(flightPath[0]))
-            weatherReport.observe(this) {
-                isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-            }
-        }
-    }
+        weatherReport = weatherService.getWeatherReport(area[0])
+        weatherReport.observe(this) {
+            isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
 
-    override fun onResume() {
-        super.onResume()
-        droneService.getData().isConnected().observe(this) {
-            findViewById<View>(R.id.buttonToMissionInProgressActivity).isEnabled = canMissionBeLaunched()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        droneService.getData().isConnected().removeObservers(this)
-    }
-
-    /**
-     * Check if there is a connected drone, and if the user or the simulation is close enough to launch a mission
-     */
-    private fun canMissionBeLaunched(): Boolean {
-        val dronePos = droneService.getData().getPosition().value
-        return if (flightPath.isEmpty() == true || !droneService.isConnected() || dronePos == null)
-            false
-        else {
-            val beginningPoint = flightPath[0]
-            dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
         }
     }
 
@@ -153,26 +126,36 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Start an intent to go to the mission in progress activity
      */
     fun launchMission(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(!isWeatherGoodEnough){
+        if (!isWeatherGoodEnough) {
             val builder = Builder(this)
             builder.setMessage(getString(R.string.launch_mission_confirmation))
             builder.setCancelable(true)
 
             builder.setPositiveButton(getString(R.string.confirm_launch)) { dialog, _ ->
                 dialog.cancel()
-                goToMissionInProgressActivity()
+                val dronePos = droneService.getData().getPosition().value
+                val beginningPoint = flightPath[0]
+                if (!droneService.isConnected()) {
+                    ToastHandler.showToast(this, R.string.launch_no_drone)
+                } else if (dronePos == null) {
+                    ToastHandler.showToast(this, R.string.launch_no_drone_pos)
+                } else if (dronePos.distanceTo(beginningPoint) > MAX_BEGINNING_DISTANCE) {
+                    ToastHandler.showToast(this, R.string.drone_too_far_from_start)
+                } else {
+                    goToMissionInProgressActivity()
+                }
             }
 
             builder.setNegativeButton(R.string.cancel_launch) { dialog, _ ->
                 dialog.cancel()
             }
             builder.create()?.show()
-        }else{
+        } else {
             goToMissionInProgressActivity()
         }
     }
 
-    private fun goToMissionInProgressActivity(){
+    private fun goToMissionInProgressActivity() {
         val intent = Intent(this, MissionInProgressActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
         startActivity(intent)
@@ -200,7 +183,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     /**
      * Go to WeatherInfoActivity
      */
-    fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER")view: View) {
+    fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, WeatherInfoActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
         startActivity(intent)

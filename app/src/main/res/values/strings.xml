@@ -94,6 +94,11 @@
     <string name="confirm_launch">Launch at my own risk</string>
     <string name="cancel_launch">Cancel</string>
     <string name="content_descriptor_drone_icon">drone_icon</string>
+    <string name="launch_no_drone">A drone should be connected to launch the mission.</string>
+    <string name="launch_no_drone_pos">Failed to get the drone location.</string>
+    <string name="drone_too_far_from_start">The drone is too far from the starting point of the mission.</string>
+
+
 
     <!-- Mission In Progress Activity -->
     <string name="mission_null">Cannot launch a null mission</string>
