@@ -98,7 +98,7 @@ class ItineraryShowActivity : BaseMapActivity() {
                         area,
                         flightHeight
                     )
-                }!!
+                }
                 missionDrawer.showMission(flightPath, false)
                 MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
@@ -110,11 +110,10 @@ class ItineraryShowActivity : BaseMapActivity() {
         weatherReport = weatherService.getWeatherReport(area[0])
         weatherReport.observe(this) {
             isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-
         }
     }
 
-    private fun readIntent(){
+    private fun readIntent() {
         val bundle = intent.extras
         if (bundle != null) {
             // Get the Intent that started this activity and extract user and ids

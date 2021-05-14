@@ -17,7 +17,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
@@ -26,8 +25,6 @@ import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.service.api.drone.DroneData
-import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
@@ -41,9 +38,6 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
-import io.mavsdk.System
-import io.mavsdk.mission.Mission
-import io.mavsdk.telemetry.Telemetry
 import javax.inject.Inject
 
 /**
@@ -96,7 +90,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     // Text
     private lateinit var altitudeText: TextView
 
-    companion object{
+    companion object {
         const val STRATEGY_INTENT_PATH = "ICA_strategy"
         const val AREA_INTENT_PATH = "ICA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
@@ -164,10 +158,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
-            altitudeText.text = flightHeight.toString() + "m"
+
+            altitudeText.text = getString(R.string.altitude_text, flightHeight)
             altitudeButton.setOnProgressChangeListener { progressValue ->
                 flightHeight = progressValue.toDouble()
-                altitudeText.text = progressValue.toString() + "m"
+                altitudeText.text = getString(R.string.altitude_text, flightHeight)
                 onMissionSettingModified()
             }
         }
@@ -269,17 +264,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     )
                 }
 
-                if (path != null) {
-                    flightPath = ArrayList(path)
-                    if (isMissionDisplayed) {
-                        missionDrawer.showMission(flightPath, false)
-                    }
-                } else {
-                    Toast.makeText(
-                        baseContext, R.string.drone_should_be_connected,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                flightPath = ArrayList(path)
+                if (isMissionDisplayed) {
+                    missionDrawer.showMission(flightPath, false)
                 }
+
             }
         }
     }
