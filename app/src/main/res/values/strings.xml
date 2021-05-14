@@ -66,6 +66,7 @@
     <string name="cancel_save_without_updating">Cancel</string>
     <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
+    <string name="altitude_text">"Altitude: %1$.0f m"</string>
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
@@ -76,8 +77,6 @@
     <string name="download_succeeded">The download of: %1$s has succeeded</string>
     <string name="download_progress">The download is at: %1$s completion</string>
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
-
-
 
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
@@ -97,8 +96,6 @@
     <string name="launch_no_drone">A drone should be connected to launch the mission.</string>
     <string name="launch_no_drone_pos">Failed to get the drone location.</string>
     <string name="drone_too_far_from_start">The drone is too far from the starting point of the mission.</string>
-
-
 
     <!-- Mission In Progress Activity -->
     <string name="mission_null">Cannot launch a null mission</string>
