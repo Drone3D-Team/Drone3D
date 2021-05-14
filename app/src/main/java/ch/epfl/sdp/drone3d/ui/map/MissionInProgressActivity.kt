@@ -111,12 +111,15 @@ class MissionInProgressActivity : BaseMapActivity() {
         backToUserButton = findViewById(R.id.backToUserButton)
 
         warningBadWeather = findViewById(R.id.warningBadWeather)
+
         if (missionPath == null) {
             warningBadWeather.visibility = View.GONE
-            weatherReport = MutableLiveData()
+        }
+
+        weatherReport = if (droneService.getData().getPosition().value != null) {
+            weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
         } else {
-            weatherReport =
-                weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+            MutableLiveData()
         }
 
         player = SimpleExoPlayer.Builder(this).build()
