@@ -15,12 +15,15 @@ import javax.inject.Inject
 
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
-    private val cameraAngle = 0.0 // Suppose the drone is looking down
-    //Those default data correspond to the Freefly Astro Quadrotor properties
-    private val defaultSensorWidth = 7.82f
-    private val defaultFocalLength = 24.0f
-    private val defaultImageWidth = 1280
-    private val defaultImageHeight = 720
+    companion object{
+        private val cameraAngle = 0.0 // Suppose the drone is looking down
+        //Those default data correspond to the Freefly Astro Quadrotor properties
+        private val defaultSensorWidth = 7.82f
+        private val defaultFocalLength = 24.0f
+        private val defaultImageWidth = 1280
+        private val defaultImageHeight = 720
+    }
+   
 
     override fun buildSinglePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng> {
 
