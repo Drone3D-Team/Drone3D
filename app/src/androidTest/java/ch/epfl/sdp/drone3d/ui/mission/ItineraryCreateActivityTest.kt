@@ -141,6 +141,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun saveButtonIsActivatedWhenAreaIsComplete() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.buttonToSaveActivity))

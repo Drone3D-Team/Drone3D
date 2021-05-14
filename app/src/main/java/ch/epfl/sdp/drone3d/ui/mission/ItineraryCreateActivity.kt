@@ -306,9 +306,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     private fun goToSaveActivity() {
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
-        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
-        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
-        intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
+        intent.putExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(ItineraryCreateActivity.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
+        //intent.putExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH, strategy.name)
+        intent.putExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH, strategy)
+
         startActivity(intent)
     }
 

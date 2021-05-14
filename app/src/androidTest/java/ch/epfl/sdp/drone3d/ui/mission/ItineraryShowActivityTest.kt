@@ -27,6 +27,7 @@ import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
@@ -59,23 +60,27 @@ import java.util.*
 )
 class ItineraryShowActivityTest {
 
-    private val GOOD_WEATHER_REPORT = WeatherReport(
-        "Clear", "description",
-        20.0, 20, 5.0, 500, Date(12903)
-    )
+    companion object{
+        private val GOOD_WEATHER_REPORT = WeatherReport(
+            "Clear", "description",
+            20.0, 20, 5.0, 500, Date(12903)
+        )
 
-    private val BAD_WEATHER_REPORT = WeatherReport(
-        "RAIN", "description",
-        -1.0, 20, 10.0, 500, Date(12903)
-    )
+        private val BAD_WEATHER_REPORT = WeatherReport(
+            "RAIN", "description",
+            -1.0, 20, 10.0, 500, Date(12903)
+        )
 
-    private val USER_UID = "asdfg"
+        private val USER_UID = "asdfg"
 
-    private val bayland_area = arrayListOf(
-        LatLng(37.41253570576311, -121.99694775011824),
-        LatLng(37.412496825414046, -121.99683107403213),
-        LatLng(37.41243024942702, -121.99686795440418)
-    )
+        private val bayland_area = arrayListOf(
+            LatLng(37.41253570576311, -121.99694775011824),
+            LatLng(37.412496825414046, -121.99683107403213),
+            LatLng(37.41243024942702, -121.99686795440418)
+        )
+    }
+
+
 
     private val activityRule = ActivityScenarioRule<ItineraryShowActivity>(
         Intent(
@@ -84,6 +89,8 @@ class ItineraryShowActivityTest {
         ).apply {
             putExtras(Bundle().apply {
                 putSerializable(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
+                putSerializable(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, 50.0)
+                putSerializable(MissionViewAdapter.STRATEGY_INTENT_PATH, MappingMissionService.Strategy.SINGLE_PASS)
             })
         }
     )
