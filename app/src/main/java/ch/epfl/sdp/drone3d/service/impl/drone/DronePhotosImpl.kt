@@ -33,7 +33,7 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val data = MutableLiveData<Bitmap>()
 
         drone.camera.captureInfo.subscribe { captureInfo ->
-            Thread {
+            GlobalScope.async {
                 val image = getPhoto(captureInfo.fileUrl)
                 if (image != null) {
                     data.postValue(image)
