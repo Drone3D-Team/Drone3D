@@ -16,7 +16,8 @@ import kotlin.math.PI
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
     companion object{
-        private const val cameraAngle = 0.0 // Suppose the drone is looking down
+        // The drone looks forward with a 30 degree compared to vertical
+        const val cameraPitch = PI.toFloat()/3
 
         //Those default data correspond to the Freefly Astro Quadrotor properties
         private const val defaultSensorWidth = 7.82f //millimeters
@@ -62,7 +63,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
             val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
                 projector.toPoint(vertices[2]))
             return projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
-                parallelogram, cameraAngle, flightHeight, groundImageDimension))
+                parallelogram, cameraPitch, flightHeight, groundImageDimension))
     }
 
     /**
