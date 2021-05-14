@@ -6,7 +6,6 @@
 package ch.epfl.sdp.drone3d.service.impl.drone
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import ch.epfl.sdp.drone3d.R
@@ -18,13 +17,11 @@ import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
-import io.mavsdk.camera.Camera
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry.FlightMode.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  * This class is an implementation of [DroneExecutor]. As such it is responsible of the mission management of the drone.
@@ -41,18 +38,12 @@ class DroneExecutorImpl(
         private const val MAX_RETRIES: Int = 5
         private const val DEFAULT_ALTITUDE: Float = 20f
     }
+
     override fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {
         if (missionPlan.missionItems.isEmpty())
             throw IllegalArgumentException("Cannot start an empty mission")
 
         val instance = getInstance()
-
-        instance.camera.captureInfo.subscribe { captureInfo ->
-            Log.d(
-                "MAVphoto",
-                "Picture taken: " + captureInfo.fileUrl
-            )
-        }
 
         val home = data.getHomeLocation().value
             ?: throw IllegalStateException("Could not query launch point")
@@ -205,26 +196,6 @@ class DroneExecutorImpl(
         Completable.fromCallable { data.getMutableDroneStatus().postValue(SENDING_ORDER) }
             .andThen(instance.mission.setReturnToLaunchAfterMission(false))
             .andThen(instance.mission.uploadMission(missionPlan))
-            .andThen(
-                instance.camera.takePhoto()
-                    .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
-                    .doOnError { throwable ->
-                        Log.d(
-                            "MAVphoto", "Failed to take a photo: "
-                                    + (throwable as Camera.CameraException).code
-                        )
-                    }
-                    .delay(2, TimeUnit.SECONDS)
-                    .andThen(instance.camera.takePhoto()
-                        .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
-                        .doOnError { throwable ->
-                            Log.d(
-                                "MAVphoto", "Failed to take a photo: "
-                                        + (throwable as Camera.CameraException).code
-                            )
-                        }
-                        .delay(2, TimeUnit.SECONDS)
-                    ))
             .andThen(instance.mission.startMission())
             .doOnComplete {
                 data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
@@ -240,33 +211,6 @@ class DroneExecutorImpl(
                 ToastHandler.showToastAsync(ctx, R.string.drone_mission_return_launch)
                 data.getMutableDroneStatus().postValue(GOING_BACK)
             }
-            .andThen(
-                instance.camera.takePhoto()
-                    .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
-                    .doOnError { throwable ->
-                        Log.d(
-                            "MAVphoto", "Failed to take a photo: "
-                                    + (throwable as Camera.CameraException).code
-                        )
-                    }
-                    .delay(2, TimeUnit.SECONDS)
-            )
-            .andThen(
-                instance.camera.listPhotos(Camera.PhotosRange.ALL)
-                    .doOnSuccess { list ->
-                        Log.d(
-                            "MAVphoto",
-                            "Found " + list.size + " photos."
-                        )
-                    }
-                    .doOnError { error ->
-                        Log.d(
-                            "MAVphoto",
-                            "Fail photos ! " + error.message
-                        )
-                    }
-                    .toCompletable()
-            )
             .andThen(instance.mission.missionProgress)
             .filter { it.current == it.total }.firstOrError().toCompletable()
             .doOnComplete { data.getMutableDroneStatus().postValue(LANDING) }
