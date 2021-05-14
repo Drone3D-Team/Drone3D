@@ -58,4 +58,9 @@ interface DroneService {
      * Returns the object responsible of launching and controlling the missions of the drone
      */
     fun getExecutor(): DroneExecutor
+
+    /**
+     * Disconnect and reconnect the drone to reset its state
+     */
+    fun reconnect()
 }

@@ -6,11 +6,12 @@
 package ch.epfl.sdp.drone3d.service.drone
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import ch.epfl.sdp.drone3d.service.api.drone.DroneData
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
@@ -21,19 +22,20 @@ import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Matchers.*
-import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
-import java.lang.IllegalStateException
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
@@ -41,6 +43,11 @@ class DroneExecutorTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val armedPublisher: PublishSubject<Boolean> = PublishSubject.create()
+    private val flightModePublisher: PublishSubject<Telemetry.FlightMode> = PublishSubject.create()
+    private val missionProgressPublisher: PublishSubject<Mission.MissionProgress> = PublishSubject.create()
+    private val inAirPublisher: PublishSubject<Boolean> = PublishSubject.create()
 
     companion object {
         private const val EPSILON = 1e-5
@@ -54,147 +61,293 @@ class DroneExecutorTest {
         )
     }
 
-    @Test
-    fun startMissionIdleUpdatesLiveData() {
-
-        val future = CompletableFuture<Mission.MissionProgress>()
-
+    private fun setupOwnMocks() {
         DroneInstanceMock.setupDefaultMocks()
-        `when`(DroneInstanceMock.droneMission.missionProgress)
-            .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
 
-        val locationService = mock(LocationService::class.java)
+        `when`(DroneInstanceMock.droneTelemetry.armed)
+                .thenReturn(armedPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
+        `when`(DroneInstanceMock.droneTelemetry.flightMode)
+                .thenReturn(flightModePublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
+        `when`(DroneInstanceMock.droneMission.missionProgress)
+                .thenReturn(missionProgressPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
+        `when`(DroneInstanceMock.droneTelemetry.inAir)
+                .thenReturn(inAirPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                        .cacheWithInitialCapacity(1))
+    }
+
+    @Test
+    fun startMissionNotArmedUpdatesLiveData() {
+        setupOwnMocks()
+
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
+        val locationService = mock(LocationService::class.java)
+
         val droneData = DroneDataImpl(droneService)
-        droneData.getMutableDroneStatus().postValue(DroneData.DroneStatus.IDLE)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
+        val mutex = Semaphore(0)
+
+        armedPublisher.onNext(false)
+        inAirPublisher.onNext(false)
+        flightModePublisher.onNext(Telemetry.FlightMode.TAKEOFF)
 
         executor.startMission(
             InstrumentationRegistry.getInstrumentation().targetContext,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).subscribe({
             assertThat(droneData.getMission().value, nullValue())
+            mutex.release()
         }, {
-            it.printStackTrace()
+            throw it
         })
 
-        assertThat(droneData.getMission().value?.isEmpty(), `is`(false))
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
+
+        dataBecomes(droneData.getDroneStatus(), GOING_BACK)
+
         //End mission
-        future.complete(Mission.MissionProgress(4, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
+
+        assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, atLeastOnce()).arm()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
+
 
     @Test
     fun startMissionTakingOffUpdatesLiveData() {
+        setupOwnMocks()
 
-        val future = CompletableFuture<Mission.MissionProgress>()
-
-        DroneInstanceMock.setupDefaultMocks()
-        `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
-
-        val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
+        val locationService = mock(LocationService::class.java)
+
         val droneData = DroneDataImpl(droneService)
-        droneData.getMutableDroneStatus().postValue(DroneData.DroneStatus.TAKING_OFF)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
+        val mutex = Semaphore(0)
+
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(false)
+        flightModePublisher.onNext(Telemetry.FlightMode.LAND)
 
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).subscribe({
             assertThat(droneData.getMission().value, nullValue())
+            mutex.release()
         }, {
-            it.printStackTrace()
+            throw it
         })
 
-        assertThat(droneData.getMission().value?.isEmpty(), `is`(false))
-        //End mission
-        future.complete(Mission.MissionProgress(4, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
+        dataBecomes(droneData.getDroneStatus(), GOING_BACK)
+
+        //End mission
+        missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
+
+        assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
+
+        verify(DroneInstanceMock.droneAction, never()).arm()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
     @Test
     fun startMissionStartingUpdatesLiveData() {
+        setupOwnMocks()
 
-        val future = CompletableFuture<Mission.MissionProgress>()
-
-        DroneInstanceMock.setupDefaultMocks()
-        `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
-
-        val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
+        val locationService = mock(LocationService::class.java)
+
         val droneData = DroneDataImpl(droneService)
-        droneData.getMutableDroneStatus().postValue(DroneData.DroneStatus.STARTING_MISSION)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
+        val mutex = Semaphore(0)
+
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.READY)
+
+        executor.startMission(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).subscribe({
+            assertThat(droneData.getMission().value, nullValue())
+            mutex.release()
+        }, {
+            throw it
+        })
+
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
+
+        dataBecomes(droneData.getDroneStatus(), GOING_BACK)
+
+        //End mission
+        missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
+
+        assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
+
+        verify(DroneInstanceMock.droneAction, never()).arm()
+        verify(DroneInstanceMock.droneAction, never()).takeoff()
+        verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
+        verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
+    }
+
+    @Test
+    fun startMissionAtHoldWorks() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val locationService = mock(LocationService::class.java)
+
+        val droneData = DroneDataImpl(droneService)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
+
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
+        val mutex = Semaphore(0)
+
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
 
         executor.startMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).subscribe({
             assertThat(droneData.getMission().value, nullValue())
+            mutex.release()
         }, {
-            it.printStackTrace()
+            throw it
         })
 
-        assertThat(droneData.getMission().value?.isEmpty(), `is`(false))
-        //End mission
-        future.complete(Mission.MissionProgress(4, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
 
+        dataBecomes(droneData.getDroneStatus(), GOING_BACK)
+
+        //End mission
+        missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
+
+        assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
+
+        verify(DroneInstanceMock.droneAction, never()).arm()
+        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).disarm()
     }
 
     @Test
-    fun startMissionDuringMissionFails() {
+    fun startMissionDuringMissionWorks() {
+        setupOwnMocks()
 
-        val future = CompletableFuture<Mission.MissionProgress>()
-
-        DroneInstanceMock.setupDefaultMocks()
-        `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
-
-        val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
+        val locationService = mock(LocationService::class.java)
+
         val droneData = DroneDataImpl(droneService)
-        droneData.getMutableDroneStatus().postValue(DroneData.DroneStatus.EXECUTING_MISSION)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
+
+        val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
+        val mutex = Semaphore(0)
+
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
+
+        executor.startMission(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).subscribe({
+            assertThat(droneData.getMission().value, nullValue())
+            mutex.release()
+        }, {
+            throw it
+        })
+
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
+        missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
+
+        dataBecomes(droneData.getDroneStatus(), GOING_BACK)
+
+        //End mission
+        missionProgressPublisher.onNext(Mission.MissionProgress(4, 4))
+        inAirPublisher.onNext(false)
+
+        assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
+
+        verify(DroneInstanceMock.droneAction, never()).arm()
+        verify(DroneInstanceMock.droneAction, never()).takeoff()
+        verify(DroneInstanceMock.droneMission, never()).startMission()
+        verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
+    }
+
+
+
+    @Test
+    fun startMissionFailsOnInvalidState() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val locationService = mock(LocationService::class.java)
+
+        val droneData = DroneDataImpl(droneService)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
-        assertThrows(IllegalStateException::class.java) {
-            executor.startMission(
-                    InstrumentationRegistry.getInstrumentation().targetContext,
-                    DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
-            ).subscribe({
-                assertThat(droneData.getMission().value, nullValue())
-            }, {
-                it.printStackTrace()
-            })
-        }
+        armedPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.UNKNOWN)
 
-        future.complete(Mission.MissionProgress(4, 4))
+        executor.startMission(
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).subscribe({
+            assertThat(true, `is`(false))
+        }, {
+            assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
+        })
     }
 
     @Test
@@ -222,9 +375,9 @@ class DroneExecutorTest {
         )
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
         `when`(droneData.getDroneStatus())
-            .thenReturn(MutableLiveData(DroneData.DroneStatus.IDLE))
+            .thenReturn(MutableLiveData(IDLE))
         `when`(droneData.getMutableDroneStatus())
-            .thenReturn(MutableLiveData(DroneData.DroneStatus.IDLE))
+            .thenReturn(MutableLiveData(IDLE))
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
@@ -256,31 +409,42 @@ class DroneExecutorTest {
 
     @Test
     fun canPauseAndResumeMission() {
-        val future = CompletableFuture<Mission.MissionProgress>()
+        setupOwnMocks()
 
-        DroneInstanceMock.setupDefaultMocks()
-        `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
-
-        val locationService = mock(LocationService::class.java)
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
 
+        val locationService = mock(LocationService::class.java)
+
         val droneData = DroneDataImpl(droneService)
+        droneData.getMutableDroneStatus().postValue(IDLE)
+
+        setupDroneAsserts(droneData)
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
+        armedPublisher.onNext(true)
+        inAirPublisher.onNext(true)
+        flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
+
         executor.startMission(
-            context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
-        ).subscribe({}, { it.printStackTrace() })
+                InstrumentationRegistry.getInstrumentation().targetContext,
+                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).subscribe({
+            assertThat(droneData.getMission().value, nullValue())
+        }, {
+            throw it
+        })
+
+        missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
 
         assertThat(droneData.getMutableMission().value?.isEmpty(), `is`(false))
         assertThat(droneData.isMissionPaused().value, `is`(false))
 
         executor.pauseMission(context).subscribe()
         assertThat(droneData.isMissionPaused().value, `is`(true))
+
 
         executor.resumeMission(context).subscribe()
         assertThat(droneData.isMissionPaused().value, `is`(false))
@@ -316,9 +480,9 @@ class DroneExecutorTest {
             Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
         `when`(droneData.getDroneStatus())
-            .thenReturn(MutableLiveData(DroneData.DroneStatus.IDLE))
+            .thenReturn(MutableLiveData(IDLE))
         `when`(droneData.getMutableDroneStatus())
-                .thenReturn(MutableLiveData(DroneData.DroneStatus.IDLE))
+                .thenReturn(MutableLiveData(IDLE))
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
@@ -345,5 +509,48 @@ class DroneExecutorTest {
             .subscribe({}, { it.printStackTrace() })
 
         assertThat(missionLiveData.value, nullValue())
+    }
+
+    private fun <T> dataBecomes(data: LiveData<T>, expected: T) {
+        InstrumentationRegistry.getInstrumentation().runOnMainSync {
+            var i = 0
+            while (i++ < 10 && data.value != expected)
+                Thread.sleep(10)
+
+            assertThat(data.value, `is`(expected))
+        }
+    }
+
+    private fun setupDroneAsserts(droneData: DroneDataImpl) {
+        // Check the state that should be there on each call
+        `when`(DroneInstanceMock.droneAction.arm()).thenAnswer {
+            Completable.fromCallable {
+                dataBecomes(droneData.getDroneStatus(), ARMING)
+                flightModePublisher.onNext(Telemetry.FlightMode.READY)
+                armedPublisher.onNext(true)
+            }
+        }
+
+        `when`(DroneInstanceMock.droneAction.takeoff()).thenAnswer {
+            Completable.fromCallable {
+                dataBecomes(droneData.getDroneStatus(), TAKING_OFF)
+                inAirPublisher.onNext(true)
+                flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
+            }
+        }
+
+        `when`(DroneInstanceMock.droneMission.startMission()).thenAnswer {
+            Completable.fromCallable {
+                dataBecomes(droneData.getDroneStatus(), SENDING_ORDER)
+                flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
+            }
+        }
+
+        `when`(DroneInstanceMock.droneAction.land()).thenAnswer {
+            Completable.fromCallable {
+                dataBecomes(droneData.getDroneStatus(), LANDING)
+                flightModePublisher.onNext(Telemetry.FlightMode.LAND)
+            }
+        }
     }
 }

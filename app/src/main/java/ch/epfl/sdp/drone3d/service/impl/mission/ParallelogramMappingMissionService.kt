@@ -15,9 +15,18 @@ import kotlin.math.PI
 
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
-    val cameraPitch = (30.0/(2*PI)).toFloat() // Look forward with angle of 30 degrees in radians
+    companion object{
+        private const val cameraAngle = 0.0 // Suppose the drone is looking down
 
-    override fun buildSinglePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng>? {
+        //Those default data correspond to the Freefly Astro Quadrotor properties
+        private const val defaultSensorWidth = 7.82f //millimeters
+        private const val defaultFocalLength = 24.0f //millimeters
+        private const val defaultImageWidth = 1280 //pixels
+        private const val defaultImageHeight = 720 //pixels
+    }
+
+
+    override fun buildSinglePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng> {
 
         return buildMappingMission(
             vertices,
@@ -26,7 +35,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         )
     }
 
-    override fun buildDoublePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng>? {
+    override fun buildDoublePassMappingMission(vertices:List<LatLng>,flightHeight:Double): List<LatLng> {
         return buildMappingMission(
             vertices,
             flightHeight,
@@ -40,8 +49,8 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         mappingFunction: (
                 startingPoint: Point, area: Parallelogram, cameraAngle: Float,
                 flightHeight: Double, groundImageDimension: GroundImageDim
-        ) -> List<Pair<Point,Boolean>>
-    ): List<LatLng>? {
+        ) -> List<Point>
+    ): List<LatLng> {
 
         if(vertices.size!=3){
             throw IllegalArgumentException("A parallelogram should be determined by 3 vertices")
@@ -49,17 +58,11 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
 
         val groundImageDimension = computeGroundImageDimension(flightHeight)
 
-        return if (groundImageDimension != null) {
             val projector = SphereToPlaneProjector(vertices[0])
-            val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]), projector.toPoint(vertices[2]))
-            //TODO: remove the last mapping function to know when photos must be taken
-            val flightPathMeters = mappingFunction(projector.toPoint(vertices[0]),
-                parallelogram, cameraPitch, flightHeight, groundImageDimension).map { pair-> pair.first }
-            val projectedFlightPath = projector.toLatLngs(flightPathMeters)
-            projectedFlightPath
-        } else {
-            null
-        }
+            val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
+                projector.toPoint(vertices[2]))
+            return projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
+                parallelogram, cameraAngle, flightHeight, groundImageDimension))
     }
 
     /**
@@ -67,20 +70,17 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
      * and the camera properties provided by the drone
      * If a property is not provided by the drone, returns null
      */
-    fun computeGroundImageDimension(flightHeight: Double): GroundImageDim? {
+    fun computeGroundImageDimension(flightHeight: Double): GroundImageDim {
 
-        val sensorWidth = droneService.getData().getSensorSize().value?.horizontalSize //millimeters
-        val focalLength = droneService.getData().getFocalLength().value // millimeters
-        val imageWidth = droneService.getData().getCameraResolution().value?.width // pixels
-        val imageHeight = droneService.getData().getCameraResolution().value?.height // pixels
-        return if (sensorWidth != null && focalLength != null && imageWidth != null && imageHeight != null) {
-            // Ground Sampling Distance in meters/pixel
-            val GSD = (sensorWidth * flightHeight) / (focalLength * imageWidth)
-            val groundImageWidth = GSD * imageWidth // meters
-            val groundImageHeight = GSD * imageHeight // meters
-            GroundImageDim(groundImageWidth, groundImageHeight)
-        } else {
-            null
-        }
+        val sensorWidth = droneService.getData().getSensorSize().value?.horizontalSize?:defaultSensorWidth //millimeters
+        val focalLength = droneService.getData().getFocalLength().value?:defaultFocalLength // millimeters
+        val imageWidth = droneService.getData().getCameraResolution().value?.width?:defaultImageWidth // pixels
+        val imageHeight = droneService.getData().getCameraResolution().value?.height?:defaultImageHeight // pixels
+
+        // Ground Sampling Distance in meters/pixel
+        val GSD = (sensorWidth * flightHeight) / (focalLength * imageWidth)
+        val groundImageWidth = GSD * imageWidth // meters
+        val groundImageHeight = GSD * imageHeight // meters
+        return GroundImageDim(groundImageWidth, groundImageHeight)
     }
 }

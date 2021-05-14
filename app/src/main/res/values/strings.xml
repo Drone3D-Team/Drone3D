@@ -10,6 +10,7 @@
     <string name="log_in">Log in</string>
     <string name="log_out">Logout</string>
     <string name="connect_a_drone">Connect a drone</string>
+    <string name="manage_offline_map">Manage offline map</string>
     <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
@@ -66,6 +67,18 @@
     <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want to save without updating the mission ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
 
+    <!--Manage offline map activity-->
+    <string name="tile_count">Tile count:</string>
+    <string name="content_descriptor_delete_icon">delete icon</string>
+    <string name="delete_successful">Delete successful</string>
+    <string name="delete_fail">Failed to delete</string>
+    <string name="download_failed">An error occurred during the download</string>
+    <string name="download_succeeded">The download of: %1$s has succeeded</string>
+    <string name="download_progress">The download is at: %1$s completion</string>
+    <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
+
+
+
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
     <string name="private_type_text">Private</string>
@@ -75,22 +88,48 @@
     <string name="delete_mission">Delete</string>
     <string name="confirm_delete">Delete</string>
     <string name="cancel_delete">Cancel</string>
+    <string name="weather_info">Weather Details</string>
     <string name="delete_confirmation">Are you sure you want to delete this mission ?</string>
+    <string name="launch_mission_confirmation">Alert bad weather ! Are you sure you want to launch the mission in these weather conditions ? The drone risks to break.</string>
+    <string name="confirm_launch">Launch at my own risk</string>
+    <string name="cancel_launch">Cancel</string>
+    <string name="content_descriptor_drone_icon">drone_icon</string>
 
     <!-- Mission In Progress Activity -->
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
+
+    <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
+    <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
+    <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
+    <string name="drone_took_off">Drone took off</string>
+    <string name="drone_already_flying">Drone already flying</string>
+    <string name="drone_armed">Drone armed</string>
+    <string name="drone_already_armed">Drone already armed</string>
+    <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
     <!-- Live values during the flight -->
-    <string name="live_speed">Speed : %1$s m/s</string>
-    <string name="live_altitude">Altitude : %1$s m</string>
-    <string name="live_battery">Battery : %1$s%%</string>
-    <string name="live_distance_user">Distance to user : %1$s m</string>
+    <string name="live_speed">Speed : %1$.2f m/s</string>
+    <string name="live_altitude">Altitude : %1$.2f m</string>
+    <string name="live_battery">Battery : %1$.2f%%</string>
+    <string name="live_distance_user">Distance to user : %1$.2f m</string>
     <string name="user_location_deactivated">Distance to user : Not allowed to access user\'s location</string>
     <string name="user_location_null">Distance to user : Error, user\'s location is null</string>
     <string name="live_status">Mission status : %1$s</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
+    <!-- Warning showed if the weather is dangerous for the drone -->
+    <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
+
+    <!-- Weather Info Activity -->
+    <string name="updated_on">Weather on %1$s</string>
+    <string name="info_weather_description">Weather : %1$s</string>
+    <string name="info_temperature">Temperature : %1$s\u2103</string>
+    <string name="info_humidity">Humidity : %1$s%%</string>
+    <string name="info_wind_speed">Wind speed : %1$s m/s</string>
+    <string name="info_visibility">Visibility limit : %1$s m</string>
+    <!-- Shown when checking the weather for a non-existent mission -->
+    <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
     <!-- Utilities -->
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>

@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.gms.google-services'
     id 'jacoco'
+    id 'org.jetbrains.kotlin.plugin.serialization' version "1.4.32"
 }
 
 android {
@@ -56,6 +57,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //Serialization
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
@@ -74,6 +79,9 @@ dependencies {
     implementation 'io.mavsdk:mavsdk:0.8.0'
     implementation 'io.mavsdk:mavsdk-server:0.8.1'
 
+    // Video stream
+    implementation fileTree(dir: 'libs', include: '*.aar')
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:3.8.0'
@@ -86,6 +94,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.3.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:3.0.2"
 
     // Hilt during tests
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
@@ -113,8 +122,6 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'crea
         '**/Manifest*.*',
         '**/*Test*.*',
         'android/**/*.*',
-        // Exclude Hilt modules
-        "service/module/*Module.class",
         // Exclude Hilt generated classes
         '**/*Hilt*.*',
         'hilt_aggregated_deps/**',
