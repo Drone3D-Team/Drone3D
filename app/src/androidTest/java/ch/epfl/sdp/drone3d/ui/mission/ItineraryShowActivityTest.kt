@@ -183,9 +183,6 @@ class ItineraryShowActivityTest {
         }
 
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
-
-
-
     }
 
 
@@ -253,6 +250,24 @@ class ItineraryShowActivityTest {
 
         val intents = Intents.getIntents()
         assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH) })
+    }
+
+    @Test
+    fun editButtonWork() {
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.editButton))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.editButton)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
     }
 
     @Test

@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
@@ -29,6 +30,7 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
@@ -80,6 +82,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     lateinit var areaBuilder: AreaBuilder
     private lateinit var areaBuilderDrawer: MapboxAreaBuilderDrawer
+    private var initialArea = listOf<LatLng>()
+
 
     // Button
     private lateinit var altitudeButton: VerticalSeekBar
@@ -109,6 +113,13 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val bundle = intent.extras
+        if (bundle != null &&  !bundle.isEmpty) {
+            flightHeight = bundle.getDouble(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH)
+            strategy = (bundle.get(ItineraryShowActivity.STRATEGY_INTENT_PATH) as Strategy)!!
+            initialArea = bundle.getParcelableArrayList(ItineraryShowActivity.AREA_INTENT_PATH)!!
+        }
+
         // Button
         altitudeButton = findViewById(R.id.verticalBar)
         changeStrategyButton = findViewById(R.id.changeStrategy)
@@ -134,13 +145,20 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             missionBuilder = ParallelogramMappingMissionService(droneService)
             missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
 
+            areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
+
             // Area - Need to be the last Drawer instanciated to allow draggable vertex
             areaBuilder = ParallelogramBuilder()
+            areaBuilder.onAreaChanged.add { onMissionSettingModified() }
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
             areaBuilder.onVerticesChanged.add { deleteButton.isEnabled = true }
+            for(vertex in initialArea){
+                areaBuilder.addVertex(vertex)
+            }
+            if(initialArea.isNotEmpty()){
+                MapboxUtility.zoomOnCoordinate(initialArea[0], mapboxMap)
+            }
 
-            areaBuilder.onAreaChanged.add { onMissionSettingModified() }
-            areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
             areaBuilderDrawer.onVertexMoved.add { old, new -> areaBuilder.moveVertex(old, new) }
 
             mapboxMap.addOnMapClickListener(this)
@@ -306,9 +324,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     private fun goToSaveActivity() {
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
-        intent.putExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
-        intent.putExtra(ItineraryCreateActivity.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
-        intent.putExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH, strategy)
+        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
+        intent.putExtra(STRATEGY_INTENT_PATH, strategy)
 
         startActivity(intent)
     }
