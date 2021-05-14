@@ -18,43 +18,43 @@ interface DroneExecutor {
     /**
      * Start a new mission that follows the given [missionPlan]
      *
-     * Shows toasts of the [context]
+     * Shows toasts on the [ctx]
      */
-    fun startMission(context: Context, missionPlan: Mission.MissionPlan): Completable
+    fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable
 
     /**
      * Pause current mission.
      *
      * Has no effect if there are no current mission or if it is already paused
      *
-     * Shows toasts of the [context]
+     * Shows toasts on the [ctx]
      */
-    fun pauseMission(context: Context): Completable
+    fun pauseMission(ctx: Context): Completable
 
     /**
      * Resume current paused mission.
      *
      * Has no effect if there are no current mission or if it is already running
      *
-     * Shows toasts of the [context]
+     * Shows toasts on the [ctx]
      */
-    fun resumeMission(context: Context): Completable
+    fun resumeMission(ctx: Context): Completable
 
     /**
      * Start a mission where the drone goes back to home location and land
      *
-     * Shows toasts of the [context]
+     * Shows toasts on the [ctx]
      *
      * Returns a [CompletableFuture] then will complete once the drone has landed
      */
-    fun returnToHomeLocationAndLand(context: Context): Completable
+    fun returnToHomeLocationAndLand(ctx: Context): Completable
 
     /**
      * Start a mission where the drone goes back to user location and land
      *
-     * Shows toasts of the [context]
+     * Shows toasts on the [ctx]
      *
      * Returns a [CompletableFuture] then will complete once the drone has landed
      */
-    fun returnToUserLocationAndLand(context: Context): Completable
+    fun returnToUserLocationAndLand(ctx: Context): Completable
 }

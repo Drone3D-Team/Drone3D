@@ -99,11 +99,20 @@
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
+
+    <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
+    <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
+    <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
+    <string name="drone_took_off">Drone took off</string>
+    <string name="drone_already_flying">Drone already flying</string>
+    <string name="drone_armed">Drone armed</string>
+    <string name="drone_already_armed">Drone already armed</string>
+    <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
     <!-- Live values during the flight -->
-    <string name="live_speed">Speed : %1$s m/s</string>
-    <string name="live_altitude">Altitude : %1$s m</string>
-    <string name="live_battery">Battery : %1$s%%</string>
-    <string name="live_distance_user">Distance to user : %1$s m</string>
+    <string name="live_speed">Speed : %1$.2f m/s</string>
+    <string name="live_altitude">Altitude : %1$.2f m</string>
+    <string name="live_battery">Battery : %1$.2f%%</string>
+    <string name="live_distance_user">Distance to user : %1$.2f m</string>
     <string name="user_location_deactivated">Distance to user : Not allowed to access user\'s location</string>
     <string name="user_location_null">Distance to user : Error, user\'s location is null</string>
     <string name="live_status">Mission status : %1$s</string>

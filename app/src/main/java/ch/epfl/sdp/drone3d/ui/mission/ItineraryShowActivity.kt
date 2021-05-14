@@ -48,15 +48,12 @@ class ItineraryShowActivity : BaseMapActivity() {
     @Inject
     lateinit var  weatherService: WeatherService
 
-    private lateinit var goToMissionInProgressButton: FloatingActionButton
     private var currentMissionPath: ArrayList<LatLng>? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
 
     private lateinit var ownerUid: String
     private var privateId: String? = null
     private var sharedId: String? = null
-
-    private lateinit var deleteButton: MaterialButton
 
     // true if the weather is good enough to launch the mission
     private var isWeatherGoodEnough: Boolean = false
@@ -66,8 +63,8 @@ class ItineraryShowActivity : BaseMapActivity() {
     lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.initMapView(savedInstanceState, R.layout.activity_itinerary_show, R.id.mapView)
 
@@ -75,9 +72,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Get the Intent that started this activity and extract the missionPath
-        @Suppress("UNCHECKED_CAST")
-        currentMissionPath =
-            intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        currentMissionPath = intent.getParcelableArrayListExtra(MissionViewAdapter.MISSION_PATH)
         // Get the Intent that started this activity and extract user and ids
         ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER).toString()
         privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
@@ -97,12 +92,8 @@ class ItineraryShowActivity : BaseMapActivity() {
             }
         }
 
-        deleteButton = findViewById(R.id.mission_delete)
-        deleteButton.visibility =
+        findViewById<View>(R.id.mission_delete).visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
-
-        goToMissionInProgressButton = findViewById(R.id.buttonToMissionInProgressActivity)
-        goToMissionInProgressButton.isEnabled = canMissionBeLaunched()
 
         if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
             weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0]))
@@ -110,6 +101,19 @@ class ItineraryShowActivity : BaseMapActivity() {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        droneService.getData().isConnected().observe(this) {
+            findViewById<View>(R.id.buttonToMissionInProgressActivity).isEnabled = canMissionBeLaunched()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        droneService.getData().isConnected().removeObservers(this)
     }
 
     /**
@@ -146,7 +150,6 @@ class ItineraryShowActivity : BaseMapActivity() {
         }else{
             goToMissionInProgressActivity()
         }
-
     }
 
     private fun goToMissionInProgressActivity(){

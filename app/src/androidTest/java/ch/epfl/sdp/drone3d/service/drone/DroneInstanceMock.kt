@@ -21,8 +21,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
 
 object DroneInstanceMock {
 
@@ -79,6 +78,12 @@ object DroneInstanceMock {
     }
 
     fun setupDefaultMocks() {
+        reset(droneAction)
+        reset(droneCamera)
+        reset(droneCore)
+        reset(droneMission)
+        reset(droneTelemetry)
+
         // Telemetry Mocks
         `when`(droneTelemetry.flightMode)
             .thenReturn(

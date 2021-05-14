@@ -148,9 +148,6 @@ class MissionInProgressActivityIntendedTest {
 
     @Test
     fun warningMessageVisibleInBadWeather() {
-        Espresso.onView(ViewMatchers.withId(R.id.warningBadWeather))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
-
         `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
             .thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
         activityRule.scenario.recreate()
@@ -277,5 +274,5 @@ class MissionInProgressActivityIntendedTest {
         }
     }
 
-    private fun <T> anyObj(type: Class<T>): T = any<T>(type)
+    private fun <T> anyObj(type: Class<T>): T = any(type)
 }

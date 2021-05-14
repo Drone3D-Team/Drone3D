@@ -19,6 +19,7 @@ import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
@@ -35,7 +36,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
-import io.mavsdk.telemetry.Telemetry
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
@@ -56,6 +56,11 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class MissionInProgressActivity : BaseMapActivity() {
 
+    companion object {
+        private const val DEFAULT_ZOOM: Double = 17.0
+        private const val ZOOM_TOLERANCE: Double = 2.0
+    }
+
     @Inject lateinit var droneService: DroneService
     @Inject lateinit var locationService: LocationService
     @Inject lateinit var weatherService: WeatherService
@@ -68,102 +73,19 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
 
+    private val observedData: MutableSet<LiveData<*>> = mutableSetOf()
     private var missionPath: ArrayList<LatLng>? = null
-
-    private var dronePositionObserver = Observer<LatLng> { newLatLng ->
-        newLatLng?.let { if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
-    }
-    private var homePositionObserver = Observer<Telemetry.Position> { newPosition: Telemetry.Position? ->
-        newPosition?.let {
-            if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(newPosition.latitudeDeg, newPosition.longitudeDeg))
-        }
-    }
-
-    private var droneStatusObserver = Observer<DroneStatus> { status ->
-        val visibility =
-                if (status == DroneStatus.EXECUTING_MISSION) View.VISIBLE else View.GONE
-
-        backToHomeButton.visibility = visibility
-        backToUserButton.visibility = visibility
-    }
-
-    private var droneConnectionStatusObserver = Observer<Boolean> { connectionStatus ->
-        if (!connectionStatus) {
-            ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
-        }
-        backToHomeButton.isEnabled = connectionStatus
-        backToUserButton.isEnabled = connectionStatus
-    }
-
-    private var videoStreamUriObserver = Observer<String> { streamUri ->
-        // TODO View stream
-    }
-
-    private var speedObserver = Observer<Float> { speed ->
-        speedLiveText.apply {
-            text = getString(R.string.live_speed, speed.toString())
-        }
-    }
-
-    private var altitudeObserver = Observer<Float> { altitude ->
-        altitudeLiveText.apply {
-            text = getString(R.string.live_altitude, altitude.toString())
-        }
-    }
-
-    private var batteryObserver = Observer<Float> { batteryLevel ->
-        batteryLiveText.apply {
-            text = getString(R.string.live_battery, batteryLevel.toString())
-        }
-    }
-
-    private var distanceUserObserver = Observer<LatLng> { position ->
-        if (locationService.isLocationEnabled()) {
-            if (locationService.getCurrentLocation() == null) {
-                distanceUserLiveText.apply {
-                    text = getString(R.string.user_location_null)
-                }
-            } else {
-                val distanceUser = position.distanceTo(locationService.getCurrentLocation()!!)
-                distanceUserLiveText.apply {
-                    text = getString(R.string.live_distance_user, distanceUser.toString())
-                }
-            }
-        } else {
-            distanceUserLiveText.apply {
-                text = getString(R.string.user_location_deactivated)
-            }
-        }
-    }
-
-    private var statusObserver = Observer<DroneStatus> { status ->
-        statusLiveText.apply {
-            text = getString(R.string.live_status, status.name)
-        }
-    }
-
-    private lateinit var weatherReport: LiveData<WeatherReport>
-    private var weatherReportObserver = Observer<WeatherReport> { report ->
-        val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
-        warningBadWeather.visibility = visibility
-    }
 
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
 
     private lateinit var warningBadWeather: TextView
-
-    private lateinit var speedLiveText: TextView
-    private lateinit var altitudeLiveText: TextView
-    private lateinit var batteryLiveText: TextView
-    private lateinit var distanceUserLiveText: TextView
-    private lateinit var statusLiveText: TextView
+    private lateinit var weatherReport: LiveData<WeatherReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        @Suppress("UNCHECKED_CAST")
-        missionPath = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        missionPath = intent.getParcelableArrayListExtra(MissionViewAdapter.MISSION_PATH)
 
         initMapView(savedInstanceState,
             R.layout.activity_mission_in_progress,
@@ -181,6 +103,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
 
+        setupObservers()
         warningBadWeather = findViewById(R.id.warningBadWeather)
         if (missionPath == null) {
             warningBadWeather.visibility = View.GONE
@@ -188,12 +111,6 @@ class MissionInProgressActivity : BaseMapActivity() {
             weatherReport =
                 weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
         }
-
-        speedLiveText = findViewById(R.id.speedLive)
-        altitudeLiveText = findViewById(R.id.altitudeLive)
-        batteryLiveText = findViewById(R.id.batteryLive)
-        distanceUserLiveText = findViewById(R.id.distanceUserLive)
-        statusLiveText = findViewById(R.id.statusLive)
 
         startMission()
     }
@@ -260,6 +177,36 @@ class MissionInProgressActivity : BaseMapActivity() {
         val intent = Intent(this, ItineraryShowActivity::class.java)
         intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
         startActivity(intent)
+        finish()
+    }
+
+    private fun setupObservers() {
+        val droneData = droneService.getData()
+
+        createObserver(droneData.getPosition()) {
+            it?.let { newLatLng -> if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
+        }
+
+        createObserver(droneData.getHomeLocation()) {
+            it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
+        }
+
+        if (this::weatherReport.isInitialized) {
+            createObserver(weatherReport) { report ->
+                val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
+                warningBadWeather.visibility = visibility
+            }
+        }
+
+        createDroneStatusObserver(droneData)
+        createTextObserver(droneData.getSpeed(), R.id.speedLive, R.string.live_speed) { it }
+        createTextObserver(droneData.getRelativeAltitude(), R.id.altitudeLive, R.string.live_altitude) { it }
+        createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
+        createPositionObserver(droneData)
+        createConnectionObserver(droneData)
+        createObserver(droneData.getVideoStreamUri()) {
+            //TODO
+        }
     }
 
     /**
@@ -301,44 +248,6 @@ class MissionInProgressActivity : BaseMapActivity() {
         Timber.e(ex)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        droneService.getData().getPosition().observe(this, dronePositionObserver)
-        droneService.getData().getHomeLocation().observe(this, homePositionObserver)
-        droneService.getData().getDroneStatus().observe(this, droneStatusObserver)
-        droneService.getData().isConnected().observe(this, droneConnectionStatusObserver)
-        droneService.getData().getVideoStreamUri().observe(this, videoStreamUriObserver)
-
-        // setup observers for live info given to user
-        droneService.getData().getSpeed().observe(this, speedObserver)
-        droneService.getData().getRelativeAltitude().observe(this, altitudeObserver)
-        droneService.getData().getBatteryLevel().observe(this, batteryObserver)
-        droneService.getData().getPosition().observe(this, distanceUserObserver)
-        droneService.getData().getDroneStatus().observe(this, statusObserver)
-
-        if (this::weatherReport.isInitialized) { weatherReport.observe(this, weatherReportObserver) }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        droneService.getData().getPosition().removeObserver(dronePositionObserver)
-        droneService.getData().getHomeLocation().removeObserver(homePositionObserver)
-        droneService.getData().getDroneStatus().removeObserver(droneStatusObserver)
-        droneService.getData().isConnected().removeObserver(droneConnectionStatusObserver)
-        droneService.getData().getVideoStreamUri().removeObserver(videoStreamUriObserver)
-
-        // remove observers for live info given to user
-        droneService.getData().getSpeed().removeObserver(speedObserver)
-        droneService.getData().getRelativeAltitude().removeObserver(altitudeObserver)
-        droneService.getData().getBatteryLevel().removeObserver(batteryObserver)
-        droneService.getData().getPosition().removeObserver(distanceUserObserver)
-        droneService.getData().getDroneStatus().removeObserver(statusObserver)
-
-        if (this::weatherReport.isInitialized) { weatherReport.removeObserver(weatherReportObserver) }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
 
@@ -346,11 +255,60 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
 
+        observedData.forEach { data -> data.removeObservers(this) }
+        observedData.clear()
+
         disposables.dispose()
     }
 
-    companion object {
-        private const val DEFAULT_ZOOM: Double = 17.0
-        private const val ZOOM_TOLERANCE: Double = 2.0
+    private fun createPositionObserver(droneData: DroneData) {
+        createObserver(droneData.getPosition()) {
+            it?.let {
+                findViewById<TextView>(R.id.distanceUserLive).apply {
+                    text = if (locationService.isLocationEnabled())
+                        if (locationService.getCurrentLocation() == null)
+                            getString(R.string.user_location_null)
+                        else {
+                            val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
+                            getString(R.string.live_distance_user, distanceUser)
+                        }
+                    else
+                        getString(R.string.user_location_deactivated)
+                }
+            }
+        }
+    }
+
+    private fun createDroneStatusObserver(droneData: DroneData) {
+        createObserver(droneData.getDroneStatus()) { status ->
+            val visibility = if (status == DroneStatus.EXECUTING_MISSION) View.VISIBLE else View.GONE
+
+            backToHomeButton.visibility = visibility
+            backToUserButton.visibility = visibility
+
+            findViewById<TextView>(R.id.statusLive).apply {
+                text = getString(R.string.live_status, status.name)
+            }
+        }
+    }
+
+    private fun createConnectionObserver(droneData: DroneData) {
+        createObserver(droneData.isConnected()) {
+            if (it == null || !it) {
+                ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
+                openItineraryShow()
+            }
+        }
+    }
+
+    private fun <T> createTextObserver(data: LiveData<T>, viewId: Int, txtId: Int, arg: (T) -> Any) {
+        createObserver(data) {
+            it?.let { findViewById<TextView>(viewId).text = getString(txtId, arg(it)) }
+        }
+    }
+
+    private fun <T> createObserver(data: LiveData<T>, observer: Observer<T>) {
+        data.observe(this, observer)
+        observedData.add(data)
     }
 }
