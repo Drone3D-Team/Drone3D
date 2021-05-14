@@ -207,8 +207,6 @@ class ItineraryShowActivityTest {
         }
 
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
-
-
     }
 
     @Test
@@ -250,7 +248,7 @@ class ItineraryShowActivityTest {
         onView(withId(R.id.buttonToMissionInProgressActivity))
             .check(matches(isEnabled()))
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
-        
+
         Intents.intended(
             hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
         )

@@ -126,24 +126,22 @@ class ItineraryShowActivity : BaseMapActivity() {
      * Start an intent to go to the mission in progress activity
      */
     fun launchMission(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (!isWeatherGoodEnough) {
+        val dronePos = droneService.getData().getPosition().value
+        val beginningPoint = flightPath[0]
+        if (!droneService.isConnected()) {
+            ToastHandler.showToast(this, R.string.launch_no_drone)
+        } else if (dronePos == null) {
+            ToastHandler.showToast(this, R.string.launch_no_drone_pos)
+        } else if (dronePos.distanceTo(beginningPoint) > MAX_BEGINNING_DISTANCE) {
+            ToastHandler.showToast(this, R.string.drone_too_far_from_start)
+        } else if (!isWeatherGoodEnough) {
             val builder = Builder(this)
             builder.setMessage(getString(R.string.launch_mission_confirmation))
             builder.setCancelable(true)
 
             builder.setPositiveButton(getString(R.string.confirm_launch)) { dialog, _ ->
                 dialog.cancel()
-                val dronePos = droneService.getData().getPosition().value
-                val beginningPoint = flightPath[0]
-                if (!droneService.isConnected()) {
-                    ToastHandler.showToast(this, R.string.launch_no_drone)
-                } else if (dronePos == null) {
-                    ToastHandler.showToast(this, R.string.launch_no_drone_pos)
-                } else if (dronePos.distanceTo(beginningPoint) > MAX_BEGINNING_DISTANCE) {
-                    ToastHandler.showToast(this, R.string.drone_too_far_from_start)
-                } else {
-                    goToMissionInProgressActivity()
-                }
+                goToMissionInProgressActivity()
             }
 
             builder.setNegativeButton(R.string.cancel_launch) { dialog, _ ->
