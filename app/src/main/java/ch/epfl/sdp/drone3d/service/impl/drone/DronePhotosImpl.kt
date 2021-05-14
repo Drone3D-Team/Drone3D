@@ -24,6 +24,7 @@ import java.net.URL
 
 class DronePhotosImpl(val service: DroneService) : DronePhotos {
 
+    //TODO: Check if cache works (same CaptureInfo are equal)
     private val photosCache = mutableMapOf<CameraProto.CaptureInfo, Bitmap>()
 
     @SuppressLint("CheckResult")
@@ -33,8 +34,10 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val data = MutableLiveData<Bitmap>()
 
         drone.camera.captureInfo.subscribe { captureInfo ->
+
+            //TODO: use cache
             GlobalScope.async {
-                val image = getPhoto(captureInfo.fileUrl)
+                val image = retrievePhoto(captureInfo.fileUrl)
                 if (image != null) {
                     data.postValue(image)
                 }
@@ -50,7 +53,7 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
 
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
             val coroutine = GlobalScope.async {
-                getPhotos(photoList)
+                retrievePhotos(photoList)
             }
             coroutine.getCompleted()
         }
@@ -64,7 +67,7 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
             val size = photoList.size
             val list = if (size <= n) photoList else photoList.subList(size - n, size)
             val coroutine = GlobalScope.async {
-                getPhotos(list)
+                retrievePhotos(list)
             }
             coroutine.getCompleted()
         }
@@ -78,7 +81,7 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
             val size = photoList.size
             val list = if (size <= n) photoList else photoList.subList(0, n)
             val coroutine = GlobalScope.async {
-                getPhotos(list)
+                retrievePhotos(list)
             }
             coroutine.getCompleted()
         }
@@ -100,13 +103,13 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
                 photoList.subList(0, n)
             }
             val coroutine = GlobalScope.async {
-                getPhotos(list)
+                retrievePhotos(list)
             }
             coroutine.getCompleted()
         }
     }
 
-    private fun getPhoto(fileUrl: String): Bitmap? {
+    private fun retrievePhoto(fileUrl: String): Bitmap? {
         var bitmap: Bitmap? = null
         try {
             val url = URL(fileUrl)
@@ -121,14 +124,14 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         return bitmap
     }
 
-    private suspend fun getPhotos(list: List<CameraProto.CaptureInfo>): List<Bitmap> {
+    private suspend fun retrievePhotos(list: List<CameraProto.CaptureInfo>): List<Bitmap> {
         return list.map { captureInfo ->
             GlobalScope.async {
                 // First check if image is cached
                 var image = photosCache[captureInfo]
                 // If not download it
                 if (image == null) {
-                    image = getPhoto(captureInfo.fileUrl)
+                    image = retrievePhoto(captureInfo.fileUrl)
                     // If the download didn't fail, cache the image
                     if (image != null) {
                         photosCache[captureInfo] = image
