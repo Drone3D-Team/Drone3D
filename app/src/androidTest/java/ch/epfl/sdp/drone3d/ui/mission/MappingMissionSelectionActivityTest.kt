@@ -123,6 +123,7 @@ class MappingMissionSelectionActivityTest {
 
         // Mock the position of the drone
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
     }
 
     @Before

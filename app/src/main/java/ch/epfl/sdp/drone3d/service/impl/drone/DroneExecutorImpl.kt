@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.service.impl.drone
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.StringRes
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneDataEditable
@@ -19,14 +20,16 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.camera.Camera
 import io.mavsdk.mission.Mission
+import io.mavsdk.telemetry.Telemetry.FlightMode.*
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 /**
  * This class is an implementation of [DroneExecutor]. As such it is responsible of the mission management of the drone.
  *
- * Parts of this code were taken from the fly2find project and adapted to our needs.
+ * This code was inspired by the fly2find project.
  */
 class DroneExecutorImpl(
     private val service: DroneService,
@@ -38,14 +41,18 @@ class DroneExecutorImpl(
         private const val MAX_RETRIES: Int = 5
         private const val DEFAULT_ALTITUDE: Float = 20f
     }
-
-    //private val photosService = DronePhotosImpl(service)
-
-    override fun startMission(context: Context, missionPlan: Mission.MissionPlan): Completable {
+    override fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {
         if (missionPlan.missionItems.isEmpty())
             throw IllegalArgumentException("Cannot start an empty mission")
 
         val instance = getInstance()
+
+        instance.camera.captureInfo.subscribe { captureInfo ->
+            Log.d(
+                "MAVphoto",
+                "Picture taken: " + captureInfo.fileUrl
+            )
+        }
 
         val home = data.getHomeLocation().value
             ?: throw IllegalStateException("Could not query launch point")
@@ -53,51 +60,101 @@ class DroneExecutorImpl(
             DroneUtils.generateMissionItem(
                 home.latitudeDeg,
                 home.longitudeDeg,
-                home.relativeAltitudeM
+                missionPlan.missionItems[0].relativeAltitudeM
             )
         )
 
-        instance.camera.captureInfo.subscribe { captureInfo ->
-            Log.d(
-                "MAVphoto",
-                "Picture taken: " + captureInfo.getFileUrl()
-            )
-        }
+        val disarmed = changeFromTo(instance.telemetry.armed)
+            .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
 
-        // Allowed start states are Landed, arming, taking off. Starting a mission on other states
-        // is dangerous and might break things
-        return when (val startStatus = data.getDroneStatus().value) {
-            IDLE, ARMING -> arm(context, instance, missionPlan)
-            TAKING_OFF -> takeoff(context, instance, missionPlan)
-            STARTING_MISSION -> start(context, instance, missionPlan)
-            else -> throw IllegalStateException("Cannot start a new mission in state $startStatus")
-        }
+        val mission = connected(instance)
+            .doOnComplete { data.getMutableDroneStatus().postValue(ARMING) }
+            .andThen(armedAndFlying(ctx, instance))
+            .andThen(sendMissionAndStart(ctx, instance, missionPlan))
+
+        return Completable.ambArray(mission, disarmed)
+            .andThen(finish(ctx, instance))
     }
 
-    override fun returnToHomeLocationAndLand(context: Context): Completable {
+    private fun connected(instance: System): Completable =
+        instance.core.connectionState.filter { it.isConnected }.firstOrError().toCompletable()
+
+    private fun armedAndFlying(ctx: Context, instance: System): Completable =
+        instance.telemetry.armed.firstOrError()
+            .flatMapCompletable { if (it) armed(ctx) else arm(ctx, instance) }
+            .doOnComplete { data.getMutableDroneStatus().postValue(TAKING_OFF) }
+            // Takeoff if the drone isn't flying
+            .andThen(instance.telemetry.inAir.firstOrError())
+            .flatMapCompletable { if (it) flying(ctx) else takeoff(ctx, instance) }
+
+    private fun armed(ctx: Context): Completable =
+        Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_armed) }
+
+    private fun arm(ctx: Context, instance: System): Completable =
+        instance.action.arm()
+            .retry { attempt, ex ->
+                Timber.e(ex, "Failure while arming the drone, try $attempt / $MAX_RETRIES")
+                ToastHandler.showToastAsync(
+                    ctx, R.string.drone_mission_retry, Toast.LENGTH_LONG,
+                    ex, attempt, MAX_RETRIES
+                )
+                attempt < MAX_RETRIES
+            }
+            .doOnComplete { ToastHandler.showToastAsync(ctx, R.string.drone_armed) }
+
+    private fun flying(ctx: Context): Completable =
+        Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_flying) }
+
+    private fun takeoff(ctx: Context, instance: System): Completable =
+        instance.action.takeoff()
+            .doOnComplete { ToastHandler.showToastAsync(ctx, R.string.drone_took_off) }
+
+    private fun sendMissionAndStart(
+        ctx: Context,
+        instance: System,
+        missionPlan: Mission.MissionPlan
+    ): Completable =
+        instance.telemetry.flightMode.firstOrError()
+            .flatMapCompletable { flightMode ->
+                when (flightMode) {
+                    // Ready to start the mission
+                    READY, HOLD, LAND, TAKEOFF ->
+                        start(ctx, instance, missionPlan)
+                    // A mission is already in progress, cannot start a new one
+                    MISSION -> {
+                        ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
+                        data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                        Completable.complete()
+                    }
+                    else -> throw IllegalStateException("Unknown state : $flightMode")
+                }
+            }
+
+    override fun returnToHomeLocationAndLand(ctx: Context): Completable {
         val returnLocation = data.getHomeLocation().value
-            ?: throw IllegalStateException(context.getString(R.string.drone_return_error))
+            ?: throw IllegalStateException(ctx.getString(R.string.drone_return_error))
 
         val location = LatLng(returnLocation.latitudeDeg, returnLocation.longitudeDeg)
         val altitude = returnLocation.relativeAltitudeM
 
-        return goToLocation(context, location, altitude)
+        return returnTo(ctx, location, altitude, R.string.drone_mission_return_launch)
     }
 
-    override fun returnToUserLocationAndLand(context: Context): Completable {
+    override fun returnToUserLocationAndLand(ctx: Context): Completable {
         if (!locationService.isLocationEnabled())
             throw IllegalStateException("Location is not enabled")
 
         val userPosition = locationService.getCurrentLocation()!!
         val altitude = data.getPosition().value?.altitude?.toFloat() ?: DEFAULT_ALTITUDE
 
-        return goToLocation(context, userPosition, altitude)
+        return returnTo(ctx, userPosition, altitude, R.string.drone_mission_to_user)
     }
 
-    private fun goToLocation(
-        context: Context,
+    private fun returnTo(
+        ctx: Context,
         returnLocation: LatLng,
-        altitude: Float
+        altitude: Float,
+        @StringRes msg: Int
     ): Completable {
 
         val droneInstance = getInstance()
@@ -106,113 +163,81 @@ class DroneExecutorImpl(
         return droneInstance.mission.pauseMission()
             .doOnComplete {
                 data.getMutableMissionPaused().postValue(true)
-                data.getMutableDroneStatus().postValue(STARTING_MISSION)
+                data.getMutableDroneStatus().postValue(SENDING_ORDER)
             }
-            .andThen(droneInstance.mission.setReturnToLaunchAfterMission(false))
             .andThen(droneInstance.mission.uploadMission(missionPlan)
                 .andThen(droneInstance.mission.startMission())
                 .doOnComplete {
                     data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
                     data.getMutableMission().postValue(null)
                     data.getMutableMissionPaused().postValue(false)
-                    ToastHandler.showToastAsync(context, R.string.drone_mission_success)
+                    ToastHandler.showToastAsync(ctx, msg)
                 })
     }
 
-    override fun pauseMission(context: Context): Completable {
+    override fun pauseMission(ctx: Context): Completable {
         val instance = getInstance()
 
+        data.getMutableDroneStatus().postValue(SENDING_ORDER)
         return instance.mission.pauseMission().doOnComplete {
             data.getMutableMissionPaused().postValue(true)
-            ToastHandler.showToastAsync(context, R.string.drone_pause_success)
+            data.getMutableDroneStatus().postValue(PAUSED)
+            ToastHandler.showToastAsync(ctx, R.string.drone_pause_success)
         }
     }
 
-    override fun resumeMission(context: Context): Completable {
+    override fun resumeMission(ctx: Context): Completable {
         val instance = getInstance()
 
+        data.getMutableDroneStatus().postValue(SENDING_ORDER)
         return instance.mission.startMission().doOnComplete {
             data.getMutableMissionPaused().postValue(false)
-            ToastHandler.showToastAsync(context, R.string.drone_mission_success)
+            data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+            ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
         }
-    }
-
-    private fun arm(
-        context: Context, instance: System, missionPlan: Mission.MissionPlan,
-        before: Completable = Completable.complete()
-    ): Completable {
-
-        val armed = before.doOnComplete { data.getMutableDroneStatus().postValue(ARMING) }
-            .andThen(instance.action.arm())
-            .retry { attempt, ex ->
-                Timber.e(ex, "Failure while arming the drone, try $attempt / $MAX_RETRIES")
-                ToastHandler.showToastAsync(
-                    context, R.string.drone_mission_retry, Toast.LENGTH_LONG,
-                    ex, attempt, MAX_RETRIES
-                )
-                attempt < MAX_RETRIES
-            }.doOnComplete { ToastHandler.showToastAsync(context, "Drone armed") }
-
-        return takeoff(context, instance, missionPlan, armed)
-    }
-
-    private fun takeoff(
-        context: Context, instance: System, missionPlan: Mission.MissionPlan,
-        before: Completable = Completable.complete()
-    ): Completable {
-
-        val takeoff = before.doOnComplete { data.getMutableDroneStatus().postValue(TAKING_OFF) }
-            .andThen(instance.action.takeoff())
-            .doOnComplete { ToastHandler.showToastAsync(context, "Drone took off") }
-
-        return start(context, instance, missionPlan, takeoff)
     }
 
     private fun start(
-        context: Context, instance: System, missionPlan: Mission.MissionPlan,
-        before: Completable = Completable.complete()
-    ): Completable {
-
-        val startMission =
-            before.doOnComplete { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
-                .andThen(instance.mission.setReturnToLaunchAfterMission(true))
-                .andThen(instance.mission.uploadMission(missionPlan))
-                .andThen(
-                    instance.camera.takePhoto()
+        ctx: Context,
+        instance: System,
+        missionPlan: Mission.MissionPlan
+    ): Completable =
+        Completable.fromCallable { data.getMutableDroneStatus().postValue(SENDING_ORDER) }
+            .andThen(instance.mission.setReturnToLaunchAfterMission(false))
+            .andThen(instance.mission.uploadMission(missionPlan))
+            .andThen(
+                instance.camera.takePhoto()
+                    .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
+                    .doOnError { throwable ->
+                        Log.d(
+                            "MAVphoto", "Failed to take a photo: "
+                                    + (throwable as Camera.CameraException).code
+                        )
+                    }
+                    .delay(2, TimeUnit.SECONDS)
+                    .andThen(instance.camera.takePhoto()
                         .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
                         .doOnError { throwable ->
                             Log.d(
                                 "MAVphoto", "Failed to take a photo: "
-                                        + (throwable as Camera.CameraException).getCode()
+                                        + (throwable as Camera.CameraException).code
                             )
                         }
                         .delay(2, TimeUnit.SECONDS)
-                        .andThen(instance.camera.takePhoto()
-                            .doOnComplete { Log.d("MAVphoto", "Taking a photo") }
-                            .doOnError { throwable ->
-                                Log.d(
-                                    "MAVphoto", "Failed to take a photo: "
-                                            + (throwable as Camera.CameraException).getCode()
-                                )
-                            }
-                            .delay(2, TimeUnit.SECONDS)
-                        )
-                        .andThen(instance.mission.startMission())
-                        .doOnComplete {
-                            data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                            data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
-                            data.getMutableMissionPaused().postValue(false)
-                            ToastHandler.showToastAsync(context, R.string.drone_mission_success)
-                        })
+                    ))
+            .andThen(instance.mission.startMission())
+            .doOnComplete {
+                data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
+                data.getMutableMissionPaused().postValue(false)
+                ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
+            }
 
-        return finish(context, instance, startMission)
-    }
-
-    private fun finish(context: Context, instance: System, before: Completable): Completable {
-        return before.andThen(instance.mission.missionProgress).distinctUntilChanged()
+    private fun finish(ctx: Context, instance: System): Completable =
+        instance.mission.missionProgress
             .filter { it.current >= it.total - 1 }.firstOrError().toCompletable()
             .doOnComplete {
-                ToastHandler.showToastAsync(context, "Mission done, returning to launch point")
+                ToastHandler.showToastAsync(ctx, R.string.drone_mission_return_launch)
                 data.getMutableDroneStatus().postValue(GOING_BACK)
             }
             .andThen(
@@ -221,28 +246,50 @@ class DroneExecutorImpl(
                     .doOnError { throwable ->
                         Log.d(
                             "MAVphoto", "Failed to take a photo: "
-                                    + (throwable as Camera.CameraException).getCode()
+                                    + (throwable as Camera.CameraException).code
                         )
                     }
                     .delay(2, TimeUnit.SECONDS)
             )
             .andThen(
                 instance.camera.listPhotos(Camera.PhotosRange.ALL)
-                    .doOnSuccess { list -> Log.d("MAVphoto", "Found " + list.size + " photos.") }
-                    .doOnError { error -> Log.d("MAVphoto", "Fail photos ! " + error.message) }
+                    .doOnSuccess { list ->
+                        Log.d(
+                            "MAVphoto",
+                            "Found " + list.size + " photos."
+                        )
+                    }
+                    .doOnError { error ->
+                        Log.d(
+                            "MAVphoto",
+                            "Fail photos ! " + error.message
+                        )
+                    }
                     .toCompletable()
             )
-            .andThen(instance.mission.missionProgress).distinctUntilChanged()
+            .andThen(instance.mission.missionProgress)
             .filter { it.current == it.total }.firstOrError().toCompletable()
             .doOnComplete { data.getMutableDroneStatus().postValue(LANDING) }
             .andThen(instance.action.land())
-            .andThen(instance.action.disarm())
+            .andThen(instance.telemetry.inAir).filter { !it }.firstOrError().toCompletable()
             .doOnComplete {
                 // Completion
                 data.getMutableDroneStatus().postValue(IDLE)
                 data.getMutableMission().postValue(null)
                 data.getMutableMissionPaused().postValue(true)
             }
+
+
+    private fun changeFromTo(flow: Flowable<Boolean>): Completable {
+        var last = false
+        return flow.distinctUntilChanged().filter { current ->
+            if (!current && last)
+                true
+            else {
+                last = current
+                false
+            }
+        }.firstOrError().toCompletable()
     }
 
     private fun getInstance(): System = service.provideDrone()

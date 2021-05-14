@@ -5,43 +5,32 @@
 
 package ch.epfl.sdp.drone3d.service.impl.drone
 
-import android.util.Log
+import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
+import ch.epfl.sdp.drone3d.service.api.drone.DronePhotos
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
-import io.mavsdk.camera.Camera
-import io.reactivex.Completable
-import io.reactivex.disposables.Disposable
+import io.reactivex.Single
 
-class DronePhotosImpl(val service: DroneService) {
+class DronePhotosImpl(val service: DroneService) : DronePhotos {
 
-    lateinit var disposable: Disposable
-
-    fun printPhoto() {
-        Log.d("MAVphoto", "Call print photo")
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-        val camera = drone.camera ?: throw IllegalStateException("Could not query the drone camera")
-        Log.d("MAVphoto", "Settup listener photo")
-        disposable = camera.captureInfo.subscribe {
-            Log.d("MAVphoto", "New photo")
-            Log.d("MAVphoto", it.fileUrl)
-        }
+    override fun getNewPhotos(): LiveData<Bitmap> {
+        TODO("Not yet implemented")
     }
 
-    fun printAllPhotos(): Completable {
-        Log.d("MAVphoto", "Call print all photos")
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-        val camera = drone.camera ?: throw IllegalStateException("Could not query the drone camera")
-        Log.d("MAVphoto", "Settup listener all photos")
+    override fun getPhotos(): Single<List<Bitmap>> {
+        TODO("Not yet implemented")
+    }
 
-        return camera.listPhotos(Camera.PhotosRange.ALL).doOnSuccess {
-            Log.d("MAVphoto", "New " + it.size + " photos !")
-            for (captureInfo in it) {
-                Log.d("MAVphoto", "Photo URL " + captureInfo.fileUrl)
-            }
-        }.doOnError {
-            Log.d("MAVphoto", "Fail photos !")
-        }.toCompletable()
+    override fun getLastPhotos(n: Int): Single<List<Bitmap>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getFirstPhotos(n: Int): Single<List<Bitmap>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getRandomPhotos(n: Int): Single<List<Bitmap>> {
+        TODO("Not yet implemented")
     }
 
 }

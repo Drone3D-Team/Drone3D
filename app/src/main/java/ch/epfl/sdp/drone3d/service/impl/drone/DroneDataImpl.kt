@@ -175,8 +175,8 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
         }
     }
     private fun addVideoStreamSubscriptions(droneInstance: System) {
-        addSubscription(droneInstance.camera.videoStreamInfo, "videoStreamUri") { i ->
-            videoStreamUri.postValue(i.settings.uri)
+        addSubscription(droneInstance.camera.videoStreamInfo.map { it.settings.uri }, "videoStreamUri") { uri ->
+            videoStreamUri.postValue(uri)
         }
     }
 

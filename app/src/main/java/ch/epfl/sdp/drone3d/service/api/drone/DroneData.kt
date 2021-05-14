@@ -32,10 +32,11 @@ interface DroneData {
         IDLE, // The drone is not armed
         ARMING, // The drone is being armed
         TAKING_OFF, // The drone is taking off
-        STARTING_MISSION, // The drone is receiving its mission
+        SENDING_ORDER, // The drone is receiving its mission
         EXECUTING_MISSION, // The drone is executing its mission
         GOING_BACK, // The drone is going back to its launch point
-        LANDING // the drone is landing
+        LANDING, // the drone is landing
+        PAUSED // The drone mission is paused
     }
 
     /**
