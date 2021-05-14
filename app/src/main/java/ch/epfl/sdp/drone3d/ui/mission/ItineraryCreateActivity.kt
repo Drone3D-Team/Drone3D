@@ -110,7 +110,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         val bundle = intent.extras
         if (bundle != null &&  !bundle.isEmpty) {
             flightHeight = bundle.getDouble(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH)
-            strategy = (bundle.get(ItineraryShowActivity.STRATEGY_INTENT_PATH) as Strategy)!!
+            strategy = (bundle.get(ItineraryShowActivity.STRATEGY_INTENT_PATH) as Strategy)
             initialArea = bundle.getParcelableArrayList(ItineraryShowActivity.AREA_INTENT_PATH)!!
         }
 
