@@ -76,17 +76,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val bundle = intent.extras
-        if (bundle != null) {
-            // Get the Intent that started this activity and extract user and ids
-            ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH).toString()
-            privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE_ID_INTENT_PATH)
-            sharedId = intent.getStringExtra(MissionViewAdapter.SHARED_ID_INTENT_PATH)
-            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)
-            strategy =
-                (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
-            area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
-        }
+        readIntent()
 
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
@@ -118,6 +108,20 @@ class ItineraryShowActivity : BaseMapActivity() {
         weatherReport.observe(this) {
             isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
 
+        }
+    }
+
+    private fun readIntent(){
+        val bundle = intent.extras
+        if (bundle != null) {
+            // Get the Intent that started this activity and extract user and ids
+            ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH).toString()
+            privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE_ID_INTENT_PATH)
+            sharedId = intent.getStringExtra(MissionViewAdapter.SHARED_ID_INTENT_PATH)
+            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)
+            strategy =
+                (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
+            area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
         }
     }
 
