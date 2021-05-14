@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxAreaBuilderDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
@@ -24,6 +25,8 @@ import ch.epfl.sdp.drone3d.map.area.AreaBuilder
 import ch.epfl.sdp.drone3d.map.area.ParallelogramBuilder
 import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData
+import ch.epfl.sdp.drone3d.service.api.drone.DroneExecutor
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
@@ -36,6 +39,9 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import dagger.hilt.android.AndroidEntryPoint
+import io.mavsdk.System
+import io.mavsdk.mission.Mission
+import io.mavsdk.telemetry.Telemetry
 import javax.inject.Inject
 
 /**
@@ -67,7 +73,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     private var flightHeight = 50.0
     private lateinit var missionBuilder: ParallelogramMappingMissionService
     private lateinit var missionDrawer: MapboxMissionDrawer
-    private var flightPathShouldBeReGenerated = false
+    private var isPreviewUpToDate = true
     private var strategy = Strategy.SINGLE_PASS
 
     // Area
@@ -86,6 +92,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     // Text
     private lateinit var altitudeText: TextView
 
+    companion object{
+        const val STRATEGY_INTENT_PATH = "ICA_strategy"
+        const val AREA_INTENT_PATH = "ICA_area"
+        const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,9 +146,10 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
+            altitudeText.text = flightHeight.toString() + "m"
             altitudeButton.setOnProgressChangeListener { progressValue ->
                 flightHeight = progressValue.toDouble()
-                altitudeText.text = progressValue.toString()
+                altitudeText.text = progressValue.toString() + "m"
                 onMissionSettingModified()
             }
         }
@@ -151,8 +163,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
     private fun onMissionSettingModified() {
         if (areaBuilder.isComplete()) {
+            isPreviewUpToDate = false
             buildMissionButton.isEnabled = true
-            flightPathShouldBeReGenerated = true
+            goToSaveButton.isEnabled = authService.hasActiveSession()
         }
         if (areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()) {
             deleteButton.isEnabled = true
@@ -224,10 +237,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun buildFlightPath(@Suppress("UNUSED_PARAMETER") view: View) {
         buildMissionButton.isEnabled = false
-        if (flightPathShouldBeReGenerated) {
-            flightPathShouldBeReGenerated = false
+        if (!isPreviewUpToDate) {
+            isPreviewUpToDate = true
             if (areaBuilder.isComplete()) {
-
                 val path = when (strategy) {
                     Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(
                         areaBuilder.vertices,
@@ -244,7 +256,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     if (isMissionDisplayed) {
                         missionDrawer.showMission(flightPath, false)
                     }
-                    goToSaveButton.isEnabled = authService.hasActiveSession()
                 } else {
                     Toast.makeText(
                         baseContext, R.string.drone_should_be_connected,
@@ -271,7 +282,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (flightPathShouldBeReGenerated) {
+        if (!isPreviewUpToDate) {
             val builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.save_without_updating_confirmation))
             builder.setCancelable(true)
@@ -295,7 +306,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     private fun goToSaveActivity() {
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
-        intent.putExtra("flightPath", flightPath)
+        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
+        intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
         startActivity(intent)
     }
 

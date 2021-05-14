@@ -51,24 +51,39 @@ import org.mockito.Mockito.`when`
 import java.util.*
 
 @HiltAndroidTest
-@UninstallModules(DroneModule::class, AuthenticationModule::class, LocationModule::class, WeatherModule::class)
+@UninstallModules(
+    DroneModule::class,
+    AuthenticationModule::class,
+    LocationModule::class,
+    WeatherModule::class
+)
 class ItineraryShowActivityTest {
 
-    private val GOOD_WEATHER_REPORT = WeatherReport("Clear", "description",
-        20.0, 20, 5.0, 500, Date(12903))
+    private val GOOD_WEATHER_REPORT = WeatherReport(
+        "Clear", "description",
+        20.0, 20, 5.0, 500, Date(12903)
+    )
 
-    private val BAD_WEATHER_REPORT = WeatherReport("RAIN", "description",
-        -1.0, 20, 10.0, 500, Date(12903))
+    private val BAD_WEATHER_REPORT = WeatherReport(
+        "RAIN", "description",
+        -1.0, 20, 10.0, 500, Date(12903)
+    )
 
     private val USER_UID = "asdfg"
 
-    private val someLocationsList = arrayListOf(LatLng(47.398979, 8.543434))
+    private val bayland_area = arrayListOf(
+        LatLng(37.41253570576311, -121.99694775011824),
+        LatLng(37.412496825414046, -121.99683107403213),
+        LatLng(37.41243024942702, -121.99686795440418)
+    )
 
     private val activityRule = ActivityScenarioRule<ItineraryShowActivity>(
-        Intent(ApplicationProvider.getApplicationContext(),
-            ItineraryShowActivity::class.java).apply {
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            ItineraryShowActivity::class.java
+        ).apply {
             putExtras(Bundle().apply {
-                putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+                putSerializable(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
             })
         }
     )
@@ -101,11 +116,20 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
 
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                GOOD_WEATHER_REPORT
+            )
+        )
 
         val executor = Mockito.mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
-        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
+        `when`(
+            executor.startMission(
+                anyObj(Context::class.java),
+                anyObj(Mission.MissionPlan::class.java)
+            )
+        )
             .thenReturn(Completable.never())
         `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
             .thenReturn(Completable.complete())
@@ -133,9 +157,15 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionInProgressActivityButtonIsNotEnabledWhenDroneIsNotConnected() {
         `when`(droneService.isConnected()).thenReturn(false)
-        `when`(droneService.getData()
-            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+        `when`(
+            droneService.getData()
+                .getPosition()
+        ).thenReturn(MutableLiveData(bayland_area[0]))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                GOOD_WEATHER_REPORT
+            )
+        )
 
         activityRule.scenario.recreate()
 
@@ -147,7 +177,11 @@ class ItineraryShowActivityTest {
     fun goToMissionProgressActivityButtonIsNotEnabledWhenDroneTooFar() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                GOOD_WEATHER_REPORT
+            )
+        )
 
         activityRule.scenario.recreate()
 
@@ -158,9 +192,15 @@ class ItineraryShowActivityTest {
     @Test
     fun goToMissionProgressActivityButtonIsEnabledWhenWeatherTooBad() {
         `when`(droneService.isConnected()).thenReturn(true)
-        `when`(droneService.getData()
-            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
+        `when`(
+            droneService.getData()
+                .getPosition()
+        ).thenReturn(MutableLiveData(bayland_area[0]))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                BAD_WEATHER_REPORT
+            )
+        )
 
         activityRule.scenario.recreate()
 
@@ -172,9 +212,15 @@ class ItineraryShowActivityTest {
     fun goToMissionInProgressActivityWork() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(locationService.isLocationEnabled()).thenReturn(false)
-        `when`(droneService.getData()
-            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_WEATHER_REPORT))
+        `when`(
+            droneService.getData()
+                .getPosition()
+        ).thenReturn(MutableLiveData(bayland_area[0]))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                GOOD_WEATHER_REPORT
+            )
+        )
 
         activityRule.scenario.recreate()
 
@@ -187,16 +233,22 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.MISSION_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH) })
     }
 
     @Test
     fun goToMissionInProgressWorksWhenBadWeather() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(locationService.isLocationEnabled()).thenReturn(false)
-        `when`(droneService.getData()
-            .getPosition()).thenReturn(MutableLiveData(someLocationsList[0]))
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
+        `when`(
+            droneService.getData()
+                .getPosition()
+        ).thenReturn(MutableLiveData(bayland_area[0]))
+        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+            MutableLiveData(
+                BAD_WEATHER_REPORT
+            )
+        )
 
         activityRule.scenario.recreate()
 
@@ -214,7 +266,7 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.MISSION_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH) })
 
     }
 
@@ -236,9 +288,11 @@ class ItineraryShowActivityTest {
         val userSession = UserSession(user)
         `when`(authService.getCurrentSession()).thenReturn(userSession)
 
-        val intent = Intent(ApplicationProvider.getApplicationContext(),
-            ItineraryShowActivity::class.java)
-        intent.putExtra(MissionViewAdapter.OWNER, USER_UID)
+        val intent = Intent(
+            ApplicationProvider.getApplicationContext(),
+            ItineraryShowActivity::class.java
+        )
+        intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH, USER_UID)
 
         ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
             onView(withId(R.id.mission_delete))

@@ -63,10 +63,10 @@ class MappingMissionSelectionActivityTest {
         private const val USER_UID = "asdfg"
 
         private val SHARED_MAPPING_MISSION =
-            MappingMission("shared1", listOf(LatLng(10.0, 10.0), LatLng(25.0, 25.0)))
-        private val PRIVATE_MAPPING_MISSION = MappingMission("private1", listOf())
+            MappingMission("shared1")
+        private val PRIVATE_MAPPING_MISSION = MappingMission("private1")
         private val PRIVATE_AND_SHARED_MAPPING_MISSION =
-            MappingMission("private2", listOf()).apply {
+            MappingMission("private2").apply {
                 state = State.PRIVATE_AND_SHARED
             }
 

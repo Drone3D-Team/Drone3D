@@ -64,7 +64,7 @@
     <string name="map_not_ready">MAP NOT READY</string>
     <string name="confirm_save_without_updating">Save anyway</string>
     <string name="cancel_save_without_updating">Cancel</string>
-    <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want to save without updating the mission ?</string>
+    <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
 
     <!--Manage offline map activity-->

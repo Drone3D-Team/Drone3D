@@ -16,8 +16,10 @@ import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
+import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
@@ -37,6 +39,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     companion object {
         // max 1000 meters between the user/simulation and the start of the mission
         private const val MAX_BEGINNING_DISTANCE = 1000
+        const val FLIGHTPATH_INTENT_PATH = "ISA_flightPath"
     }
 
     @Inject
@@ -48,12 +51,16 @@ class ItineraryShowActivity : BaseMapActivity() {
     @Inject
     lateinit var  weatherService: WeatherService
 
-    private var currentMissionPath: ArrayList<LatLng>? = null
+    // TODO remove
+    private var flightPath = listOf<LatLng>()
     private lateinit var missionDrawer: MapboxMissionDrawer
 
     private lateinit var ownerUid: String
     private var privateId: String? = null
     private var sharedId: String? = null
+    private lateinit var area: List<LatLng>
+    private lateinit var strategy: MappingMissionService.Strategy
+    private var flightHeight: Double = 50.0
 
     // true if the weather is good enough to launch the mission
     private var isWeatherGoodEnough: Boolean = false
@@ -71,12 +78,16 @@ class ItineraryShowActivity : BaseMapActivity() {
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Get the Intent that started this activity and extract the missionPath
-        currentMissionPath = intent.getParcelableArrayListExtra(MissionViewAdapter.MISSION_PATH)
-        // Get the Intent that started this activity and extract user and ids
-        ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER).toString()
-        privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE)
-        sharedId = intent.getStringExtra(MissionViewAdapter.SHARED)
+        val bundle = intent.extras
+        if(bundle != null){
+            // Get the Intent that started this activity and extract user and ids
+            ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH).toString()
+            privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE_ID_INTENT_PATH)
+            sharedId = intent.getStringExtra(MissionViewAdapter.SHARED_ID_INTENT_PATH)
+            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)!!
+            strategy = (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
+            area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
+        }
 
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
@@ -85,18 +96,27 @@ class ItineraryShowActivity : BaseMapActivity() {
                     missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, mapboxMap.style!!)
                 }
 
-                if (currentMissionPath != null) {
-                    missionDrawer.showMission(currentMissionPath!!, false)
-                    MapboxUtility.zoomOnMission(currentMissionPath!!, mapboxMap)
-                }
+                val missionBuilder = ParallelogramMappingMissionService(droneService)
+                flightPath = when (strategy) {
+                    MappingMissionService.Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(
+                        area,
+                        flightHeight
+                    )
+                    MappingMissionService.Strategy.DOUBLE_PASS -> missionBuilder.buildDoublePassMappingMission(
+                        area,
+                        flightHeight
+                    )
+                }!!
+                missionDrawer.showMission(flightPath, false)
+                    MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
         }
 
         findViewById<View>(R.id.mission_delete).visibility =
             if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
 
-        if (currentMissionPath != null && currentMissionPath!!.isNotEmpty()) {
-            weatherReport = weatherService.getWeatherReport(LatLng(currentMissionPath!![0]))
+        if (flightPath.isNotEmpty()) {
+            weatherReport = weatherService.getWeatherReport(LatLng(flightPath[0]))
             weatherReport.observe(this) {
                 isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
             }
@@ -121,10 +141,10 @@ class ItineraryShowActivity : BaseMapActivity() {
      */
     private fun canMissionBeLaunched(): Boolean {
         val dronePos = droneService.getData().getPosition().value
-        return if (currentMissionPath?.isEmpty() == true || !droneService.isConnected() || dronePos == null)
+        return if (flightPath.isEmpty() == true || !droneService.isConnected() || dronePos == null)
             false
         else {
-            val beginningPoint = currentMissionPath!![0]
+            val beginningPoint = flightPath[0]
             dronePos.distanceTo(beginningPoint) < MAX_BEGINNING_DISTANCE
         }
     }
@@ -154,7 +174,7 @@ class ItineraryShowActivity : BaseMapActivity() {
 
     private fun goToMissionInProgressActivity(){
         val intent = Intent(this, MissionInProgressActivity::class.java)
-        intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
         startActivity(intent)
     }
 
@@ -182,7 +202,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      */
     fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER")view: View) {
         val intent = Intent(this, WeatherInfoActivity::class.java)
-        intent.putExtra(MissionViewAdapter.MISSION_PATH, currentMissionPath)
+        intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
         startActivity(intent)
     }
 

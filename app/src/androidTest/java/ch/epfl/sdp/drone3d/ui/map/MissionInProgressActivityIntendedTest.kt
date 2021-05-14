@@ -72,7 +72,7 @@ class MissionInProgressActivityIntendedTest {
         Intent(ApplicationProvider.getApplicationContext(), MissionInProgressActivity::class.java).apply {
             putExtras(
                     Bundle().apply {
-                        putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+                        putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, someLocationsList)
                     }
             )
         }

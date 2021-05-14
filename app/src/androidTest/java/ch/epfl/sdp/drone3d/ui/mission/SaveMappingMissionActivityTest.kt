@@ -115,8 +115,7 @@ class SaveMappingMissionActivityTest {
         val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
 
         val expectedMappingMission = MappingMission(
-            "Unnamed mission",
-            flightPath
+            "Unnamed mission"
         )
 
         val intent = Intent(
@@ -139,7 +138,7 @@ class SaveMappingMissionActivityTest {
 
         val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
 
-        val expectedMappingMission = MappingMission("Unnamed mission", flightPath)
+        val expectedMappingMission = MappingMission("Unnamed mission")
 
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
@@ -161,7 +160,7 @@ class SaveMappingMissionActivityTest {
 
         val flightPath = arrayListOf(LatLng(10.1, 12.2), LatLng(1.1, 1.2))
 
-        val expectedMappingMission = MappingMission("Unnamed mission", flightPath)
+        val expectedMappingMission = MappingMission("Unnamed mission")
 
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
@@ -186,7 +185,7 @@ class SaveMappingMissionActivityTest {
         val flightPath = arrayListOf<LatLng>()
         val name = "My mission"
 
-        val expectedMappingMission = MappingMission(name, flightPath)
+        val expectedMappingMission = MappingMission(name)
 
         val intent = Intent(
             ApplicationProvider.getApplicationContext(),
