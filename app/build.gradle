@@ -79,6 +79,9 @@ dependencies {
     implementation 'io.mavsdk:mavsdk:0.8.0'
     implementation 'io.mavsdk:mavsdk-server:0.8.1'
 
+    // Video stream
+    implementation fileTree(dir: 'libs', include: '*.aar')
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
     testImplementation 'org.mockito:mockito-core:3.8.0'

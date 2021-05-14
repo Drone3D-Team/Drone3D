@@ -6,12 +6,13 @@
 package ch.epfl.sdp.drone3d.ui.map
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.view.SurfaceView
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.Transformations
 import ch.epfl.sdp.drone3d.R
@@ -29,6 +30,12 @@ import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource
+import com.google.android.exoplayer2.source.rtsp.core.Client
+import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.material.button.MaterialButton
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -67,11 +74,13 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
-    private lateinit var cameraView: SurfaceView
 
     private lateinit var missionDrawer: MapboxMissionDrawer
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
+
+    private lateinit var player: ExoPlayer
+    private lateinit var rtspFactory: Client.Factory<*>
 
     private val observedData: MutableSet<LiveData<*>> = mutableSetOf()
     private var missionPath: ArrayList<LatLng>? = null
@@ -98,19 +107,28 @@ class MissionInProgressActivity : BaseMapActivity() {
             }
         }
 
-        cameraView = findViewById(R.id.camera_mission_view)
-
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
 
-        setupObservers()
         warningBadWeather = findViewById(R.id.warningBadWeather)
+
         if (missionPath == null) {
             warningBadWeather.visibility = View.GONE
-        } else {
-            weatherReport =
-                weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
         }
+
+        weatherReport = if (droneService.getData().getPosition().value != null) {
+            weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
+        } else {
+            MutableLiveData()
+        }
+
+        player = SimpleExoPlayer.Builder(this).build()
+        rtspFactory = RtspDefaultClient.factory(player)
+            .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
+            .setNatMethod(Client.RTSP_NAT_DUMMY)
+        findViewById<PlayerView>(R.id.camera_mission_view).player = player
+
+        setupObservers()
 
         startMission()
     }
@@ -191,11 +209,9 @@ class MissionInProgressActivity : BaseMapActivity() {
             it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
         }
 
-        if (this::weatherReport.isInitialized) {
-            createObserver(weatherReport) { report ->
-                val visibility = if (WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
-                warningBadWeather.visibility = visibility
-            }
+        createObserver(weatherReport) { report ->
+                warningBadWeather.visibility =
+                    if (report == null || WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
         }
 
         createDroneStatusObserver(droneData)
@@ -205,7 +221,14 @@ class MissionInProgressActivity : BaseMapActivity() {
         createPositionObserver(droneData)
         createConnectionObserver(droneData)
         createObserver(droneData.getVideoStreamUri()) {
-            //TODO
+            it?.let { streamUri ->
+                val mediaSource = RtspMediaSource.Factory(rtspFactory)
+                    .createMediaSource(Uri.parse(streamUri.replace("rtspt://", "rtsp://")))
+
+                player.setMediaSource(mediaSource)
+                player.prepare()
+                player.play()
+            }
         }
     }
 
@@ -259,6 +282,8 @@ class MissionInProgressActivity : BaseMapActivity() {
         observedData.clear()
 
         disposables.dispose()
+
+        player.release()
     }
 
     private fun createPositionObserver(droneData: DroneData) {
