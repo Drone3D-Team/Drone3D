@@ -253,7 +253,7 @@ class ItineraryShowActivityTest {
     }
 
     @Test
-    fun editButtonWork() {
+    fun editButtonWorks() {
         activityRule.scenario.recreate()
 
         onView(withId(R.id.editButton))
@@ -265,9 +265,9 @@ class ItineraryShowActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
-        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH) })
-        assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.AREA_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH) })
     }
 
     @Test
