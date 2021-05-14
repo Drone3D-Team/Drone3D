@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.service.impl.mission
 
-import android.util.Log
 import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
