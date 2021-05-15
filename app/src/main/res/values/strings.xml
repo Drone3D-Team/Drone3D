@@ -77,8 +77,6 @@
     <string name="download_progress">The download is at: %1$s completion</string>
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
 
-
-
     <!-- Mapping Mission Selection Activity -->
     <string name="create_mapping_mission_button_text">Create new mapping mission</string>
     <string name="private_type_text">Private</string>
@@ -128,6 +126,7 @@
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>
     <string name="info_visibility">Visibility limit : %1$s m</string>
+    <string name="info_visibility_km">Visibility limit : %1$s km</string>
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
