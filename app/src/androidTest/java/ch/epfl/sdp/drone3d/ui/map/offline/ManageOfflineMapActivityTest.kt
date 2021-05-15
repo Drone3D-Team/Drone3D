@@ -3,12 +3,10 @@ package ch.epfl.sdp.drone3d.ui.map.offline
 import android.os.SystemClock
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
@@ -150,10 +148,8 @@ class ManageOfflineMapActivityTest {
             .perform(click())
 
         onView(withId((R.id.input_text)))
-            .perform(typeText("regionName"))
-
-        closeSoftKeyboard()
-
+            .perform(typeText("regionName"), closeSoftKeyboard())
+        
         onView(withContentDescription("Positive button"))
             .perform((click()))
 
@@ -204,9 +200,7 @@ class ManageOfflineMapActivityTest {
         SystemClock.sleep(100)
 
         onView(withId((R.id.input_text)))
-            .perform(typeText(""))
-
-        closeSoftKeyboard()
+            .perform(typeText(""), closeSoftKeyboard())
 
         onView(withContentDescription("Positive button"))
             .perform((click()))
