@@ -146,7 +146,7 @@ class ManageOfflineMapActivityTest {
         }
 
         assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-        /*
+
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
 
@@ -162,9 +162,10 @@ class ManageOfflineMapActivityTest {
             .perform(typeText("regionName"), closeSoftKeyboard())
 
         onView(withContentDescription("Positive button"))
-            .inRoot(RootMatchers.isDialog())
+            .inRoot(RootMatchers.isDialog()).check(matches(isEnabled()))
             .perform(click())
 
+        /*
         SystemClock.sleep(12000) //Need to wait for the map to be downloaded. Cannot use counter
         //since the callback is inside the activity
 
@@ -200,7 +201,7 @@ class ManageOfflineMapActivityTest {
 
         onView(withId(R.id.tiles_used))
             .check(matches(withText("0/6000")))
-            
+
          */
     }
 
