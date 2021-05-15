@@ -7,6 +7,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
@@ -15,7 +16,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
-import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImplTest
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineManager
@@ -148,6 +148,12 @@ class ManageOfflineMapActivityTest {
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
 
+        onView(withId((R.id.input_text)))
+            .perform(typeText("regionName"))
+
+        onView(withContentDescription("Positive button"))
+            .perform((click()))
+
         SystemClock.sleep(10000) //Need to wait for the map to be downloaded. Cannot use counter
         //since the callback is inside the activity
 
@@ -184,5 +190,7 @@ class ManageOfflineMapActivityTest {
         onView(withId(R.id.tiles_used))
             .check(matches(withText("0/6000")))
     }
+
+
 
 }

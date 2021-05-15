@@ -168,6 +168,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
         dialog.setOnShowListener {
             val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.contentDescription = "Positive button" //Used for testing
 
             button.setOnClickListener{
 
