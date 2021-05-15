@@ -20,6 +20,7 @@ import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 
@@ -88,47 +89,62 @@ object DroneInstanceMock {
         `when`(droneTelemetry.flightMode)
             .thenReturn(
                 Flowable.fromArray(
-                Telemetry.FlightMode.LAND,
-                Telemetry.FlightMode.MISSION,
-                Telemetry.FlightMode.HOLD,
-                Telemetry.FlightMode.MISSION
-            ))
-        `when`(droneTelemetry.armed)
-            .thenReturn(Flowable.fromArray(
-                true
-            ))
-        `when`(droneTelemetry.position)
-            .thenReturn(Flowable.fromArray(
-                Telemetry.Position(0.0, 0.0, 0.0f, 0.0f),
-                Telemetry.Position(0.1, 0.0, 0.0f, 0.0f),
-                Telemetry.Position(0.2, 0.0, 0.0f, 0.0f),
-                Telemetry.Position(0.3, 0.0, 0.0f, 0.0f)
-            ))
-        `when`(droneTelemetry.battery)
-            .thenReturn(Flowable.fromArray(
-                Telemetry.Battery(5.0f, 10.0f)
-            ))
-        `when`(droneTelemetry.positionVelocityNed)
-            .thenReturn(Flowable.fromArray(
-                Telemetry.PositionVelocityNed(
-                    Telemetry.PositionNed(0.0f, 0.0f, 0.0f),
-                    Telemetry.VelocityNed(0.0f, 0.0f, 0.0f)
+                    Telemetry.FlightMode.LAND,
+                    Telemetry.FlightMode.MISSION,
+                    Telemetry.FlightMode.HOLD,
+                    Telemetry.FlightMode.MISSION
                 )
-            ))
+            )
+        `when`(droneTelemetry.armed)
+            .thenReturn(
+                Flowable.fromArray(
+                    true
+                )
+            )
+        `when`(droneTelemetry.position)
+            .thenReturn(
+                Flowable.fromArray(
+                    Telemetry.Position(0.0, 0.0, 0.0f, 0.0f),
+                    Telemetry.Position(0.1, 0.0, 0.0f, 0.0f),
+                    Telemetry.Position(0.2, 0.0, 0.0f, 0.0f),
+                    Telemetry.Position(0.3, 0.0, 0.0f, 0.0f)
+                )
+            )
+        `when`(droneTelemetry.battery)
+            .thenReturn(
+                Flowable.fromArray(
+                    Telemetry.Battery(5.0f, 10.0f)
+                )
+            )
+        `when`(droneTelemetry.positionVelocityNed)
+            .thenReturn(
+                Flowable.fromArray(
+                    Telemetry.PositionVelocityNed(
+                        Telemetry.PositionNed(0.0f, 0.0f, 0.0f),
+                        Telemetry.VelocityNed(0.0f, 0.0f, 0.0f)
+                    )
+                )
+            )
         `when`(droneTelemetry.home)
-            .thenReturn(Flowable.fromArray(
-                Telemetry.Position(0.0, 0.0, 0.0f, 0.0f)
-            ))
+            .thenReturn(
+                Flowable.fromArray(
+                    Telemetry.Position(0.0, 0.0, 0.0f, 0.0f)
+                )
+            )
         `when`(droneTelemetry.inAir)
-            .thenReturn(Flowable.fromArray(
-                true
-            ))
+            .thenReturn(
+                Flowable.fromArray(
+                    true
+                )
+            )
 
         //Core mocks
         `when`(droneCore.connectionState)
-            .thenReturn(Flowable.fromArray(
-                Core.ConnectionState(0L, true)
-            ))
+            .thenReturn(
+                Flowable.fromArray(
+                    Core.ConnectionState(0L, true)
+                )
+            )
 
         //Mission mocks
         `when`(droneMission.pauseMission())
@@ -142,13 +158,15 @@ object DroneInstanceMock {
         `when`(droneMission.clearMission())
             .thenReturn(Completable.complete())
         `when`(droneMission.missionProgress)
-            .thenReturn(Flowable.fromArray(
-                Mission.MissionProgress(0, 4),
-                Mission.MissionProgress(1, 4),
-                Mission.MissionProgress(2, 4),
-                Mission.MissionProgress(3, 4),
-                Mission.MissionProgress(4, 4)
-            ))
+            .thenReturn(
+                Flowable.fromArray(
+                    Mission.MissionProgress(0, 4),
+                    Mission.MissionProgress(1, 4),
+                    Mission.MissionProgress(2, 4),
+                    Mission.MissionProgress(3, 4),
+                    Mission.MissionProgress(4, 4)
+                )
+            )
         `when`(droneMission.isMissionFinished)
             .thenReturn(Single.just(true))
 
@@ -157,11 +175,14 @@ object DroneInstanceMock {
             .thenReturn(Completable.complete())
         `when`(droneAction.takeoff())
             .thenReturn(Completable.complete())
-        `when`(droneAction.gotoLocation(
-            ArgumentMatchers.anyDouble(),
-            ArgumentMatchers.anyDouble(),
-            ArgumentMatchers.anyFloat(),
-            ArgumentMatchers.anyFloat()))
+        `when`(
+            droneAction.gotoLocation(
+                ArgumentMatchers.anyDouble(),
+                ArgumentMatchers.anyDouble(),
+                ArgumentMatchers.anyFloat(),
+                ArgumentMatchers.anyFloat()
+            )
+        )
             .thenReturn(Completable.complete())
         `when`(droneAction.returnToLaunch())
             .thenReturn(Completable.complete())
@@ -173,30 +194,53 @@ object DroneInstanceMock {
         // Camera
         `when`(droneCamera.information)
             .thenReturn(
-                Flowable.fromArray(Camera.Information(
-                    "vendor",
-                    "model",
-                                45f,
-                                15f,
-                                10f,
-                                2500,
-                                2000))
+                Flowable.fromArray(
+                    Camera.Information(
+                        "vendor",
+                        "model",
+                        45f,
+                        15f,
+                        10f,
+                        2500,
+                        2000
+                    )
+                )
             )
         `when`(droneCamera.videoStreamInfo)
             .thenReturn(
-                Flowable.fromArray(Camera.VideoStreamInfo(
-                    Camera.VideoStreamSettings(
-                        30f,
-                        2500,
-                        2500,
-                        60,
+                Flowable.fromArray(
+                    Camera.VideoStreamInfo(
+                        Camera.VideoStreamSettings(
+                            30f,
+                            2500,
+                            2500,
+                            60,
+                            0,
+                            "uri",
+                            0f
+                        ),
+                        Camera.VideoStreamInfo.VideoStreamStatus.IN_PROGRESS,
+                        Camera.VideoStreamInfo.VideoStreamSpectrum.VISIBLE_LIGHT
+                    )
+                )
+            )
+        `when`(droneCamera.captureInfo)
+            .thenReturn(
+                Flowable.fromArray(
+                    Camera.CaptureInfo(
+                        Camera.Position(.0, .0, 0f, 0f),
+                        Camera.Quaternion(0f, 0f, 0f, 0f),
+                        Camera.EulerAngle(0f, 0f, 0f),
                         0,
-                        "uri",
-                        0f
-                            ),
-                    Camera.VideoStreamInfo.VideoStreamStatus.IN_PROGRESS,
-                    Camera.VideoStreamInfo.VideoStreamSpectrum.VISIBLE_LIGHT
-                ))
+                        true,
+                        0,
+                        "URL"
+                    )
+                )
+            )
+        `when`(droneCamera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION))
+            .thenReturn(
+                Single.just(emptyList())
             )
     }
 }
