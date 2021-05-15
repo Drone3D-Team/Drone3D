@@ -2,6 +2,7 @@ package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.SystemClock
 import android.view.View
+import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
@@ -10,6 +11,7 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -20,6 +22,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineManager
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import org.junit.*
@@ -149,13 +152,20 @@ class ManageOfflineMapActivityTest {
 
         SystemClock.sleep(500)
 
-        onView(withId((R.id.input_text)))
+        onView(
+            allOf(
+                withId(R.id.input_text),
+                isAssignableFrom(EditText::class.java)
+            )
+        )
+            .inRoot(RootMatchers.isDialog())
             .perform(typeText("regionName"), closeSoftKeyboard())
-        
-        onView(withContentDescription("Positive button"))
-            .perform((click()))
 
-        SystemClock.sleep(15000) //Need to wait for the map to be downloaded. Cannot use counter
+        onView(withContentDescription("Positive button"))
+            .inRoot(RootMatchers.isDialog())
+            .perform(click())
+
+        SystemClock.sleep(12000) //Need to wait for the map to be downloaded. Cannot use counter
         //since the callback is inside the activity
 
         onView(withId(R.id.tiles_used))
@@ -183,7 +193,7 @@ class ManageOfflineMapActivityTest {
             )
         )
 
-        SystemClock.sleep(4000) // Make sure the region had enough time to be deleted
+        SystemClock.sleep(3000) // Make sure the region had enough time to be deleted
 
         size = recyclerView?.adapter?.itemCount ?: 1
         assert(size == 0)
@@ -201,11 +211,18 @@ class ManageOfflineMapActivityTest {
 
         SystemClock.sleep(500)
 
-        onView(withId((R.id.input_text)))
+        onView(
+            allOf(
+                withId(R.id.input_text),
+                isAssignableFrom(EditText::class.java)
+            )
+        )
+            .inRoot(RootMatchers.isDialog())
             .perform(typeText(""), closeSoftKeyboard())
 
         onView(withContentDescription("Positive button"))
-            .perform((click()))
+            .inRoot(RootMatchers.isDialog())
+            .perform(click())
 
         //Check that the dialog is still displayed
         onView(withId((R.id.input_text)))
