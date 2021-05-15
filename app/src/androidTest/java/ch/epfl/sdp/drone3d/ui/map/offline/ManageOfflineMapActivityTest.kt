@@ -3,6 +3,7 @@ package ch.epfl.sdp.drone3d.ui.map.offline
 import android.os.SystemClock
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -151,6 +152,8 @@ class ManageOfflineMapActivityTest {
         onView(withId((R.id.input_text)))
             .perform(typeText("regionName"))
 
+        closeSoftKeyboard()
+
         onView(withContentDescription("Positive button"))
             .perform((click()))
 
@@ -202,6 +205,8 @@ class ManageOfflineMapActivityTest {
 
         onView(withId((R.id.input_text)))
             .perform(typeText(""))
+
+        closeSoftKeyboard()
 
         onView(withContentDescription("Positive button"))
             .perform((click()))
