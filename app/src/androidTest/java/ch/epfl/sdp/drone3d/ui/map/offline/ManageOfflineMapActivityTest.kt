@@ -160,11 +160,11 @@ class ManageOfflineMapActivityTest {
             )
         )
             .inRoot(RootMatchers.isDialog())
-            .perform(typeText("regionName"), closeSoftKeyboard())
+            .perform(typeText(""), closeSoftKeyboard())
 
         /*
         onView(withContentDescription("Positive button"))
-            .inRoot(RootMatchers.isDialog()).check(matches(isEnabled()))
+            .inRoot(RootMatchers.isDialog())
             .perform(click())
 
 
@@ -222,7 +222,7 @@ class ManageOfflineMapActivityTest {
                 isAssignableFrom(EditText::class.java)
             )
         )
-            .inRoot(RootMatchers.isDialog()).check(matches(isEnabled()))
+            .inRoot(RootMatchers.isDialog())
             .perform(typeText(""), closeSoftKeyboard())
 
         onView(withContentDescription("Positive button"))
