@@ -153,6 +153,7 @@ class ManageOfflineMapActivityTest {
 
         SystemClock.sleep(500)
 
+        /*
         onView(
             allOf(
                 withId(R.id.input_text),
@@ -160,8 +161,8 @@ class ManageOfflineMapActivityTest {
             )
         )
             .inRoot(RootMatchers.isDialog())
-            .perform(typeText(""), closeSoftKeyboard())
-
+            .perform(typeText("regionName"), closeSoftKeyboard())
+         */
         /*
         onView(withContentDescription("Positive button"))
             .inRoot(RootMatchers.isDialog())
