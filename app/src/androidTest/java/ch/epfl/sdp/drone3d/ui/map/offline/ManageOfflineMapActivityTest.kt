@@ -131,8 +131,6 @@ class ManageOfflineMapActivityTest {
     @Test
     fun userBehaviorTest() {
 
-        activityRule.scenario.recreate()
-
         SystemClock.sleep(2000) //Need to wait for the map to be downloaded. Doesn't work with later callback only
 
         //Zoom to make the download happens faster so that we don't have to wait to sleep for too long
@@ -164,11 +162,12 @@ class ManageOfflineMapActivityTest {
             .inRoot(RootMatchers.isDialog())
             .perform(typeText("regionName"), closeSoftKeyboard())
 
+        /*
         onView(withContentDescription("Positive button"))
             .inRoot(RootMatchers.isDialog()).check(matches(isEnabled()))
             .perform(click())
 
-        /*
+
         SystemClock.sleep(12000) //Need to wait for the map to be downloaded. Cannot use counter
         //since the callback is inside the activity
 
