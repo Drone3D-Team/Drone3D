@@ -191,6 +191,24 @@ class ManageOfflineMapActivityTest {
             .check(matches(withText("0/6000")))
     }
 
+    @Test
+    fun cannotEnterEmptyStringForRegionName() {
+        SystemClock.sleep(100)
 
+        onView(withId(R.id.buttonToSaveOfflineMap))
+            .perform(click())
 
+        SystemClock.sleep(100)
+
+        onView(withId((R.id.input_text)))
+            .perform(typeText(""))
+
+        onView(withContentDescription("Positive button"))
+            .perform((click()))
+
+        //Check that the dialog is still displayed
+        onView(withId((R.id.input_text)))
+            .check(matches(isDisplayed()))
+
+    }
 }
