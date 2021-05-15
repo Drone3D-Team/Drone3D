@@ -147,6 +147,8 @@ class ManageOfflineMapActivityTest {
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
 
+        SystemClock.sleep(500)
+
         onView(withId((R.id.input_text)))
             .perform(typeText("regionName"), closeSoftKeyboard())
         
@@ -197,7 +199,7 @@ class ManageOfflineMapActivityTest {
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
 
-        SystemClock.sleep(100)
+        SystemClock.sleep(500)
 
         onView(withId((R.id.input_text)))
             .perform(typeText(""), closeSoftKeyboard())
