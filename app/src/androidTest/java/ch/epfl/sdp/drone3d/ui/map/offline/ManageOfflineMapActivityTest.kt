@@ -153,7 +153,7 @@ class ManageOfflineMapActivityTest {
         onView(withContentDescription("Positive button"))
             .perform((click()))
 
-        SystemClock.sleep(10000) //Need to wait for the map to be downloaded. Cannot use counter
+        SystemClock.sleep(15000) //Need to wait for the map to be downloaded. Cannot use counter
         //since the callback is inside the activity
 
         onView(withId(R.id.tiles_used))
@@ -181,7 +181,7 @@ class ManageOfflineMapActivityTest {
             )
         )
 
-        SystemClock.sleep(2000) // Make sure the region had enough time to be deleted
+        SystemClock.sleep(4000) // Make sure the region had enough time to be deleted
 
         size = recyclerView?.adapter?.itemCount ?: 1
         assert(size == 0)
