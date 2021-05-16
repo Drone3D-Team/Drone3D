@@ -137,8 +137,8 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.saveButton)).perform(click())
 
         assertThat(
-            activityRule.scenario.state.toString(),
-            equalTo(Lifecycle.State.DESTROYED.toString())
+            activityRule.scenario.state,
+            equalTo(Lifecycle.State.DESTROYED)
         )
 
         verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
@@ -154,8 +154,8 @@ class SaveMappingMissionActivityTest {
         onView(withId(R.id.saveButton)).perform(click())
 
         assertThat(
-            activityRule.scenario.state.toString(),
-            equalTo(Lifecycle.State.DESTROYED.toString())
+            activityRule.scenario.state,
+            equalTo(Lifecycle.State.DESTROYED)
         )
 
         verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)

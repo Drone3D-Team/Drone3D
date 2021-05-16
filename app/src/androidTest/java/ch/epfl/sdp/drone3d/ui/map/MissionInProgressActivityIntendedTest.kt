@@ -172,8 +172,8 @@ class MissionInProgressActivityIntendedTest {
         ToastMatcher.onToast(activity.get(), activity.get().getString(R.string.drone_mission_error, "test"))
 
         ViewMatchers.assertThat(
-            activityRule.scenario.state.toString(),
-            Matchers.equalTo(Lifecycle.State.DESTROYED.toString())
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
 
         missionEndFuture = CompletableFuture() //reset
@@ -203,8 +203,8 @@ class MissionInProgressActivityIntendedTest {
         Thread.sleep(500)
 
         ViewMatchers.assertThat(
-            activityRule.scenario.state.toString(),
-            Matchers.equalTo(Lifecycle.State.DESTROYED.toString())
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
 
 
@@ -235,10 +235,9 @@ class MissionInProgressActivityIntendedTest {
         Thread.sleep(500)
 
         ViewMatchers.assertThat(
-            activityRule.scenario.state.toString(),
-            Matchers.equalTo(Lifecycle.State.DESTROYED.toString())
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
-
 
         missionEndFuture = CompletableFuture() //reset
     }
