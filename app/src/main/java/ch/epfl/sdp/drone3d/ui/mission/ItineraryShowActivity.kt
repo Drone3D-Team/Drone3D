@@ -76,7 +76,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         //Create a "back button" in the action bar up
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        readIntent()
+        extractExtras()
 
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
@@ -110,7 +110,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         }
     }
 
-    private fun readIntent() {
+    private fun extractExtras() {
         val bundle = intent.extras
         if (bundle != null) {
             // Get the Intent that started this activity and extract user and ids

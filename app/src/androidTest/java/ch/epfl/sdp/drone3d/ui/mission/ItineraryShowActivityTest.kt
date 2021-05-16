@@ -183,9 +183,6 @@ class ItineraryShowActivityTest {
         }
 
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
-
-
-
     }
 
 

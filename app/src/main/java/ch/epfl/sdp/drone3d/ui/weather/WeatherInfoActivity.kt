@@ -56,8 +56,7 @@ class WeatherInfoActivity : AppCompatActivity() {
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
 
-        @Suppress("UNCHECKED_CAST")
-        location = intent.getSerializableExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH) as ArrayList<LatLng>?
+        location = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
 
         if (location == null || location!!.isEmpty()) {
             setupInvalidMission()
