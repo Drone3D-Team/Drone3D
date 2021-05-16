@@ -10,8 +10,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.ComponentNameMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import ch.epfl.sdp.drone3d.R
@@ -27,7 +25,6 @@ import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
-import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -95,7 +92,7 @@ class MissionInProgressActivityIntendedTest {
         val executor = mock(DroneExecutor::class.java)
 
         `when`(droneService.getExecutor()).thenReturn(executor)
-        `when`(executor.startMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
+        `when`(executor.setupMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
             .thenAnswer{ Completable.fromFuture(missionEndFuture).subscribeOn(Schedulers.io()) }
         `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
                 .thenReturn(Completable.complete())

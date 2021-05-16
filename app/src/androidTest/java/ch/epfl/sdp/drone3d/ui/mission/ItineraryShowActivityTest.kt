@@ -135,7 +135,7 @@ class ItineraryShowActivityTest {
         val executor = Mockito.mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
         `when`(
-            executor.startMission(
+            executor.setupMission(
                 anyObj(Context::class.java),
                 anyObj(Mission.MissionPlan::class.java)
             )

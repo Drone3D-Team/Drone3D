@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -29,7 +28,6 @@ import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
-import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
@@ -174,7 +172,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         } else {
             val droneMission = DroneUtils.makeDroneMission(missionPath!!, 20f)
             try {
-                val completable = droneService.getExecutor().startMission(this, droneMission)
+                val completable = droneService.getExecutor().setupMission(this, droneMission)
 
                 disposables.add(
                     completable.subscribe(

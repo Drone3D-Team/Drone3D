@@ -98,7 +98,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(false)
         flightModePublisher.onNext(Telemetry.FlightMode.TAKEOFF)
 
-        executor.startMission(
+        executor.setupMission(
             InstrumentationRegistry.getInstrumentation().targetContext,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -147,7 +147,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(false)
         flightModePublisher.onNext(Telemetry.FlightMode.LAND)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -195,7 +195,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.READY)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -243,7 +243,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -291,7 +291,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -339,7 +339,7 @@ class DroneExecutorTest {
         armedPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.UNKNOWN)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -380,7 +380,7 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
-        executor.startMission(
+        executor.setupMission(
             context,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({}, { it.printStackTrace() })
@@ -427,7 +427,7 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
 
-        executor.startMission(
+        executor.setupMission(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({
@@ -485,7 +485,7 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
-        executor.startMission(
+        executor.setupMission(
             context,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({}, { it.printStackTrace() })
