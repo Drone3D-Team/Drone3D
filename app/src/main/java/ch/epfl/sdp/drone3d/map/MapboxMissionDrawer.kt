@@ -26,13 +26,6 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
     private var reset = true
 
     /**
-     * Show a [mission] on the map by linking all points with lines.
-     */
-    fun showMission(mission: MappingMission, withIndex : Boolean) {
-        showMission(mission.flightPath, withIndex)
-    }
-
-    /**
      * Show a [flightPath] on the map by linking all points with lines.
      */
     fun showMission(flightPath: List<LatLng>, withIndex : Boolean) {

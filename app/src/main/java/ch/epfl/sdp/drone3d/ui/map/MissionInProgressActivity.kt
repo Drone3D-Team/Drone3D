@@ -94,7 +94,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        missionPath = intent.getParcelableArrayListExtra(MissionViewAdapter.MISSION_PATH)
+        missionPath = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
 
         initMapView(savedInstanceState,
             R.layout.activity_mission_in_progress,
@@ -178,25 +178,19 @@ class MissionInProgressActivity : BaseMapActivity() {
 
                 disposables.add(
                     completable.subscribe(
-                            { openItineraryShow() },
+                            { finish() },
                             {
                                 showError(it)
-                                openItineraryShow()
+                                finish()
                             })
                 )
             } catch (e: Exception) {
                 showError(e)
-                openItineraryShow()
+                finish()
             }
         }
     }
 
-    private fun openItineraryShow() {
-        val intent = Intent(this, ItineraryShowActivity::class.java)
-        intent.putExtra(MissionViewAdapter.MISSION_PATH, missionPath)
-        startActivity(intent)
-        finish()
-    }
 
     private fun setupObservers() {
         val droneData = droneService.getData()
@@ -321,7 +315,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         createObserver(droneData.isConnected()) {
             if (it == null || !it) {
                 ToastHandler.showToastAsync(this, R.string.lost_connection_message, Toast.LENGTH_SHORT)
-                openItineraryShow()
+                finish()
             }
         }
     }

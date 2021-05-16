@@ -75,7 +75,7 @@ class MainActivityTest {
         // If permission is true, it will not request permission
         `when`(permissionService.isPermissionGranted()).thenReturn(true)
 
-        val liveData = MutableLiveData(listOf(MappingMission("name", listOf())))
+        val liveData = MutableLiveData(listOf(MappingMission("name")))
         `when`(mappingMissionDao.getPrivateMappingMissions(anyString())).thenReturn(liveData)
         `when`(mappingMissionDao.getSharedMappingMissions()).thenReturn(liveData)
         `when`(mappingMissionDao.getPrivateFilteredMappingMissions()).thenReturn(liveData)

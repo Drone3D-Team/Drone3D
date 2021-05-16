@@ -25,10 +25,12 @@ class MissionViewAdapter(private val privateList: Boolean) :
         ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
 
     companion object{
-        const val MISSION_PATH = "ch.epfl.sdp.drone3d.ui.mission.MAPPING_MISSION"
-        const val OWNER = "owner"
-        const val PRIVATE = "private"
-        const val SHARED = "shared"
+        const val OWNER_ID_INTENT_PATH = "MVA_owner"
+        const val PRIVATE_ID_INTENT_PATH = "MVA_private"
+        const val SHARED_ID_INTENT_PATH = "MVA_shared"
+        const val STRATEGY_INTENT_PATH = "MVA_strategy"
+        const val AREA_INTENT_PATH = "MVA_area"
+        const val FLIGHTHEIGHT_INTENT_PATH = "MVA_flightHeight"
     }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
@@ -40,12 +42,13 @@ class MissionViewAdapter(private val privateList: Boolean) :
             textView.setOnClickListener {
                 curMission?.let { mission ->
                     val intent = Intent(view.context, ItineraryShowActivity::class.java)
-                    val flightPathArrayList: ArrayList<LatLng> = ArrayList(mission.flightPath) //ArrayList implements Serializable, not List
 
-                    intent.putExtra(MISSION_PATH, flightPathArrayList)
-                    intent.putExtra(OWNER, mission.ownerUid)
-                    intent.putExtra(PRIVATE, mission.privateId)
-                    intent.putExtra(SHARED, mission.sharedId)
+                    intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, mission.flightHeight)
+                    intent.putExtra(AREA_INTENT_PATH, ArrayList(mission.area))
+                    intent.putExtra(STRATEGY_INTENT_PATH, mission.strategy)
+                    intent.putExtra(OWNER_ID_INTENT_PATH, mission.ownerUid)
+                    intent.putExtra(PRIVATE_ID_INTENT_PATH, mission.privateId)
+                    intent.putExtra(SHARED_ID_INTENT_PATH, mission.sharedId)
 
                     view.context.startActivity(intent)
                 }

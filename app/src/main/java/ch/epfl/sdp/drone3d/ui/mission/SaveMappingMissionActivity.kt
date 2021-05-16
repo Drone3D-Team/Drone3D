@@ -15,11 +15,13 @@ import androidx.lifecycle.MediatorLiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 /**
  * This activity let the user name then store and/or share a mapping mission.
@@ -37,7 +39,10 @@ class SaveMappingMissionActivity : AppCompatActivity() {
     private lateinit var sharedCheckBox: CheckBox
     private lateinit var saveButton: Button
 
-    private lateinit var flightPath: List<LatLng>
+    private var flightHeight by Delegates.notNull<Double>()
+    private lateinit var strategy: MappingMissionService.Strategy
+    private lateinit var area: List<LatLng>
+
 
     private lateinit var nameEditText: EditText
 
@@ -46,7 +51,9 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            flightPath = bundle.getParcelableArrayList("flightPath")!!
+            flightHeight = bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH)
+            strategy = (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)
+            area = bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!
         }
 
         //Create a "back button" in the action bar up
@@ -124,7 +131,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         saveButton.isEnabled = false;
 
         val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
-        val newMappingMission = MappingMission(name.toString(), flightPath)
+        val newMappingMission = MappingMission(name.toString(), flightHeight, strategy, area)
 
         // The user should be logged to access this page
         val ownerId = authService.getCurrentSession()!!.user.uid
