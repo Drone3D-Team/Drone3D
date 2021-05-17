@@ -15,6 +15,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,8 +56,7 @@ class WeatherInfoActivity : AppCompatActivity() {
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
 
-        @Suppress("UNCHECKED_CAST")
-        location = intent.getSerializableExtra(MissionViewAdapter.MISSION_PATH) as ArrayList<LatLng>?
+        location = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
 
         if (location == null || location!!.isEmpty()) {
             setupInvalidMission()

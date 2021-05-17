@@ -22,6 +22,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
@@ -139,6 +140,21 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
+    fun saveButtonIsActivatedWhenAreaIsComplete() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(not(isEnabled())))
+
+        createMission()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(isEnabled()))
+    }
+
+    @Test
     fun deleteButtonIsEnabledWhenThereIsSomethingToDelete() {
         activityRule.scenario.recreate()
 
@@ -232,7 +248,9 @@ class ItineraryCreateActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra("flightPath") })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
     }
 
     @Test
