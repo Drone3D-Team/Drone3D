@@ -39,7 +39,6 @@ class OfflineMapSaverImplTest {
         const val style = Style.MAPBOX_STREETS
         const val TIMEOUT = 10L
         const val DOUBLE_PRECISION = 0.0001
-        const val MAP_API_KEY = "pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw"
 
         val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
         lateinit var offlineSaver:OfflineMapSaver
@@ -47,7 +46,7 @@ class OfflineMapSaverImplTest {
 
     init {
         UiThreadStatement.runOnUiThread {
-            Mapbox.getInstance(context, MAP_API_KEY)
+            Mapbox.getInstance(context,context.resources.getString(R.string.mapbox_access_token))
             offlineSaver = OfflineMapSaverImpl(context,style)
         }
     }
