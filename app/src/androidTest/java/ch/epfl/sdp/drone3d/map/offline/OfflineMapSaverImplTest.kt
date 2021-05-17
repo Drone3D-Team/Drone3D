@@ -128,36 +128,6 @@ class OfflineMapSaverImplTest {
     }
 
     @Test
-    fun deleteRegionsRemovesRegion(){
-        downloadRegionSync(rolexName, rolexBounds, defaultZoom)
-
-        val counterLiveDataInit = CountDownLatch(1)
-        val liveRegions = offlineSaver.getOfflineRegions()
-        var regions: Array<OfflineRegion>? = null
-        liveRegions.observeForever {
-            if (it.isNotEmpty()) {
-                regions = it
-                counterLiveDataInit.countDown()
-            }
-        }
-
-        //Wait until live data is init
-        assert(counterLiveDataInit.await(TIMEOUT, TimeUnit.SECONDS))
-
-        val counterDeleteComplete = CountDownLatch(1)
-        offlineSaver.deleteRegion(regions!!.first().id,
-            object : OfflineRegion.OfflineRegionDeleteCallback {
-                override fun onDelete() {
-                    counterDeleteComplete.countDown()
-                }
-
-                override fun onError(error: String?) {}
-            })
-
-        assert(counterDeleteComplete.await(TIMEOUT, TimeUnit.SECONDS))
-    }
-
-    @Test
     fun regionsAreEmptyAtBeginning(){
         val counter = CountDownLatch(1)
         val regions = offlineSaver.getOfflineRegions()
