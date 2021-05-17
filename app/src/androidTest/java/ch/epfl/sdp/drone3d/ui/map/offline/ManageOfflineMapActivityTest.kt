@@ -163,8 +163,10 @@ class ManageOfflineMapActivityTest {
                 isAssignableFrom(EditText::class.java)
             )
         )
-            .inRoot(isDialog()).check(matches(isDisplayed()))
-            .perform(typeText("regionName"), closeSoftKeyboard())
+            .inRoot(isDialog()).check(matches(isDisplayed())).perform(click())
+            .perform(typeText("regionName"))
+
+        closeSoftKeyboard()
 
         /*
 
@@ -208,7 +210,7 @@ class ManageOfflineMapActivityTest {
 
         onView(withId(R.id.tiles_used))
             .check(matches(withText("0/6000")))
-            
+
          */
 
     }
