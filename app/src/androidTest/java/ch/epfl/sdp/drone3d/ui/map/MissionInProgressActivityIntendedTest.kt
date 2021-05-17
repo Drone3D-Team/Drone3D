@@ -166,7 +166,7 @@ class MissionInProgressActivityIntendedTest {
         missionEndFuture.completeExceptionally(Error("test"))
 
         Thread.sleep(500)
-        ToastMatcher.onToast(activity.get(), activity.get().getString(R.string.drone_mission_error, "test"))
+        ToastMatcher.onToast(activity.get(), activity.get().getString(R.string.drone_setup_mission_error, "test"))
 
         ViewMatchers.assertThat(
             activityRule.scenario.state.toString(),

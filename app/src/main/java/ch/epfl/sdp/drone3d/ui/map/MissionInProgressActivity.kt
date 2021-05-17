@@ -24,10 +24,8 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
-import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
-import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
@@ -81,7 +79,6 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var rtspFactory: Client.Factory<*>
 
     private val observedData: MutableSet<LiveData<*>> = mutableSetOf()
-    private var missionPath: ArrayList<LatLng>? = null
 
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
@@ -91,8 +88,6 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        missionPath = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
 
         initMapView(savedInstanceState,
             R.layout.activity_mission_in_progress,
@@ -109,10 +104,6 @@ class MissionInProgressActivity : BaseMapActivity() {
         backToUserButton = findViewById(R.id.backToUserButton)
 
         warningBadWeather = findViewById(R.id.warningBadWeather)
-
-        if (missionPath == null) {
-            warningBadWeather.visibility = View.GONE
-        }
 
         weatherReport = if (droneService.getData().getPosition().value != null) {
             weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
@@ -167,25 +158,19 @@ class MissionInProgressActivity : BaseMapActivity() {
      * Launch the mission
      */
     private fun startMission() {
-        if(missionPath == null) {
-            ToastHandler.showToastAsync(this, R.string.mission_null)
-        } else {
-            val droneMission = DroneUtils.makeDroneMission(missionPath!!, 20f)
-            try {
-                val completable = droneService.getExecutor().setupMission(this, droneMission)
-
-                disposables.add(
-                    completable.subscribe(
-                            { finish() },
-                            {
-                                showError(it)
-                                finish()
-                            })
-                )
-            } catch (e: Exception) {
-                showError(e)
-                finish()
-            }
+        try {
+            disposables.add(
+                droneService.getExecutor().executeMission(this)
+                    .subscribe(
+                        { finish() },
+                        {
+                            showError(it)
+                            finish()
+                        })
+            )
+        } catch (e: Exception) {
+            showError(e)
+            finish()
         }
     }
 

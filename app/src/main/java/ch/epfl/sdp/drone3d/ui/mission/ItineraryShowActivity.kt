@@ -23,7 +23,6 @@ import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionServi
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
-import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -146,7 +145,7 @@ class ItineraryShowActivity : BaseMapActivity() {
 
             builder.setPositiveButton(getString(R.string.confirm_launch)) { dialog, _ ->
                 dialog.cancel()
-                goToMissionInProgressActivity()
+                goToMissionStartActivity()
             }
 
             builder.setNegativeButton(R.string.cancel_launch) { dialog, _ ->
@@ -154,7 +153,7 @@ class ItineraryShowActivity : BaseMapActivity() {
             }
             builder.create()?.show()
         } else {
-            goToMissionInProgressActivity()
+            goToMissionStartActivity()
         }
     }
 
@@ -169,8 +168,8 @@ class ItineraryShowActivity : BaseMapActivity() {
         startActivity(intent)
     }
 
-    private fun goToMissionInProgressActivity() {
-        val intent = Intent(this, MissionInProgressActivity::class.java)
+    private fun goToMissionStartActivity() {
+        val intent = Intent(this, MissionStartActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
         startActivity(intent)
     }

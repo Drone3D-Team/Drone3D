@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.mission.MissionStartActivity">
+
+    <ProgressBar
+        android:id="@+id/mission_start_progress"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="90dip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/mission_start_guideline2"
+        app:layout_constraintStart_toStartOf="@+id/mission_start_guideline1"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar3"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toTopOf="@id/mission_start_text"
+        app:layout_constraintEnd_toStartOf="@+id/mission_start_guideline2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/mission_start_guideline1"
+        app:layout_constraintTop_toTopOf="@+id/mission_start_guideline3" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mission_start_guideline1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.12" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mission_start_guideline2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.88" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mission_start_guideline3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.17" />
+
+    <TextView
+        android:id="@+id/mission_start_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toTopOf="@id/mission_start_progress"
+        app:layout_constraintEnd_toEndOf="@+id/mission_start_progress"
+        app:layout_constraintStart_toStartOf="@+id/mission_start_progress"
+        app:layout_constraintTop_toBottomOf="@id/progressBar3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
