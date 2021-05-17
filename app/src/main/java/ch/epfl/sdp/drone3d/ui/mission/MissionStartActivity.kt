@@ -67,7 +67,7 @@ class MissionStartActivity : AppCompatActivity() {
     private fun getProgress(status: DroneData.DroneStatus?) : Int? =
         MISSION_START_STATUS.indexOf(status).takeIf { it != -1 }
 
-    private fun totalProgress(): Int = MISSION_START_STATUS.size - 1
+    private fun totalProgress(): Int = MISSION_START_STATUS.size
 
     private fun getText(status: DroneData.DroneStatus?): CharSequence =
         getText(
