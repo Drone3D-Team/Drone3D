@@ -174,7 +174,7 @@ class DroneExecutorImpl(
     override fun resumeMission(ctx: Context): Completable {
         val instance = getInstance()
 
-        data.getMutableDroneStatus().postValue(SENDING_ORDER)
+        data.getMutableDroneStatus().postValue(STARTING_MISSION)
         return instance.mission.startMission().doOnComplete {
             data.getMutableMissionPaused().postValue(false)
             data.getMutableDroneStatus().postValue(EXECUTING_MISSION)

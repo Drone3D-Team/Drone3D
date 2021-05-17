@@ -551,7 +551,7 @@ class DroneExecutorTest {
 
         `when`(DroneInstanceMock.droneMission.startMission()).thenAnswer {
             Completable.fromCallable {
-                dataBecomes(droneData.getDroneStatus(), SENDING_ORDER)
+                dataBecomes(droneData.getDroneStatus(), STARTING_MISSION)
                 flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
             }
         }
