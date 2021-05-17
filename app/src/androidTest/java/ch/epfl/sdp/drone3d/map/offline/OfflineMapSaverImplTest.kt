@@ -9,7 +9,6 @@ import android.content.Context
 import android.os.SystemClock
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import androidx.test.platform.app.InstrumentationRegistry
@@ -32,9 +31,9 @@ class OfflineMapSaverImplTest {
     companion object{
         const val rolexName = "Rolex"
         val rolexBounds: LatLngBounds =  LatLngBounds.Builder()
-            .include(LatLng(46.517804, 6.567261))
-            .include(LatLng(46.518907783162064, 6.569428157806775))
-            .build()
+                            .include(LatLng(46.517804, 6.567261))
+                            .include(LatLng(46.518907783162064, 6.569428157806775))
+                            .build()
 
         const val defaultZoom = 14.0
         const val style = Style.MAPBOX_STREETS
@@ -47,7 +46,7 @@ class OfflineMapSaverImplTest {
 
     init {
         UiThreadStatement.runOnUiThread {
-            Mapbox.getInstance(context, context.resources.getString(R.string.mapbox_access_token))
+            Mapbox.getInstance(context,context.resources.getString(R.string.mapbox_access_token))
             offlineSaver = OfflineMapSaverImpl(context,style)
         }
     }
@@ -111,7 +110,6 @@ class OfflineMapSaverImplTest {
 
     @Test
     fun downloadAddsCorrectRegion(){
-
         downloadRegionSync(rolexName,rolexBounds,defaultZoom)
         val regions = offlineSaver.getOfflineRegions()
 
@@ -133,14 +131,13 @@ class OfflineMapSaverImplTest {
 
     @Test
     fun deleteRegionsRemovesRegion(){
-
-        downloadRegionSync(rolexName,rolexBounds,defaultZoom)
+        downloadRegionSync(rolexName, rolexBounds, defaultZoom)
 
         val counterLiveDataInit = CountDownLatch(1)
         val liveRegions = offlineSaver.getOfflineRegions()
-        var regions:Array<OfflineRegion>? = null
+        var regions: Array<OfflineRegion>? = null
         liveRegions.observeForever {
-            if(it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 regions = it
                 counterLiveDataInit.countDown()
             }
@@ -150,15 +147,16 @@ class OfflineMapSaverImplTest {
         assert(counterLiveDataInit.await(TIMEOUT, TimeUnit.SECONDS))
 
         val counterDeleteComplete = CountDownLatch(1)
-        offlineSaver.deleteRegion(regions!!.first().id,object:OfflineRegion.OfflineRegionDeleteCallback {
-            override fun onDelete() {
-                counterDeleteComplete.countDown()
-            }
+        offlineSaver.deleteRegion(regions!!.first().id,
+            object : OfflineRegion.OfflineRegionDeleteCallback {
+                override fun onDelete() {
+                    counterDeleteComplete.countDown()
+                }
 
-            override fun onError(error: String?) {}
-        })
+                override fun onError(error: String?) {}
+            })
 
-        assert(counterDeleteComplete.await(TIMEOUT,TimeUnit.SECONDS))
+        assert(counterDeleteComplete.await(TIMEOUT, TimeUnit.SECONDS))
     }
 
     @Test
@@ -166,26 +164,31 @@ class OfflineMapSaverImplTest {
         val counter = CountDownLatch(1)
         val regions = offlineSaver.getOfflineRegions()
 
-        regions.observeForever{offlineRegions->
+        regions.observeForever { offlineRegions ->
             assert(offlineRegions.isEmpty())
             counter.countDown()
         }
 
-        assert(counter.await(TIMEOUT,TimeUnit.SECONDS))
+        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
     }
 
     @Test
     fun afterDownloadTotalTileCountIsNotZero(){
-
         val counter = CountDownLatch(1)
-        downloadRegionSync(rolexName,rolexBounds,defaultZoom)
+        downloadRegionSync(rolexName, rolexBounds, defaultZoom)
 
-        offlineSaver.getTotalTileCount().observeForever{tileCount->
-            if(tileCount!=0L){
+        offlineSaver.getTotalTileCount().observeForever { tileCount ->
+            if (tileCount != 0L) {
                 counter.countDown()
             }
         }
-        assert(counter.await(TIMEOUT,TimeUnit.SECONDS))
+        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
+    }
+
+
+    @Test
+    fun getMaxTileCountReturnsTileLimit(){
+        assertEquals(offlineSaver.getMaxTileCount(), OfflineMapSaverImpl.TILE_LIMIT)
     }
 
     @Test
@@ -193,10 +196,5 @@ class OfflineMapSaverImplTest {
         val expectedOfflineMetadata = OfflineRegionMetadata(rolexName, rolexBounds,0,defaultZoom, true)
         val obtainedOfflineMetadata = OfflineMapSaverImpl.deserializeMetadata(OfflineMapSaverImpl.serializeMetadata(expectedOfflineMetadata))
         assertEquals(expectedOfflineMetadata,obtainedOfflineMetadata)
-    }
-
-    @Test
-    fun getMaxTileCountReturnsTileLimit(){
-        assertEquals(offlineSaver.getMaxTileCount(), OfflineMapSaverImpl.TILE_LIMIT)
     }
 }
