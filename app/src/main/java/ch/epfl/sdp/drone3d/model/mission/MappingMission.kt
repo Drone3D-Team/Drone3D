@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.model.mission
 
+import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import com.mapbox.mapboxsdk.geometry.LatLng
 
 
@@ -21,14 +22,15 @@ enum class State {
 }
 
 /**
- * A MappingMission is instantiated with a [name], a [flightPath] and a [flightHeight].
+ * A MappingMission is instantiated with a [name], a [flightHeight], a [strategy] and a [area].
  * The [privateId], [sharedId] and [state] are updated according to where the MappingMission are stored.
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */
 data class MappingMission(
     val name: String = "",
-    val flightPath: List<LatLng> = listOf(),
-    val flightHeight:Double = 0.0,
+    val flightHeight: Double = 0.0,
+    val strategy: Strategy = Strategy.SINGLE_PASS,
+    val area: List<LatLng> = listOf(),
     var privateId: String? = null,
     var sharedId: String? = null,
     var state: State = State.NOT_STORED,
