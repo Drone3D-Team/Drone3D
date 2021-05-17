@@ -37,8 +37,6 @@ class ManageOfflineMapActivityTest {
 
     companion object {
         private const val TIMEOUT = 5L
-        private const val ZOOM_VALUE = 19.9
-        private val ZOOM_LOCATION = LatLng(10.0, 10.0)
     }
 
     private val activityRule = ActivityScenarioRule(ManageOfflineMapActivity::class.java)
@@ -69,12 +67,23 @@ class ManageOfflineMapActivityTest {
 
     @Test
     fun cannotEnterEmptyStringForRegionName() {
-        SystemClock.sleep(500)
+
+        //Used to wait for the map to be downloaded before clickling the button
+        var counter = CountDownLatch(1)
+
+        activityRule.scenario.onActivity { activity ->
+            activity.mapView.getMapAsync { mapboxMap ->
+                mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
+                    counter.countDown()
+
+                }
+            }
+        }
+
+        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
 
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
-
-        SystemClock.sleep(500)
 
         onView(
             allOf(

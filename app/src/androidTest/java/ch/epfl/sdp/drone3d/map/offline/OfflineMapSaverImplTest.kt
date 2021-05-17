@@ -7,7 +7,6 @@ package ch.epfl.sdp.drone3d.map.offline
 
 import android.content.Context
 import android.os.SystemClock
-import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
 import com.mapbox.mapboxsdk.offline.OfflineRegion
@@ -90,7 +89,6 @@ class OfflineMapSaverImplTest {
             override fun onStatusChanged(status: OfflineRegionStatus) {
                 if(status.isComplete){
                     counter.countDown()
-                    Log.e("Test","Downloaded a region")
                 }
             }
             override fun onError(error: OfflineRegionError?) {}
