@@ -12,6 +12,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.RootMatchers
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -148,24 +149,27 @@ class ManageOfflineMapActivityTest {
 
         assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
 
+        SystemClock.sleep(500)
+
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
 
         SystemClock.sleep(500)
 
-        /*
+
         onView(
             allOf(
                 withId(R.id.input_text),
                 isAssignableFrom(EditText::class.java)
             )
         )
-            .inRoot(RootMatchers.isDialog())
+            .inRoot(isDialog()).check(matches(isDisplayed()))
             .perform(typeText("regionName"), closeSoftKeyboard())
-         */
+
         /*
+
         onView(withContentDescription("Positive button"))
-            .inRoot(RootMatchers.isDialog())
+            .inRoot(isDialog())
             .perform(click())
 
 
@@ -204,13 +208,14 @@ class ManageOfflineMapActivityTest {
 
         onView(withId(R.id.tiles_used))
             .check(matches(withText("0/6000")))
-
+            
          */
+
     }
 
     @Test
     fun cannotEnterEmptyStringForRegionName() {
-        SystemClock.sleep(100)
+        SystemClock.sleep(500)
 
         onView(withId(R.id.buttonToSaveOfflineMap))
             .perform(click())
@@ -223,11 +228,11 @@ class ManageOfflineMapActivityTest {
                 isAssignableFrom(EditText::class.java)
             )
         )
-            .inRoot(RootMatchers.isDialog())
+            .inRoot(isDialog())
             .perform(typeText(""), closeSoftKeyboard())
 
         onView(withContentDescription("Positive button"))
-            .inRoot(RootMatchers.isDialog())
+            .inRoot(isDialog())
             .perform(click())
 
         //Check that the dialog is still displayed
