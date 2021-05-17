@@ -200,7 +200,7 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture.complete(Any())
 
-        Thread.sleep(500)
+        Thread.sleep(2000)
 
         ViewMatchers.assertThat(
             activityRule.scenario.state,
@@ -232,7 +232,7 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture.complete(Any())
 
-        Thread.sleep(500)
+        Thread.sleep(2000)
 
         ViewMatchers.assertThat(
             activityRule.scenario.state,
