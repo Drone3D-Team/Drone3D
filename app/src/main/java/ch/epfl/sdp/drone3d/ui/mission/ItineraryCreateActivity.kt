@@ -146,9 +146,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilder.onAreaChanged.add { onMissionSettingModified() }
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
             areaBuilder.onVerticesChanged.add { deleteButton.isEnabled = true }
-            for(vertex in initialArea){
-                areaBuilder.addVertex(vertex)
-            }
+            initialArea.forEach { areaBuilder.addVertex(it) }
             if(initialArea.isNotEmpty()){
                 MapboxUtility.zoomOnCoordinate(initialArea[0], mapboxMap)
             }
