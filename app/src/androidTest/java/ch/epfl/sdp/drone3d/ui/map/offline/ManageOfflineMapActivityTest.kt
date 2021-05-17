@@ -122,99 +122,6 @@ class ManageOfflineMapActivityTest {
             .check(matches(withText("0/6000")))
     }
 
-    /**
-     * This test tests most of the UI functionality at once. The reason is that the downloading takes
-     * quite a long time and that it is done asynchronously, thus it makes the testing faster if we don't
-     * have to wait for most of the tests to download some tiles. Furthermore, mocking the OfflineMapSaverImpl
-     * is not possible either, because Mapbox's OfflineRegion cannot be instantiated since its constructor
-     * is private.
-     */
-    @Test
-    fun userBehaviorTest() {
-
-        SystemClock.sleep(2000) //Need to wait for the map to be downloaded. Doesn't work with later callback only
-
-        //Zoom to make the download happens faster so that we don't have to wait to sleep for too long
-        var counter = CountDownLatch(1)
-
-        activityRule.scenario.onActivity { activity ->
-            activity.mapView.getMapAsync { mapboxMap ->
-                mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
-                    MapboxUtility.zoomOnCoordinate(ZOOM_LOCATION, mapboxMap, ZOOM_VALUE)
-                    counter.countDown()
-
-                }
-            }
-        }
-
-        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-
-        SystemClock.sleep(500)
-
-        onView(withId(R.id.buttonToSaveOfflineMap))
-            .perform(click())
-
-        SystemClock.sleep(500)
-
-
-        onView(
-            allOf(
-                withId(R.id.input_text),
-                isAssignableFrom(EditText::class.java)
-            )
-        )
-            .inRoot(isDialog()).check(matches(isDisplayed())).perform(click())
-            .perform(typeText("regionName"))
-
-        closeSoftKeyboard()
-
-        /*
-
-        onView(withContentDescription("Positive button"))
-            .inRoot(isDialog())
-            .perform(click())
-
-
-        SystemClock.sleep(12000) //Need to wait for the map to be downloaded. Cannot use counter
-        //since the callback is inside the activity
-
-        onView(withId(R.id.tiles_used))
-            .check(matches(not(withText("0/6000"))))
-
-
-        //Check that the recyclerView has an element
-        counter = CountDownLatch(1)
-        var size = 0
-        var recyclerView: RecyclerView? = null
-        activityRule.scenario.onActivity { activity ->
-            recyclerView = activity.findViewById<RecyclerView>(R.id.saved_regions)
-            size = recyclerView?.adapter?.itemCount ?: 0
-            counter.countDown()
-        }
-
-        assert(counter.await(TIMEOUT, TimeUnit.SECONDS))
-
-        assert(size == 1)
-
-        //Click to remove the element and check that the recyclerView has no more elements
-        onView(withId(R.id.saved_regions)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<OfflineRegionViewAdapter.OfflineRegionViewHolder>(
-                0, MyViewAction.clickChildViewWithId(R.id.deleteRegionButton)
-            )
-        )
-
-        SystemClock.sleep(3000) // Make sure the region had enough time to be deleted
-
-        size = recyclerView?.adapter?.itemCount ?: 1
-        assert(size == 0)
-
-        onView(withId(R.id.tiles_used))
-            .check(matches(withText("0/6000")))
-
-         */
-
-    }
-
     @Test
     fun cannotEnterEmptyStringForRegionName() {
         SystemClock.sleep(500)
@@ -240,6 +147,5 @@ class ManageOfflineMapActivityTest {
         //Check that the dialog is still displayed
         onView(withId((R.id.input_text)))
             .check(matches(isDisplayed()))
-
     }
 }
