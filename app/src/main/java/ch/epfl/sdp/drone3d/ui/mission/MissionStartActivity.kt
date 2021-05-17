@@ -28,7 +28,8 @@ class MissionStartActivity : AppCompatActivity() {
             IDLE,
             ARMING,
             TAKING_OFF,
-            SENDING_ORDER
+            SENDING_ORDER,
+            STARTING_MISSION
         )
     }
 

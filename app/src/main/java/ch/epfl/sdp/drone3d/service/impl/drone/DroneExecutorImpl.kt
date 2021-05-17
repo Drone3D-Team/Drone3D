@@ -67,8 +67,8 @@ class DroneExecutorImpl(
         val instance = getInstance()
 
         return connected(instance)
-                .andThen(start(ctx, instance))
-                .andThen(finish(ctx, instance))
+            .doOnComplete { data.getMutableDroneStatus().postValue(EXECUTING_MISSION) }
+            .andThen(waitForMissionEnd(ctx, instance))
     }
 
     private fun connected(instance: System): Completable =
@@ -109,7 +109,7 @@ class DroneExecutorImpl(
                 .flatMapCompletable { flightMode ->
                     when(flightMode) {
                         // Ready to start the mission
-                        READY, HOLD, LAND, TAKEOFF -> setup(instance, missionPlan)
+                        READY, HOLD, LAND, TAKEOFF -> setupAndStart(ctx, instance, missionPlan)
                         // A mission is already in progress, cannot start a new one
                         MISSION -> {
                             ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
@@ -182,23 +182,20 @@ class DroneExecutorImpl(
         }
     }
 
-    private fun setup(instance: System, missionPlan: Mission.MissionPlan): Completable =
+    private fun setupAndStart(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable =
             Completable.fromCallable { data.getMutableDroneStatus().postValue(SENDING_ORDER) }
                     .andThen(instance.mission.setReturnToLaunchAfterMission(false))
                     .andThen(instance.mission.uploadMission(missionPlan))
-                    .doOnComplete {
-                        data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
-                    }
-
-    private fun start(ctx: Context, instance: System): Completable =
-            instance.mission.startMission()
+                    .doOnComplete { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
+                    .andThen(instance.mission.startMission())
                     .doOnComplete {
                         data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                        data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
                         data.getMutableMissionPaused().postValue(false)
                         ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
                     }
 
-    private fun finish(ctx: Context, instance: System): Completable = 
+    private fun waitForMissionEnd(ctx: Context, instance: System): Completable =
             instance.mission.missionProgress
                             .filter{ it.current >= it.total - 1 }.firstOrError().toCompletable()
                             .doOnComplete{
