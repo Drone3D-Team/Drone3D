@@ -50,8 +50,9 @@ class MissionStartActivity : AppCompatActivity() {
         droneService.getData().getDroneStatus().observe(this) { status ->
             getProgress(status)?.let {
                 progressBar.progress = it
-                progressText.text = getText(status)
             }
+
+            progressText.text = getText(status)
         }
 
         val missionPath = intent.getParcelableArrayListExtra<LatLng>(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)

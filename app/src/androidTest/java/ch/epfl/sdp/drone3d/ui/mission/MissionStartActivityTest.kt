@@ -11,9 +11,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.ActivityScenarioRule
@@ -31,7 +29,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import io.mavsdk.mission.Mission
-import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.subjects.CompletableSubject
 import org.hamcrest.CoreMatchers.`is`
@@ -88,6 +85,7 @@ class MissionStartActivityTest {
     fun tearDown() {
         Intents.release()
         missionExecutionEnd = CompletableSubject.create()
+        droneStatus.postValue(IDLE)
     }
 
     init {
@@ -132,14 +130,15 @@ class MissionStartActivityTest {
 
     @Test
     fun failureDestroyActivity() {
-        blockingSetValue(droneStatus, PAUSED)
+        missionExecutionEnd.onError(Error("Test"))
 
         assertThat(activityRule.scenario.state, `is`(Lifecycle.State.DESTROYED))
     }
 
     @Test
     fun unknownStateHasCorrectText() {
-        missionExecutionEnd.onError(Error("Test"))
+        blockingSetValue(droneStatus, PAUSED)
+
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_unknown)))
     }
 
