@@ -253,6 +253,24 @@ class ItineraryShowActivityTest {
     }
 
     @Test
+    fun editButtonWorks() {
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.editButton))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.editButton)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(ItineraryCreateActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.AREA_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH) })
+    }
+
+    @Test
     fun goToMissionInProgressWorksWhenBadWeather() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(locationService.isLocationEnabled()).thenReturn(false)
