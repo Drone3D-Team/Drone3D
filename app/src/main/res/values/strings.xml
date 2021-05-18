@@ -133,6 +133,7 @@
     <string name="mission_state_arming">Arming the drone</string>
     <string name="mission_state_takeoff">The drone is taking off</string>
     <string name="mission_state_sending">Sending the mission to the drone</string>
+    <string name="mission_state_starting">The mission is starting</string>
     <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
 
     <!-- Weather Info Activity -->

@@ -7,7 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.api.drone.DroneData
+import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
@@ -24,7 +24,7 @@ class MissionStartActivity : AppCompatActivity() {
 
 
     companion object {
-        val MISSION_START_STATUS: List<DroneData.DroneStatus> = listOf(
+        val MISSION_START_STATUS: List<DroneStatus> = listOf(
             IDLE,
             ARMING,
             TAKING_OFF,
@@ -65,18 +65,19 @@ class MissionStartActivity : AppCompatActivity() {
         disposable?.dispose()
     }
 
-    private fun getProgress(status: DroneData.DroneStatus?) : Int? =
+    private fun getProgress(status: DroneStatus?) : Int? =
         MISSION_START_STATUS.indexOf(status).takeIf { it != -1 }
 
     private fun totalProgress(): Int = MISSION_START_STATUS.size
 
-    private fun getText(status: DroneData.DroneStatus?): CharSequence =
+    private fun getText(status: DroneStatus?): CharSequence =
         getText(
             when(status) {
                 IDLE -> R.string.mission_state_idle
                 ARMING -> R.string.mission_state_arming
                 TAKING_OFF -> R.string.mission_state_takeoff
                 SENDING_ORDER -> R.string.mission_state_sending
+                STARTING_MISSION -> R.string.mission_state_starting
                 else -> R.string.mission_state_unknown
             }
         )
