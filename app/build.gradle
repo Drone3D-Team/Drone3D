@@ -80,7 +80,7 @@ dependencies {
     implementation 'io.mavsdk:mavsdk-server:0.8.1'
 
     // Video stream
-    // The exoplayer lirbary is a branch of the where rtsp is implemented.
+    // The exoplayer lirbary is a branch of exoplayer where rtsp is implemented.
     // It can be found here : https://github.com/tresvecesseis/ExoPlayer/tree/dev-v2-rtsp
     implementation fileTree(dir: 'libs', include: '*.aar')
 
