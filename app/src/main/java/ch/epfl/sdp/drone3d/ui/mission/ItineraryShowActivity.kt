@@ -91,7 +91,26 @@ class ItineraryShowActivity : BaseMapActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         extractExtras()
+        setupMap()
 
+        findViewById<View>(R.id.mission_delete).visibility =
+            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+
+        weatherReport = weatherService.getWeatherReport(area[0])
+        weatherReport.observe(this) {
+            isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
+        }
+
+        if (locationService.isLocationEnabled()) {
+            subscriptionTracker = locationService.subscribeToLocationUpdates( {
+                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
+                ,
+                MissionInProgressActivity.MIN_TIME_DELTA,
+                MissionInProgressActivity.MIN_DISTANCE_DELTA)
+        }
+    }
+
+    private fun setupMap() {
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
@@ -116,22 +135,6 @@ class ItineraryShowActivity : BaseMapActivity() {
                 missionDrawer.showMission(flightPath, false)
                 MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
-        }
-
-        findViewById<View>(R.id.mission_delete).visibility =
-            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
-
-        weatherReport = weatherService.getWeatherReport(area[0])
-        weatherReport.observe(this) {
-            isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
-        }
-
-        if (locationService.isLocationEnabled()) {
-            subscriptionTracker = locationService.subscribeToLocationUpdates( {
-                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
-                ,
-                MissionInProgressActivity.MIN_TIME_DELTA,
-                MissionInProgressActivity.MIN_DISTANCE_DELTA)
         }
     }
 
