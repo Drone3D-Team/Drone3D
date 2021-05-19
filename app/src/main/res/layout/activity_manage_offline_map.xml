@@ -109,7 +109,7 @@
             android:layout_margin="30sp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_save_icon"
-            android:onClick="downloadOfflineMap"
+            android:onClick="showDialog"
             app:srcCompat="@android:drawable/ic_menu_save" />
 
     </com.mapbox.mapboxsdk.maps.MapView>

@@ -41,6 +41,9 @@ class ItineraryShowActivity : BaseMapActivity() {
         // max 1000 meters between the user/simulation and the start of the mission
         private const val MAX_BEGINNING_DISTANCE = 1000
         const val FLIGHTPATH_INTENT_PATH = "ISA_flightPath"
+        const val STRATEGY_INTENT_PATH = "ISA_strategy"
+        const val AREA_INTENT_PATH = "ISA_area"
+        const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
 
         // Constants used to update the user location on the map
         const val MIN_TIME_DELTA: Long = 1000
@@ -175,6 +178,17 @@ class ItineraryShowActivity : BaseMapActivity() {
         } else {
             goToMissionInProgressActivity()
         }
+    }
+
+    /**
+     * Go to mission creation activity to let the user edit the mission
+     */
+    fun goToMissionCreation(@Suppress("UNUSED_PARAMETER") view: View) {
+        val intent = Intent(this, ItineraryCreateActivity::class.java)
+        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(AREA_INTENT_PATH, ArrayList(area))
+        intent.putExtra(STRATEGY_INTENT_PATH, strategy)
+        startActivity(intent)
     }
 
     private fun goToMissionInProgressActivity() {
