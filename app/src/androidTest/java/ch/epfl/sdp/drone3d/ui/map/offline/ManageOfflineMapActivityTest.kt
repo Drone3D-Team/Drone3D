@@ -72,6 +72,7 @@ class ManageOfflineMapActivityTest {
     @Test
     fun cannotEnterEmptyStringForRegionName() {
 
+        Thread.sleep(2000)
         //Used to wait for the map to be downloaded before clickling the button
         var counter = CountDownLatch(1)
 
