@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.ui.map
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -29,7 +28,6 @@ import ch.epfl.sdp.drone3d.service.impl.drone.DroneUtils
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
-import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.rtsp.RtspDefaultClient
@@ -66,6 +64,8 @@ class MissionInProgressActivity : BaseMapActivity() {
     companion object {
         private const val DEFAULT_ZOOM: Double = 17.0
         private const val ZOOM_TOLERANCE: Double = 2.0
+
+        private const val MAX_DIST_TO_USER: Double = 1000.0
     }
 
     @Inject lateinit var droneService: DroneService
@@ -293,6 +293,29 @@ class MissionInProgressActivity : BaseMapActivity() {
                         }
                     else
                         getString(R.string.user_location_deactivated)
+                }
+            }
+        }
+
+        // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
+        // and stay visible for the user
+        createObserver(droneData.getPosition()) {
+            it?.let {
+                if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
+                    val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
+                    val maxDistance: Double = if (MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
+                        weatherReport.value!!.visibility.toDouble()
+                    } else {
+                        MAX_DIST_TO_USER
+                    }
+
+                    if (distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
+                        droneService.getExecutor().pauseMission(this)
+                        ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
+                    } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
+                        droneService.getExecutor().resumeMission(this)
+                        ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
+                    }
                 }
             }
         }
