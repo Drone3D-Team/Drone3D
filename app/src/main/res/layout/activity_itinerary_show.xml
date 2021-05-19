@@ -12,6 +12,22 @@
     tools:context=".ui.mission.ItineraryShowActivity">
 
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/editButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:clickable="true"
+        android:contentDescription="@string/content_descriptor_edit_icon"
+        android:onClick="goToMissionCreation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.878"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.84"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
+
     <Button
         android:id="@+id/mission_delete"
         android:layout_width="wrap_content"
@@ -58,11 +74,10 @@
         app:layout_constraintVertical_bias="0.997"
         app:srcCompat="@drawable/drone" />
 
-     <com.mapbox.mapboxsdk.maps.MapView
-         android:id="@+id/mapView"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
-
-     </com.mapbox.mapboxsdk.maps.MapView>
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
