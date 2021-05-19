@@ -30,9 +30,13 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
     override fun getWeatherReport(location: LatLng): LiveData<WeatherReport> {
         val liveData = MutableLiveData<WeatherReport>()
         thread {
-            val data = fetchAPI(location)
-            val report = parseJsonToWeatherReport(data)
-            liveData.postValue(report)
+            try {
+                val data = fetchAPI(location)
+                val report = parseJsonToWeatherReport(data)
+                liveData.postValue(report)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
         }
         return liveData
     }
