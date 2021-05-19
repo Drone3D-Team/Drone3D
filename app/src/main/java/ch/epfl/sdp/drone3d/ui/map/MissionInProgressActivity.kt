@@ -214,6 +214,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
         createPositionObserver(droneData)
         createConnectionObserver(droneData)
+        createDroneKeeperObserver(droneData)
         createObserver(droneData.getVideoStreamUri()) {
             it?.let { streamUri ->
                 val mediaSource = RtspMediaSource.Factory(rtspFactory)
@@ -296,7 +297,9 @@ class MissionInProgressActivity : BaseMapActivity() {
                 }
             }
         }
+    }
 
+    private fun createDroneKeeperObserver(droneData: DroneData) {
         // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
         // and stay visible for the user
         createObserver(droneData.getPosition()) {
@@ -319,6 +322,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                 }
             }
         }
+
     }
 
     private fun createDroneStatusObserver(droneData: DroneData) {

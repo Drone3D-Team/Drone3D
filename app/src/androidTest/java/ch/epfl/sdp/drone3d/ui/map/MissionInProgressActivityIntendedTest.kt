@@ -110,7 +110,7 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
 
-        `when`(locationService.isLocationEnabled()).thenReturn(false)
+        `when`(locationService.isLocationEnabled()).thenReturn(true)
         `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
 
         `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
