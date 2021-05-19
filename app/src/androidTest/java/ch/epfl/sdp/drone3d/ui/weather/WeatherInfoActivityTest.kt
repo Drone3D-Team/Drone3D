@@ -20,7 +20,7 @@ import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
-import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
+import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -57,7 +57,7 @@ class WeatherInfoActivityTest {
         Intent(ApplicationProvider.getApplicationContext(), WeatherInfoActivity::class.java).apply {
             putExtras(
                 Bundle().apply {
-                    putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+                    putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, someLocationsList)
                 }
             )
         }
