@@ -1,13 +1,15 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.os.Bundle
+import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -19,8 +21,8 @@ import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
 import timber.log.Timber
-import java.lang.StringBuilder
 import java.lang.System.currentTimeMillis
+import javax.inject.Inject
 import kotlin.math.min
 
 /**
@@ -32,6 +34,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     companion object{
         private const val DOWNLOAD_STATUS_TIME_DELAY = 1000
     }
+
+    // Location
+    @Inject
+    lateinit var locationService: LocationService
 
     private lateinit var offlineMapSaver: OfflineMapSaver
     private lateinit var mapboxMap: MapboxMap
@@ -52,17 +58,19 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
-        this.mapboxMap = mapboxMap
-        // Used to detect when the map is ready in tests
-        mapView.contentDescription = getString(R.string.map_ready)
-
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            //configureLocationOptions
+            LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
 
             offlineMapSaver = OfflineMapSaverImpl(this@ManageOfflineMapActivity, style.uri)
             bindOfflineRegionsToRecycler()
             downloadButton.isEnabled = true
             bindTileCount()
         }
+
+        this.mapboxMap = mapboxMap
+        // Used to detect when the map is ready in tests
+        mapView.contentDescription = getString(R.string.map_ready)
     }
 
     /**
