@@ -3,7 +3,6 @@ package ch.epfl.sdp.drone3d.ui.map.offline
 import android.app.AlertDialog
 import android.graphics.LightingColorFilter
 import android.os.Bundle
-import android.view.View
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +28,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.lang.System.currentTimeMillis
 import javax.inject.Inject
@@ -39,6 +39,7 @@ import kotlin.math.min
  * Activity which allow a user to select regions on the map to download/remove when he's online so
  * that he can use them in offline mode.
  */
+@AndroidEntryPoint
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     companion object{
@@ -69,6 +70,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
+        this.mapboxMap = mapboxMap
+        // Used to detect when the map is ready in tests
+        mapView.contentDescription = getString(R.string.map_ready)
+
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             //configureLocationOptions
             LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
@@ -78,10 +83,6 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             downloadButton.isEnabled = true
             bindTileCount()
         }
-
-        this.mapboxMap = mapboxMap
-        // Used to detect when the map is ready in tests
-        mapView.contentDescription = getString(R.string.map_ready)
     }
 
     /**
