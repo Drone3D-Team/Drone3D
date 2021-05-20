@@ -29,7 +29,6 @@ enum class State {
 data class MappingMission(
     val name: String = "",
     val flightHeight: Double = 0.0,
-    val cameraPitch: Float = 0f,//Angle in radians with respect to the horizontal axis
     val strategy: Strategy = Strategy.SINGLE_PASS,
     val area: List<LatLng> = listOf(),
     var privateId: String? = null,
