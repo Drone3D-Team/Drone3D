@@ -24,24 +24,28 @@ import com.mapbox.mapboxsdk.utils.ColorUtils
 class MapboxUserDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
     private var circleManager = CircleManager(mapView, mapboxMap, style)
     private lateinit var marker: Circle
-    private var reset: Boolean = false
+    private var reset: Boolean = true
 
     /**
      * Draws the [location] of the home on the map
      */
     fun showUser(location: LatLng?) {
-        if (location == null) {
-            circleManager.deleteAll()
-            reset = true
-        } else if (!::marker.isInitialized || reset) {
-            val circleOptions = CircleOptions()
-                .withLatLng(location)
-                .withCircleColor(ColorUtils.colorToRgbaString(Color.BLUE))
-            marker = circleManager.create(circleOptions)
-            reset = false
-        } else {
-            marker.latLng = location
-            circleManager.update(marker)
+        when {
+            location == null -> {
+                circleManager.deleteAll()
+                reset = true
+            }
+            reset -> {
+                val circleOptions = CircleOptions()
+                    .withLatLng(location)
+                    .withCircleColor(ColorUtils.colorToRgbaString(Color.BLUE))
+                marker = circleManager.create(circleOptions)
+                reset = false
+            }
+            else -> {
+                marker.latLng = location
+                circleManager.update(marker)
+            }
         }
     }
 
