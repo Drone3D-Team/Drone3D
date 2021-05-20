@@ -38,8 +38,6 @@ class WeatherInfoActivity : AppCompatActivity() {
 
     private lateinit var nonExistentMission: TextView
 
-    //private lateinit var weatherReportData: LiveData<WeatherReport>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather_info)
@@ -120,7 +118,6 @@ class WeatherInfoActivity : AppCompatActivity() {
         humidityInfo.visibility = View.GONE
         windSpeedInfo.visibility = View.GONE
         visibilityInfo.visibility = View.GONE
-
         nonExistentMission.visibility = View.VISIBLE
     }
 }

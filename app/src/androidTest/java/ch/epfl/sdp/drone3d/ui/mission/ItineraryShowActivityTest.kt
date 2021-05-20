@@ -82,8 +82,6 @@ class ItineraryShowActivityTest {
         )
     }
 
-
-
     private val activityRule = ActivityScenarioRule<ItineraryShowActivity>(
         Intent(
             ApplicationProvider.getApplicationContext(),
