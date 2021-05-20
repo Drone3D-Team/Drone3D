@@ -12,10 +12,16 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import javax.inject.Inject
 import kotlin.math.PI
 
+/**
+ * This class offers functions to generate the flight path a drone would take to take pictures of
+ * an area. Those pictures could then be used to generate a 3D model of the mapped environment.
+ * The droneService is used to provide the properties of the drone's camera necessary to design the
+ * flight path.
+ */
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
     companion object{
-        // The drone looks forward with a 60 degree angle compared to vertical
+        // The drone looks forward with a 60 degree angle compared to horizontal
         // which corresponds to a 30 degree angle compared to vertical
         const val cameraPitch = PI.toFloat()/3
 

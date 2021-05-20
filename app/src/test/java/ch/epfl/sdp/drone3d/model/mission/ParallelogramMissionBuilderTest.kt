@@ -14,7 +14,7 @@ import kotlin.math.PI
 class ParallelogramMissionBuilderTest {
 
     companion object{
-        private const val cameraAngle = (PI/2).toFloat()
+        private const val cameraPitch = (PI/2).toFloat()
     }
 
     @Test
@@ -24,7 +24,7 @@ class ParallelogramMissionBuilderTest {
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
         val droneHeight = 1.0
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
         val expectedMappingMission = listOf(Point(1.0,6.0),
                                             Point(1.0,5.0),
                                             Point(1.0,-5.0),
@@ -42,7 +42,7 @@ class ParallelogramMissionBuilderTest {
         val droneHeight = 1.0
         val groundImageDimension = GroundImageDim(6.0,6.0)
 
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
         val expectedMappingMission = listOf(
             Point(0.0, -5.0),
             Point(0.0, -4.0),
@@ -61,7 +61,7 @@ class ParallelogramMissionBuilderTest {
         val droneHeight = 1.0
         val groundImageDimension = GroundImageDim(10.0,10.0)
 
-        val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraAngle,droneHeight,groundImageDimension)
+        val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
         val expectedMappingMission =
             listOf(
                 Point(0.0,-5.0),
