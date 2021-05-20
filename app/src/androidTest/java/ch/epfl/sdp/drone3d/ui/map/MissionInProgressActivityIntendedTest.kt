@@ -100,7 +100,7 @@ class MissionInProgressActivityIntendedTest {
             .thenReturn(Completable.complete())
 
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
-        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.3, 0.0)))
+        `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.0, 0.0)))
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getDroneStatus()).thenReturn(statusLiveData)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
@@ -109,6 +109,7 @@ class MissionInProgressActivityIntendedTest {
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(false))
 
         `when`(locationService.isLocationEnabled()).thenReturn(true)
         `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
