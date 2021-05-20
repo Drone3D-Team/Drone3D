@@ -9,7 +9,6 @@ import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import kotlin.math.PI
 
