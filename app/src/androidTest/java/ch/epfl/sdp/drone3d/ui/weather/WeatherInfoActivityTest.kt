@@ -39,19 +39,20 @@ import java.util.*
 @HiltAndroidTest
 @UninstallModules(WeatherModule::class)
 class WeatherInfoActivityTest {
+    companion object {
+        private val GOOD_VISIBILITY_REPORT = WeatherReport("Clear", "description",
+            20.0, 20, 5.0, 10000, Date(12903))
 
-    private val GOOD_VISIBILITY_REPORT = WeatherReport("Clear", "description",
-        20.0, 20, 5.0, 10000, Date(12903))
+        private val BAD_VISIBILITY_REPORT = WeatherReport("RAIN", "description",
+            -1.0, 20, 10.0, 100, Date(12903))
 
-    private val BAD_VISIBILITY_REPORT = WeatherReport("RAIN", "description",
-        -1.0, 20, 10.0, 100, Date(12903))
-
-    private val someLocationsList = arrayListOf(
-        LatLng(47.398979, 8.543434),
-        LatLng(47.398279, 8.543934),
-        LatLng(47.397426, 8.544867),
-        LatLng(47.397026, 8.543067)
-    )
+        private val someLocationsList = arrayListOf(
+            LatLng(47.398979, 8.543434),
+            LatLng(47.398279, 8.543934),
+            LatLng(47.397426, 8.544867),
+            LatLng(47.397026, 8.543067)
+        )
+    }
 
     private val activityRule = ActivityScenarioRule<MissionInProgressActivity>(
         Intent(ApplicationProvider.getApplicationContext(), WeatherInfoActivity::class.java).apply {
