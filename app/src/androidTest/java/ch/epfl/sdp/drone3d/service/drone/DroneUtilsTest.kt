@@ -32,17 +32,16 @@ class DroneUtilsTest {
             val randomLatitude = nextDouble(-90.0, 90.0)
             val randomLongitude = nextDouble(0.0, 180.0)
             val randomPitch =  nextDouble(0.0, 60.0/(2*PI)).toFloat()
-            val takePhoto = nextBoolean()
-            val cameraAction = if(takePhoto) Mission.MissionItem.CameraAction.TAKE_PHOTO else Mission.MissionItem.CameraAction.NONE
+            val cameraAction = Mission.MissionItem.CameraAction.TAKE_PHOTO
             val mission = Mission.MissionItem(
                 randomLatitude,
                 randomLongitude,
                 10f,
                 10f,
-                true, randomPitch, Float.NaN,
+                false, randomPitch, Float.NaN,
                 cameraAction, Float.NaN,
                 1.0)
-            val expectedMission = DroneUtils.generateMissionItem(randomLatitude, randomLongitude, 10f,randomPitch,takePhoto)
+            val expectedMission = DroneUtils.generateMissionItem(randomLatitude, randomLongitude, 10f,randomPitch)
             Assert.assertTrue(missionEquality(expectedMission, mission))
         }
     }
@@ -61,7 +60,7 @@ class DroneUtilsTest {
         val pitch = 30/(2*PI).toFloat()
 
         val expectedMissionItems = positions.map { pos ->
-            DroneUtils.generateMissionItem(pos.latitude, pos.longitude, altitude,pitch.toFloat(),true)
+            DroneUtils.generateMissionItem(pos.latitude, pos.longitude, altitude,pitch)
         }
 
         val missionPlan = DroneUtils.makeDroneMission(positions, altitude,pitch)
