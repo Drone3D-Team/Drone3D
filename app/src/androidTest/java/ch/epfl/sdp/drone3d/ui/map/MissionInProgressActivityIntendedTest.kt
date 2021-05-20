@@ -3,6 +3,7 @@ package ch.epfl.sdp.drone3d.ui.map
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
@@ -36,6 +37,7 @@ import io.mavsdk.mission.Mission
 import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
+import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -72,7 +74,7 @@ class MissionInProgressActivityIntendedTest {
         Intent(ApplicationProvider.getApplicationContext(), MissionInProgressActivity::class.java).apply {
             putExtras(
                     Bundle().apply {
-                        putSerializable(MissionViewAdapter.MISSION_PATH, someLocationsList)
+                        putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, someLocationsList)
                     }
             )
         }
@@ -169,9 +171,9 @@ class MissionInProgressActivityIntendedTest {
         Thread.sleep(500)
         ToastMatcher.onToast(activity.get(), activity.get().getString(R.string.drone_mission_error, "test"))
 
-        Intents.intended(
-                IntentMatchers.hasComponent(
-                        ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        ViewMatchers.assertThat(
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
 
         missionEndFuture = CompletableFuture() //reset
@@ -198,12 +200,13 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture.complete(Any())
 
-        Thread.sleep(500)
+        Thread.sleep(2000)
 
-        Intents.intended(
-            IntentMatchers.hasComponent(
-                ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        ViewMatchers.assertThat(
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
+
 
         missionEndFuture = CompletableFuture() //reset
     }
@@ -229,11 +232,11 @@ class MissionInProgressActivityIntendedTest {
 
         missionEndFuture.complete(Any())
 
-        Thread.sleep(500)
+        Thread.sleep(2000)
 
-        Intents.intended(
-            IntentMatchers.hasComponent(
-                ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
+        ViewMatchers.assertThat(
+            activityRule.scenario.state,
+            Matchers.equalTo(Lifecycle.State.DESTROYED)
         )
 
         missionEndFuture = CompletableFuture() //reset
