@@ -114,7 +114,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     private fun bindOfflineRegionsToRecycler() {
         val savedRegionsRecycler = findViewById<RecyclerView>(R.id.saved_regions)
         val offlineRegions = offlineMapSaver.getOfflineRegions()
-        val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager)
+        val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager, mapboxMap)
         savedRegionsRecycler.adapter = adapter
 
         offlineRegions.observe(this, androidx.lifecycle.Observer {
@@ -211,7 +211,6 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         lineManager.create(LineOptions().withLatLngs(
             listOf(bounds.northEast, bounds.northWest, bounds.southWest, bounds.southEast, bounds.northEast)
         ))
-
     }
 
 }
