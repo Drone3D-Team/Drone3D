@@ -100,12 +100,12 @@
     <string name="launch_no_drone">A drone should be connected to launch the mission.</string>
     <string name="launch_no_drone_pos">Failed to get the drone location.</string>
     <string name="drone_too_far_from_start">The drone is too far from the starting point of the mission.</string>
+    <string name="content_descriptor_edit_icon">edit_icon</string>
 
     <!-- Mission In Progress Activity -->
     <string name="mission_null">Cannot launch a null mission</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
-
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
@@ -134,6 +134,7 @@
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>
     <string name="info_visibility">Visibility limit : %1$s m</string>
+    <string name="info_visibility_km">Visibility limit : %1$s km</string>
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
