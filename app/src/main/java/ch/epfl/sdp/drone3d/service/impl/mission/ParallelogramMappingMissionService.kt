@@ -16,7 +16,8 @@ import kotlin.math.PI
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
     companion object{
-        // The drone looks forward with a 30 degree compared to vertical
+        // The drone looks forward with a 60 degree angle compared to vertical
+        // which corresponds to a 30 degree angle compared to vertical
         const val cameraPitch = PI.toFloat()/3
 
         //Those default data correspond to the Freefly Astro Quadrotor properties
