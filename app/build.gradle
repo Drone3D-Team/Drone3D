@@ -76,8 +76,8 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
 
     // Import mavsdk to control the drone
-    implementation 'io.mavsdk:mavsdk:0.8.0'
-    implementation 'io.mavsdk:mavsdk-server:0.8.1'
+    implementation 'io.mavsdk:mavsdk:0.9.0'
+    implementation 'io.mavsdk:mavsdk-server:0.9.1'
 
     // Video stream
     implementation fileTree(dir: 'libs', include: '*.aar')
