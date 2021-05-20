@@ -138,6 +138,7 @@
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>
     <string name="info_visibility">Visibility limit : %1$s m</string>
+    <string name="info_visibility_km">Visibility limit : %1$s km</string>
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
