@@ -22,6 +22,7 @@ import io.mavsdk.telemetry.Telemetry.FlightMode.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import timber.log.Timber
+import kotlin.math.PI
 
 /**
  * This class is an implementation of [DroneExecutor]. As such it is responsible of the mission management of the drone.
@@ -38,6 +39,7 @@ class DroneExecutorImpl(
         private const val MAX_RETRIES: Int = 5
         //TODO: CHANGE
         private const val DEFAULT_ALTITUDE: Float = 20f
+        private const val DEFAULT_CAMERA_ANGLE = PI.toFloat()/3
     }
 
     override fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {

@@ -66,6 +66,9 @@ class MissionInProgressActivity : BaseMapActivity() {
     companion object {
         private const val DEFAULT_ZOOM: Double = 17.0
         private const val ZOOM_TOLERANCE: Double = 2.0
+
+        private const val MOCK_CAMERA_ANGLE = 0f
+        private const val MOCK_ALTITUDE = 0f
     }
 
     @Inject lateinit var droneService: DroneService
