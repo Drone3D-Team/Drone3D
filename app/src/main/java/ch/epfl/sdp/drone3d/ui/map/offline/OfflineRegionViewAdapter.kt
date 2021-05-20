@@ -13,13 +13,16 @@ import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl.Companion.getMetadata
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.offline.OfflineRegion
+import com.mapbox.mapboxsdk.plugins.annotation.Line
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import timber.log.Timber
 
 /**
  * ViewAdapter for the RecyclerView holding OfflineRegions. Use an [offlineMapSaver] to delete
  * the missions when we click on the delete button.
  */
-class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
+class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, private val lineManager: LineManager) :
     ListAdapter<OfflineRegion, OfflineRegionViewAdapter.OfflineRegionViewHolder>(RegionDiff) {
 
     /**
@@ -36,15 +39,17 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
          * Bind holder with the [OfflineRegion] by setting the name in the textView and the
          * onClickListener of the button to delete it using the [offlineMapSaver].
          */
-        fun bind(offRegion: OfflineRegion, offlineMapSaver: OfflineMapSaver) {
+        fun bind(offRegion: OfflineRegion, offlineMapSaver: OfflineMapSaver, lineManager: LineManager) {
             offlineRegion = offRegion
-            textView.text = getMetadata(offRegion).name
+            val metadata = getMetadata(offRegion)
+            textView.text = metadata.name
 
             deleteButton.setOnClickListener {
                 offlineMapSaver.deleteRegion(
                     offRegion.id,
                     object : OfflineRegion.OfflineRegionDeleteCallback {
                         override fun onDelete() {
+                            lineManager.deleteAll()
                             ToastHandler.showToast(it.context, R.string.delete_successful)
                         }
 
@@ -66,7 +71,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver) :
     }
 
     override fun onBindViewHolder(holder: OfflineRegionViewHolder, position: Int) {
-        holder.bind(getItem(position), offlineMapSaver)
+        holder.bind(getItem(position), offlineMapSaver, lineManager)
     }
 
     override fun getItemCount(): Int {
