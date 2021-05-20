@@ -41,6 +41,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         const val STRATEGY_INTENT_PATH = "ISA_strategy"
         const val AREA_INTENT_PATH = "ISA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
+        const val CAMERA_PITCH_INTENT_PATH = "ISA_cameraPitch"
     }
 
     @Inject
@@ -64,6 +65,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     private lateinit var area: List<LatLng>
     private lateinit var strategy: MappingMissionService.Strategy
     private var flightHeight: Double = 50.0
+    private var cameraPitch: Float = 0f
 
     // true if the weather is good enough to launch the mission
     private var isWeatherGoodEnough: Boolean = false
@@ -98,6 +100,7 @@ class ItineraryShowActivity : BaseMapActivity() {
                         flightHeight
                     )
                 }
+                cameraPitch = missionBuilder.getCameraPitch()
                 missionDrawer.showMission(flightPath, false)
                 MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
@@ -171,6 +174,8 @@ class ItineraryShowActivity : BaseMapActivity() {
     private fun goToMissionStartActivity() {
         val intent = Intent(this, MissionStartActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
+        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH,flightHeight)
+        intent.putExtra(CAMERA_PITCH_INTENT_PATH,cameraPitch)
         startActivity(intent)
     }
 

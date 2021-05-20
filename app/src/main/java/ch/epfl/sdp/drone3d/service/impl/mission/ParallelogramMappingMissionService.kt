@@ -11,12 +11,15 @@ import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import java.lang.IllegalArgumentException
 import javax.inject.Inject
+import kotlin.math.PI
 
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
     companion object{
+        //Camera angle in radians with respect to the horizontal
         private const val cameraAngle = 0.0 // Suppose the drone is looking down
 
+        private const val RADIAN_TO_DEGREE_FACTOR = 180/PI
         //Those default data correspond to the Freefly Astro Quadrotor properties
         private const val defaultSensorWidth = 7.82f //millimeters
         private const val defaultFocalLength = 24.0f //millimeters
@@ -40,6 +43,10 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
             flightHeight,
             ParallelogramMissionBuilder.Companion::buildDoublePassMappingMission
         )
+    }
+
+    override fun getCameraPitch(): Float {
+        return (RADIAN_TO_DEGREE_FACTOR*cameraAngle).toFloat()
     }
 
     private fun buildMappingMission(
