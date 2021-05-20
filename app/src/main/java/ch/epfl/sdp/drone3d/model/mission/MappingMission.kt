@@ -22,7 +22,7 @@ enum class State {
 }
 
 /**
- * A MappingMission is instantiated with a [name], a [flightHeight], a [strategy], an [area] and a [cameraPitch].
+ * A MappingMission is instantiated with a [name], a [flightHeight], a [strategy], and an [area].
  * The [privateId], [sharedId] and [state] are updated according to where the MappingMission are stored.
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */

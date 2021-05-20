@@ -98,6 +98,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         super.onCreate(savedInstanceState)
 
         missionPath = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
+        //TODO: intent should provide altitude and camera angle
 
         initMapView(savedInstanceState,
             R.layout.activity_mission_in_progress,

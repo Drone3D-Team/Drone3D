@@ -21,7 +21,7 @@ object DroneUtils {
      */
     fun makeDroneMission(path: List<LatLng>, altitude: Float, cameraPitch:Float?=null): MissionPlan {
         return MissionPlan(path.map { point ->
-            generateMissionItem(point.latitude, point.longitude, altitude,cameraPitch,true)
+            generateMissionItem(point.latitude, point.longitude, altitude,cameraPitch)
         })
     }
 
@@ -29,14 +29,14 @@ object DroneUtils {
      * Create a MissionItem by using the coordinates [latitudeDeg] and [longitudeDeg], the [altitude] and the [forwardCameraAngle] wanted
      * for the drone
      */
-    fun generateMissionItem(latitudeDeg: Double, longitudeDeg: Double, altitude: Float,cameraPitch:Float?=null,takePhoto:Boolean = true): MissionItem {
+    fun generateMissionItem(latitudeDeg: Double, longitudeDeg: Double, altitude: Float,cameraPitch:Float?=null): MissionItem {
         return MissionItem(
             latitudeDeg,
             longitudeDeg,
             altitude,
             10f,
             false, cameraPitch ?: Float.NaN, Float.NaN,
-            if(takePhoto)MissionItem.CameraAction.TAKE_PHOTO
+            if(cameraPitch!=null)MissionItem.CameraAction.TAKE_PHOTO
                     else MissionItem.CameraAction.NONE,
             Float.NaN, 1.0)
     }

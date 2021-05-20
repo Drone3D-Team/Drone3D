@@ -37,9 +37,7 @@ class DroneExecutorImpl(
 
     companion object {
         private const val MAX_RETRIES: Int = 5
-        //TODO: CHANGE
         private const val DEFAULT_ALTITUDE: Float = 20f
-        private const val DEFAULT_CAMERA_ANGLE = PI.toFloat()/3
     }
 
     override fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {
@@ -140,7 +138,7 @@ class DroneExecutorImpl(
     private fun returnTo(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
 
         val droneInstance = getInstance()
-        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude,0f)
+        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude)
 
         return droneInstance.mission.pauseMission()
             .doOnComplete {
