@@ -7,16 +7,15 @@ package ch.epfl.sdp.drone3d.ui.weather
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
-import ch.epfl.sdp.drone3d.ui.mission.MissionViewAdapter
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,8 +29,6 @@ class WeatherInfoActivity : AppCompatActivity() {
     @Inject
     lateinit var weatherService: WeatherService
 
-    private var location: ArrayList<LatLng>? = null
-
     private lateinit var dateInfo: TextView
     private lateinit var weatherDescription: TextView
     private lateinit var temperatureInfo: TextView
@@ -41,7 +38,7 @@ class WeatherInfoActivity : AppCompatActivity() {
 
     private lateinit var nonExistentMission: TextView
 
-    private lateinit var weatherReportData: LiveData<WeatherReport>
+    //private lateinit var weatherReportData: LiveData<WeatherReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,15 +53,14 @@ class WeatherInfoActivity : AppCompatActivity() {
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
 
-        location = intent.getParcelableArrayListExtra(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
+        val location = intent.extras?.get(ItineraryShowActivity.LOCATION_INTENT_PATH) as LatLng?
 
-        if (location == null || location!!.isEmpty()) {
-            setupInvalidMission()
-        } else {
-            weatherReportData = weatherService.getWeatherReport(location!![0])
-            weatherReportData.observe(this) { report ->
+        if (location != null) {
+            weatherService.getWeatherReport(location).observe(this) { report ->
                 setupWeatherInfo(report)
             }
+        } else {
+            setupInvalidMission()
         }
     }
 

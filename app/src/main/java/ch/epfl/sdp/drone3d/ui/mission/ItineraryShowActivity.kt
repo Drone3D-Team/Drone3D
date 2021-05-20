@@ -39,6 +39,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         // max 1000 meters between the user/simulation and the start of the mission
         private const val MAX_BEGINNING_DISTANCE = 1000
         const val FLIGHTPATH_INTENT_PATH = "ISA_flightPath"
+        const val LOCATION_INTENT_PATH = "ISA_location"
         const val STRATEGY_INTENT_PATH = "ISA_strategy"
         const val AREA_INTENT_PATH = "ISA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
@@ -199,7 +200,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      */
     fun goToWeatherInfo(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, WeatherInfoActivity::class.java)
-        intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
+        intent.putExtra(LOCATION_INTENT_PATH, area[0])
         startActivity(intent)
     }
 
