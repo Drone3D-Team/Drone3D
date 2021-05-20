@@ -26,12 +26,11 @@ enum class State {
  * The [ownerUid] is set the first time the mission is either stored or shared.
  */
 data class MappingMission(
-    //TODO: could be split into 2 substructure, one for the metadata and one for the
-    // actual mission(flight path, flight height, camera pitch)
-    // Only a shape should know be stored and the mapping mission regenerated for every drone
     val name: String = "",
     val flightPath: List<LatLng> = listOf(),
     val flightHeight:Double = 0.0,
+    //Camera pitch is the angle of the camera in radians with respect to the horizontal axis
+    //A camera pitch of PI/2 points towards the ground.
     val cameraPitch:Float = 0f,
     var privateId: String? = null,
     var sharedId: String? = null,
