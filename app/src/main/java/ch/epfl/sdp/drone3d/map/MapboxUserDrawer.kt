@@ -16,7 +16,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
 /**
- * This class draw the location of the home of the drone on the map
+ * This class draw the location of the user on the map
  *
  * This class is taken from the Fly2Find project with one adaptation :
  * - the SymbolManager was replaced by a CircleManager, and the modifications implied by this change
