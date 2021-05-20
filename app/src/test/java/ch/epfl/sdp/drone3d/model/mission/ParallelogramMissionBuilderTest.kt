@@ -14,7 +14,7 @@ import kotlin.math.PI
 class ParallelogramMissionBuilderTest {
 
     companion object{
-        private const val cameraAngle = (PI/2)//.toFloat()
+        private const val cameraAngle = (PI/2).toFloat()
     }
 
     @Test
