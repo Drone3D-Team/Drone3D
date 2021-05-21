@@ -90,6 +90,8 @@ class ItineraryCreateActivityTest {
     fun supportActionBarGoesBackToMainActivity() {
         `when`(authService.hasActiveSession()).thenReturn(true)
 
+        activityRule.scenario.recreate()
+
         val imageButton = onView(
             Matchers.allOf(
                 withContentDescription("Navigate up"),
