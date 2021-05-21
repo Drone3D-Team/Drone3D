@@ -27,7 +27,7 @@ class MapboxUserDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : M
     private var reset: Boolean = true
 
     /**
-     * Draws the [location] of the home on the map
+     * Draws the [location] of the user on the map
      */
     fun showUser(location: LatLng?) {
         when {
