@@ -35,7 +35,6 @@ import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.service.module.WeatherModule
-import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -138,7 +137,7 @@ class ItineraryShowActivityTest {
         val executor = Mockito.mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
         `when`(
-            executor.startMission(
+            executor.setupMission(
                 anyObj(Context::class.java),
                 anyObj(Mission.MissionPlan::class.java)
             )
@@ -248,7 +247,7 @@ class ItineraryShowActivityTest {
         onView(withId(R.id.buttonToMissionInProgressActivity)).perform(click())
 
         Intents.intended(
-            hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
+            hasComponent(hasClassName(MissionStartActivity::class.java.name))
         )
 
         val intents = Intents.getIntents()
@@ -299,7 +298,7 @@ class ItineraryShowActivityTest {
             .perform(click())
 
         Intents.intended(
-            hasComponent(hasClassName(MissionInProgressActivity::class.java.name))
+            hasComponent(hasClassName(MissionStartActivity::class.java.name))
         )
 
         val intents = Intents.getIntents()

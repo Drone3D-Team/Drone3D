@@ -33,6 +33,7 @@ interface DroneData {
         ARMING, // The drone is being armed
         TAKING_OFF, // The drone is taking off
         SENDING_ORDER, // The drone is receiving its mission
+        STARTING_MISSION, // The drone is starting its mission
         EXECUTING_MISSION, // The drone is executing its mission
         GOING_BACK, // The drone is going back to its launch point
         LANDING, // the drone is landing
