@@ -27,4 +27,8 @@ class ParallelogramBuilder: AreaBuilder() {
         val C = GeometryUtils.getFourthParallelogramVertex(O, A, B)
         return listOf(A, O, B, C)
     }
+
+    override fun getAreaSizeGivenComplete(): Float {
+        TODO("Not yet implemented")
+    }
 }
