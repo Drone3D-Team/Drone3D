@@ -80,7 +80,6 @@ class ItineraryCreateActivityTest {
 
     companion object{
         private val AREA = listOf<LatLng>(LatLng(46.518732896473644, 6.5628454889064365), LatLng(46.51874120200868, 6.563415458311842), LatLng(46.518398828344715, 6.563442280401509))
-
     }
 
     /**
