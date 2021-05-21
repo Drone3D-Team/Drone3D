@@ -24,8 +24,7 @@ import java.net.URL
 
 class DronePhotosImpl(val service: DroneService) : DronePhotos {
 
-    //TODO: Check if cache works (same CaptureInfo are equal)
-    private val photosCache = mutableMapOf<CameraProto.CaptureInfo, Bitmap>()
+    private val photosCache = mutableMapOf<String, Bitmap>()
 
     @SuppressLint("CheckResult")
     override fun getNewPhotos(): LiveData<Bitmap> {
@@ -34,8 +33,6 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val data = MutableLiveData<Bitmap>()
 
         drone.camera.captureInfo.subscribe { captureInfo ->
-
-            //TODO: use cache
             GlobalScope.async {
                 val image = retrievePhoto(captureInfo.fileUrl)
                 if (image != null) {
@@ -128,13 +125,13 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         return list.map { captureInfo ->
             GlobalScope.async {
                 // First check if image is cached
-                var image = photosCache[captureInfo]
+                var image = photosCache[captureInfo.fileUrl]
                 // If not download it
                 if (image == null) {
                     image = retrievePhoto(captureInfo.fileUrl)
                     // If the download didn't fail, cache the image
                     if (image != null) {
-                        photosCache[captureInfo] = image
+                        photosCache[captureInfo.fileUrl] = image
                     }
                 }
                 image
