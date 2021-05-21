@@ -12,10 +12,12 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.map.MapboxUserDrawer
 import ch.epfl.sdp.drone3d.map.MapboxUtility
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
@@ -42,6 +44,10 @@ class ItineraryShowActivity : BaseMapActivity() {
         const val STRATEGY_INTENT_PATH = "ISA_strategy"
         const val AREA_INTENT_PATH = "ISA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
+
+        // Constants used to update the user location on the map
+        const val MIN_TIME_DELTA: Long = 1000
+        const val MIN_DISTANCE_DELTA: Float = 1.0F
     }
 
     @Inject
@@ -54,10 +60,15 @@ class ItineraryShowActivity : BaseMapActivity() {
     lateinit var weatherService: WeatherService
 
     @Inject
+    lateinit var locationService: LocationService
+
+    @Inject
     lateinit var authService: AuthenticationService
 
     private var flightPath = listOf<LatLng>()
     private lateinit var missionDrawer: MapboxMissionDrawer
+    private lateinit var userDrawer: MapboxUserDrawer
+    private var subscriptionTracker: Int? = null
 
     private lateinit var ownerUid: String
     private var privateId: String? = null
@@ -80,12 +91,34 @@ class ItineraryShowActivity : BaseMapActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         extractExtras()
+        setupMap()
 
+        findViewById<View>(R.id.mission_delete).visibility =
+            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+
+        weatherReport = weatherService.getWeatherReport(area[0])
+        weatherReport.observe(this) {
+            isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
+        }
+
+        if (locationService.isLocationEnabled()) {
+            subscriptionTracker = locationService.subscribeToLocationUpdates( {
+                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
+                ,
+                MissionInProgressActivity.MIN_TIME_DELTA,
+                MissionInProgressActivity.MIN_DISTANCE_DELTA)
+        }
+    }
+
+    private fun setupMap() {
         mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded. Now we can add data or make other map adjustments
                 if (!::missionDrawer.isInitialized) {
                     missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, mapboxMap.style!!)
+                }
+                if (!::userDrawer.isInitialized) {
+                    userDrawer = MapboxUserDrawer(mapView, mapboxMap, mapboxMap.style!!)
                 }
 
                 val missionBuilder = ParallelogramMappingMissionService(droneService)
@@ -102,14 +135,6 @@ class ItineraryShowActivity : BaseMapActivity() {
                 missionDrawer.showMission(flightPath, false)
                 MapboxUtility.zoomOnMission(flightPath, mapboxMap)
             }
-        }
-
-        findViewById<View>(R.id.mission_delete).visibility =
-            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
-
-        weatherReport = weatherService.getWeatherReport(area[0])
-        weatherReport.observe(this) {
-            isWeatherGoodEnough = WeatherUtils.isWeatherGoodEnough(it)
         }
     }
 
