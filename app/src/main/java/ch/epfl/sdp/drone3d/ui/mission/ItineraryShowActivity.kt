@@ -25,6 +25,7 @@ import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionServi
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
+import ch.epfl.sdp.drone3d.ui.map.MissionInProgressActivity
 import ch.epfl.sdp.drone3d.ui.weather.WeatherInfoActivity
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -46,10 +47,6 @@ class ItineraryShowActivity : BaseMapActivity() {
         const val STRATEGY_INTENT_PATH = "ISA_strategy"
         const val AREA_INTENT_PATH = "ISA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
-
-        // Constants used to update the user location on the map
-        const val MIN_TIME_DELTA: Long = 1000
-        const val MIN_DISTANCE_DELTA: Float = 1.0F
     }
 
     @Inject
