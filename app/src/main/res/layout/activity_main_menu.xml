@@ -65,15 +65,6 @@
             android:text="@string/disconnect_drone" />
 
         <Button
-            android:id="@+id/manage_offline_map_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToDroneManageOfflineMap"
-            android:text="@string/manage_offline_map" />
-
-        <Button
             android:id="@+id/go_connect_drone_button"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -81,6 +72,15 @@
             android:layout_weight="1"
             android:onClick="goToDroneConnect"
             android:text="@string/connect_a_drone" />
+
+        <Button
+            android:id="@+id/manage_offline_map_button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="7dp"
+            android:layout_weight="1"
+            android:onClick="goToDroneManageOfflineMap"
+            android:text="@string/manage_offline_map" />
 
     </LinearLayout>
 
