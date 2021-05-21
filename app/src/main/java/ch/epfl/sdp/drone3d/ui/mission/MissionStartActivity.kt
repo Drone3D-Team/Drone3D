@@ -32,6 +32,8 @@ class MissionStartActivity : AppCompatActivity() {
 
 
     companion object {
+        const val MISSION_ALTITUDE: Float = 20f
+
         val MISSION_START_STATUS: List<DroneStatus> = listOf(
             IDLE,
             ARMING,
@@ -95,7 +97,7 @@ class MissionStartActivity : AppCompatActivity() {
             ToastHandler.showToastAsync(this, R.string.mission_null)
             finish()
         } else {
-            val droneMission = DroneUtils.makeDroneMission(missionPath, 20f)
+            val droneMission = DroneUtils.makeDroneMission(missionPath, MISSION_ALTITUDE)
             try {
                 disposable = droneService.getExecutor().setupMission(this, droneMission)
                     .subscribe(
