@@ -27,7 +27,6 @@ import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
-import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
@@ -130,7 +129,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         goToSaveButton.isEnabled = false
         setLaunchOrLaunchButtonIcon()
 
-        if(!authService.hasActiveSession()){
+        if (!authService.hasActiveSession()) {
             setDialogNotLogin()
         }
 
@@ -142,7 +141,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     /**
      * Warn the user that he is not login and he won't be able to save his mission
      */
-    private fun setDialogNotLogin(){
+    private fun setDialogNotLogin() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(getString(R.string.warning_not_login))
         builder.setCancelable(false)
@@ -161,8 +160,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     /**
      * If the user as an active session display save icon, otherwise send icon
      */
-    private fun setLaunchOrLaunchButtonIcon(){
-        if(authService.hasActiveSession()){
+    private fun setLaunchOrLaunchButtonIcon() {
+        if (authService.hasActiveSession()) {
             goToSaveButton.setImageDrawable(
                 ResourcesCompat.getDrawable(
                     resources,
@@ -170,7 +169,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                     null
                 )
             )
-        }else {
+        } else {
             goToSaveButton.setImageDrawable(
                 ResourcesCompat.getDrawable(
                     resources,
@@ -349,7 +348,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if(authService.hasActiveSession()){
+        if (authService.hasActiveSession()) {
             if (!isPreviewUpToDate) {
                 val builder = AlertDialog.Builder(this)
                 builder.setMessage(getString(R.string.save_without_updating_confirmation))
@@ -367,7 +366,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             } else {
                 goToSaveActivity()
             }
-        }else{
+        } else {
             val intent = Intent(this, ItineraryShowActivity::class.java)
             intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
             intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))

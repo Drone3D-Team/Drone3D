@@ -8,8 +8,6 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.Activity
 import android.content.Intent
 import android.os.SystemClock
-import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -18,7 +16,6 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
@@ -328,7 +325,7 @@ class ItineraryCreateActivityTest {
             ItineraryCreateActivity::class.java
         )
         val flightHeight = 10.0
-        val area = listOf(LatLng(1.0,1.0), LatLng(0.0,0.0), LatLng(5.0,5.0))
+        val area = listOf(LatLng(1.0, 1.0), LatLng(0.0, 0.0), LatLng(5.0, 5.0))
         val strategy = MappingMissionService.Strategy.DOUBLE_PASS
 
         intent.putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
@@ -357,9 +354,18 @@ class ItineraryCreateActivityTest {
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
 
         val bundle = intents.get(1).extras!!
-        assertThat(bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH), equalTo(flightHeight))
-        assertThat((bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)!!, equalTo(strategy))
-        assertThat(bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!, equalTo(area))
+        assertThat(
+            bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH),
+            equalTo(flightHeight)
+        )
+        assertThat(
+            (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)!!,
+            equalTo(strategy)
+        )
+        assertThat(
+            bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!,
+            equalTo(area)
+        )
 
 
     }

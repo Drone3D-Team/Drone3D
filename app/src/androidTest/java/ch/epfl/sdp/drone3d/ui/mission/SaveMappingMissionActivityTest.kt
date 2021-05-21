@@ -23,13 +23,14 @@ import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
-import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.service.module.*
+import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
+import ch.epfl.sdp.drone3d.service.module.LocationModule
+import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
+import ch.epfl.sdp.drone3d.service.module.WeatherModule
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -59,12 +60,18 @@ class SaveMappingMissionActivityTest {
             20.0, 20, 5.0, 500, Date(12903)
         )
         private val AREA = arrayListOf(
-            LatLng( 46.52109254025395, 6.643008669745938),
-            LatLng( 46.52109254025395, 6.64300866974594),
-            LatLng( 46.52109254025397, 6.643008669745938),
+            LatLng(46.52109254025395, 6.643008669745938),
+            LatLng(46.52109254025395, 6.64300866974594),
+            LatLng(46.52109254025397, 6.643008669745938),
         )
-        private val UNNAMED_MISSION = MappingMission("Unnamed mission", 50.0, MappingMissionService.Strategy.SINGLE_PASS, AREA)
-        private val NAMED_MISSION = MappingMission("My mission", 50.0, MappingMissionService.Strategy.SINGLE_PASS, AREA)
+        private val UNNAMED_MISSION = MappingMission(
+            "Unnamed mission",
+            50.0,
+            MappingMissionService.Strategy.SINGLE_PASS,
+            AREA
+        )
+        private val NAMED_MISSION =
+            MappingMission("My mission", 50.0, MappingMissionService.Strategy.SINGLE_PASS, AREA)
 
     }
 
@@ -77,18 +84,20 @@ class SaveMappingMissionActivityTest {
             SaveMappingMissionActivity::class.java
         ).apply {
             putExtras(Bundle().apply {
-                putSerializable(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, UNNAMED_MISSION.flightHeight)
+                putSerializable(
+                    ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH,
+                    UNNAMED_MISSION.flightHeight
+                )
                 putSerializable(
                     ItineraryCreateActivity.STRATEGY_INTENT_PATH,
                     UNNAMED_MISSION.strategy
                 )
                 putSerializable(
-                    ItineraryCreateActivity.AREA_INTENT_PATH, AREA)
+                    ItineraryCreateActivity.AREA_INTENT_PATH, AREA
+                )
             })
         }
     )
-
-
 
 
     @get:Rule
