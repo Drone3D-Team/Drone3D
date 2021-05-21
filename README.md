@@ -3,10 +3,21 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/maintainability)](https://codeclimate.com/github/Drone3D-Team/Drone3D/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/test_coverage)](https://codeclimate.com/github/Drone3D-Team/Drone3D/test_coverage)
 
+
+## Table of contents
+* [Description](#description)
+* [Usage](#usage)
+* [Set up](#set-up)
+* [Developement](#developement)
+* [License](#license)
+
 ## Description
 Drone3D is the mobile application that let you plan and execute drone mission to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supporting [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 
 ## Usage
+
+
+## Set-up
 This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share you private keys, be carefull !
 
 ### Mapbox
@@ -35,6 +46,29 @@ You'll first have to login or create an account [here](https://home.openweatherm
 
 ## Developement
 Drone3D was developed as part of the CS-306 course "Software developement project" at EPFL. We have followed agile development methods by adopting the scrum framework. You cane find our scrum board [here](https://github.com/Drone3D-Team/Drone3D/projects/1). We have divided the semester into sprints of one week each. For each sprint we assigned ourselves tasks. Once the task has been implemented, tested and merged into the main branch, it is moved to the corresponding "Done is sprint X" column.  At the end of the week, a presentation of the application's functionality takes place, as well as a review of the last sprint to improve the next one. We summarise the work done in each sprint in a sprint summary available in our [wiki](https://github.com/Drone3D-Team/Drone3D/wiki).
+
+We had a few imposed requirements for this app:
+
+### Correctness & Utility
+Drone3D let users plan and execute mission to create 3D model of a area.
+
+### Split app model
+Our app use firebase to let the users store and share their mission.
+
+### Sensor usage
+Every map in the app is zoomed on the user, based on his gps. Users can follow the live progression of the drone on the map when a mission is launched. At any time they can send an instruction so that the drone comes back to their location.
+
+### User support
+We use an email/password register and login. Login users have the possibility to store and share their mission. The app is still useable without being login.
+
+### Local cache & offline mode
+Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping mission locally, it'll be synchronised with the online database as soon as they regain connection.
+
+### Testing
+Our code is carefully tested. It has the following stats:
+[![Build Status](https://api.cirrus-ci.com/github/Drone3D-Team/Drone3D.svg)](https://cirrus-ci.com/github/Drone3D-Team/Drone3D)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/maintainability)](https://codeclimate.com/github/Drone3D-Team/Drone3D/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/test_coverage)](https://codeclimate.com/github/Drone3D-Team/Drone3D/test_coverage)
 
 ## License
 
