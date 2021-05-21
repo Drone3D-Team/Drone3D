@@ -68,6 +68,6 @@ class ParallelAreaBuilderTest {
         area.addVertex(b)
         area.addVertex(c)
 
-        assertThat(area.getAreaSize(), equalTo(a.distanceTo(b) * a.distanceTo(c)))
+        assertThat(area.getAreaSize(), equalTo(b.distanceTo(a) * b.distanceTo(c)))
     }
 }
