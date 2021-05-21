@@ -374,6 +374,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
 
             startActivity(intent)
+            finish()
         }
     }
 
@@ -387,6 +388,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
 
         startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

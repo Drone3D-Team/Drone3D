@@ -35,6 +35,7 @@ import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
 import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.service.module.LocationModule
 import ch.epfl.sdp.drone3d.ui.MainActivity
+import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -104,10 +105,24 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
+    fun goToLoginDialogWorkWhenNotLogin() {
+        `when`(authService.hasActiveSession()).thenReturn(false)
+
+        activityRule.scenario.recreate()
+
+        onView(withText(R.string.go_to_login)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(LoginActivity::class.java.name))
+        )
+    }
+
+    @Test
     fun goToSaveActivityButtonIsNotEnabledOnStart() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
+        onView(withText(R.string.continue_without_saving)).perform(click())
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(not(isEnabled())))
@@ -136,6 +151,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun buildButtonIsActivatedWhenAreaIsComplete() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.buildFlightPath))
@@ -164,6 +181,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun deleteButtonIsEnabledWhenThereIsSomethingToDelete() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.delete_button))
@@ -187,6 +206,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun changeFlightPathVisibilityButtonIsClickable() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.showMission))
@@ -201,6 +222,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun switchStrategyButtonIsClickable() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.changeStrategy))
@@ -215,6 +238,8 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun buildButtonIsClickable() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
         activityRule.scenario.recreate()
 
         onView(withId(R.id.buildFlightPath))
@@ -233,7 +258,7 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun goToSaveActivityWork() {
+    fun goToSaveActivityWorkWhenLogin() {
         `when`(authService.hasActiveSession()).thenReturn(true)
 
         activityRule.scenario.recreate()
@@ -262,10 +287,12 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun goToSaveActivityButtonIsNotEnabledWhenUserNotLogin() {
+    fun goToSaveActivityWorkWhenNotLogin() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
+
+        onView(withText(R.string.continue_without_saving)).perform(click())
 
         createMission()
 
@@ -277,8 +304,19 @@ class ItineraryCreateActivityTest {
         SystemClock.sleep(1000L)
 
         onView(withId(R.id.buttonToSaveActivity))
-            .check(matches(not(isEnabled())))
+            .check(matches(isEnabled()))
+        onView(withId(R.id.buttonToSaveActivity)).perform(click())
+
+        Intents.intended(
+            hasComponent(hasClassName(ItineraryShowActivity::class.java.name))
+        )
+
+        val intents = Intents.getIntents()
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
     }
+
 
     @Test
     fun saveWithoutModifyingHaveSameOutputThanInput() {

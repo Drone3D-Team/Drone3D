@@ -192,6 +192,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         intent.putExtra(AREA_INTENT_PATH, ArrayList(area))
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
         startActivity(intent)
+        finish()
     }
 
     private fun goToMissionStartActivity() {
