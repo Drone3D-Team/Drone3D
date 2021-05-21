@@ -18,6 +18,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxDroneDrawer
 import ch.epfl.sdp.drone3d.map.MapboxHomeDrawer
 import ch.epfl.sdp.drone3d.map.MapboxMissionDrawer
+import ch.epfl.sdp.drone3d.map.MapboxUserDrawer
 import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
@@ -65,6 +66,10 @@ class MissionInProgressActivity : BaseMapActivity() {
         private const val DEFAULT_ZOOM: Double = 17.0
         private const val ZOOM_TOLERANCE: Double = 2.0
 
+        // Constants used to update the user location on the map
+        internal const val MIN_TIME_DELTA: Long = 1000
+        internal const val MIN_DISTANCE_DELTA: Float = 1.0F
+
         // maximum distance allowed between the user and the drone, in meters
         private const val MAX_DIST_TO_USER: Double = 1000.0
     }
@@ -76,6 +81,9 @@ class MissionInProgressActivity : BaseMapActivity() {
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
 
+    private lateinit var userDrawer: MapboxUserDrawer
+    // used to keep track of the subscription tu the user location
+    private var subscriptionTracker: Int? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
     private lateinit var droneDrawer: MapboxDroneDrawer
     private lateinit var homeDrawer: MapboxHomeDrawer
@@ -135,6 +143,7 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private fun setupMapboxMap(mapView: MapView, style: Style) {
+        userDrawer = MapboxUserDrawer(mapView, mapboxMap, style)
         homeDrawer = MapboxHomeDrawer(mapView, mapboxMap, style)
         droneDrawer = MapboxDroneDrawer(mapView, mapboxMap, style)
         missionDrawer = MapboxMissionDrawer(mapView, mapboxMap, style)
@@ -150,6 +159,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         }.observe(this, { path ->
             if(path != null) missionDrawer.showMission(path, false)
         })
+
     }
 
     /**
@@ -195,6 +205,12 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private fun setupObservers() {
         val droneData = droneService.getData()
+
+        if (locationService.isLocationEnabled()) {
+            subscriptionTracker = locationService.subscribeToLocationUpdates( {
+                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
+                , MIN_TIME_DELTA, MIN_DISTANCE_DELTA)
+        }
 
         createObserver(droneData.getPosition()) {
             it?.let { newLatLng -> if (::droneDrawer.isInitialized) droneDrawer.showDrone(newLatLng) }
@@ -273,6 +289,9 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (this::droneDrawer.isInitialized) droneDrawer.onDestroy()
         if (this::missionDrawer.isInitialized) missionDrawer.onDestroy()
         if (this::homeDrawer.isInitialized) homeDrawer.onDestroy()
+        if (this::userDrawer.isInitialized) userDrawer.onDestroy()
+
+        if (subscriptionTracker != null) locationService.unsubscribeFromLocationUpdates(subscriptionTracker!!)
 
         observedData.forEach { data -> data.removeObservers(this) }
         observedData.clear()
