@@ -16,11 +16,20 @@ import java.util.concurrent.CompletableFuture
 interface DroneExecutor {
 
     /**
-     * Start a new mission that follows the given [missionPlan]
+     * Setup a new mission that follows the given [missionPlan]
+     *
+     * Ues [executeMission] to start it
      *
      * Shows toasts on the [ctx]
      */
-    fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable
+    fun setupMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable
+
+    /**
+     * Execute a mission set up by [setupMission]
+     *
+     * Shows toasts on the [ctx]
+     */
+    fun executeMission(ctx: Context): Completable
 
     /**
      * Pause current mission.
