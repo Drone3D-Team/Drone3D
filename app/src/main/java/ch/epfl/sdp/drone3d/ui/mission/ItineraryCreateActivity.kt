@@ -152,7 +152,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             startActivity(Intent(this, LoginActivity::class.java))
         }
 
-        builder.setNegativeButton(R.string.continue_without_saving) { dialog, _ ->
+        builder.setNegativeButton(R.string.no_saving_possible) { dialog, _ ->
             dialog.cancel()
         }
         builder.create()?.show()

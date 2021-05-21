@@ -52,6 +52,11 @@
     <string name="mission_saved">Mission saved</string>
     <string name="error_mission_saved">Error while saving mission</string>
     <string name="private_repo">Private</string>
+    <string name="warning_no_box_selected">"You haven't checked any of the options, if you continue your mission will not be saved for the next time"</string>
+    <string name="continue_without_saving">Continue without saving</string>
+    <string name="cancel">Cancel</string>
+
+
     <string name="share_repo">Share</string>
 
     <!-- Itinerary Create Activity -->
@@ -68,7 +73,7 @@
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
     <string name="altitude_text">"Altitude: %1$.0f m"</string>
     <string name="warning_not_login">"Your are not login, you won't be able to save or share your mission."</string>
-    <string name="continue_without_saving">"Continue anyway"</string>
+    <string name="no_saving_possible">"Continue anyway"</string>
     <string name="go_to_login">"Login"</string>
 
 

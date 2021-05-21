@@ -122,7 +122,7 @@ class ItineraryCreateActivityTest {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
-        onView(withText(R.string.continue_without_saving)).perform(click())
+        onView(withText(R.string.no_saving_possible)).perform(click())
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(not(isEnabled())))
@@ -287,12 +287,12 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
-    fun goToSaveActivityWorkWhenNotLogin() {
+    fun goToItineraryShowWorkWhenNotLogin() {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
 
-        onView(withText(R.string.continue_without_saving)).perform(click())
+        onView(withText(R.string.no_saving_possible)).perform(click())
 
         createMission()
 

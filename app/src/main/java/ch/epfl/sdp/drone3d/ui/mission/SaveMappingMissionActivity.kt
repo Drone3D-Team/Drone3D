@@ -5,6 +5,8 @@
 
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -52,7 +54,8 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         val bundle = intent.extras
         if (bundle != null) {
             flightHeight = bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH)
-            strategy = (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)
+            strategy =
+                (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)
             area = bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!
         }
 
@@ -65,22 +68,14 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         privateCheckBox = findViewById(R.id.privateCheckBox)
         sharedCheckBox = findViewById(R.id.sharedCheckBox)
         saveButton = findViewById(R.id.saveButton)
-        saveButton.isEnabled = false
-
-
-        privateCheckBox.setOnCheckedChangeListener { _, _ -> updateSaveButton() }
-        sharedCheckBox.setOnCheckedChangeListener { _, _ -> updateSaveButton() }
-
+        saveButton.isEnabled = true
     }
 
-    private fun updateSaveButton() {
-        saveButton.isEnabled = privateCheckBox.isChecked || sharedCheckBox.isChecked
-    }
 
     private fun onCompleteSaving(isSuccess: Boolean) {
         if (isSuccess) {
+            goToItineraryShow()
             ToastHandler.showToast(this, R.string.mission_saved)
-            finish()
         } else {
             ToastHandler.showToast(this, R.string.error_mission_saved)
             saveButton.isEnabled = true;
@@ -124,34 +119,61 @@ class SaveMappingMissionActivity : AppCompatActivity() {
         }
     }
 
+    private fun goToItineraryShow(){
+        val intent = Intent(this, ItineraryShowActivity::class.java)
+        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(area))
+        intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
+        startActivity(intent)
+        finish()
+    }
+
     /**
      * Store the mapping mission in the checked repo(s)
      */
     fun save(@Suppress("UNUSED_PARAMETER") view: View) {
-        saveButton.isEnabled = false;
 
-        val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
-        val newMappingMission = MappingMission(name.toString(), flightHeight, strategy, area)
+        if (!privateCheckBox.isChecked && !sharedCheckBox.isChecked) {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.warning_no_box_selected))
+            builder.setCancelable(true)
 
-        // The user should be logged to access this page
-        val ownerId = authService.getCurrentSession()!!.user.uid
-
-        if (privateCheckBox.isChecked && sharedCheckBox.isChecked) {
-            shareAndStoreMission(ownerId, newMappingMission)
-        }else{
-            if (privateCheckBox.isChecked) {
-                mappingMissionDao.storeMappingMission(ownerId, newMappingMission).observe(this) {
-                    onCompleteSaving(it)
-                }
+            builder.setPositiveButton(getString(R.string.continue_without_saving)) { dialog, _ ->
+                dialog.cancel()
+                goToItineraryShow()
             }
 
-            if (sharedCheckBox.isChecked) {
-                mappingMissionDao.shareMappingMission(ownerId, newMappingMission).observe(this) {
-                    onCompleteSaving(it)
+            builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.create()?.show()
+        } else {
+            saveButton.isEnabled = false;
+
+            val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
+            val newMappingMission = MappingMission(name.toString(), flightHeight, strategy, area)
+
+            // The user should be logged to access this page
+            val ownerId = authService.getCurrentSession()!!.user.uid
+
+            if (privateCheckBox.isChecked && sharedCheckBox.isChecked) {
+                shareAndStoreMission(ownerId, newMappingMission)
+            } else {
+                if (privateCheckBox.isChecked) {
+                    mappingMissionDao.storeMappingMission(ownerId, newMappingMission)
+                        .observe(this) {
+                            onCompleteSaving(it)
+                        }
+                }
+
+                if (sharedCheckBox.isChecked) {
+                    mappingMissionDao.shareMappingMission(ownerId, newMappingMission)
+                        .observe(this) {
+                            onCompleteSaving(it)
+                        }
                 }
             }
         }
-
 
 
     }
