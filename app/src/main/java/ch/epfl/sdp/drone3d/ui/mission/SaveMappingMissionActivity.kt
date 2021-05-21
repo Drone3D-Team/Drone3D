@@ -121,6 +121,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
     private fun goToItineraryShow(){
         val intent = Intent(this, ItineraryShowActivity::class.java)
+        intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH,  authService.getCurrentSession()!!.user.uid)
         intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
         intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(area))
         intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)

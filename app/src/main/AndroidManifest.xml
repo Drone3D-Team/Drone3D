@@ -15,6 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D">
+
         <activity android:name=".ui.mission.MissionStartActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity" />
         <activity

@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.mission
 import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import ch.epfl.sdp.drone3d.R
@@ -149,6 +150,9 @@ class ItineraryShowActivity : BaseMapActivity() {
             strategy =
                 (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
             area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
+            Log.e("debug",area.toString())
+            Log.e("debug",strategy.toString())
+            Log.e("debug",flightHeight.toString())
         }
     }
 

@@ -21,11 +21,15 @@ import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.auth.UserSession
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
+import ch.epfl.sdp.drone3d.model.weather.WeatherReport
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
-import ch.epfl.sdp.drone3d.service.module.AuthenticationModule
-import ch.epfl.sdp.drone3d.service.module.MappingMissionDaoModule
+import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.module.*
 import com.google.firebase.auth.FirebaseUser
 import com.mapbox.mapboxsdk.geometry.LatLng
 import dagger.hilt.android.testing.BindValue
@@ -37,14 +41,35 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito
 import org.mockito.Mockito.*
 import java.lang.Thread.sleep
+import java.util.*
 
 @HiltAndroidTest
-@UninstallModules(AuthenticationModule::class, MappingMissionDaoModule::class)
+@UninstallModules(
+    AuthenticationModule::class,
+    MappingMissionDaoModule::class,
+    LocationModule::class,
+    WeatherModule::class,
+)
 class SaveMappingMissionActivityTest {
 
     companion object {
         private const val USER_UID = "user_id"
+        private val GOOD_WEATHER_REPORT = WeatherReport(
+            "Clear", "description",
+            20.0, 20, 5.0, 500, Date(12903)
+        )
+        private val AREA = arrayListOf(
+            LatLng( 46.52109254025395, 6.643008669745938),
+            LatLng( 46.52109254025395, 6.64300866974594),
+            LatLng( 46.52109254025397, 6.643008669745938),
+        )
+        private val UNNAMED_MISSION = MappingMission("Unnamed mission", 50.0, MappingMissionService.Strategy.SINGLE_PASS, AREA)
+        private val NAMED_MISSION = MappingMission("My mission", 50.0, MappingMissionService.Strategy.SINGLE_PASS, AREA)
+
     }
+
+    @BindValue
+    val locationService: LocationService = Mockito.mock(LocationService::class.java)
 
     private val activityRule = ActivityScenarioRule<SaveMappingMissionActivity>(
         Intent(
@@ -52,21 +77,19 @@ class SaveMappingMissionActivityTest {
             SaveMappingMissionActivity::class.java
         ).apply {
             putExtras(Bundle().apply {
-                putSerializable(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, 0.0)
+                putSerializable(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH, UNNAMED_MISSION.flightHeight)
                 putSerializable(
                     ItineraryCreateActivity.STRATEGY_INTENT_PATH,
-                    MappingMissionService.Strategy.SINGLE_PASS
+                    UNNAMED_MISSION.strategy
                 )
                 putSerializable(
-                    ItineraryCreateActivity.AREA_INTENT_PATH, arrayListOf<LatLng>(
-                        LatLng(37.41253570576311, -121.99694775011824),
-                        LatLng(37.412496825414046, -121.99683107403213),
-                        LatLng(37.41243024942702, -121.99686795440418)
-                    )
-                )
+                    ItineraryCreateActivity.AREA_INTENT_PATH, AREA)
             })
         }
     )
+
+
+
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
@@ -74,6 +97,10 @@ class SaveMappingMissionActivityTest {
 
     @BindValue
     val authService: AuthenticationService = mockAuthenticationService()
+
+    @BindValue
+    val weatherService: WeatherService = Mockito.mock(WeatherService::class.java)
+
 
     @BindValue
     val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
@@ -130,17 +157,24 @@ class SaveMappingMissionActivityTest {
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
     }
 
+    init {
+        `when`(locationService.isLocationEnabled()).thenReturn(false)
+        `when`(weatherService.getWeatherReport(AREA[0])).thenReturn(
+            MutableLiveData(
+                GOOD_WEATHER_REPORT
+            )
+        )
+    }
+
 
     @Test
     fun saveMappingMissionToPrivateCallStore() {
         activityRule.scenario.recreate()
 
-        val expectedMappingMission = MappingMission(
-            "Unnamed mission"
-        )
-
         onView(withId(R.id.privateCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
+
+        sleep(1000)
 
         Intents.intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
@@ -151,15 +185,13 @@ class SaveMappingMissionActivityTest {
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
-        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, UNNAMED_MISSION)
     }
 
     @Test
     fun saveMappingMissionToShareCallShare() {
         activityRule.scenario.recreate()
 
-        val expectedMappingMission = MappingMission("Unnamed mission")
-
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.saveButton)).perform(click())
 
@@ -175,14 +207,12 @@ class SaveMappingMissionActivityTest {
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
-        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, UNNAMED_MISSION)
     }
 
     @Test
     fun saveMappingMissionToShareAndPrivateCallShareAndStore() {
         activityRule.scenario.recreate()
-
-        val expectedMappingMission = MappingMission("Unnamed mission")
 
         onView(withId(R.id.sharedCheckBox)).perform(click())
         onView(withId(R.id.privateCheckBox)).perform(click())
@@ -199,21 +229,17 @@ class SaveMappingMissionActivityTest {
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
-        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, expectedMappingMission)
-        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).shareMappingMission(USER_UID, UNNAMED_MISSION)
+        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, UNNAMED_MISSION)
     }
 
     @Test
     fun nameIsCorrect() {
         activityRule.scenario.recreate()
 
-        val name = "My mission"
-
-        val expectedMappingMission = MappingMission(name)
-
         onView(withId(R.id.missionName)).perform(click()).perform(
             typeText(
-                name
+                NAMED_MISSION.name
             )
         ).perform(closeSoftKeyboard())
 
@@ -231,7 +257,7 @@ class SaveMappingMissionActivityTest {
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
-        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, expectedMappingMission)
+        verify(mappingMissionDao, times(1)).storeMappingMission(USER_UID, NAMED_MISSION)
     }
 
     @Test
