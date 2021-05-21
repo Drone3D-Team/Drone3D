@@ -55,8 +55,9 @@ class DroneExecutorImpl(
         val disarmed = changeFromTo(instance.telemetry.armed)
                 .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
 
+        data.getMutableDroneStatus().postValue(IDLE)
+
         val mission = connected(instance)
-                .doOnComplete{ data.getMutableDroneStatus().postValue(ARMING) }
                 .andThen(armedAndFlying(ctx, instance))
                 .andThen(sendMission(ctx, instance, missionPlan))
 
@@ -75,12 +76,17 @@ class DroneExecutorImpl(
             instance.core.connectionState.filter{ it.isConnected }.firstOrError().toCompletable()
 
     private fun armedAndFlying(ctx: Context, instance: System): Completable =
-            instance.telemetry.armed.firstOrError()
-                    .flatMapCompletable { if(it) armed(ctx) else arm(ctx, instance) }
-                    .doOnComplete{ data.getMutableDroneStatus().postValue(TAKING_OFF) }
+            // Query both values at the same time to avoid blocking code between arming and taking off
+            instance.telemetry.armed.zipWith(instance.telemetry.inAir) { armed, inAir -> Pair(armed, inAir)}
+                .firstOrError().doOnSuccess { data.getMutableDroneStatus().postValue(ARMING) }
+                .flatMapCompletable { (armed, inAir) ->
+                    // Arm if not armed
+                    val arming = if(armed) armed(ctx) else arm(ctx, instance)
                     // Takeoff if the drone isn't flying
-                    .andThen(instance.telemetry.inAir.firstOrError())
-                    .flatMapCompletable { if(it) flying(ctx) else takeoff(ctx, instance) }
+                    val takeoff = if(inAir) flying(ctx) else takeoff(ctx, instance)
+                    arming.doOnComplete{ data.getMutableDroneStatus().postValue(TAKING_OFF) }
+                        .andThen(takeoff)
+                }
 
     private fun armed(ctx: Context): Completable =
             Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_armed) }
