@@ -97,16 +97,17 @@ class DroneExecutorTest {
         armedPublisher.onNext(false)
         inAirPublisher.onNext(false)
         flightModePublisher.onNext(Telemetry.FlightMode.TAKEOFF)
-
-        executor.startMission(
-            InstrumentationRegistry.getInstrumentation().targetContext,
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-            mutex.release()
-        }, {
-            throw it
-        })
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+                mutex.release()
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
@@ -146,16 +147,17 @@ class DroneExecutorTest {
         armedPublisher.onNext(true)
         inAirPublisher.onNext(false)
         flightModePublisher.onNext(Telemetry.FlightMode.LAND)
-
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-            mutex.release()
-        }, {
-            throw it
-        })
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+                mutex.release()
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
@@ -195,15 +197,17 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.READY)
 
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-            mutex.release()
-        }, {
-            throw it
-        })
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+                mutex.release()
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
@@ -243,15 +247,17 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
 
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-            mutex.release()
-        }, {
-            throw it
-        })
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+                mutex.release()
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
@@ -291,15 +297,17 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
 
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-            mutex.release()
-        }, {
-            throw it
-        })
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+                mutex.release()
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
         missionProgressPublisher.onNext(Mission.MissionProgress(3, 4))
@@ -339,10 +347,11 @@ class DroneExecutorTest {
         armedPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.UNKNOWN)
 
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context)).subscribe({
             assertThat(true, `is`(false))
         }, {
             assertThat(it, `is`(instanceOf(IllegalStateException::class.java)))
@@ -380,7 +389,7 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
-        executor.startMission(
+        executor.setupMission(
             context,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
         ).subscribe({}, { it.printStackTrace() })
@@ -427,14 +436,15 @@ class DroneExecutorTest {
         inAirPublisher.onNext(true)
         flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
 
-        executor.startMission(
-                InstrumentationRegistry.getInstrumentation().targetContext,
-                DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({
-            assertThat(droneData.getMission().value, nullValue())
-        }, {
-            throw it
-        })
+        executor.setupMission(
+            context,
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+        ).andThen(executor.executeMission(context))
+            .subscribe({
+                assertThat(droneData.getMission().value, nullValue())
+            }, {
+                throw it
+            })
 
         missionProgressPublisher.onNext(Mission.MissionProgress(0, 4))
 
@@ -485,10 +495,11 @@ class DroneExecutorTest {
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
-        executor.startMission(
+        executor.setupMission(
             context,
             DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
-        ).subscribe({}, { it.printStackTrace() })
+        ).andThen(executor.executeMission(context))
+            .subscribe({}, { it.printStackTrace() })
 
         `when`(DroneInstanceMock.droneMission.uploadMission(ArgumentMatchers.any(Mission.MissionPlan::class.java)))
             .thenAnswer {
@@ -540,7 +551,7 @@ class DroneExecutorTest {
 
         `when`(DroneInstanceMock.droneMission.startMission()).thenAnswer {
             Completable.fromCallable {
-                dataBecomes(droneData.getDroneStatus(), SENDING_ORDER)
+                dataBecomes(droneData.getDroneStatus(), STARTING_MISSION)
                 flightModePublisher.onNext(Telemetry.FlightMode.MISSION)
             }
         }
