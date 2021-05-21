@@ -17,6 +17,7 @@ import io.mavsdk.camera.CameraProto
 import io.reactivex.Single
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.io.IOException
 import java.net.MalformedURLException
@@ -49,10 +50,15 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            val coroutine = GlobalScope.async {
-                retrievePhotos(photoList)
+            var result: List<Bitmap> = emptyList()
+            runBlocking {
+                val coroutine = GlobalScope.async {
+                    retrievePhotos(photoList)
+                }
+                coroutine.await()
+                result = coroutine.getCompleted()
             }
-            coroutine.getCompleted()
+            result
         }
     }
 
