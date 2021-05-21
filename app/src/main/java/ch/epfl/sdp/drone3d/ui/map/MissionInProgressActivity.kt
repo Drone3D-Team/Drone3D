@@ -65,6 +65,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         private const val DEFAULT_ZOOM: Double = 17.0
         private const val ZOOM_TOLERANCE: Double = 2.0
 
+        // maximum distance allowed between the user and the drone, in meters
         private const val MAX_DIST_TO_USER: Double = 1000.0
     }
 
