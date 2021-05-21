@@ -56,4 +56,18 @@ class ParallelAreaBuilderTest {
         area.reset()
         assertThat(area.vertices.size, equalTo(0))
     }
+
+    @Test
+    fun getAreaSizeIsCorrect() {
+        val area = ParallelogramBuilder()
+
+        val a = LatLng(Random.nextDouble(), Random.nextDouble())
+        val b = LatLng(Random.nextDouble(), Random.nextDouble())
+        val c = LatLng(Random.nextDouble(), Random.nextDouble())
+        area.addVertex(a)
+        area.addVertex(b)
+        area.addVertex(c)
+
+        assertThat(area.getAreaSize(), equalTo(a.distanceTo(b) * a.distanceTo(c)))
+    }
 }
