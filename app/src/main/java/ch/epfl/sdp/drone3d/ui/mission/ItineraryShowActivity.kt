@@ -77,7 +77,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     private lateinit var area: List<LatLng>
     private lateinit var strategy: MappingMissionService.Strategy
     private var flightHeight: Double = 50.0
-    private var cameraPitch: Float = 0f
+    private var cameraPitch: Float = 90f
 
     // true if the weather is good enough to launch the mission
     private var isWeatherGoodEnough: Boolean = false
