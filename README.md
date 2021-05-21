@@ -6,7 +6,7 @@
 
 ## Table of contents
 * [Description](#description)
-* [Usage](#usage)
+* [Usage and features](#usage-and-features)
 * [Set up](#set-up)
 * [Developement](#developement)
 * [License](#license)
@@ -14,8 +14,51 @@
 ## Description
 Drone3D is the mobile application that let you plan and execute drone mission to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supporting [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 
-## Usage
+## Usage and features
 
+### Register and login
+TODO add screen login / register
+
+You can create a account or login in a previously created account with a email and a password. Once you are login you'll be able to store and share missions.
+
+### Connect a drone or a simulation
+TODO add screen connect a drone
+
+To connect a drone you'll have power up your drone set it up to communicate through the udp://:14540 port, then click on the "connect a drone" button, it will open the port and search for the drone for three seconds before timing out. Repeat the operation as many time as needed.
+To connect a simulation, you'll have first to create to launch a simulation with a tool such as [auterion](https://suite.auterion.com/login?returnUrl=%2Fsimulations) and then enter the corresponding the IP and port, click on the "connect a simulation" button, it can take a few seconds.
+
+### Manage offline map
+TODO add screen offline map
+
+This page let you download a part of the map. Select the on the map the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precison of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
+
+### Create and save an itinerary 
+TODO add screen of creation a itinerary
+
+This page contains all the tools needed to create a mission:  
+* You can select the area of which you want to create a 3D model by adding three points on the map (click on the map to add a point).
+* Choose your flight altitude with the vertical bar on the left. (Be sure to be above any obstacle !)
+* Select you strategy on the right with the top button. Either single or double path strategy are implemented.
+* Preview the path your drone will take. (To have exact path be sure the be already connected to your drone, default settings will be use otherwise.)
+* Hide / show the path once you have generated it with the previous button.
+* Delete the area and start again in case you changed your mind.
+* Save and/or share the mapping mission (only if you are login).
+
+TODO add screen of save a itinerary
+
+To save a mission, you'll need to give it a name and select if you want to store it, share it or both.
+
+### Browse itineraries
+TODO add screen browse itineraries
+
+If you are login, you can find all your previously saved mission as well as access the mission other have shared. If you want to delete any of your mission which is either private or shared, click on it and press on the delete button.
+
+In case you are not login, you can still access shared missions.
+
+You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that let you launch it.
+
+### Launch a mission
+TODO add screen itieneraryShow
 
 ## Set-up
 This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share you private keys, be carefull !
@@ -88,5 +131,5 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/agpl-3.0.html>.
 
