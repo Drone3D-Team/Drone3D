@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.mission
 
 import android.content.Intent
@@ -19,6 +24,9 @@ import io.reactivex.disposables.Disposable
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * Activity showing a loading screen when setting up a drone for a mission
+ */
 @AndroidEntryPoint
 class MissionStartActivity : AppCompatActivity() {
 
@@ -58,13 +66,12 @@ class MissionStartActivity : AppCompatActivity() {
         val missionPath = intent.getParcelableArrayListExtra<LatLng>(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
         val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) as Double
         val cameraPitch = intent.extras?.get(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH) as Float
-        setupMission(missionPath,missionHeight,cameraPitch)
+        setupMission(missionPath, missionHeight,cameraPitch)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        droneService.getData().getDroneStatus().removeObservers(this)
         disposable?.dispose()
     }
 
@@ -90,7 +97,7 @@ class MissionStartActivity : AppCompatActivity() {
             ToastHandler.showToastAsync(this, R.string.mission_invalid)
             finish()
         } else {
-            val droneMission = DroneUtils.makeDroneMission(missionPath, missionHeight.toFloat(),cameraPitch)
+            val droneMission = DroneUtils.makeDroneMission(missionPath, missionHeight.toFloat(), cameraPitch)
             try {
                 disposable = droneService.getExecutor().setupMission(this, droneMission)
                     .subscribe(

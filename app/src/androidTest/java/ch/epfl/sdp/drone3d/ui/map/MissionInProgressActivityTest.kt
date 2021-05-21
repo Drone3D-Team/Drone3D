@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.map
 
 import android.content.Context
@@ -97,6 +102,7 @@ class MissionInProgressActivityTest {
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getBatteryLevel()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(true))
 
         `when`(locationService.isLocationEnabled()).thenReturn(false)
         `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
@@ -251,6 +257,58 @@ class MissionInProgressActivityTest {
             statusLiveData.value = DroneData.DroneStatus.IDLE
             mutex.release()
         }
+    }
+
+    @Test
+    fun toastShowedWhenDroneTooFar() {
+        val dronePosition = MutableLiveData(LatLng(0.1, 0.1))
+        val homePosition = MutableLiveData(LatLng(0.0, 0.0))
+
+        `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
+        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
+            Telemetry.Position(
+                homePosition.value?.latitude,
+                homePosition.value?.longitude,
+                10f,
+                10f)))
+        statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(false))
+
+        // Test that the toast is displayed
+        val activity = CompletableFuture<MissionInProgressActivity>()
+        activityRule.scenario.onActivity {
+            dronePosition.value = LatLng(10.1, 10.1)
+            activity.complete(it)
+        }
+
+        ToastMatcher.onToast(activity.get(), R.string.drone_too_far)
+    }
+
+    @Test
+    fun toastShowedWhenDroneCloseEnoughAgain() {
+        val dronePosition = MutableLiveData(LatLng(10.1, 10.1))
+        val homePosition = MutableLiveData(LatLng(0.0, 0.0))
+
+        `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
+        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
+            Telemetry.Position(
+                homePosition.value?.latitude,
+                homePosition.value?.longitude,
+                10f,
+                10f)))
+        statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
+        `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
+        `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(true))
+
+        // Test that the toast is displayed
+        val activity = CompletableFuture<MissionInProgressActivity>()
+        activityRule.scenario.onActivity {
+            dronePosition.value = LatLng(0.0, 0.0)
+            activity.complete(it)
+        }
+
+        ToastMatcher.onToast(activity.get(), R.string.drone_close_again)
     }
 
     private fun <T> anyObj(type: Class<T>): T = any(type)

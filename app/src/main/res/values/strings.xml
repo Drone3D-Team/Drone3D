@@ -126,6 +126,10 @@
     <string name="lost_connection_message">Lost Connection With the Drone</string>
     <!-- Warning showed if the weather is dangerous for the drone -->
     <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
+    <!--  Message showed when the drone is too far from the user -->
+    <string name="drone_too_far">The drone is too far from you. Mission paused until you go closer from it.</string>
+    <!-- Message showed when the drone is again close enough from the user -->
+    <string name="drone_close_again">The drone is close enough again. Mission resumed.</string>
 
     <!-- Mission Start Activity -->
 
