@@ -71,8 +71,9 @@ class AndroidLocationService @Inject constructor(
         listeners[id] = listener
         val provider = getMyLocationProvider() ?: return null
 
-        if(getCurrentLocation() != null){
-            consumer(getCurrentLocation()!!)
+        val loc = getCurrentLocation()
+        if(loc != null){
+            consumer(loc)
         }
         locationManager.requestLocationUpdates(
             provider,
