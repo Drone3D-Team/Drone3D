@@ -31,6 +31,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
+/**
+ * Activity that shows a mission before starting it
+ */
 @AndroidEntryPoint
 class ItineraryShowActivity : BaseMapActivity() {
 
