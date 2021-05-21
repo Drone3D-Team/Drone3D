@@ -73,14 +73,14 @@ class ItineraryShowActivityTest {
 
         private val USER_UID = "asdfg"
 
+        private val FLIGHT_HEIGHT = 50.0
+
         private val bayland_area = arrayListOf(
             LatLng(37.41253570576311, -121.99694775011824),
             LatLng(37.412496825414046, -121.99683107403213),
             LatLng(37.41243024942702, -121.99686795440418)
         )
     }
-
-
 
     private val activityRule = ActivityScenarioRule<ItineraryShowActivity>(
         Intent(
@@ -89,8 +89,11 @@ class ItineraryShowActivityTest {
         ).apply {
             putExtras(Bundle().apply {
                 putSerializable(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
-                putSerializable(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, 50.0)
-                putSerializable(MissionViewAdapter.STRATEGY_INTENT_PATH, MappingMissionService.Strategy.SINGLE_PASS)
+                putSerializable(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+                putSerializable(
+                    MissionViewAdapter.STRATEGY_INTENT_PATH,
+                    MappingMissionService.Strategy.SINGLE_PASS
+                )
             })
         }
     )
@@ -328,8 +331,11 @@ class ItineraryShowActivityTest {
         )
         intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH, USER_UID)
         intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
-        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, 50.0)
-        intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, MappingMissionService.Strategy.SINGLE_PASS)
+        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+        intent.putExtra(
+            MissionViewAdapter.STRATEGY_INTENT_PATH,
+            MappingMissionService.Strategy.SINGLE_PASS
+        )
 
         ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
             onView(withId(R.id.mission_delete))
@@ -346,6 +352,8 @@ class ItineraryShowActivityTest {
 
     @Test
     fun goToWeatherInfoWorks() {
+
+        activityRule.scenario.recreate()
         onView(withId(R.id.weatherInfoButton))
             .perform(click())
         Intents.intended(

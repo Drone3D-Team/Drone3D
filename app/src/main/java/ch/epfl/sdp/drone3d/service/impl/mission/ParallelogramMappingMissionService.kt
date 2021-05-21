@@ -9,13 +9,21 @@ import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
+import kotlin.math.PI
 
+/**
+ * This class offers functions to generate the flight path a drone would take to take pictures of
+ * an area. Those pictures could then be used to generate a 3D model of the mapped environment.
+ * The droneService is used to provide the properties of the drone's camera necessary to design the
+ * flight path.
+ */
 class ParallelogramMappingMissionService @Inject constructor(val droneService: DroneService): MappingMissionService {
 
     companion object{
-        private const val cameraAngle = 0.0 // Suppose the drone is looking down
+        // The drone looks forward with a 60 degree angle compared to horizontal
+        // which corresponds to a 30 degree angle compared to vertical
+        const val cameraPitch = PI.toFloat()/3
 
         //Those default data correspond to the Freefly Astro Quadrotor properties
         private const val defaultSensorWidth = 7.82f //millimeters
@@ -46,7 +54,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         vertices: List<LatLng>,
         flightHeight: Double,
         mappingFunction: (
-                startingPoint: Point, area: Parallelogram, cameraAngle: Double,
+                startingPoint: Point, area: Parallelogram, cameraAngle: Float,
                 flightHeight: Double, groundImageDimension: GroundImageDim
         ) -> List<Point>
     ): List<LatLng> {
@@ -61,7 +69,7 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
             val parallelogram = Parallelogram(projector.toPoint(vertices[1]), projector.toPoint(vertices[0]),
                 projector.toPoint(vertices[2]))
             return projector.toLatLngs(mappingFunction(projector.toPoint(vertices[0]),
-                parallelogram, cameraAngle, flightHeight, groundImageDimension))
+                parallelogram, cameraPitch, flightHeight, groundImageDimension))
     }
 
     /**
