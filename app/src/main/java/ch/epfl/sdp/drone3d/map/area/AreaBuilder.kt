@@ -104,12 +104,12 @@ abstract class AreaBuilder : DrawableArea {
 
     protected abstract fun getShapeVerticesGivenComplete(): List<LatLng>
 
-    fun getAreaSize(): Float {
+    fun getAreaSize(): Double {
         if (!isComplete()) {
             throw AreaNotCompleteException("$shapeName not complete")
         }
         return getAreaSizeGivenComplete()
     }
 
-    protected abstract fun getAreaSizeGivenComplete(): Float
+    protected abstract fun getAreaSizeGivenComplete(): Double
 }

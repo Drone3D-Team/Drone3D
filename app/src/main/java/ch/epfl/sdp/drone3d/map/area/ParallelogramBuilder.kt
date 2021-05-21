@@ -28,7 +28,10 @@ class ParallelogramBuilder: AreaBuilder() {
         return listOf(A, O, B, C)
     }
 
-    override fun getAreaSizeGivenComplete(): Float {
-        TODO("Not yet implemented")
+    override fun getAreaSizeGivenComplete(): Double {
+        val O = vertices[1]
+        val A = vertices[0]
+        val B = vertices[2]
+        return O.distanceTo(A) * O.distanceTo(B)
     }
 }

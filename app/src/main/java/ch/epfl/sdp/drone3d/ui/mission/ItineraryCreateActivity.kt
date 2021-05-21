@@ -29,6 +29,7 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
+import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lukelorusso.verticalseekbar.VerticalSeekBar
@@ -94,6 +95,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
         const val DEFAULT_FLIGHTHEIGHT = 50.0
         val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
+
+        // Maximum area size in m2
+        const val MAXIMUM_AREA_SIZE = 100000.0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -260,9 +264,15 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun buildFlightPath(@Suppress("UNUSED_PARAMETER") view: View) {
         buildMissionButton.isEnabled = false
-        if (!isPreviewUpToDate) {
-            isPreviewUpToDate = true
-            if (areaBuilder.isComplete()) {
+
+        if (areaBuilder.isComplete()) {
+            if (!isSizeWithinLimit()) {
+                ToastHandler.showToast(this, R.string.area_size_to_big)
+                return
+            }
+            if (!isPreviewUpToDate) {
+                isPreviewUpToDate = true
+
                 val path = when (strategy) {
                     Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(
                         areaBuilder.vertices,
@@ -299,7 +309,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (!isPreviewUpToDate) {
+        if (!isSizeWithinLimit()) {
+            ToastHandler.showToast(this, R.string.area_size_to_big)
+        } else if (!isPreviewUpToDate) {
             val builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.save_without_updating_confirmation))
             builder.setCancelable(true)
@@ -316,7 +328,21 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         } else {
             goToSaveActivity()
         }
+
+
     }
+
+    /**
+     * Test if the size of the area is with the accepted size
+     */
+    private fun isSizeWithinLimit(): Boolean {
+        return if (areaBuilder.isComplete()) {
+            areaBuilder.getAreaSize() < MAXIMUM_AREA_SIZE
+        } else {
+            false
+        }
+    }
+
 
     /**
      * Launch SaveMappingMissionActivity and transfer flightpath

@@ -67,6 +67,8 @@
     <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
     <string name="altitude_text">"Altitude: %1$.0f m"</string>
+    <string name="area_size_to_big">"The selected area is too large. Please create a smaller one."</string>
+
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
