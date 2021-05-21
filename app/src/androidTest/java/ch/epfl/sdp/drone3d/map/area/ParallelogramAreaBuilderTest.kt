@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.map.area
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.model.util.GeometryUtils
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -64,10 +65,17 @@ class ParallelAreaBuilderTest {
         val a = LatLng(Random.nextDouble(), Random.nextDouble())
         val b = LatLng(Random.nextDouble(), Random.nextDouble())
         val c = LatLng(Random.nextDouble(), Random.nextDouble())
+
         area.addVertex(a)
         area.addVertex(b)
         area.addVertex(c)
 
-        assertThat(area.getAreaSize(), equalTo(b.distanceTo(a) * b.distanceTo(c)))
+        val distab = a.distanceTo(b)
+        val distbc = b.distanceTo(c)
+        val diag = a.distanceTo(c)
+
+        val s = (distab + distbc + diag) / 2.0
+        
+        assertThat(area.getAreaSize(), equalTo(2 * Math.sqrt(s * (s - distab) * (s - distbc) * (s - diag))))
     }
 }

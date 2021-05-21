@@ -11,7 +11,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 /**
  * Builder to build a parallelogram. The parallelogram area is controlled by three vertices, the last one is automatically generated.
  */
-class ParallelogramBuilder: AreaBuilder() {
+class ParallelogramBuilder : AreaBuilder() {
     override val sizeLowerBound: Int = 3
     override val sizeUpperBound: Int = 3
     override val shapeName: String = "Parallelogram"
@@ -21,17 +21,23 @@ class ParallelogramBuilder: AreaBuilder() {
     }
 
     override fun getShapeVerticesGivenComplete(): List<LatLng> {
-        val O = vertices[1]
         val A = vertices[0]
+        val O = vertices[1]
         val B = vertices[2]
         val C = GeometryUtils.getFourthParallelogramVertex(O, A, B)
         return listOf(A, O, B, C)
     }
 
     override fun getAreaSizeGivenComplete(): Double {
-        val O = vertices[1]
         val A = vertices[0]
+        val O = vertices[1]
         val B = vertices[2]
-        return O.distanceTo(A) * O.distanceTo(B)
+
+        val distAO = A.distanceTo(O)
+        val distOB = O.distanceTo(B)
+        val diag = A.distanceTo(B)
+
+        val s = (distAO + distOB + diag) / 2.0
+        return 2 * Math.sqrt(s * (s - distAO) * (s - distOB) * (s - diag))
     }
 }
