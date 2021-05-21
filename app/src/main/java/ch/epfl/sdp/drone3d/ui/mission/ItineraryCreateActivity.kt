@@ -97,7 +97,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
 
         // Maximum area size in m2
-        const val MAXIMUM_AREA_SIZE = 100000.0
+        const val MAXIMUM_AREA_SIZE = 10000.0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
