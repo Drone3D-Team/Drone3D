@@ -103,7 +103,11 @@ class WeatherInfoActivity : AppCompatActivity() {
 
         visibilityInfo.apply {
             val visibility = weatherReport.visibility
-            text = getString(R.string.info_visibility, visibility.toString())
+            text = if (visibility >= 1000) {
+                getString(R.string.info_visibility_km, (visibility/1000).toString())
+            } else {
+                getString(R.string.info_visibility, visibility.toString())
+            }
             if (visibility <= WeatherUtils.MIN_VISIBILITY) {
                 setTextColor(Color.RED)
             }
