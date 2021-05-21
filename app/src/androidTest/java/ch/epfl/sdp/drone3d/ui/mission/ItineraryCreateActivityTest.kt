@@ -69,6 +69,9 @@ class ItineraryCreateActivityTest {
     @Before
     fun setUp() {
         Intents.init()
+        activityRule.scenario.onActivity {
+            it.areaBuilder.reset()
+        }
     }
 
     @After
