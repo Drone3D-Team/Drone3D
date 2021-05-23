@@ -45,6 +45,7 @@ import org.junit.*
 import org.junit.rules.RuleChain
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import java.lang.Thread.sleep
 
 @HiltAndroidTest
 @UninstallModules(AuthenticationModule::class, DroneModule::class, LocationModule::class)
@@ -125,8 +126,11 @@ class ItineraryCreateActivityTest {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
+
         onView(withText(R.string.no_saving_possible)).check(matches(isDisplayed()))
         onView(withText(R.string.no_saving_possible)).perform(click())
+
+        sleep(100)
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(not(isEnabled())))
