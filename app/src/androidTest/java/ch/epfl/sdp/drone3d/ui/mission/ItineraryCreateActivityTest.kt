@@ -296,6 +296,7 @@ class ItineraryCreateActivityTest {
 
         activityRule.scenario.recreate()
 
+        onView(withText(R.string.no_saving_possible)).check(matches(isDisplayed()))
         onView(withText(R.string.no_saving_possible)).perform(click())
 
         createMission()
