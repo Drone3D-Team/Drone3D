@@ -36,9 +36,8 @@ class MissionStartActivity : AppCompatActivity() {
 
         val MISSION_START_STATUS: List<DroneStatus> = listOf(
             IDLE,
-            ARMING,
-            TAKING_OFF,
             SENDING_ORDER,
+            ARMING,
             STARTING_MISSION
         )
     }

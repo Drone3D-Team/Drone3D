@@ -148,6 +148,7 @@ class DroneExecutorImpl(
 
     private fun start(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable {
         return instance.mission.startMission()
+                .doOnSubscribe { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
                 .doOnComplete {
                     data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
                     data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
