@@ -95,7 +95,7 @@ You'll first have to login or create an account [here](https://home.openweatherm
 </resources>
 ```
 
-## Developement
+## Development
 Drone3D was developed as part of the CS-306 course "Software development project" at EPFL. We have followed agile development methods by adopting the scrum framework. You can find our scrum board [here](https://github.com/Drone3D-Team/Drone3D/projects/1). We have divided the semester into sprints of one week each. For each sprint, we assigned ourselves tasks. Once a task has been implemented, tested and merged into the main branch, it is moved to the corresponding "Done is sprint X" column. At the end of the week, a presentation of the application's functionality takes place, as well as a review of the last sprint. We summarize the work done in each sprint in a sprint summary available in our [wiki](https://github.com/Drone3D-Team/Drone3D/wiki).
 
 We had a few requirements for this app:
