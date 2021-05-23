@@ -44,7 +44,7 @@ This page contains all the tools needed to create a mission:
 * Delete the area and start again in case you changed your mind.
 * Save and/or share the mapping mission (only if you are logged-in).
 
-If you're not logged-in you won't be able to save the mission but you can still launch it.
+If you're not logged-in, you won't be able to save the mission but you can still launch it.
 
 TODO add screen of save a itinerary
 
