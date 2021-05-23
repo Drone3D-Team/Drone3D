@@ -57,7 +57,7 @@ If you are logged-in, you can find all your previously saved mission as well as 
 
 In case you are not logged-in, you can still access shared missions.
 
-You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that let you launch the mission.
+You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that lets you launch the mission.
 
 ### Launch a mission
 TODO add screen itieneraryShow and weather
