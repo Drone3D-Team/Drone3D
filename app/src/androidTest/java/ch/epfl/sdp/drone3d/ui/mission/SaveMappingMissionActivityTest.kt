@@ -108,7 +108,7 @@ class SaveMappingMissionActivityTest {
     val authService: AuthenticationService = mockAuthenticationService()
 
     @BindValue
-    val weatherService: WeatherService = Mockito.mock(WeatherService::class.java)
+    val weatherService: WeatherService = mock(WeatherService::class.java)
 
 
     @BindValue
