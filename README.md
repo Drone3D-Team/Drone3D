@@ -113,7 +113,7 @@ Every map in the app is zoomed on the user, based on his gps. Users can follow t
 We use an email/password register and login system. Logged-in users have the possibility to store and share their mission. The app is still useable without being logged-in.
 
 ### Local cache & offline mode 
-Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping mission locally, it'll be synchronised with the online database as soon as they regain connection.
+Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping missions locally. It'll be synchronized with the online database as soon as they regain connection.
 
 ### Testing
 Our code is carefully tested. It has the following stats:
