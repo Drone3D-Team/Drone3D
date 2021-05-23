@@ -125,6 +125,7 @@ class ItineraryCreateActivityTest {
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
+        onView(withText(R.string.no_saving_possible)).check(matches(isDisplayed()))
         onView(withText(R.string.no_saving_possible)).perform(click())
 
         onView(withId(R.id.buttonToSaveActivity))
