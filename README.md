@@ -69,7 +69,7 @@ TODO add screen loading and missionInProgress
 Once the mission is dispatched to the drone, you'll be able to follow it live on the map. You'll also have the speed, height, live camera feed, state and battery of the drone. At any time you call the drone back to you or to the take off location.
 
 ## Set-up
-This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share you private keys, be carefull !
+This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share your private keys, be carefull !
 
 ### Mapbox
 You'll first have to login or create an account [here](https://account.mapbox.com/auth/signin/). Update "mapbox_access_token" with your default public token in [strings.xml](app/src/main/res/values/strings.xml).
