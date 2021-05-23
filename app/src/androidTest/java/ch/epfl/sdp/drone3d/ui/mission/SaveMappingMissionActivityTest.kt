@@ -76,7 +76,7 @@ class SaveMappingMissionActivityTest {
     }
 
     @BindValue
-    val locationService: LocationService = Mockito.mock(LocationService::class.java)
+    val locationService: LocationService = mock(LocationService::class.java)
 
     private val activityRule = ActivityScenarioRule<SaveMappingMissionActivity>(
         Intent(
