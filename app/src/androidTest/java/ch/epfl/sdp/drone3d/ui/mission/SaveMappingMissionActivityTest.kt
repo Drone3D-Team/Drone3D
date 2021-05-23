@@ -76,7 +76,7 @@ class SaveMappingMissionActivityTest {
     }
 
     @BindValue
-    val locationService: LocationService = Mockito.mock(LocationService::class.java)
+    val locationService: LocationService = mock(LocationService::class.java)
 
     private val activityRule = ActivityScenarioRule<SaveMappingMissionActivity>(
         Intent(
@@ -108,7 +108,7 @@ class SaveMappingMissionActivityTest {
     val authService: AuthenticationService = mockAuthenticationService()
 
     @BindValue
-    val weatherService: WeatherService = Mockito.mock(WeatherService::class.java)
+    val weatherService: WeatherService = mock(WeatherService::class.java)
 
 
     @BindValue
@@ -274,6 +274,7 @@ class SaveMappingMissionActivityTest {
 
         onView(withId(R.id.saveButton)).perform(click())
 
+        onView(withText(R.string.continue_without_saving)).check(matches(isDisplayed()))
         onView(withText(R.string.continue_without_saving)).perform(click())
 
         sleep(1000)
