@@ -336,11 +336,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Test if the size of the area is with the accepted size
      */
     private fun isSizeWithinLimit(): Boolean {
-        return if (areaBuilder.isComplete()) {
-            areaBuilder.getAreaSize() < MAXIMUM_AREA_SIZE
-        } else {
-            false
-        }
+        return areaBuilder.isComplete() && areaBuilder.getAreaSize() < MAXIMUM_AREA_SIZE
     }
 
 
