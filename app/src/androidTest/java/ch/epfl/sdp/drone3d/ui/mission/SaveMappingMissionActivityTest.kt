@@ -275,6 +275,7 @@ class SaveMappingMissionActivityTest {
 
         onView(withId(R.id.saveButton)).perform(click())
 
+        onView(withText(R.string.continue_without_saving)).check(matches(isDisplayed()))
         onView(withText(R.string.continue_without_saving)).perform(click())
 
         sleep(1000)
