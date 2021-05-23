@@ -123,14 +123,9 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun goToSaveActivityButtonIsNotEnabledOnStart() {
-        `when`(authService.hasActiveSession()).thenReturn(false)
+        `when`(authService.hasActiveSession()).thenReturn(true)
 
         activityRule.scenario.recreate()
-
-        onView(withText(R.string.no_saving_possible)).check(matches(isDisplayed()))
-        onView(withText(R.string.no_saving_possible)).perform(click())
-
-        sleep(100)
 
         onView(withId(R.id.buttonToSaveActivity))
             .check(matches(not(isEnabled())))
