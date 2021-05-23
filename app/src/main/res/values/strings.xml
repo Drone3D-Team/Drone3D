@@ -113,7 +113,7 @@
     <string name="content_descriptor_edit_icon">edit_icon</string>
 
     <!-- Mission In Progress Activity -->
-    <string name="mission_null">Cannot launch a null mission</string>
+    <string name="mission_invalid">Some of the provided mission arguments are null</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>

@@ -55,6 +55,8 @@ class MissionStartActivityTest {
             LatLng(37.412496825414046, -121.99683107403213),
             LatLng(37.41243024942702, -121.99686795440418)
         )
+        private const val FLIGHT_HEIGHT = 50.0
+        private const val CAMERA_PITCH = 90f
     }
 
     private val activityRule = ActivityScenarioRule<MissionStartActivity>(
@@ -68,6 +70,8 @@ class MissionStartActivityTest {
                     ArrayList(FLIGHT_PATH)
                 )
             })
+            putExtra(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH, CAMERA_PITCH)
+            putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
         })
 
     @get:Rule

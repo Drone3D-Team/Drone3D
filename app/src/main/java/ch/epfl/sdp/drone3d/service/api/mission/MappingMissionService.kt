@@ -24,4 +24,10 @@ interface MappingMissionService {
      * Use this function for high resolution vertical 3D mappings such a cities.
      */
     fun buildDoublePassMappingMission(vertices:List<LatLng>,flightHeight:Double):List<LatLng>?
+
+    /**
+     * Returns the angle of the drone's camera with respect to the horizontal axis in degree, where
+     * a value of 0 corresponds to the camera looking forward and 90 to the camera looking down
+     */
+    fun getCameraPitch():Float
 }

@@ -149,7 +149,7 @@ class DroneExecutorImpl(
     private fun returnTo(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
 
         val droneInstance = getInstance()
-        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude)
+        val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude,null)
 
         return droneInstance.mission.pauseMission()
             .doOnComplete {
