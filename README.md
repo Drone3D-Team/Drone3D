@@ -8,7 +8,7 @@
 * [Description](#description)
 * [Usage and features](#usage-and-features)
 * [Set up](#set-up)
-* [Developement](#developement)
+* [Development](#development)
 * [License](#license)
 
 ## Description
