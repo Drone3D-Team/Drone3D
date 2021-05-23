@@ -35,7 +35,7 @@ class DroneExecutorImpl(
         private const val DEFAULT_ALTITUDE: Float = 20f
     }
 
-    override fun startMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {
+    override fun setupMission(ctx: Context, missionPlan: Mission.MissionPlan): Completable {
         if (missionPlan.missionItems.isEmpty())
             throw IllegalArgumentException("Cannot start an empty mission")
 
@@ -48,13 +48,25 @@ class DroneExecutorImpl(
                 home.longitudeDeg,
                 missionPlan.missionItems[0].relativeAltitudeM))
 
+        val disarmed = changeFromTo(instance.telemetry.armed)
+                .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
+
+        data.getMutableDroneStatus().postValue(IDLE)
+
         val mission = connected(instance)
                 .andThen(uploadMission(instance, missionPlan))
                 .andThen(arm(ctx, instance))
                 .andThen(start(ctx, instance, missionPlan))
 
-        return mission
-                .andThen(finish(ctx, instance))
+        return Completable.ambArray(mission, disarmed)
+    }
+
+    override fun executeMission(ctx: Context): Completable {
+        val instance = getInstance()
+
+        return connected(instance)
+                .doOnComplete { data.getMutableDroneStatus().postValue(EXECUTING_MISSION) }
+                .andThen(waitForMissionEnd(ctx, instance))
     }
 
     private fun connected(instance: System): Completable =
@@ -120,7 +132,7 @@ class DroneExecutorImpl(
     override fun resumeMission(ctx: Context): Completable {
         val instance = getInstance()
 
-        data.getMutableDroneStatus().postValue(SENDING_ORDER)
+        data.getMutableDroneStatus().postValue(STARTING_MISSION)
         return instance.mission.startMission().doOnComplete {
             data.getMutableMissionPaused().postValue(false)
             data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
@@ -144,7 +156,7 @@ class DroneExecutorImpl(
                 }
     }
 
-    private fun finish(ctx: Context, instance: System): Completable = 
+    private fun waitForMissionEnd(ctx: Context, instance: System): Completable =
             instance.mission.missionProgress
                             .filter{ it.current >= it.total - 1 }.firstOrError().toCompletable()
                             .doOnComplete{

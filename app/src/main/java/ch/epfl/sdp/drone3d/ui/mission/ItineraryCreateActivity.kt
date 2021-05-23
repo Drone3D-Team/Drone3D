@@ -27,7 +27,6 @@ import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
-import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
@@ -62,15 +61,14 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     lateinit var mapboxMap: MapboxMap
 
-
     // Mission
-    private var isMissionDisplayed = true
     private var flightPath = arrayListOf<LatLng>()
-    private var flightHeight = 50.0
+    private var flightHeight = DEFAULT_FLIGHTHEIGHT
+    private var strategy = DEFAULT_STRATEGY
     private lateinit var missionBuilder: ParallelogramMappingMissionService
     private lateinit var missionDrawer: MapboxMissionDrawer
     private var isPreviewUpToDate = true
-    private var strategy = Strategy.SINGLE_PASS
+    private var isMissionDisplayed = true
 
     // Area
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -94,6 +92,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         const val STRATEGY_INTENT_PATH = "ICA_strategy"
         const val AREA_INTENT_PATH = "ICA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
+        const val DEFAULT_FLIGHTHEIGHT = 50.0
+        val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,7 +108,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val bundle = intent.extras
-        if (bundle != null &&  !bundle.isEmpty) {
+        if (bundle != null && !bundle.isEmpty) {
             flightHeight = bundle.getDouble(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH)
             strategy = (bundle.get(ItineraryShowActivity.STRATEGY_INTENT_PATH) as Strategy)
             initialArea = bundle.getParcelableArrayList(ItineraryShowActivity.AREA_INTENT_PATH)!!
@@ -116,7 +116,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // Button
         altitudeButton = findViewById(R.id.verticalBar)
+        altitudeButton.progress = flightHeight.toInt()
         changeStrategyButton = findViewById(R.id.changeStrategy)
+        setStrategyButtonIcon()
         buildMissionButton = findViewById(R.id.buildFlightPath)
         buildMissionButton.isEnabled = false
         showMissionButton = findViewById(R.id.showMission)
@@ -128,6 +130,32 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // TextView
         altitudeText = findViewById(R.id.altitude)
+    }
+
+    /**
+     * Update the strategy button icon based on the current strategy
+     */
+    private fun setStrategyButtonIcon() {
+        when (strategy) {
+            Strategy.SINGLE_PASS -> {
+                changeStrategyButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_single_path_strategy,
+                        null
+                    )
+                )
+            }
+            Strategy.DOUBLE_PASS -> {
+                changeStrategyButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        resources,
+                        R.drawable.ic_double_path_strategy,
+                        null
+                    )
+                )
+            }
+        }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -147,7 +175,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
             areaBuilder.onVerticesChanged.add { deleteButton.isEnabled = true }
             initialArea.forEach { areaBuilder.addVertex(it) }
-            if(initialArea.isNotEmpty()){
+            if (initialArea.isNotEmpty()) {
                 MapboxUtility.zoomOnCoordinate(initialArea[0], mapboxMap)
             }
 
@@ -156,7 +184,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
-
             altitudeText.text = getString(R.string.altitude_text, flightHeight)
             altitudeButton.setOnProgressChangeListener { progressValue ->
                 flightHeight = progressValue.toDouble()
@@ -218,27 +245,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun switchStrategy(@Suppress("UNUSED_PARAMETER") view: View) {
         strategy = when (strategy) {
-            Strategy.SINGLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_double_path_strategy,
-                        null
-                    )
-                )
+            Strategy.SINGLE_PASS ->
                 Strategy.DOUBLE_PASS
-            }
-            Strategy.DOUBLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_single_path_strategy,
-                        null
-                    )
-                )
+            Strategy.DOUBLE_PASS ->
                 Strategy.SINGLE_PASS
-            }
         }
+        setStrategyButtonIcon()
         onMissionSettingModified()
     }
 

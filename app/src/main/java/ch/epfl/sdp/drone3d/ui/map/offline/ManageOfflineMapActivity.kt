@@ -14,8 +14,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -26,8 +28,12 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
+import dagger.hilt.android.AndroidEntryPoint
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import timber.log.Timber
 import java.lang.System.currentTimeMillis
+import javax.inject.Inject
 import kotlin.math.min
 
 
@@ -35,6 +41,7 @@ import kotlin.math.min
  * Activity which allow a user to select regions on the map to download/remove when he's online so
  * that he can use them in offline mode.
  */
+@AndroidEntryPoint
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     companion object{
@@ -42,6 +49,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         private const val BACKGROUND_COLOR_MULTIPLIER = -0x1000000
     }
 
+    // Location
+    @Inject
+    lateinit var locationService: LocationService
+
+    private lateinit var lineManager: LineManager
     private lateinit var offlineMapSaver: OfflineMapSaver
     private lateinit var mapboxMap: MapboxMap
     private lateinit var downloadButton: FloatingActionButton
@@ -66,7 +78,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         mapView.contentDescription = getString(R.string.map_ready)
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            //configureLocationOptions
+            LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
 
+            lineManager = LineManager(mapView, mapboxMap, style)
             offlineMapSaver = OfflineMapSaverImpl(this@ManageOfflineMapActivity, style.uri)
             bindOfflineRegionsToRecycler()
             downloadButton.isEnabled = true
@@ -110,7 +125,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     private fun bindOfflineRegionsToRecycler() {
         val savedRegionsRecycler = findViewById<RecyclerView>(R.id.saved_regions)
         val offlineRegions = offlineMapSaver.getOfflineRegions()
-        val adapter = OfflineRegionViewAdapter(offlineMapSaver)
+        val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager, mapboxMap)
         savedRegionsRecycler.adapter = adapter
 
         offlineRegions.observe(this, androidx.lifecycle.Observer {
@@ -203,7 +218,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
      * Display the [offlineRegion] on the map by putting a square surrounding the region on the map
      */
     private fun display(offlineRegion: OfflineRegion){
-        //TODO("Implement")
+        val bounds = OfflineMapSaverImpl.getMetadata(offlineRegion).bounds
+        lineManager.create(LineOptions().withLatLngs(
+            listOf(bounds.northEast, bounds.northWest, bounds.southWest, bounds.southEast, bounds.northEast)
+        ))
     }
 
 }

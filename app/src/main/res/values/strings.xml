@@ -126,6 +126,19 @@
     <string name="lost_connection_message">Lost Connection With the Drone</string>
     <!-- Warning showed if the weather is dangerous for the drone -->
     <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
+    <!--  Message showed when the drone is too far from the user -->
+    <string name="drone_too_far">The drone is too far from you. Mission paused until you go closer from it.</string>
+    <!-- Message showed when the drone is again close enough from the user -->
+    <string name="drone_close_again">The drone is close enough again. Mission resumed.</string>
+
+    <!-- Mission Start Activity -->
+
+    <string name="mission_state_idle">Establishing connection with the drone</string>
+    <string name="mission_state_arming">Arming the drone</string>
+    <string name="mission_state_takeoff">The drone is taking off</string>
+    <string name="mission_state_sending">Sending the mission to the drone</string>
+    <string name="mission_state_starting">The mission is starting</string>
+    <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
 
     <!-- Weather Info Activity -->
     <string name="updated_on">Weather on %1$s</string>
@@ -151,7 +164,8 @@
 
     <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
-    <string name="drone_mission_error">An error occurred while dispatching missing to the drone : %s</string>
+    <string name="drone_setup_mission_error">An error occurred while dispatching mission to the drone : %s</string>
+    <string name="drone_mission_error">An error occurred during the mission : %s</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
     <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>

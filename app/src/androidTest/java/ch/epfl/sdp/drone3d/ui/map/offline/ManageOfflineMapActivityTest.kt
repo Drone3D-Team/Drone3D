@@ -1,38 +1,34 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
-import android.os.SystemClock
-import android.view.View
 import android.widget.EditText
-import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
+import ch.epfl.sdp.drone3d.service.module.LocationModule
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.offline.OfflineManager
+import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Matcher
 import org.junit.*
 import org.junit.rules.RuleChain
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 
 @HiltAndroidTest
+@UninstallModules(LocationModule::class)
 class ManageOfflineMapActivityTest {
 
     companion object {
@@ -44,6 +40,14 @@ class ManageOfflineMapActivityTest {
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
         .around(activityRule)
+
+    @BindValue
+    val locationService: LocationService = mock(LocationService::class.java)
+
+    init {
+        `when`(locationService.isLocationEnabled()).thenReturn(true)
+        `when`(locationService.getCurrentLocation()).thenReturn(LatLng(0.0, 0.0))
+    }
 
     @Before
     fun setUp() {
@@ -68,6 +72,7 @@ class ManageOfflineMapActivityTest {
     @Test
     fun cannotEnterEmptyStringForRegionName() {
 
+        Thread.sleep(2000)
         //Used to wait for the map to be downloaded before clickling the button
         var counter = CountDownLatch(1)
 
