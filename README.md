@@ -30,7 +30,7 @@ To connect a simulation, you'll have first to create to launch a simulation with
 ### Manage offline map
 TODO add screen offline map
 
-This page lets you download a part of the map. Select the on the map the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precison of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
+This page lets you download a part of the map. Select the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precision of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
 
 ### Create and save an itinerary 
 TODO add screen of creation a itinerary
@@ -140,4 +140,3 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/agpl-3.0.html>.
-
