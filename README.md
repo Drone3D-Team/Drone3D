@@ -110,7 +110,7 @@ Our app uses firebase to let the users store and share their mission.
 Every map in the app is zoomed on the user, based on his gps. Users can follow the live progression of the drone on the map when a mission is launched. At any time they can send an instruction so that the drone comes back to their location.
 
 ### User support
-We use an email/password register and login system. Logged-in users have the possibility to store and share their mission. The app is still useable without being logged-in.
+We use an email/password registration and login system. Logged-in users have the possibility to store and share their mission. The app is still useable without being logged-in.
 
 ### Local cache & offline mode 
 Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping missions locally. It'll be synchronized with the online database as soon as they regain connection.
