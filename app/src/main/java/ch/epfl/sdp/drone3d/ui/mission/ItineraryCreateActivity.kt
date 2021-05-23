@@ -127,7 +127,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         deleteButton.isEnabled = false
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
         goToSaveButton.isEnabled = false
-        setLaunchOrLaunchButtonIcon()
+        setButtonIconToSaveOrLaunchMission()
 
         if (!authService.hasActiveSession()) {
             setDialogNotLogin()
@@ -158,9 +158,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     /**
-     * If the user as an active session display save icon, otherwise send icon
+     * If the user as an active session display save icon, otherwise send icon is displayed on the bottom button
      */
-    private fun setLaunchOrLaunchButtonIcon() {
+    private fun setButtonIconToSaveOrLaunchMission() {
         if (authService.hasActiveSession()) {
             goToSaveButton.setImageDrawable(
                 ResourcesCompat.getDrawable(

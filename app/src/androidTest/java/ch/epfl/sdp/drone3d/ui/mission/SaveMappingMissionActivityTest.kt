@@ -206,7 +206,6 @@ class SaveMappingMissionActivityTest {
 
         sleep(1000)
 
-
         Intents.intended(
             IntentMatchers.hasComponent(ComponentNameMatchers.hasClassName(ItineraryShowActivity::class.java.name))
         )
