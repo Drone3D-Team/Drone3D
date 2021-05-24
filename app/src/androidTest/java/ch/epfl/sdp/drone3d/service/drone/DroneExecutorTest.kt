@@ -122,7 +122,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, atLeastOnce()).arm()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -172,7 +171,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -222,7 +220,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -272,7 +269,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -322,7 +318,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, never()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -539,14 +534,6 @@ class DroneExecutorTest {
                 dataBecomes(droneData.getDroneStatus(), ARMING)
                 flightModePublisher.onNext(Telemetry.FlightMode.READY)
                 armedPublisher.onNext(true)
-            }
-        }
-
-        `when`(DroneInstanceMock.droneAction.takeoff()).thenAnswer {
-            Completable.fromCallable {
-                dataBecomes(droneData.getDroneStatus(), TAKING_OFF)
-                inAirPublisher.onNext(true)
-                flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
             }
         }
 

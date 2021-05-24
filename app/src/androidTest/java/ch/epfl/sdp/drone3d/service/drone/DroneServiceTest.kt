@@ -38,7 +38,7 @@ class DroneServiceTest {
         // force isConnected() to be true during the simulation setup
         `when`(drone.core.connectionState).thenReturn(
             Flowable.fromArray(
-                Core.ConnectionState(0L, true)
+                Core.ConnectionState(true)
             )
         )
 
