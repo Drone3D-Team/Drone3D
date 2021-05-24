@@ -9,13 +9,11 @@
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF0000FF</color>
     <color name="red">#FFFF0000</color>
     <color name="mapbox_offline_green">#58BCF3</color>
-    <color name="test1">#e6ffff</color>
-    <color name="test2">#00cc99</color>
-
+    <color name="lightMainColor">#e6ffff</color>
+    <color name="darkMainColor">#FF018786</color>
 </resources>

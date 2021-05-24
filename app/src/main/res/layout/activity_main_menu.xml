@@ -6,7 +6,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/test1"
+    android:background="@color/lightMainColor"
     android:id="@+id/main_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -42,7 +42,7 @@
         android:orientation="vertical"
         android:weightSum="1"
         android:gravity="center"
-        android:background="@color/teal_700"
+        android:background="@color/darkMainColor"
         app:layout_constraintBottom_toBottomOf="@id/horizontalTopGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -51,8 +51,8 @@
         <!--TODO: put logo of the app-->
         <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="logo"
+        android:layout_height="0dp"
+        android:contentDescription="@string/logo_image_descriptor"
         android:src="@drawable/drone"
         android:layout_weight="1"
         app:layout_constraintBottom_toTopOf="parent"
@@ -63,7 +63,7 @@
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/test1"
+        android:background="@color/lightMainColor"
         android:id="@+id/cardsLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -106,11 +106,10 @@
             android:id="@+id/browse_itinerary_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
+            android:foreground="?attr/selectableItemBackground"
             android:onClick="goToMappingMissionSelection"
             app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
             app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
@@ -127,8 +126,8 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:contentDescription="todo_change"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/browse_itineraries_image_descriptor"
                     android:src="@drawable/browse_itineraries_image"
                     android:layout_weight="1"
                     android:layout_gravity="center"
@@ -151,8 +150,7 @@
             android:id="@+id/create_itinerary_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
+            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
@@ -172,8 +170,8 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:contentDescription="todo_change"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/create_itinerary_image_descriptor"
                     android:src="@drawable/create_itinerary_image"
                     android:layout_weight="1"
                     android:layout_gravity="center"
@@ -189,6 +187,7 @@
                     android:layout_gravity="center"
                     android:textAlignment="center"
                     android:text="@string/create_a_new_itinerary" />
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
@@ -198,8 +197,7 @@
             android:id="@+id/go_disconnect_drone_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
+            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
@@ -219,8 +217,8 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:contentDescription="todo_change"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/disconnect_drone_image_descriptor"
                     android:src="@drawable/drone"
                     android:layout_weight="1"
                     android:layout_gravity="center"
@@ -244,8 +242,7 @@
             android:id="@+id/go_connect_drone_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
+            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
@@ -266,8 +263,8 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:contentDescription="todo_change"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/connect_drone_image_descriptor"
                     android:src="@drawable/drone"
                     android:layout_weight="1"
                     android:layout_gravity="center"
@@ -290,8 +287,7 @@
             android:id="@+id/manage_offline_map_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_columnWeight="1"
-            android:layout_rowWeight="1"
+            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
@@ -311,8 +307,8 @@
 
                 <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:contentDescription="todo_change"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/manage_offline_map_image_descriptor"
                     android:src="@drawable/offline_image"
                     android:layout_weight="1"
                     android:layout_gravity="center"
@@ -339,7 +335,9 @@
         android:layout_height="wrap_content"
         android:onClick="logout"
         android:text="@string/log_out"
-        android:background="@drawable/rounded_button"
+        app:backgroundTint="@color/white"
+        android:textColor="@color/black"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
@@ -351,7 +349,9 @@
         android:layout_height="wrap_content"
         android:onClick="goToLogin"
         android:text="@string/log_in"
-        android:background="@drawable/rounded_button"
+        android:textColor="@color/black"
+        app:backgroundTint="@color/white"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
