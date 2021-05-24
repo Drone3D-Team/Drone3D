@@ -119,8 +119,6 @@
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
-    <string name="drone_took_off">Drone took off</string>
-    <string name="drone_already_flying">Drone already flying</string>
     <string name="drone_armed">Drone armed</string>
     <string name="drone_already_armed">Drone already armed</string>
     <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
@@ -144,7 +142,6 @@
     <!-- Mission Start Activity -->
     <string name="mission_state_idle">Establishing connection with the drone</string>
     <string name="mission_state_arming">Arming the drone</string>
-    <string name="mission_state_takeoff">The drone is taking off</string>
     <string name="mission_state_sending">Sending the mission to the drone</string>
     <string name="mission_state_starting">The mission is starting</string>
     <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>

@@ -123,14 +123,11 @@ class MissionStartActivityTest {
         blockingSetValue(droneStatus, IDLE)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_idle)))
 
-        blockingSetValue(droneStatus, ARMING)
-        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_arming)))
-
-        blockingSetValue(droneStatus, TAKING_OFF)
-        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_takeoff)))
-
         blockingSetValue(droneStatus, SENDING_ORDER)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_sending)))
+
+        blockingSetValue(droneStatus, ARMING)
+        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_arming)))
 
         blockingSetValue(droneStatus, STARTING_MISSION)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_starting)))
