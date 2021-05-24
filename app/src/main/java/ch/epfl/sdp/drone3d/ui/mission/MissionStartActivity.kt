@@ -84,7 +84,6 @@ class MissionStartActivity : AppCompatActivity() {
             when(status) {
                 IDLE -> R.string.mission_state_idle
                 ARMING -> R.string.mission_state_arming
-                TAKING_OFF -> R.string.mission_state_takeoff
                 SENDING_ORDER -> R.string.mission_state_sending
                 STARTING_MISSION -> R.string.mission_state_starting
                 else -> R.string.mission_state_unknown

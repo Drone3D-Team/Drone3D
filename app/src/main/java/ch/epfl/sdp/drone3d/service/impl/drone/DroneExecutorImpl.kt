@@ -17,7 +17,6 @@ import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.mapbox.mapboxsdk.geometry.LatLng
 import io.mavsdk.System
 import io.mavsdk.mission.Mission
-import io.mavsdk.telemetry.Telemetry
 import io.mavsdk.telemetry.Telemetry.FlightMode.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
