@@ -22,6 +22,7 @@ interface DronePhotos {
 
     /**
      * Returns the last [n] images taken by the drone.
+     * If [n] is negative, it will return an empty list.
      * If the drone took less than [n] images, it will return all of them.
      * It may return less than [n] photos in case a download failed.
      */
@@ -29,6 +30,7 @@ interface DronePhotos {
 
     /**
      * Returns the first [n] images taken by the drone.
+     * If [n] is negative, it will return an empty list.
      * If the drone took less than [n] images, it will return all of them.
      * It may return less than [n] photos in case a download failed.
      */
@@ -36,6 +38,7 @@ interface DronePhotos {
 
     /**
      * Returns [n] random images taken by the drone.
+     * If [n] is negative, it will return an empty list.
      * If the drone took less than [n] images, it will return all of them.
      * It may return less than [n] photos in case a download failed.
      */

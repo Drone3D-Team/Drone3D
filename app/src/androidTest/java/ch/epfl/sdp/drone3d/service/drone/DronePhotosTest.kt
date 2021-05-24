@@ -64,11 +64,10 @@ class DronePhotosTest {
                 captureInfoPublisher.toFlowable(BackpressureStrategy.BUFFER)
                     .cacheWithInitialCapacity(1)
             )
-    }
-
-    private fun setPhotosList(list: List<CameraProto.CaptureInfo>) {
         `when`(DroneInstanceMock.droneCamera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION))
-            .thenReturn(Single.just(list))
+            .thenReturn(Single.just(CORRECT_URLS.map { url ->
+                CameraProto.CaptureInfo.newBuilder().setFileUrl(url).build()
+            }))
     }
 
     @Test
@@ -100,9 +99,6 @@ class DronePhotosTest {
                 CORRECT_URLS[0]
             )
         )
-        // For some reason the downloaded image "photo1" from the exact same link which he downloads the photo is not the same
-        //val ctx: Context = getApplicationContext()
-        //val expected = BitmapFactory.decodeResource(ctx.resources, R.drawable.photo1)
 
         val observer = Observer<Bitmap> {
             if (it != null) {
@@ -115,7 +111,6 @@ class DronePhotosTest {
 
         counter.await(5L, TimeUnit.SECONDS)
         assertThat(counter.count, CoreMatchers.equalTo(0L))
-
     }
 
     @Test
@@ -169,7 +164,6 @@ class DronePhotosTest {
 
         counter.await(5L, TimeUnit.SECONDS)
         assertThat(counter.count, CoreMatchers.equalTo(0L))
-
     }
 
     @Test
@@ -178,11 +172,6 @@ class DronePhotosTest {
 
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
-
-        val captureInfos = CORRECT_URLS.map { url ->
-            CameraProto.CaptureInfo.newBuilder().setFileUrl(url).build()
-        }
-        setPhotosList(captureInfos)
 
         val photos: DronePhotos = DronePhotosImpl(droneService)
         val mutex = Semaphore(0)
@@ -195,7 +184,7 @@ class DronePhotosTest {
         }
 
         photos.getPhotos().map {
-            assertThat(it.size, CoreMatchers.equalTo(2))
+            assertThat(it.size, CoreMatchers.equalTo(CORRECT_URLS.size))
             for (i in expected.indices) {
                 assertTrue(it[i].sameAs(expected[i]))
             }
@@ -206,7 +195,260 @@ class DronePhotosTest {
             mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
             CoreMatchers.`is`(true)
         )
+    }
 
+    @Test
+    fun get3LastPhotosReturnsCorrect3LastPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 3
+
+        val expected: MutableList<Bitmap> = mutableListOf()
+        for (url in CORRECT_URLS.subList(CORRECT_URLS.size - n, CORRECT_URLS.size)) {
+            val imageStream = URL(url).openStream()
+            expected.add(BitmapFactory.decodeStream(imageStream))
+            imageStream.close()
+        }
+
+        photos.getLastPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(n))
+            for (i in expected.indices) {
+                assertTrue(it[i].sameAs(expected[i]))
+            }
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getLastPhotosWithNegativeNumberReturnsEmptyList() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = -1
+
+        photos.getLastPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(0))
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getLastPhotosWithNumberBiggerThanTotalPhotosReturnsAllPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 10
+
+        checkFullList(photos.getLastPhotos(n), mutex, n)
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun get3FirstPhotosReturnsCorrect3FirstPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 3
+
+        val expected: MutableList<Bitmap> = mutableListOf()
+        for (url in CORRECT_URLS.subList(0, n)) {
+            val imageStream = URL(url).openStream()
+            expected.add(BitmapFactory.decodeStream(imageStream))
+            imageStream.close()
+        }
+
+        photos.getFirstPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(n))
+            for (i in expected.indices) {
+                assertTrue(it[i].sameAs(expected[i]))
+            }
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getFirstPhotosWithNegativeNumberReturnsEmptyList() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = -1
+
+        photos.getFirstPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(0))
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getFirstPhotosWithNumberBiggerThanTotalPhotosReturnsAllPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 10
+
+        checkFullList(photos.getFirstPhotos(n), mutex, n)
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun get3RandomPhotosReturnsSome3RandomPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 3
+
+        val expected: MutableList<Bitmap> = mutableListOf()
+        for (url in CORRECT_URLS) {
+            val imageStream = URL(url).openStream()
+            expected.add(BitmapFactory.decodeStream(imageStream))
+            imageStream.close()
+        }
+
+        photos.getRandomPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(n))
+            for (actual in it) {
+                var exists = false
+                for (bitmap in expected) {
+                    if (actual.sameAs(bitmap)) {
+                        exists = true
+                        // Remove from expected to detect duplicates
+                        expected.remove(bitmap)
+                        break
+                    }
+                }
+                assertTrue(exists)
+            }
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getRandomPhotosWithNegativeNumberReturnsEmptyList() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = -1
+
+        photos.getRandomPhotos(n).map {
+            assertThat(it.size, CoreMatchers.equalTo(0))
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    @Test
+    fun getRandomPhotosWithNumberBiggerThanTotalPhotosReturnsAllPhotos() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val n = 10
+
+        checkFullList(photos.getRandomPhotos(n), mutex, n)
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    private fun checkFullList(list: Single<List<Bitmap>>, mutex: Semaphore, n: Int) {
+        val expected: MutableList<Bitmap> = mutableListOf()
+        for (url in CORRECT_URLS) {
+            val imageStream = URL(url).openStream()
+            expected.add(BitmapFactory.decodeStream(imageStream))
+            imageStream.close()
+        }
+
+        list.map {
+            assertThat(it.size, CoreMatchers.equalTo(expected.size))
+            for (i in expected.indices) {
+                assertTrue(it[i].sameAs(expected[i]))
+            }
+            mutex.release()
+        }.blockingGet()
     }
 
 }
