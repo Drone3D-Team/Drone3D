@@ -6,6 +6,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/lightMainColor"
     android:id="@+id/main_activity"
     android:layout_width="match_parent"
@@ -63,28 +64,22 @@
     </LinearLayout>
 
     <Button
+        style="@style/simpleButtonStyle"
         android:id="@+id/log_out_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:onClick="logout"
         android:text="@string/log_out"
-        android:textColor="@color/black"
         app:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        style="@style/simpleButtonStyle"
         android:id="@+id/log_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:onClick="goToLogin"
         android:text="@string/log_in"
-        android:textColor="@color/black"
         app:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
@@ -131,14 +126,11 @@
 
 
         <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
             android:id="@+id/browse_itinerary_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:onClick="goToMappingMissionSelection"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
-            android:layout_margin="18dp"
-            android:foreground="?attr/selectableItemBackground"
-            android:onClick="goToMappingMissionSelection"
             app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
             app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
             app:layout_constraintStart_toStartOf="parent"
@@ -146,42 +138,30 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:padding="16dp">
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    style="@style/mainImageViewStyle"
                     android:contentDescription="@string/browse_itineraries_image_descriptor"
                     android:src="@drawable/browse_itineraries_image"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
+                    style="@style/simpleTextViewStyle"
                     android:text="@string/browse_itineraries" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
             android:id="@+id/create_itinerary_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
-            android:layout_margin="18dp"
             android:onClick="goToItineraryCreate"
             app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
             app:layout_constraintEnd_toEndOf="parent"
@@ -190,19 +170,13 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:padding="16dp">
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    style="@style/mainImageViewStyle"
                     android:contentDescription="@string/create_itinerary_image_descriptor"
                     android:src="@drawable/create_itinerary_image"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -210,25 +184,18 @@
                     />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
+                    style="@style/simpleTextViewStyle"
                     android:text="@string/create_a_new_itinerary" />
-
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
 
         <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
             android:id="@+id/go_disconnect_drone_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
-            android:layout_margin="18dp"
             android:onClick="goToDroneConnect"
             app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
             app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
@@ -237,19 +204,13 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:padding="16dp">
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    style="@style/mainImageViewStyle"
                     android:contentDescription="@string/disconnect_drone_image_descriptor"
                     android:src="@drawable/drone"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -257,23 +218,17 @@
                     />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
+                    style="@style/simpleTextViewStyle"
                     android:text="@string/disconnect_drone" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
             android:id="@+id/go_connect_drone_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
-            android:layout_margin="18dp"
             android:onClick="goToDroneConnect"
             app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
             app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
@@ -282,43 +237,30 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:textAlignment="center"
-                android:padding="16dp">
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    style="@style/mainImageViewStyle"
                     android:contentDescription="@string/connect_drone_image_descriptor"
                     android:src="@drawable/drone"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
+                    style="@style/simpleTextViewStyle"
                     android:text="@string/connect_a_drone" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
             android:id="@+id/manage_offline_map_button"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:foreground="?attr/selectableItemBackground"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
-            android:layout_margin="18dp"
             android:onClick="goToDroneManageOfflineMap"
             app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
             app:layout_constraintEnd_toEndOf="parent"
@@ -327,29 +269,21 @@
             >
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                android:padding="16dp">
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    style="@style/mainImageViewStyle"
+
                     android:contentDescription="@string/manage_offline_map_image_descriptor"
                     android:src="@drawable/offline_image"
-                    android:layout_weight="1"
-                    android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:textAlignment="center"
+                    style="@style/simpleTextViewStyle"
                     android:text="@string/manage_offline_map" />
             </LinearLayout>
 
