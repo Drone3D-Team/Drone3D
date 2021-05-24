@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        app:layout_constraintGuide_percent="0.1" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -62,8 +62,36 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/log_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="logout"
+        android:text="@string/log_out"
+        android:textColor="@color/black"
+        app:backgroundTint="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/log_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToLogin"
+        android:text="@string/log_in"
+        android:textColor="@color/black"
+        app:backgroundTint="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:background="@color/lightMainColor"
+        android:background="?attr/colorPrimaryVariant"
         android:id="@+id/cardsLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -328,35 +356,5 @@
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <Button
-        android:id="@+id/log_out_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="logout"
-        android:text="@string/log_out"
-        app:backgroundTint="@color/white"
-        android:textColor="@color/black"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/log_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="goToLogin"
-        android:text="@string/log_in"
-        android:textColor="@color/black"
-        app:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
