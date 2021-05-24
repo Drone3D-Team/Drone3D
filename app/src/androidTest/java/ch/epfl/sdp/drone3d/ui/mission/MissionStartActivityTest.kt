@@ -51,31 +51,35 @@ class MissionStartActivityTest {
 
     companion object {
         private val FLIGHT_PATH = listOf(
-                LatLng(37.41253570576311, -121.99694775011824),
-                LatLng(37.412496825414046, -121.99683107403213),
-                LatLng(37.41243024942702, -121.99686795440418)
+            LatLng(37.41253570576311, -121.99694775011824),
+            LatLng(37.412496825414046, -121.99683107403213),
+            LatLng(37.41243024942702, -121.99686795440418)
         )
         private const val FLIGHT_HEIGHT = 50.0
         private const val CAMERA_PITCH = 90f
     }
 
     private val activityRule = ActivityScenarioRule<MissionStartActivity>(
-            Intent(
-                    ApplicationProvider.getApplicationContext(),
-                    MissionStartActivity::class.java
-            ).apply {
-                putExtras(Bundle().apply {
-                    putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, ArrayList(FLIGHT_PATH))
-                })
-                putExtra(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH,CAMERA_PITCH)
-                putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH,FLIGHT_HEIGHT)
+        Intent(
+            ApplicationProvider.getApplicationContext(),
+            MissionStartActivity::class.java
+        ).apply {
+            putExtras(Bundle().apply {
+                putSerializable(
+                    ItineraryShowActivity.FLIGHTPATH_INTENT_PATH,
+                    ArrayList(FLIGHT_PATH)
+                )
             })
+            putExtra(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH, CAMERA_PITCH)
+            putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+        })
 
     @get:Rule
     var testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(activityRule)
+        .around(activityRule)
 
-    @BindValue val droneService: DroneService = DroneInstanceMock.mockService()
+    @BindValue
+    val droneService: DroneService = DroneInstanceMock.mockService()
 
     private val droneStatus = MutableLiveData(IDLE)
     private var missionExecutionEnd = CompletableSubject.create()
@@ -95,8 +99,13 @@ class MissionStartActivityTest {
     init {
         val executor = mock(DroneExecutor::class.java)
         `when`(droneService.getExecutor()).thenReturn(executor)
-        `when`(executor.setupMission(anyObj(Context::class.java), anyObj(Mission.MissionPlan::class.java)))
-                .thenAnswer { missionExecutionEnd }
+        `when`(
+            executor.setupMission(
+                anyObj(Context::class.java),
+                anyObj(Mission.MissionPlan::class.java)
+            )
+        )
+            .thenAnswer { missionExecutionEnd }
         `when`(executor.executeMission(anyObj(Context::class.java))).thenReturn(Completable.never())
         `when`(droneService.getData().getDroneStatus()).thenReturn(droneStatus)
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData())
@@ -125,7 +134,7 @@ class MissionStartActivityTest {
 
         missionExecutionEnd.onComplete()
         intended(
-                hasComponent(ComponentNameMatchers.hasClassName(MissionInProgressActivity::class.java.name))
+            hasComponent(ComponentNameMatchers.hasClassName(MissionInProgressActivity::class.java.name))
         )
     }
 
