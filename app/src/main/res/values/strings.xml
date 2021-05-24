@@ -64,8 +64,9 @@
     <string name="map_not_ready">MAP NOT READY</string>
     <string name="confirm_save_without_updating">Save anyway</string>
     <string name="cancel_save_without_updating">Cancel</string>
-    <string name="save_without_updating_confirmation">The settings of the mission have changed since the last build. Do you want to save without updating the mission ?</string>
+    <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
+    <string name="altitude_text">"Altitude: %1$.0f m"</string>
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
@@ -76,7 +77,9 @@
     <string name="download_succeeded">The download of: %1$s has succeeded</string>
     <string name="download_progress">The download is at: %1$s completion</string>
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
-
+    <string name="name_hint">Name</string>
+    <string name="download">download</string>
+    <string name="empty">Name should not be empty</string>
 
 
     <!-- Mapping Mission Selection Activity -->
@@ -94,12 +97,15 @@
     <string name="confirm_launch">Launch at my own risk</string>
     <string name="cancel_launch">Cancel</string>
     <string name="content_descriptor_drone_icon">drone_icon</string>
+    <string name="launch_no_drone">A drone should be connected to launch the mission.</string>
+    <string name="launch_no_drone_pos">Failed to get the drone location.</string>
+    <string name="drone_too_far_from_start">The drone is too far from the starting point of the mission.</string>
+    <string name="content_descriptor_edit_icon">edit_icon</string>
 
     <!-- Mission In Progress Activity -->
-    <string name="mission_null">Cannot launch a null mission</string>
+    <string name="mission_invalid">Some of the provided mission arguments are null</string>
     <string name="back_to_home_button">Back to Home</string>
     <string name="back_to_user_button">Back to User</string>
-
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
@@ -120,6 +126,19 @@
     <string name="lost_connection_message">Lost Connection With the Drone</string>
     <!-- Warning showed if the weather is dangerous for the drone -->
     <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
+    <!--  Message showed when the drone is too far from the user -->
+    <string name="drone_too_far">The drone is too far from you. Mission paused until you go closer from it.</string>
+    <!-- Message showed when the drone is again close enough from the user -->
+    <string name="drone_close_again">The drone is close enough again. Mission resumed.</string>
+
+    <!-- Mission Start Activity -->
+
+    <string name="mission_state_idle">Establishing connection with the drone</string>
+    <string name="mission_state_arming">Arming the drone</string>
+    <string name="mission_state_takeoff">The drone is taking off</string>
+    <string name="mission_state_sending">Sending the mission to the drone</string>
+    <string name="mission_state_starting">The mission is starting</string>
+    <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
 
     <!-- Weather Info Activity -->
     <string name="updated_on">Weather on %1$s</string>
@@ -128,6 +147,7 @@
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>
     <string name="info_visibility">Visibility limit : %1$s m</string>
+    <string name="info_visibility_km">Visibility limit : %1$s km</string>
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
@@ -144,7 +164,8 @@
 
     <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>
-    <string name="drone_mission_error">An error occurred while dispatching missing to the drone : %s</string>
+    <string name="drone_setup_mission_error">An error occurred while dispatching mission to the drone : %s</string>
+    <string name="drone_mission_error">An error occurred during the mission : %s</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
     <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>

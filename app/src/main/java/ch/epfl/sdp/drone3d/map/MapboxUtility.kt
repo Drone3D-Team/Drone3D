@@ -23,7 +23,7 @@ class MapboxUtility {
          * Zoom on the first step of a mission [mission] on the map [mapboxMap].
          */
         fun zoomOnMission(mission: MappingMission, mapboxMap: MapboxMap) {
-            zoomOnMission(mission.flightPath, mapboxMap)
+            zoomOnMission(mission.area, mapboxMap)
         }
 
         /**

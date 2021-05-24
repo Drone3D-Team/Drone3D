@@ -34,44 +34,41 @@
         android:id="@+id/tile_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/black"
         android:layout_margin="0dp"
-        android:textColor="@color/white"
+        android:background="@color/black"
         android:text="@string/tile_count"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@id/top_guideline"
         app:layout_constraintEnd_toEndOf="@id/left_guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tiles_used"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/black"
         android:layout_margin="0dp"
+        android:background="@color/black"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toTopOf="@+id/tile_count_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/left_guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/tile_count_bar"
-        app:layout_constraintWidth_percent="0.6"
+        style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="5dp"
-        style="@android:style/Widget.ProgressBar.Horizontal"
         android:progressBackgroundTint="@color/white"
         android:progressTint="@color/purple_200"
         app:layout_constraintBottom_toTopOf="@id/top_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/left_guideline"
         app:layout_constraintTop_toTopOf="@id/tiles_used"
-        />
+        app:layout_constraintWidth_percent="0.6" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/saved_regions"
@@ -84,8 +81,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_guideline"
-        >
+        app:layout_constraintTop_toBottomOf="@id/top_guideline">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -109,14 +105,10 @@
             android:layout_margin="30sp"
             android:clickable="true"
             android:contentDescription="@string/content_descriptor_save_icon"
-            android:onClick="downloadOfflineMap"
+            android:onClick="showDialog"
             app:srcCompat="@android:drawable/ic_menu_save" />
 
     </com.mapbox.mapboxsdk.maps.MapView>
-
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

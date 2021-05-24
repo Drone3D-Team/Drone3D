@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.map
 
-import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -24,13 +23,6 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
     private lateinit var mapSymbols: List<Symbol>
 
     private var reset = true
-
-    /**
-     * Show a [mission] on the map by linking all points with lines.
-     */
-    fun showMission(mission: MappingMission, withIndex : Boolean) {
-        showMission(mission.flightPath, withIndex)
-    }
 
     /**
      * Show a [flightPath] on the map by linking all points with lines.
@@ -56,7 +48,7 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
                 displayStartAndEnd(flightPath)
             }
 
-            if (!::mapLines.isInitialized || reset) {
+            if (reset) {
 
                 val lineOptions = LineOptions()
                     .withLatLngs(flightPath)

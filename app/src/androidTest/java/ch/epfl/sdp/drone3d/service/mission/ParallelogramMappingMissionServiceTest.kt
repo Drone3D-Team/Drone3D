@@ -8,9 +8,9 @@ package ch.epfl.sdp.drone3d.service.mission
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.assertEquals
@@ -28,7 +28,6 @@ class ParallelogramMappingMissionServiceTest {
         val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
         val focalLength = MutableLiveData(4f)
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
-
         val mappingMissionService = ParallelogramMappingMissionService(droneService)
     }
 
@@ -46,7 +45,7 @@ class ParallelogramMappingMissionServiceTest {
     fun computeGroundImageDimensionReturnsExpected() {
 
         val flightHeight = 10.0
-        val groundImageDimension = mappingMissionService.computeGroundImageDimension(flightHeight)!!
+        val groundImageDimension = mappingMissionService.computeGroundImageDimension(flightHeight)
 
         val expected = GroundImageDim(5.0, 5.0)
         assertEquals(expected, groundImageDimension)
@@ -59,18 +58,18 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraPitch = ParallelogramMappingMissionService.cameraPitch
         val flightHeight = 100.0
-        val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!
+        val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)
 
         val expected = projector.toLatLngs(ParallelogramMissionBuilder.buildSinglePassMappingMission(
             vertices[0],
             area,
-            cameraAngle,
+            cameraPitch,
             flightHeight,
             groundImageDim
         ))
-        val obtained = mappingMissionService.buildSinglePassMappingMission(latLngVertices, flightHeight)!!
+        val obtained = mappingMissionService.buildSinglePassMappingMission(latLngVertices, flightHeight)
         for (i in expected.indices){
             assertEquals(expected[i].latitude,obtained[i].latitude,0.0001)
             assertEquals(expected[i].longitude,obtained[i].longitude,0.0001)
@@ -84,21 +83,21 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraPitch = ParallelogramMappingMissionService.cameraPitch
         val flightHeight = 100.0
-        val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)!!
+        val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)
 
         val expected = projector.toLatLngs(
             ParallelogramMissionBuilder.buildDoublePassMappingMission(
                 vertices[0],
                 area,
-                cameraAngle,
+                cameraPitch,
                 flightHeight,
                 groundImageDim
             )
         )
         val obtained =
-            mappingMissionService.buildDoublePassMappingMission(latLngVertices, flightHeight)!!
+            mappingMissionService.buildDoublePassMappingMission(latLngVertices, flightHeight)
         for (i in expected.indices) {
             assertEquals(expected[i].latitude, obtained[i].latitude, 0.0001)
             assertEquals(expected[i].longitude, obtained[i].longitude, 0.0001)

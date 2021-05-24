@@ -1,13 +1,23 @@
 package ch.epfl.sdp.drone3d.ui.map.offline
 
+import android.app.AlertDialog
+import android.graphics.LightingColorFilter
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.map.gps.LocationComponentManager
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl
+import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -18,21 +28,32 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
+import dagger.hilt.android.AndroidEntryPoint
+import com.mapbox.mapboxsdk.plugins.annotation.LineManager
+import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import timber.log.Timber
-import java.lang.StringBuilder
 import java.lang.System.currentTimeMillis
+import javax.inject.Inject
 import kotlin.math.min
+
 
 /**
  * Activity which allow a user to select regions on the map to download/remove when he's online so
  * that he can use them in offline mode.
  */
+@AndroidEntryPoint
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
     companion object{
         private const val DOWNLOAD_STATUS_TIME_DELAY = 1000
+        private const val BACKGROUND_COLOR_MULTIPLIER = -0x1000000
     }
 
+    // Location
+    @Inject
+    lateinit var locationService: LocationService
+
+    private lateinit var lineManager: LineManager
     private lateinit var offlineMapSaver: OfflineMapSaver
     private lateinit var mapboxMap: MapboxMap
     private lateinit var downloadButton: FloatingActionButton
@@ -57,7 +78,10 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         mapView.contentDescription = getString(R.string.map_ready)
 
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            //configureLocationOptions
+            LocationComponentManager.enableLocationComponent(this, mapboxMap, locationService)
 
+            lineManager = LineManager(mapView, mapboxMap, style)
             offlineMapSaver = OfflineMapSaverImpl(this@ManageOfflineMapActivity, style.uri)
             bindOfflineRegionsToRecycler()
             downloadButton.isEnabled = true
@@ -66,12 +90,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     }
 
     /**
-     * Download the offlineRegion delimited with the current view of the map
+     * Download the offlineRegion delimited with the current view of the map and call it [regionName]
      */
-    fun downloadOfflineMap(@Suppress("UNUSED_PARAMETER") view:View){
+    private fun downloadOfflineMap(regionName: String){
         val bounds = mapboxMap.projection.visibleRegion.latLngBounds
         val zoom = mapboxMap.cameraPosition.zoom
-        val regionName = "TO_REPLACE"
 
         offlineMapSaver.downloadRegion(regionName,bounds,zoom,object:OfflineRegion.OfflineRegionObserver{
             override fun onStatusChanged(status: OfflineRegionStatus) {
@@ -102,7 +125,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     private fun bindOfflineRegionsToRecycler() {
         val savedRegionsRecycler = findViewById<RecyclerView>(R.id.saved_regions)
         val offlineRegions = offlineMapSaver.getOfflineRegions()
-        val adapter = OfflineRegionViewAdapter(offlineMapSaver)
+        val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager, mapboxMap)
         savedRegionsRecycler.adapter = adapter
 
         offlineRegions.observe(this, androidx.lifecycle.Observer {
@@ -141,10 +164,64 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     }
 
     /**
+     * Show a dialog which let the user enter the name of the region he wants to download.
+     */
+    fun showDialog(@Suppress("UNUSED_PARAMETER") view:View){
+
+        val viewInflated: View = LayoutInflater.from(this)
+            .inflate(R.layout.enter_offline_region_name_dialog, parent as ViewGroup?, false)
+        val inputText = viewInflated.findViewById<View>(R.id.input_text) as EditText
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+
+        val dialog: AlertDialog= builder.setView(viewInflated)
+            .setTitle("New offline region")
+            .setPositiveButton(R.string.download, null) //Set to null, will be overridden to add check that not empty
+            .setNegativeButton(android.R.string.cancel
+            ) { dialog, _ -> dialog.cancel() }
+            .create()
+
+        dialog.setOnShowListener {
+            val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            button.contentDescription = "Positive button" //Used for testing
+
+            button.setOnClickListener{
+
+                val regionName = inputText.text.toString()
+
+                if(regionName == ""){
+
+                    //Close the keyboard if it's open so that we can see the toast
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    if (imm.isAcceptingText) {
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+                    }
+
+                    ToastHandler.showToast(applicationContext, R.string.empty)
+                }
+
+                else{
+                    downloadOfflineMap(regionName)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
+
+        //Set backgroundColor for the dialog
+        dialog.window?.decorView?.background?.colorFilter =
+            LightingColorFilter(BACKGROUND_COLOR_MULTIPLIER, ContextCompat.getColor(this, R.color.white))
+    }
+
+    /**
      * Display the [offlineRegion] on the map by putting a square surrounding the region on the map
      */
     private fun display(offlineRegion: OfflineRegion){
-        //TODO("Implement")
+        val bounds = OfflineMapSaverImpl.getMetadata(offlineRegion).bounds
+        lineManager.create(LineOptions().withLatLngs(
+            listOf(bounds.northEast, bounds.northWest, bounds.southWest, bounds.southEast, bounds.northEast)
+        ))
     }
 
 }
