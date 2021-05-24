@@ -44,4 +44,9 @@ interface DronePhotos {
      */
     fun getRandomPhotos(n: Int): Single<List<Bitmap>>
 
+    /**
+     * Returns all the url of the photos of the drone since its connection.
+     */
+    fun getPhotosUrl(): Single<List<String>>
+
 }

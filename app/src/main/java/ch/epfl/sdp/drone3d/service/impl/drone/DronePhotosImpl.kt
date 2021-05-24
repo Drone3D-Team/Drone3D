@@ -22,8 +22,9 @@ import timber.log.Timber
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import javax.inject.Inject
 
-class DronePhotosImpl(val service: DroneService) : DronePhotos {
+class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhotos {
 
     private val photosCache = mutableMapOf<String, Bitmap>()
 
@@ -131,6 +132,14 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
             }
             result
         }
+    }
+
+    override fun getPhotosUrl(): Single<List<String>> {
+        val drone =
+            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
+
+        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION)
+            .map { list -> list.map { captureInfo -> captureInfo.fileUrl } }
     }
 
     private fun retrievePhoto(fileUrl: String): Bitmap? {

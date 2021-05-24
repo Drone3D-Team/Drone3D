@@ -176,20 +176,7 @@ class DronePhotosTest {
         val photos: DronePhotos = DronePhotosImpl(droneService)
         val mutex = Semaphore(0)
 
-        val expected: MutableList<Bitmap> = mutableListOf()
-        for (url in CORRECT_URLS) {
-            val imageStream = URL(url).openStream()
-            expected.add(BitmapFactory.decodeStream(imageStream))
-            imageStream.close()
-        }
-
-        photos.getPhotos().map {
-            assertThat(it.size, CoreMatchers.equalTo(CORRECT_URLS.size))
-            for (i in expected.indices) {
-                assertTrue(it[i].sameAs(expected[i]))
-            }
-            mutex.release()
-        }.blockingGet()
+        checkFullList(photos.getPhotos(), mutex)
 
         ViewMatchers.assertThat(
             mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
@@ -265,7 +252,7 @@ class DronePhotosTest {
 
         val n = 10
 
-        checkFullList(photos.getLastPhotos(n), mutex, n)
+        checkFullList(photos.getLastPhotos(n), mutex)
 
         ViewMatchers.assertThat(
             mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
@@ -341,7 +328,7 @@ class DronePhotosTest {
 
         val n = 10
 
-        checkFullList(photos.getFirstPhotos(n), mutex, n)
+        checkFullList(photos.getFirstPhotos(n), mutex)
 
         ViewMatchers.assertThat(
             mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
@@ -426,7 +413,7 @@ class DronePhotosTest {
 
         val n = 10
 
-        checkFullList(photos.getRandomPhotos(n), mutex, n)
+        checkFullList(photos.getRandomPhotos(n), mutex)
 
         ViewMatchers.assertThat(
             mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
@@ -434,7 +421,33 @@ class DronePhotosTest {
         )
     }
 
-    private fun checkFullList(list: Single<List<Bitmap>>, mutex: Semaphore, n: Int) {
+    @Test
+    fun getPhotosUrlReturnsCorrectUrls() {
+        setupOwnMocks()
+
+        val droneService = mock(DroneService::class.java)
+        `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
+
+        val photos: DronePhotos = DronePhotosImpl(droneService)
+        val mutex = Semaphore(0)
+
+        val expected = CORRECT_URLS
+
+        photos.getPhotosUrl().map {
+            assertThat(it.size, CoreMatchers.equalTo(expected.size))
+            for (i in expected.indices) {
+                assertThat(it[i], CoreMatchers.equalTo(expected[i]))
+            }
+            mutex.release()
+        }.blockingGet()
+
+        ViewMatchers.assertThat(
+            mutex.tryAcquire(100, TimeUnit.MILLISECONDS),
+            CoreMatchers.`is`(true)
+        )
+    }
+
+    private fun checkFullList(list: Single<List<Bitmap>>, mutex: Semaphore) {
         val expected: MutableList<Bitmap> = mutableListOf()
         for (url in CORRECT_URLS) {
             val imageStream = URL(url).openStream()
