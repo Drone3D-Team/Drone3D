@@ -46,19 +46,15 @@ class WeatherInfoActivityTest {
         private val BAD_VISIBILITY_REPORT = WeatherReport("RAIN", "description",
             -1.0, 20, 10.0, 100, Date(12903))
 
-        private val someLocationsList = arrayListOf(
-            LatLng(47.398979, 8.543434),
-            LatLng(47.398279, 8.543934),
-            LatLng(47.397426, 8.544867),
-            LatLng(47.397026, 8.543067)
-        )
+        private val location = LatLng(47.398979, 8.543434)
+
     }
 
     private val activityRule = ActivityScenarioRule<MissionInProgressActivity>(
         Intent(ApplicationProvider.getApplicationContext(), WeatherInfoActivity::class.java).apply {
             putExtras(
                 Bundle().apply {
-                    putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, someLocationsList)
+                    putExtra(ItineraryShowActivity.LOCATION_INTENT_PATH, location)
                 }
             )
         }
@@ -72,7 +68,7 @@ class WeatherInfoActivityTest {
     val weatherService: WeatherService = Mockito.mock(WeatherService::class.java)
 
     init {
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_VISIBILITY_REPORT))
+        `when`(weatherService.getWeatherReport(location)).thenReturn(MutableLiveData(GOOD_VISIBILITY_REPORT))
     }
 
     @Before
@@ -97,7 +93,7 @@ class WeatherInfoActivityTest {
 
     @Test
     fun visibilityTextAndColorCorrectWhenGoodVisibility() {
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(GOOD_VISIBILITY_REPORT))
+        `when`(weatherService.getWeatherReport(location)).thenReturn(MutableLiveData(GOOD_VISIBILITY_REPORT))
 
         activityRule.scenario.recreate()
 
@@ -107,7 +103,7 @@ class WeatherInfoActivityTest {
 
     @Test
     fun visibilityTextAndColorCorrectWhenBadVisibility() {
-        `when`(weatherService.getWeatherReport(someLocationsList[0])).thenReturn(MutableLiveData(BAD_VISIBILITY_REPORT))
+        `when`(weatherService.getWeatherReport(location)).thenReturn(MutableLiveData(BAD_VISIBILITY_REPORT))
 
         activityRule.scenario.recreate()
 

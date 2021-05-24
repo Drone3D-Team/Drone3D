@@ -16,19 +16,20 @@ import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
 
 /**
- * This class draws the location of drone on the map
+ * This class draw the location of the user on the map
  *
- * This class is taken from the Fly2Find project.
+ * This class is taken from the Fly2Find project with one adaptation :
+ * - the SymbolManager was replaced by a CircleManager, and the modifications implied by this change
  */
-class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
+class MapboxUserDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
     private var circleManager = CircleManager(mapView, mapboxMap, style)
     private lateinit var marker: Circle
     private var reset: Boolean = true
 
     /**
-     * Draws the [location] of the drone on the map
+     * Draws the [location] of the user on the map
      */
-    fun showDrone(location: LatLng?) {
+    fun showUser(location: LatLng?) {
         when {
             location == null -> {
                 circleManager.deleteAll()
@@ -37,7 +38,7 @@ class MapboxDroneDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : 
             reset -> {
                 val circleOptions = CircleOptions()
                     .withLatLng(location)
-                    .withCircleColor(ColorUtils.colorToRgbaString(Color.YELLOW))
+                    .withCircleColor(ColorUtils.colorToRgbaString(Color.BLUE))
                 marker = circleManager.create(circleOptions)
                 reset = false
             }

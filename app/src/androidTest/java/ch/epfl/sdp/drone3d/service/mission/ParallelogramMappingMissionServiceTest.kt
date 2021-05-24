@@ -8,9 +8,9 @@ package ch.epfl.sdp.drone3d.service.mission
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.assertEquals
@@ -28,7 +28,6 @@ class ParallelogramMappingMissionServiceTest {
         val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
         val focalLength = MutableLiveData(4f)
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
-
         val mappingMissionService = ParallelogramMappingMissionService(droneService)
     }
 
@@ -59,14 +58,14 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraPitch = ParallelogramMappingMissionService.cameraPitch
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)
 
         val expected = projector.toLatLngs(ParallelogramMissionBuilder.buildSinglePassMappingMission(
             vertices[0],
             area,
-            cameraAngle,
+            cameraPitch,
             flightHeight,
             groundImageDim
         ))
@@ -84,7 +83,7 @@ class ParallelogramMappingMissionServiceTest {
         val vertices = listOf(Point(0.0, 0.0), Point(1.0, 0.0), Point(0.0, 1.0))
         val latLngVertices = projector.toLatLngs(vertices)
         val area = Parallelogram(vertices[1], vertices[0], vertices[2])
-        val cameraAngle = 0.0
+        val cameraPitch = ParallelogramMappingMissionService.cameraPitch
         val flightHeight = 100.0
         val groundImageDim = mappingMissionService.computeGroundImageDimension(flightHeight)
 
@@ -92,7 +91,7 @@ class ParallelogramMappingMissionServiceTest {
             ParallelogramMissionBuilder.buildDoublePassMappingMission(
                 vertices[0],
                 area,
-                cameraAngle,
+                cameraPitch,
                 flightHeight,
                 groundImageDim
             )
