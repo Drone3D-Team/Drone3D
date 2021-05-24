@@ -14,4 +14,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF0000FF</color>
     <color name="red">#FFFF0000</color>
+    <color name="mapbox_offline_green">#58BCF3</color>
+    <color name="test1">#e6ffff</color>
+    <color name="test2">#00cc99</color>
+
 </resources>
