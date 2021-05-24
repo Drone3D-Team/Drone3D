@@ -186,13 +186,13 @@ class DroneExecutorImpl(
                     data.getMutableDroneStatus().postValue(SENDING_ORDER)
                 }
                 .andThen(droneInstance.mission.uploadMission(missionPlan)
-                        .andThen(droneInstance.mission.startMission())
-                        .doOnComplete {
-                            data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                            data.getMutableMission().postValue(null)
-                            data.getMutableMissionPaused().postValue(false)
-                            ToastHandler.showToastAsync(ctx, msg)
-                        })
+                .andThen(droneInstance.mission.startMission())
+                .doOnComplete {
+                    data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                    data.getMutableMission().postValue(null)
+                    data.getMutableMissionPaused().postValue(false)
+                    ToastHandler.showToastAsync(ctx, msg)
+                })
     }
 
     private fun changeFromTo(flow: Flowable<Boolean>): Completable {
