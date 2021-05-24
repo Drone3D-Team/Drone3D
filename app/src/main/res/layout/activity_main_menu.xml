@@ -26,13 +26,6 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.15" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/verticalMiddle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
-
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/verticalRightGuideline"
@@ -40,6 +33,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.7" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -68,27 +62,60 @@
 
     </LinearLayout>
 
-    <GridLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/test1"
+        android:id="@+id/cardsLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontalTopGuideline"
+        app:layout_constraintTop_toTopOf="@id/horizontalTopGuideline"
         >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalUpperCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalMiddleCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalLowerCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/browse_itinerary_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
             android:onClick="goToMappingMissionSelection"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalUpperCardGuideline"
             >
 
             <LinearLayout
@@ -123,13 +150,17 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/create_itinerary_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
             android:onClick="goToItineraryCreate"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/verticalMiddle"
+            app:layout_constraintTop_toTopOf="@id/horizontalUpperCardGuideline"
             >
 
             <LinearLayout
@@ -149,7 +180,8 @@
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -161,108 +193,113 @@
 
         </androidx.cardview.widget.CardView>
 
-        <FrameLayout
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/go_disconnect_drone_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:layout_margin="18dp"
+            android:onClick="goToDroneConnect"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
             >
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/go_disconnect_drone_button"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
-                app:cardElevation="10dp"
-                app:cardCornerRadius="12dp"
-                android:layout_margin="18dp"
-                android:onClick="goToDroneConnect"
-                >
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:padding="16dp">
 
-                <LinearLayout
+                <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
+                    android:layout_height="120dp"
+                    android:contentDescription="todo_change"
+                    android:src="@drawable/drone"
+                    android:layout_weight="1"
                     android:layout_gravity="center"
-                    android:padding="16dp">
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:contentDescription="todo_change"
-                        android:src="@drawable/drone"
-                        android:layout_weight="1"
-                        android:layout_gravity="center"
-                        app:layout_constraintBottom_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textAlignment="center"
-                        android:text="@string/disconnect_drone" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/go_connect_drone_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
-                app:cardElevation="10dp"
-                app:cardCornerRadius="12dp"
-                android:layout_margin="18dp"
-                android:onClick="goToDroneConnect"
-                >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textAlignment="center"
-                    android:padding="16dp">
+                    android:text="@string/disconnect_drone" />
+            </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:contentDescription="todo_change"
-                        android:src="@drawable/drone"
-                        android:layout_weight="1"
-                        android:layout_gravity="center"
-                        app:layout_constraintBottom_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+        </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textAlignment="center"
-                        android:text="@string/connect_a_drone" />
-                </LinearLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/go_connect_drone_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_columnWeight="1"
+            android:layout_rowWeight="1"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:layout_margin="18dp"
+            android:onClick="goToDroneConnect"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
+            >
 
-            </androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:textAlignment="center"
+                android:padding="16dp">
 
-        </FrameLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:contentDescription="todo_change"
+                    android:src="@drawable/drone"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:text="@string/connect_a_drone" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/manage_offline_map_button"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardElevation="10dp"
             app:cardCornerRadius="12dp"
             android:layout_margin="18dp"
             android:onClick="goToDroneManageOfflineMap"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/verticalMiddle"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
             >
 
             <LinearLayout
@@ -294,8 +331,7 @@
 
         </androidx.cardview.widget.CardView>
 
-
-    </GridLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/log_out_button"
