@@ -55,6 +55,8 @@ class MissionStartActivityTest {
                 LatLng(37.412496825414046, -121.99683107403213),
                 LatLng(37.41243024942702, -121.99686795440418)
         )
+        private const val FLIGHT_HEIGHT = 50.0
+        private const val CAMERA_PITCH = 90f
     }
 
     private val activityRule = ActivityScenarioRule<MissionStartActivity>(
@@ -65,6 +67,8 @@ class MissionStartActivityTest {
                 putExtras(Bundle().apply {
                     putSerializable(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH, ArrayList(FLIGHT_PATH))
                 })
+                putExtra(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH,CAMERA_PITCH)
+                putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH,FLIGHT_HEIGHT)
             })
 
     @get:Rule
@@ -110,14 +114,11 @@ class MissionStartActivityTest {
         blockingSetValue(droneStatus, IDLE)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_idle)))
 
-        blockingSetValue(droneStatus, ARMING)
-        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_arming)))
-
-        blockingSetValue(droneStatus, TAKING_OFF)
-        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_takeoff)))
-
         blockingSetValue(droneStatus, SENDING_ORDER)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_sending)))
+
+        blockingSetValue(droneStatus, ARMING)
+        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_arming)))
 
         blockingSetValue(droneStatus, STARTING_MISSION)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_starting)))
