@@ -85,6 +85,10 @@ class ItineraryCreateActivityTest {
      */
     @Test
     fun useAppContext() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         Assert.assertEquals("ch.epfl.sdp.drone3d", appContext.packageName)
@@ -115,6 +119,8 @@ class ItineraryCreateActivityTest {
 
         onView(withText(R.string.go_to_login)).check(matches(isDisplayed()))
         onView(withText(R.string.go_to_login)).perform(click())
+
+        sleep(100)
 
         Intents.intended(
             hasComponent(hasClassName(LoginActivity::class.java.name))
