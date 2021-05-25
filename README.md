@@ -37,7 +37,7 @@ TODO add screen of creation a itinerary
 This page contains all the tools needed to create a mission:  
 * You can select the area for which you want to create a 3D model by adding three points on the map (click on the map to add a point).
 * Choose your flight altitude with the vertical bar on the left. (Be sure to be above any obstacle !)
-* Select you strategy on the right with the top button. Either single or double path strategy are implemented.
+* Select your strategy on the right with the top button. Either single or double path strategy are implemented.
 * Preview the path your drone will take. (To have exact path be sure the be already connected to your drone, default settings will be use otherwise.)
 * Hide / show the path once you have generated it with the previous button.
 * Delete the area and start again in case you changed your mind.
