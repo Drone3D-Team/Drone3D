@@ -457,8 +457,8 @@ class DronePhotosTest {
 
         list.map {
             assertThat(it.size, CoreMatchers.equalTo(expected.size))
-            for (i in expected.indices) {
-                assertTrue(it[i].sameAs(expected[i]))
+            for (e in expected) {
+                assertTrue(it.any { bitmap -> bitmap.sameAs(e) })
             }
             mutex.release()
         }.blockingGet()
