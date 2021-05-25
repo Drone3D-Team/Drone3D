@@ -89,6 +89,15 @@ class MappingMissionSelectionActivityTest {
         private val PRIVATE_LIVE_DATA = MutableLiveData(listOf(PRIVATE_MAPPING_MISSION))
         private val SHARED_FILTERED_LIVE_DATA = MutableLiveData(emptyList<MappingMission>())
         private val PRIVATE_FILTERED_LIVE_DATA = MutableLiveData(emptyList<MappingMission>())
+        fun matchCount(expectedCount: Int): ViewAssertion =
+            ViewAssertion { view, noViewFoundException ->
+                if (noViewFoundException != null) {
+                    throw noViewFoundException
+                }
+                val recyclerView = view as RecyclerView
+                val adapter = recyclerView.adapter
+                assertThat(adapter!!.itemCount, `is`(expectedCount))
+            }
     }
 
     private val activityRule = ActivityScenarioRule(MappingMissionSelectionActivity::class.java)
@@ -518,7 +527,7 @@ class MappingMissionSelectionActivityTest {
             else if (!shared && filter) R.id.private_filtered_mission_list_view
             else R.id.private_mission_list_view
 
-        onView(withId(id)).check(matchCount(currentData?.size ?: 0))
+        onView(withId(id)).check(Companion.matchCount(currentData?.size ?: 0))
         onView(withId(id)).check(
             matches(
                 withEffectiveVisibility(
@@ -548,14 +557,4 @@ class MappingMissionSelectionActivityTest {
             else
                 m.name + " - S"
         else m.name
-
-    private fun matchCount(expectedCount: Int): ViewAssertion =
-        ViewAssertion { view, noViewFoundException ->
-            if (noViewFoundException != null) {
-                throw noViewFoundException
-            }
-            val recyclerView = view as RecyclerView
-            val adapter = recyclerView.adapter
-            assertThat(adapter!!.itemCount, `is`(expectedCount))
-        }
 }

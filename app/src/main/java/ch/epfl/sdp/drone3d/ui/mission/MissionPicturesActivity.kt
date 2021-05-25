@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.mission
 
 import android.content.ClipData
@@ -18,6 +23,9 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * An activity showing a sample of the pictures taken by the drone
+ */
 @AndroidEntryPoint
 class MissionPicturesActivity : AppCompatActivity() {
 
@@ -47,7 +55,7 @@ class MissionPicturesActivity : AppCompatActivity() {
                 .retry(10 )
                 .subscribe(
                         {
-                            adapter.submitList(it)
+                            runOnUiThread { adapter.submitList(it) }
                         },
                         {
                             ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
