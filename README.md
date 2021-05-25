@@ -12,8 +12,7 @@
 * [License](#license)
 
 ## Description
-Drone3D is the mobile application that let you plan and execute drone mission to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supporting [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
-
+Drone3D is the mobile application that let you plan and execute drone mission to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 ## Usage and features
 
 ### Register and login
