@@ -23,7 +23,6 @@ import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 
@@ -50,62 +49,6 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private val currentListState =
         MutableLiveData(Pair<StorageType, String?>(StorageType.PRIVATE, null))
-
-    private fun setupAdapter(
-            data: LiveData<List<MappingMission>>,
-            adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
-    ) = data.observe(this, androidx.lifecycle.Observer {
-        it.let { adapter.submitList(sortedList(it)) }
-    })
-
-
-    private fun sortedList(mappingMissions: List<MappingMission>?): List<MappingMission> {
-        if (mappingMissions != null && mappingMissions.isNotEmpty()) {
-            val list = mappingMissions.toList()
-            Collections.sort(
-                list
-            ) { o1, o2 -> compare(o1, o2) }
-            return list
-        }
-        return emptyList()
-    }
-
-    private fun compare(m1: MappingMission, m2: MappingMission): Int {
-        val name1 = m1.nameUpperCase
-        val name2 = m2.nameUpperCase
-        val smallerStringSize = if (name1.length < name2.length) name1.length else name2.length
-        val diffIndex = indexOfDifference(name1, name2)
-
-        if (diffIndex < smallerStringSize) {
-            return if (name1[diffIndex].isDigit() && name2[diffIndex].isDigit()) {
-                extractInt(name1.substring(diffIndex)) - extractInt(name2.substring(diffIndex))
-            } else if (name1[diffIndex].isDigit()) {
-                1
-            } else if (name2[diffIndex].isDigit()) {
-                -1
-            } else {
-                name1.compareTo(name2)
-            }
-        }
-
-        return name1.compareTo(name2)
-    }
-
-    private fun extractInt(s: String): Int {
-        val num = s.replace("\\D".toRegex(), "")
-        return if (num.isEmpty()) 0 else num.toInt()
-    }
-
-    private fun indexOfDifference(s1: String, s2: String): Int {
-        if (s1.isNotEmpty() && s2.isNotEmpty()) {
-            val smaller = if (s1.length < s2.length) s1.length else s2.length
-            for (i in 0 until smaller) {
-                if (s1[i] != s2[i]) return i
-            }
-            return smaller
-        }
-        return 0
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -144,6 +87,61 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         setupSearchBar(searchBar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setupAdapter(
+        data: LiveData<List<MappingMission>>,
+        adapter: ListAdapter<MappingMission, out RecyclerView.ViewHolder>
+    ) = data.observe(this, {
+        it.let { adapter.submitList(sortedList(it)) }
+    })
+
+
+    private fun sortedList(mappingMissions: List<MappingMission>?): List<MappingMission> {
+        return if (mappingMissions.isNullOrEmpty()) {
+            emptyList()
+        } else {
+            mappingMissions.toList().sortedWith { m1: MappingMission, m2: MappingMission ->
+                compare(m1, m2)
+            }
+        }
+    }
+
+    private fun compare(m1: MappingMission, m2: MappingMission): Int {
+        val name1 = m1.nameUpperCase
+        val name2 = m2.nameUpperCase
+        val smallerStringSize = if (name1.length < name2.length) name1.length else name2.length
+        val diffIndex = indexOfDifference(name1, name2)
+
+        if (diffIndex < smallerStringSize) {
+            return if (name1[diffIndex].isDigit() && name2[diffIndex].isDigit()) {
+                extractInt(name1.substring(diffIndex)) - extractInt(name2.substring(diffIndex))
+            } else if (name1[diffIndex].isDigit()) {
+                1
+            } else if (name2[diffIndex].isDigit()) {
+                -1
+            } else {
+                name1.compareTo(name2)
+            }
+        }
+
+        return name1.compareTo(name2)
+    }
+
+    private fun extractInt(s: String): Int {
+        val num = s.replace("\\D".toRegex(), "")
+        return if (num.isEmpty()) 0 else num.toInt()
+    }
+
+    private fun indexOfDifference(s1: String, s2: String): Int {
+        if (s1.isNotEmpty() && s2.isNotEmpty()) {
+            val smaller = if (s1.length < s2.length) s1.length else s2.length
+            for (i in 0 until smaller) {
+                if (s1[i] != s2[i]) return i
+            }
+            return smaller
+        }
+        return 0
     }
 
     /**
@@ -186,9 +184,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
                     mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
                 }
             })
-
         }
-
     }
 
     private fun getVisibility(
