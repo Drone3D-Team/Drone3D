@@ -9,11 +9,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
@@ -24,6 +26,7 @@ import java.lang.Runnable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class DroneConnectActivity : AppCompatActivity() {
@@ -63,6 +66,8 @@ class DroneConnectActivity : AppCompatActivity() {
 
         loadingProgressBar = findViewById(R.id.progress_bar_drone)
         waitingText = findViewById(R.id.waiting_connection)
+
+        setupPortTextListener()
 
         showConnectionOptions()
     }
@@ -196,5 +201,19 @@ class DroneConnectActivity : AppCompatActivity() {
         val inputMethodManager: InputMethodManager =
             getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(view.applicationWindowToken, 0)
+    }
+
+    /**
+     * Creates a listener on the connection port text view that launches the
+     * connection when enter is pressed
+     */
+    private fun setupPortTextListener() {
+        portText.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                simulationConnectButton.performClick()
+                return@OnEditorActionListener true
+            }
+            false
+        })
     }
 }
