@@ -19,7 +19,7 @@ object Utils {
     /**
      * Creates a listener on [editText] that presses [button] when the done
      * button is pressed on the keyboard
-     * Requires the editText to have 'android:imeOptions="actionDone"' in its layout
+     * Requires [editText] to have 'android:imeOptions="actionDone"' in its layout
      */
     fun pressButtonWhenTextIsDone(editText: EditText, button: Button) {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
@@ -32,7 +32,7 @@ object Utils {
     }
 
     /**
-     * Closes the keyboard of the activity whose context and view is passed
+     * Closes the keyboard of the activity whose [context] and [view] is passed
      */
     fun closeKeyboard(view: View, context: Context) {
         val inputMethodManager: InputMethodManager =
