@@ -1,6 +1,11 @@
 package ch.epfl.sdp.drone3d.ui.mission
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.telecom.TelecomManager.DURATION_SHORT
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +13,7 @@ import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DronePhotos
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
@@ -18,9 +23,11 @@ class MissionPicturesActivity : AppCompatActivity() {
 
     companion object {
         private const val SAMPLE_SIZE = 20
+
+        private const val CLIPBOARD_NAME = "mission_pictures"
     }
 
-    private var disposable: Disposable? = null
+    private val disposables = CompositeDisposable()
 
     @Inject lateinit var photos: DronePhotos
     
@@ -35,7 +42,7 @@ class MissionPicturesActivity : AppCompatActivity() {
         val adapter = PictureViewAdapter()
         recyclerView.adapter = adapter
 
-        disposable = photos.getRandomPhotos(SAMPLE_SIZE)
+        disposables.add(photos.getRandomPhotos(SAMPLE_SIZE)
                 .subscribeOn(Schedulers.io())
                 .retry(10 )
                 .subscribe(
@@ -48,12 +55,30 @@ class MissionPicturesActivity : AppCompatActivity() {
                             finish()
                         }
                 )
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        disposable?.dispose()
-        disposable = null
+        disposables.dispose()
+    }
+
+    fun copyUrls(@Suppress("UNUSED_PARAMETER") view: View) {
+        disposables.add(photos.getPhotosUrl()
+                .subscribe(
+                        {
+                            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clipData = ClipData.newPlainText(CLIPBOARD_NAME, it.joinToString("\n"))
+                            clipboardManager.setPrimaryClip(clipData)
+
+                            ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
+                        },
+                        {
+                            it.printStackTrace()
+                            ToastHandler.showToastAsync(this, R.string.error, DURATION_SHORT, it.message)
+                        }
+                )
+        )
     }
 }
