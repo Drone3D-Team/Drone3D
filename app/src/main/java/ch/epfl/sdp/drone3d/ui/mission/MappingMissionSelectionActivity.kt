@@ -102,7 +102,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         return if (mappingMissions.isNullOrEmpty()) {
             emptyList()
         } else {
-            mappingMissions.toList().sortedWith { m1: MappingMission, m2: MappingMission ->
+            mappingMissions.sortedWith { m1: MappingMission, m2: MappingMission ->
                 compare(m1, m2)
             }
         }
