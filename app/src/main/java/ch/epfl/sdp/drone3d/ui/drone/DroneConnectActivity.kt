@@ -65,7 +65,7 @@ class DroneConnectActivity : AppCompatActivity() {
         loadingProgressBar = findViewById(R.id.progress_bar_drone)
         waitingText = findViewById(R.id.waiting_connection)
 
-        Utils.setupPortTextListener(portText, simulationConnectButton)
+        Utils.pressButtonWhenTextIsDone(portText, simulationConnectButton)
 
         showConnectionOptions()
     }

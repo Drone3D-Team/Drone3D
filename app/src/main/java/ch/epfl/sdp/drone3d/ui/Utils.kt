@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui
 
 import android.content.Context
@@ -16,7 +21,7 @@ object Utils {
      * button is pressed on the keyboard
      * Requires the editText to have 'android:imeOptions="actionDone"' in its layout
      */
-    fun setupPortTextListener(editText: EditText, button: Button) {
+    fun pressButtonWhenTextIsDone(editText: EditText, button: Button) {
         editText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 button.performClick()
