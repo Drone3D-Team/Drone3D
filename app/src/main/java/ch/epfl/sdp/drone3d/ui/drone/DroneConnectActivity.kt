@@ -9,17 +9,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.lang.Runnable
@@ -67,7 +65,7 @@ class DroneConnectActivity : AppCompatActivity() {
         loadingProgressBar = findViewById(R.id.progress_bar_drone)
         waitingText = findViewById(R.id.waiting_connection)
 
-        setupPortTextListener()
+        Utils.setupPortTextListener(portText, simulationConnectButton)
 
         showConnectionOptions()
     }
@@ -77,7 +75,7 @@ class DroneConnectActivity : AppCompatActivity() {
      */
     fun connectSimulatedDrone(view: View) {
 
-        closeKeyboard(view)
+        Utils.closeKeyboard(view, this)
 
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
 
@@ -121,7 +119,7 @@ class DroneConnectActivity : AppCompatActivity() {
      */
     fun connectDrone(view: View) {
 
-        closeKeyboard(view)
+        Utils.closeKeyboard(view, this)
 
         showWaiting()
         droneService.setDrone()
@@ -191,29 +189,5 @@ class DroneConnectActivity : AppCompatActivity() {
     private fun verifyIp(ip: String): Boolean {
         val matcher: Matcher = pattern.matcher(ip)
         return matcher.matches()
-    }
-
-
-    /**
-     * Closes the keyboard
-     */
-    private fun closeKeyboard(view: View) {
-        val inputMethodManager: InputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view.applicationWindowToken, 0)
-    }
-
-    /**
-     * Creates a listener on the connection port text view that launches the
-     * connection when enter is pressed
-     */
-    private fun setupPortTextListener() {
-        portText.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                simulationConnectButton.performClick()
-                return@OnEditorActionListener true
-            }
-            false
-        })
     }
 }
