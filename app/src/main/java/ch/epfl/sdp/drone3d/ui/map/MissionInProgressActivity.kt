@@ -304,28 +304,32 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private fun createDroneKeeperObserver(droneData: DroneData) {
-        // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
-        // and stay visible for the user
-        createObserver(droneData.getPosition()) {
-            it?.let {
-                if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
-                    val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
-                    val maxDistance: Double = if (MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
-                        weatherReport.value!!.visibility.toDouble()
-                    } else {
-                        MAX_DIST_TO_USER
-                    }
+        // Don't create anything if the drone used is simulated
+        if (!droneService.isSimulation()) {
+            // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
+            // and stay visible for the user
+            createObserver(droneData.getPosition()) {
+                it?.let {
+                    if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
+                        val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
+                        val maxDistance: Double = if (MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
+                            weatherReport.value!!.visibility.toDouble()
+                        } else {
+                            MAX_DIST_TO_USER
+                        }
 
-                    if (distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
-                        droneService.getExecutor().pauseMission(this)
-                        ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
-                    } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
-                        droneService.getExecutor().resumeMission(this)
-                        ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
+                        if (distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
+                            droneService.getExecutor().pauseMission(this)
+                            ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
+                        } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
+                            droneService.getExecutor().resumeMission(this)
+                            ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
+                        }
                     }
                 }
             }
         }
+
 
     }
 
