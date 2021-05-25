@@ -129,7 +129,7 @@ class ItineraryCreateActivityTest {
         onView(withText(R.string.go_to_login)).check(matches(isDisplayed()))
         onView(withText(R.string.go_to_login)).perform(click())
 
-        sleep(100)
+        sleep(400)
 
         Intents.intended(
             hasComponent(hasClassName(LoginActivity::class.java.name))
