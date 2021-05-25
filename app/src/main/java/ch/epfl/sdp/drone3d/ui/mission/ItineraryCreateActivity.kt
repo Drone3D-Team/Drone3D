@@ -29,6 +29,7 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
+import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lukelorusso.verticalseekbar.VerticalSeekBar
@@ -126,10 +127,58 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         deleteButton.isEnabled = false
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
         goToSaveButton.isEnabled = false
+        setButtonIconToSaveOrLaunchMission()
+
+        if (!authService.hasActiveSession()) {
+            setDialogNotLogin()
+        }
 
 
         // TextView
         altitudeText = findViewById(R.id.altitude)
+    }
+
+    /**
+     * Warn the user that he is not login and he won't be able to save his mission
+     */
+    private fun setDialogNotLogin() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(getString(R.string.warning_not_login))
+        builder.setCancelable(false)
+
+        builder.setPositiveButton(getString(R.string.go_to_login)) { dialog, _ ->
+            dialog.cancel()
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        builder.setNegativeButton(R.string.no_saving_possible) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.create()?.show()
+    }
+
+    /**
+     * If the user as an active session display save icon, otherwise send icon is displayed on the bottom button
+     */
+    private fun setButtonIconToSaveOrLaunchMission() {
+        if (authService.hasActiveSession()) {
+            goToSaveButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    android.R.drawable.ic_menu_save,
+                    null
+                )
+            )
+        } else {
+            goToSaveButton.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    android.R.drawable.ic_menu_send,
+                    null
+                )
+            )
+        }
+
     }
 
     /**
@@ -203,7 +252,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         if (areaBuilder.isComplete()) {
             isPreviewUpToDate = false
             buildMissionButton.isEnabled = true
-            goToSaveButton.isEnabled = authService.hasActiveSession()
+            goToSaveButton.isEnabled = true
         }
         if (areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()) {
             deleteButton.isEnabled = true
@@ -299,22 +348,32 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (!isPreviewUpToDate) {
-            val builder = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.save_without_updating_confirmation))
-            builder.setCancelable(true)
+        if (authService.hasActiveSession()) {
+            if (!isPreviewUpToDate) {
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage(getString(R.string.save_without_updating_confirmation))
+                builder.setCancelable(true)
 
-            builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, _ ->
-                dialog.cancel()
+                builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, _ ->
+                    dialog.cancel()
+                    goToSaveActivity()
+                }
+
+                builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, _ ->
+                    dialog.cancel()
+                }
+                builder.create()?.show()
+            } else {
                 goToSaveActivity()
             }
-
-            builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, _ ->
-                dialog.cancel()
-            }
-            builder.create()?.show()
         } else {
-            goToSaveActivity()
+            val intent = Intent(this, ItineraryShowActivity::class.java)
+            intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+            intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
+            intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
+
+            startActivity(intent)
+            finish()
         }
     }
 
@@ -328,6 +387,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
 
         startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

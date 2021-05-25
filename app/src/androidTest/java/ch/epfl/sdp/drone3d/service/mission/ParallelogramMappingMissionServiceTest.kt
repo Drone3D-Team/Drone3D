@@ -8,9 +8,9 @@ package ch.epfl.sdp.drone3d.service.mission
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.api.drone.DroneData
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.model.mission.*
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
 import com.mapbox.mapboxsdk.geometry.LatLng
 import org.junit.Assert.assertEquals
@@ -28,7 +28,6 @@ class ParallelogramMappingMissionServiceTest {
         val cameraResolution = MutableLiveData(DroneData.CameraResolution(200, 200))
         val focalLength = MutableLiveData(4f)
         val sensorSize = MutableLiveData(DroneData.SensorSize(2f, 2f))
-
         val mappingMissionService = ParallelogramMappingMissionService(droneService)
     }
 

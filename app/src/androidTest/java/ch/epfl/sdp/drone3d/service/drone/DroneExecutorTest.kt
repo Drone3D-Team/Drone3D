@@ -52,6 +52,7 @@ class DroneExecutorTest {
     companion object {
         private const val EPSILON = 1e-5
         private const val DEFAULT_ALTITUDE = 10f
+        private const val DEFAULT_CAMERA_PITCH = 90f
         val someLocationsList = listOf(
             LatLng(47.398979, 8.543434),
             LatLng(47.398279, 8.543934),
@@ -100,7 +101,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -121,7 +122,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, atLeastOnce()).arm()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -150,7 +150,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -171,7 +171,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, atLeastOnce()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -200,7 +199,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -221,7 +220,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -250,7 +248,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -271,7 +269,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, atLeastOnce()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -300,7 +297,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -321,7 +318,6 @@ class DroneExecutorTest {
         assertThat(mutex.tryAcquire(100, TimeUnit.MILLISECONDS), `is`(true))
 
         verify(DroneInstanceMock.droneAction, never()).arm()
-        verify(DroneInstanceMock.droneAction, never()).takeoff()
         verify(DroneInstanceMock.droneMission, never()).startMission()
         verify(DroneInstanceMock.droneAction, atLeastOnce()).land()
     }
@@ -350,7 +346,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context)).subscribe({
             assertThat(true, `is`(false))
         }, {
@@ -391,7 +387,7 @@ class DroneExecutorTest {
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).subscribe({}, { it.printStackTrace() })
 
         `when`(DroneInstanceMock.droneMission.uploadMission(ArgumentMatchers.any(Mission.MissionPlan::class.java)))
@@ -438,7 +434,7 @@ class DroneExecutorTest {
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -497,7 +493,7 @@ class DroneExecutorTest {
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({}, { it.printStackTrace() })
 
@@ -538,14 +534,6 @@ class DroneExecutorTest {
                 dataBecomes(droneData.getDroneStatus(), ARMING)
                 flightModePublisher.onNext(Telemetry.FlightMode.READY)
                 armedPublisher.onNext(true)
-            }
-        }
-
-        `when`(DroneInstanceMock.droneAction.takeoff()).thenAnswer {
-            Completable.fromCallable {
-                dataBecomes(droneData.getDroneStatus(), TAKING_OFF)
-                inAirPublisher.onNext(true)
-                flightModePublisher.onNext(Telemetry.FlightMode.HOLD)
             }
         }
 

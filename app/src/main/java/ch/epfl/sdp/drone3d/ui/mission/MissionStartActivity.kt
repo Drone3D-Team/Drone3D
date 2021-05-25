@@ -32,13 +32,10 @@ class MissionStartActivity : AppCompatActivity() {
 
 
     companion object {
-        const val MISSION_ALTITUDE: Float = 20f
-
         val MISSION_START_STATUS: List<DroneStatus> = listOf(
             IDLE,
-            ARMING,
-            TAKING_OFF,
             SENDING_ORDER,
+            ARMING,
             STARTING_MISSION
         )
     }
@@ -66,7 +63,9 @@ class MissionStartActivity : AppCompatActivity() {
         }
 
         val missionPath = intent.getParcelableArrayListExtra<LatLng>(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
-        setupMission(missionPath)
+        val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) as Double
+        val cameraPitch = intent.extras?.get(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH) as Float
+        setupMission(missionPath, missionHeight,cameraPitch)
     }
 
     override fun onDestroy() {
@@ -85,19 +84,18 @@ class MissionStartActivity : AppCompatActivity() {
             when(status) {
                 IDLE -> R.string.mission_state_idle
                 ARMING -> R.string.mission_state_arming
-                TAKING_OFF -> R.string.mission_state_takeoff
                 SENDING_ORDER -> R.string.mission_state_sending
                 STARTING_MISSION -> R.string.mission_state_starting
                 else -> R.string.mission_state_unknown
             }
         )
 
-    private fun setupMission(missionPath: List<LatLng>?) {
-        if(missionPath == null) {
-            ToastHandler.showToastAsync(this, R.string.mission_null)
+    private fun setupMission(missionPath: List<LatLng>?,missionHeight:Double?,cameraPitch:Float?) {
+        if(missionPath == null || missionHeight==null || cameraPitch==null) {
+            ToastHandler.showToastAsync(this, R.string.mission_invalid)
             finish()
         } else {
-            val droneMission = DroneUtils.makeDroneMission(missionPath, MISSION_ALTITUDE)
+            val droneMission = DroneUtils.makeDroneMission(missionPath, missionHeight.toFloat(), cameraPitch)
             try {
                 disposable = droneService.getExecutor().setupMission(this, droneMission)
                     .subscribe(
