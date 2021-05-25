@@ -70,7 +70,7 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Connect a simulation to the application using an ip address and a port
      */
-    fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun connectSimulatedDrone(view: View) {
 
         closeKeyboard(view)
 
@@ -114,7 +114,7 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Connect a drone to the application
      */
-    fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun connectDrone(view: View) {
 
         closeKeyboard(view)
 
