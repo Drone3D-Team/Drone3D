@@ -184,4 +184,6 @@
     <string name="permission_deny_button">Deny</string>
     <string name="permission_location_enable">Enable location</string>
     <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
+    <string name="error">An error occured : $1%s</string>
+    <string name="copy_pictures_links">Copy pictures links</string>
 </resources>
