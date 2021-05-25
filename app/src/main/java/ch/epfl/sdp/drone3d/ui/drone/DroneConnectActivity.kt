@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -71,6 +72,8 @@ class DroneConnectActivity : AppCompatActivity() {
      */
     fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
 
+        closeKeyboard(view)
+
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
 
         if (verifyIp(ip)) {
@@ -95,7 +98,10 @@ class DroneConnectActivity : AppCompatActivity() {
                     } else {
                         droneService.disconnect()
                         showConnectionOptions()
-                        ToastHandler.showToastAsync(applicationContext, R.string.ip_connection_timeout)
+                        ToastHandler.showToastAsync(
+                            applicationContext,
+                            R.string.ip_connection_timeout
+                        )
                     }
                 }
                 mainHandler.post(myRunnable)
@@ -109,6 +115,8 @@ class DroneConnectActivity : AppCompatActivity() {
      * Connect a drone to the application
      */
     fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+
+        closeKeyboard(view)
 
         showWaiting()
         droneService.setDrone()
@@ -178,5 +186,15 @@ class DroneConnectActivity : AppCompatActivity() {
     private fun verifyIp(ip: String): Boolean {
         val matcher: Matcher = pattern.matcher(ip)
         return matcher.matches()
+    }
+
+
+    /**
+     * Closes the keyboard
+     */
+    private fun closeKeyboard(view: View) {
+        val inputMethodManager: InputMethodManager =
+            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.applicationWindowToken, 0)
     }
 }
