@@ -227,11 +227,20 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         // Searches only when submit button is pressed
         searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                currentListState.value = Pair(currentListState.value!!.first, query)
+                if(query.isEmpty()){
+                    currentListState.value = Pair(currentListState.value!!.first, null)
+                }else{
+                    currentListState.value = Pair(currentListState.value!!.first, query)
+                }
                 return false
             }
 
-            override fun onQueryTextChange(newText: String): Boolean {
+            override fun onQueryTextChange(query: String): Boolean {
+                if(query.isEmpty()){
+                    currentListState.value = Pair(currentListState.value!!.first, null)
+                }else{
+                    currentListState.value = Pair(currentListState.value!!.first, query)
+                }
                 return false
             }
         })
