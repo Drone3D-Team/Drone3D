@@ -165,50 +165,29 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * If the user as an active session display save icon, otherwise send icon is displayed on the bottom button
      */
     private fun setButtonIconToSaveOrLaunchMission() {
-        if (authService.hasActiveSession()) {
-            goToSaveButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                    resources,
-                    android.R.drawable.ic_menu_save,
-                    null
-                )
+        goToSaveButton.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                if(authService.hasActiveSession()) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_send,
+                null
             )
-        } else {
-            goToSaveButton.setImageDrawable(
-                ResourcesCompat.getDrawable(
-                    resources,
-                    android.R.drawable.ic_menu_send,
-                    null
-                )
-            )
-        }
-
+        )
     }
 
     /**
      * Update the strategy button icon based on the current strategy
      */
     private fun setStrategyButtonIcon() {
-        when (strategy) {
-            Strategy.SINGLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_single_path_strategy,
-                        null
-                    )
-                )
-            }
-            Strategy.DOUBLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_double_path_strategy,
-                        null
-                    )
-                )
-            }
-        }
+        changeStrategyButton.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                when (strategy) {
+                    Strategy.SINGLE_PASS -> R.drawable.ic_single_path_strategy
+                    Strategy.DOUBLE_PASS -> R.drawable.ic_double_path_strategy
+                },
+                null
+            )
+        )
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
