@@ -17,12 +17,14 @@ import io.mavsdk.camera.CameraProto
 import io.reactivex.Single
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import javax.inject.Inject
 
-class DronePhotosImpl(val service: DroneService) : DronePhotos {
+class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhotos {
 
     private val photosCache = mutableMapOf<String, Bitmap>()
 
@@ -49,10 +51,15 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            val coroutine = GlobalScope.async {
-                retrievePhotos(photoList)
+            var result: List<Bitmap> = emptyList()
+            runBlocking {
+                val coroutine = GlobalScope.async {
+                    retrievePhotos(photoList)
+                }
+                coroutine.await()
+                result = coroutine.getCompleted()
             }
-            coroutine.getCompleted()
+            result
         }
     }
 
@@ -60,13 +67,20 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val drone =
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
+        if (n <= 0) return Single.just(emptyList())
+
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
+            var result: List<Bitmap> = emptyList()
             val size = photoList.size
             val list = if (size <= n) photoList else photoList.subList(size - n, size)
-            val coroutine = GlobalScope.async {
-                retrievePhotos(list)
+            runBlocking {
+                val coroutine = GlobalScope.async {
+                    retrievePhotos(list)
+                }
+                coroutine.await()
+                result = coroutine.getCompleted()
             }
-            coroutine.getCompleted()
+            result
         }
     }
 
@@ -74,13 +88,20 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val drone =
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
+        if (n <= 0) return Single.just(emptyList())
+
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
+            var result: List<Bitmap> = emptyList()
             val size = photoList.size
             val list = if (size <= n) photoList else photoList.subList(0, n)
-            val coroutine = GlobalScope.async {
-                retrievePhotos(list)
+            runBlocking {
+                val coroutine = GlobalScope.async {
+                    retrievePhotos(list)
+                }
+                coroutine.await()
+                result = coroutine.getCompleted()
             }
-            coroutine.getCompleted()
+            result
         }
     }
 
@@ -88,7 +109,10 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
         val drone =
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
+        if (n <= 0) return Single.just(emptyList())
+
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
+            var result: List<Bitmap> = emptyList()
             val size = photoList.size
             if (size > n) {
                 photoList.shuffle()
@@ -99,11 +123,23 @@ class DronePhotosImpl(val service: DroneService) : DronePhotos {
                 photoList.shuffle()
                 photoList.subList(0, n)
             }
-            val coroutine = GlobalScope.async {
-                retrievePhotos(list)
+            runBlocking {
+                val coroutine = GlobalScope.async {
+                    retrievePhotos(list)
+                }
+                coroutine.await()
+                result = coroutine.getCompleted()
             }
-            coroutine.getCompleted()
+            result
         }
+    }
+
+    override fun getPhotosUrl(): Single<List<String>> {
+        val drone =
+            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
+
+        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION)
+            .map { list -> list.map { captureInfo -> captureInfo.fileUrl } }
     }
 
     private fun retrievePhoto(fileUrl: String): Bitmap? {

@@ -59,7 +59,7 @@ import java.util.*
 )
 class ItineraryShowActivityTest {
 
-    companion object{
+    companion object {
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
             20.0, 20, 5.0, 500, Date(12903)
