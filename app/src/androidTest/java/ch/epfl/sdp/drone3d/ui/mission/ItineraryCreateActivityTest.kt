@@ -24,6 +24,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.map.MapboxUtility
+import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService
@@ -78,6 +79,14 @@ class ItineraryCreateActivityTest {
     @After
     fun tearDown() {
         Intents.release()
+    }
+
+    companion object {
+        private val AREA = listOf<LatLng>(
+            LatLng(46.518732896473644, 6.5628454889064365),
+            LatLng(46.51874120200868, 6.563415458311842),
+            LatLng(46.518398828344715, 6.563442280401509)
+        )
     }
 
     /**
@@ -146,12 +155,33 @@ class ItineraryCreateActivityTest {
         activityRule.scenario.onActivity {
             if (!hasBeenInit) {
                 MapboxUtility.zoomOnCoordinate(
-                    LatLng(46.518732896473644, 6.5628454889064365),
+                    AREA[0],
                     it.mapboxMap
                 )
-                it.areaBuilder.addVertex(LatLng(46.518732896473644, 6.5628454889064365))
-                it.areaBuilder.addVertex(LatLng(46.51874120200868, 6.563415458311842))
-                it.areaBuilder.addVertex(LatLng(46.518398828344715, 6.563442280401509))
+                it.areaBuilder.addVertex(AREA[0])
+                it.areaBuilder.addVertex(AREA[1])
+                it.areaBuilder.addVertex(AREA[2])
+                hasBeenInit = true
+            }
+
+        }
+    }
+
+    private fun createMissionTooBig() {
+        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
+
+        var hasBeenInit = false
+
+        activityRule.scenario.onActivity {
+            if (!hasBeenInit) {
+                MapboxUtility.zoomOnCoordinate(
+                    AREA[0],
+                    it.mapboxMap
+                )
+                it.areaBuilder.addVertex(LatLng(0.0, 0.0))
+                it.areaBuilder.addVertex(LatLng(1.0, 1.0))
+                it.areaBuilder.addVertex(LatLng(2.0, 2.0))
                 hasBeenInit = true
             }
 
@@ -267,6 +297,50 @@ class ItineraryCreateActivityTest {
     }
 
     @Test
+    fun cantBuildTooBigZone() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(not(isEnabled())))
+
+        createMissionTooBig()
+
+        onView(withId(R.id.buildFlightPath))
+            .check(matches(isEnabled()))
+
+        onView(withId(R.id.buildFlightPath))
+            .perform(click())
+
+        activityRule.scenario.onActivity {
+            ToastMatcher.onToast(it, R.string.area_size_to_big)
+        }
+    }
+
+    @Test
+    fun cantSaveTooBigZone() {
+        `when`(authService.hasActiveSession()).thenReturn(true)
+
+        activityRule.scenario.recreate()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(not(isEnabled())))
+
+        createMissionTooBig()
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .check(matches(isEnabled()))
+
+        onView(withId(R.id.buttonToSaveActivity))
+            .perform(click())
+
+        activityRule.scenario.onActivity {
+            ToastMatcher.onToast(it, R.string.area_size_to_big)
+        }
+    }
+
+    @Test
     fun goToSaveActivityWorkWhenLogin() {
         `when`(authService.hasActiveSession()).thenReturn(true)
 
@@ -337,12 +411,12 @@ class ItineraryCreateActivityTest {
             ApplicationProvider.getApplicationContext(),
             ItineraryCreateActivity::class.java
         )
+
         val flightHeight = 10.0
-        val area = listOf(LatLng(1.0, 1.0), LatLng(0.0, 0.0), LatLng(5.0, 5.0))
         val strategy = MappingMissionService.Strategy.DOUBLE_PASS
 
         intent.putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
-        intent.putExtra(ItineraryShowActivity.AREA_INTENT_PATH, ArrayList(area))
+        intent.putExtra(ItineraryShowActivity.AREA_INTENT_PATH, ArrayList(AREA))
         intent.putExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH, strategy)
 
         ActivityScenario.launch<Activity>(intent)
@@ -377,9 +451,7 @@ class ItineraryCreateActivityTest {
         )
         assertThat(
             bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!,
-            equalTo(area)
+            equalTo(AREA)
         )
-
-
     }
 }
