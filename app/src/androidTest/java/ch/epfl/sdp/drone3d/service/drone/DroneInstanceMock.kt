@@ -127,7 +127,7 @@ object DroneInstanceMock {
         //Core mocks
         `when`(droneCore.connectionState)
             .thenReturn(Flowable.fromArray(
-                Core.ConnectionState(0L, true)
+                Core.ConnectionState(true)
             ))
 
         //Mission mocks
