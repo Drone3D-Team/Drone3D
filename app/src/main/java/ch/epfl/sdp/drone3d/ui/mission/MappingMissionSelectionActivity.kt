@@ -24,6 +24,7 @@ import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.storage.dao.MappingMissionDao
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.math.min
 
 
 /**
@@ -110,7 +111,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
     private fun compare(m1: MappingMission, m2: MappingMission): Int {
         val name1 = m1.nameUpperCase
         val name2 = m2.nameUpperCase
-        val smallerStringSize = if (name1.length < name2.length) name1.length else name2.length
+        val smallerStringSize = min(name1.length, name2.length)
         val diffIndex = indexOfDifference(name1, name2)
 
         if (diffIndex < smallerStringSize) {
@@ -135,7 +136,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private fun indexOfDifference(s1: String, s2: String): Int {
         if (s1.isNotEmpty() && s2.isNotEmpty()) {
-            val smaller = if (s1.length < s2.length) s1.length else s2.length
+            val smaller = min(s1.length,s2.length)
             for (i in 0 until smaller) {
                 if (s1[i] != s2[i]) return i
             }
@@ -223,20 +224,18 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         // Searches only when submit button is pressed
         searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                if(query.isEmpty()){
-                    currentListState.value = Pair(currentListState.value!!.first, null)
-                }else{
-                    currentListState.value = Pair(currentListState.value!!.first, query)
-                }
+
+                currentListState.value =
+                    if (query.isEmpty()) Pair(currentListState.value!!.first, null)
+                    else Pair(currentListState.value!!.first, query)
+
                 return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {
-                if(query.isEmpty()){
-                    currentListState.value = Pair(currentListState.value!!.first, null)
-                }else{
-                    currentListState.value = Pair(currentListState.value!!.first, query)
-                }
+                currentListState.value =
+                    if (query.isEmpty()) Pair(currentListState.value!!.first, null)
+                    else Pair(currentListState.value!!.first, query)
                 return false
             }
         })
