@@ -215,7 +215,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
         createPositionObserver(droneData)
         createConnectionObserver(droneData)
-        createDroneKeeperObserver(droneData)
+        if (!droneService.isSimulation()) { createDroneKeeperObserver(droneData) }
         createObserver(droneData.getVideoStreamUri()) {
             it?.let { streamUri ->
                 val mediaSource = RtspMediaSource.Factory(rtspFactory)
@@ -304,33 +304,28 @@ class MissionInProgressActivity : BaseMapActivity() {
     }
 
     private fun createDroneKeeperObserver(droneData: DroneData) {
-        // Don't create anything if the drone used is simulated
-        if (!droneService.isSimulation()) {
-            // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
-            // and stay visible for the user
-            createObserver(droneData.getPosition()) {
-                it?.let {
-                    if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
-                        val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
-                        val maxDistance: Double = if (MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
-                            weatherReport.value!!.visibility.toDouble()
-                        } else {
-                            MAX_DIST_TO_USER
-                        }
+        // Create an observer assuring that the drone stays within [MAX_DIST_TO_USER] meters of the user
+        // and stay visible for the user
+        createObserver(droneData.getPosition()) {
+            it?.let {
+                if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
+                    val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
+                    val maxDistance: Double = if (MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
+                        weatherReport.value!!.visibility.toDouble()
+                    } else {
+                        MAX_DIST_TO_USER
+                    }
 
-                        if (distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
-                            droneService.getExecutor().pauseMission(this)
-                            ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
-                        } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
-                            droneService.getExecutor().resumeMission(this)
-                            ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
-                        }
+                    if (distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
+                        droneService.getExecutor().pauseMission(this)
+                        ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
+                    } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
+                        droneService.getExecutor().resumeMission(this)
+                        ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
                     }
                 }
             }
         }
-
-
     }
 
     private fun createDroneStatusObserver(droneData: DroneData) {
