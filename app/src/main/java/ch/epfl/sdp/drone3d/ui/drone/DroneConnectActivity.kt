@@ -17,12 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.lang.Runnable
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class DroneConnectActivity : AppCompatActivity() {
@@ -63,13 +65,17 @@ class DroneConnectActivity : AppCompatActivity() {
         loadingProgressBar = findViewById(R.id.progress_bar_drone)
         waitingText = findViewById(R.id.waiting_connection)
 
+        Utils.pressButtonWhenTextIsDone(portText, simulationConnectButton)
+
         showConnectionOptions()
     }
 
     /**
      * Connect a simulation to the application using an ip address and a port
      */
-    fun connectSimulatedDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun connectSimulatedDrone(view: View) {
+
+        Utils.closeKeyboard(view, this)
 
         val ip = findViewById<EditText>(R.id.text_IP_address).text.toString()
 
@@ -95,7 +101,10 @@ class DroneConnectActivity : AppCompatActivity() {
                     } else {
                         droneService.disconnect()
                         showConnectionOptions()
-                        ToastHandler.showToastAsync(applicationContext, R.string.ip_connection_timeout)
+                        ToastHandler.showToastAsync(
+                            applicationContext,
+                            R.string.ip_connection_timeout
+                        )
                     }
                 }
                 mainHandler.post(myRunnable)
@@ -108,7 +117,9 @@ class DroneConnectActivity : AppCompatActivity() {
     /**
      * Connect a drone to the application
      */
-    fun connectDrone(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun connectDrone(view: View) {
+
+        Utils.closeKeyboard(view, this)
 
         showWaiting()
         droneService.setDrone()
