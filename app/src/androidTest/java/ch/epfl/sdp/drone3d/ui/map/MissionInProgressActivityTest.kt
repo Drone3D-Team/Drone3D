@@ -92,6 +92,8 @@ class MissionInProgressActivityTest {
         `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
             .thenReturn(Completable.complete())
 
+        `when`(droneService.isSimulation()).thenReturn(false)
+
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(0.3, 0.0)))
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())

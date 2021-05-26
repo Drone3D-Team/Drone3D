@@ -221,7 +221,7 @@ class MissionInProgressActivity : BaseMapActivity() {
         createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
         createPositionObserver(droneData)
         createConnectionObserver(droneData)
-        createDroneKeeperObserver(droneData)
+        if (!droneService.isSimulation()) { createDroneKeeperObserver(droneData) }
         createObserver(droneData.getVideoStreamUri()) {
             it?.let { streamUri ->
                 val mediaSource = RtspMediaSource.Factory(rtspFactory)
@@ -332,7 +332,6 @@ class MissionInProgressActivity : BaseMapActivity() {
                 }
             }
         }
-
     }
 
     private fun createDroneStatusObserver(droneData: DroneData) {
