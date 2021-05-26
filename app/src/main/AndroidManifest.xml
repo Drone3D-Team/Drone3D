@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Drone3D"
         android:usesCleartextTraffic="true">
+
         <activity android:name=".ui.mission.MissionStartActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity" />
         <activity

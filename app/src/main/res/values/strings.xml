@@ -48,10 +48,15 @@
 
     <!-- Itinerary Save Activity -->
     <string name="name_mission_text">Mission name</string>
-    <string name="save_mission_text">Save</string>
+    <string name="save_mission_text">Continue</string>
     <string name="mission_saved">Mission saved</string>
     <string name="error_mission_saved">Error while saving mission</string>
     <string name="private_repo">Private</string>
+    <string name="warning_no_box_selected">"You haven't checked any of the options, if you continue your mission will not be saved for the next time"</string>
+    <string name="continue_without_saving">Continue without saving</string>
+    <string name="cancel">Cancel</string>
+
+
     <string name="share_repo">Share</string>
 
     <!-- Itinerary Create Activity -->
@@ -67,6 +72,10 @@
     <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
     <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
     <string name="altitude_text">"Altitude: %1$.0f m"</string>
+    <string name="area_size_to_big">"The selected area is too large. Please create a smaller one."</string>
+    <string name="warning_not_login">"Your are not login, you won't be able to save or share your mission."</string>
+    <string name="no_saving_possible">"Continue anyway"</string>
+    <string name="go_to_login">"Login"</string>
 
     <!--Manage offline map activity-->
     <string name="tile_count">Tile count:</string>
@@ -109,8 +118,6 @@
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
-    <string name="drone_took_off">Drone took off</string>
-    <string name="drone_already_flying">Drone already flying</string>
     <string name="drone_armed">Drone armed</string>
     <string name="drone_already_armed">Drone already armed</string>
     <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
@@ -132,10 +139,8 @@
     <string name="drone_close_again">The drone is close enough again. Mission resumed.</string>
 
     <!-- Mission Start Activity -->
-
     <string name="mission_state_idle">Establishing connection with the drone</string>
     <string name="mission_state_arming">Arming the drone</string>
-    <string name="mission_state_takeoff">The drone is taking off</string>
     <string name="mission_state_sending">Sending the mission to the drone</string>
     <string name="mission_state_starting">The mission is starting</string>
     <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
