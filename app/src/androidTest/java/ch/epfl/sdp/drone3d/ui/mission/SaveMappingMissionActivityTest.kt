@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -114,7 +114,7 @@ class SaveMappingMissionActivityTest {
     @BindValue
     val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
 
-    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+    private fun <T> any(type: Class<T>): T = Mockito.any(type)
 
     private fun mockMappingMissionDao(): MappingMissionDao {
         val mappingMissionDao = mock(MappingMissionDao::class.java)

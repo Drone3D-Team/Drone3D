@@ -82,7 +82,7 @@ class ItineraryCreateActivityTest {
     }
 
     companion object {
-        private val AREA = listOf<LatLng>(
+        private val AREA = listOf(
             LatLng(46.518732896473644, 6.5628454889064365),
             LatLng(46.51874120200868, 6.563415458311842),
             LatLng(46.518398828344715, 6.563442280401509)
@@ -147,7 +147,7 @@ class ItineraryCreateActivityTest {
     }
 
     private fun createMission() {
-        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
         var hasBeenInit = false
@@ -168,7 +168,7 @@ class ItineraryCreateActivityTest {
     }
 
     private fun createMissionTooBig() {
-        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
         var hasBeenInit = false
@@ -227,7 +227,7 @@ class ItineraryCreateActivityTest {
         onView(withId(R.id.delete_button))
             .check(matches(not(isEnabled())))
 
-        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
         onView(withId(R.id.mapView)).perform(click())
         SystemClock.sleep(100L)
@@ -421,7 +421,7 @@ class ItineraryCreateActivityTest {
 
         ActivityScenario.launch<Activity>(intent)
 
-        var mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         mUiDevice.wait(Until.hasObject(By.desc("MAP READY")), 1000L)
 
         onView(withId(R.id.buttonToSaveActivity))
@@ -440,13 +440,13 @@ class ItineraryCreateActivityTest {
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
 
-        val bundle = intents.get(1).extras!!
+        val bundle = intents[1].extras!!
         assertThat(
             bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH),
             equalTo(flightHeight)
         )
         assertThat(
-            (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)!!,
+            (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy),
             equalTo(strategy)
         )
         assertThat(

@@ -92,9 +92,9 @@ class ParallelogramMappingMissionService @Inject constructor(val droneService: D
         val imageHeight = droneService.getData().getCameraResolution().value?.height?:defaultImageHeight // pixels
 
         // Ground Sampling Distance in meters/pixel
-        val GSD = (sensorWidth * flightHeight) / (focalLength * imageWidth)
-        val groundImageWidth = GSD * imageWidth // meters
-        val groundImageHeight = GSD * imageHeight // meters
+        val gsd = (sensorWidth * flightHeight) / (focalLength * imageWidth)
+        val groundImageWidth = gsd * imageWidth // meters
+        val groundImageHeight = gsd * imageHeight // meters
         return GroundImageDim(groundImageWidth, groundImageHeight)
     }
 }

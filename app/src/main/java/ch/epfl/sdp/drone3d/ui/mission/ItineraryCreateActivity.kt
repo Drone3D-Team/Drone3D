@@ -247,7 +247,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun eraseAll(@Suppress("UNUSED_PARAMETER") view: View) {
         areaBuilder.reset()
-        flightPath = ArrayList<LatLng>()
+        flightPath = ArrayList()
         missionDrawer.showMission(listOf(), false)
         deleteButton.isEnabled = false
         goToSaveButton.isEnabled = false

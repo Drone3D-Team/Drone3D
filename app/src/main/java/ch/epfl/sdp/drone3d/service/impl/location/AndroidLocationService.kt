@@ -17,7 +17,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
- * Location service using android location functionalities
+ * Location service using android location functionality
  */
 class AndroidLocationService @Inject constructor(
     private val locationManager: LocationManager,

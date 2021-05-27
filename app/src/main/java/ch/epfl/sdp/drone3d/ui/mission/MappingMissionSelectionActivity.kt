@@ -158,29 +158,29 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val privateFilteredList =
                 findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
 
-        setupListAdapter(sharedList, false, false)
-        setupListAdapter(sharedFilteredList, false, true)
+        setupListAdapter(sharedList, private = false, filter = false)
+        setupListAdapter(sharedFilteredList, private = false, filter = true)
 
         // Link state with view visibility
-        currentListState.observe(this, androidx.lifecycle.Observer {
+        currentListState.observe(this) {
             it.let {
-                sharedList.visibility = getVisibility(false, false, it)
-                privateList.visibility = getVisibility(true, false, it)
-                sharedFilteredList.visibility = getVisibility(false, true, it)
-                privateFilteredList.visibility = getVisibility(true, true, it)
+                sharedList.visibility = getVisibility(private = false, filter = false, current = it)
+                privateList.visibility = getVisibility(private = true, filter = false, current = it)
+                sharedFilteredList.visibility = getVisibility(private = false, filter = true, current = it)
+                privateFilteredList.visibility = getVisibility(private = true, filter = true, current = it)
 
                 mappingMissionDao.updateSharedFilteredMappingMissions(it.second)
             }
-        })
+        }
 
 
         if(authService.getCurrentSession() != null) {
             val ownerId = authService.getCurrentSession()!!.user.uid
 
-            setupListAdapter(privateList, true, false)
-            setupListAdapter(privateFilteredList, true, true)
+            setupListAdapter(privateList, private = true, filter = false)
+            setupListAdapter(privateFilteredList, private = true, filter = true)
 
-            currentListState.observe(this, androidx.lifecycle.Observer {
+            currentListState.observe(this, {
                 it.let {
                     mappingMissionDao.updatePrivateFilteredMappingMissions(ownerId, it.second)
                 }

@@ -6,14 +6,16 @@
 package ch.epfl.sdp.drone3d.model.mission
 
 import com.mapbox.mapboxsdk.geometry.LatLng
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SphereToPlaneProjectorTest {
 
-    private val LATITUDE_ERROR_1_DEGREE = 0.0000001
-    private val LONGITUDE_ERROR_1_DEGREE = 0.00002
+    companion object {
+        private const val LATITUDE_ERROR_1_DEGREE = 0.0000001
+        private const val LONGITUDE_ERROR_1_DEGREE = 0.00002
+    }
 
     @Test
     fun originIsMappedToZeroZeroAsPoint(){
@@ -59,7 +61,7 @@ class SphereToPlaneProjectorTest {
         val point2 = Point(5.0,1.0)
         val point3 = Point(8.0,30.0)
 
-        val points = listOf<Point>(point1, point2, point3)
+        val points = listOf(point1, point2, point3)
 
         val origin = LatLng(70.0,30.0)
         val projector = SphereToPlaneProjector(origin)
@@ -68,7 +70,7 @@ class SphereToPlaneProjectorTest {
         val latLng2 = projector.toLatLng(point2)
         val latLng3 = projector.toLatLng(point3)
 
-        val expected = listOf<LatLng>(latLng1, latLng2, latLng3)
+        val expected = listOf(latLng1, latLng2, latLng3)
 
         val actual = projector.toLatLngs(points)
 
@@ -82,7 +84,7 @@ class SphereToPlaneProjectorTest {
         val latLng2 = LatLng(70.0, 30.0)
         val latLng3 = LatLng(71.0, 31.0)
 
-        val latlngs = listOf<LatLng>(latLng1, latLng2, latLng3)
+        val latlngs = listOf(latLng1, latLng2, latLng3)
 
         val origin = LatLng(70.0,30.0)
         val projector = SphereToPlaneProjector(origin)
@@ -91,7 +93,7 @@ class SphereToPlaneProjectorTest {
         val point2 = projector.toPoint(latLng2)
         val point3 = projector.toPoint(latLng3)
 
-        val expected = listOf<Point>(point1, point2, point3)
+        val expected = listOf(point1, point2, point3)
 
         val actual = projector.toPoints(latlngs)
 
@@ -162,6 +164,4 @@ class SphereToPlaneProjectorTest {
         assertEquals(expectedLongitude2, resultLatLng2.longitude, 0.000000000001)
         assertEquals(expectedLatitude2, resultLatLng2.latitude, 1.0)
     }
-
-
 }

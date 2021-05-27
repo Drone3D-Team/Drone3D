@@ -7,6 +7,7 @@ package ch.epfl.sdp.drone3d.map.area
 
 import ch.epfl.sdp.drone3d.model.util.GeometryUtils
 import com.mapbox.mapboxsdk.geometry.LatLng
+import kotlin.math.sqrt
 
 /**
  * Builder to build a parallelogram. The parallelogram area is controlled by three vertices, the last one is automatically generated.
@@ -21,23 +22,23 @@ class ParallelogramBuilder : AreaBuilder() {
     }
 
     override fun getShapeVerticesGivenComplete(): List<LatLng> {
-        val A = vertices[0]
-        val O = vertices[1]
-        val B = vertices[2]
-        val C = GeometryUtils.getFourthParallelogramVertex(O, A, B)
-        return listOf(A, O, B, C)
+        val a = vertices[0]
+        val o = vertices[1]
+        val b = vertices[2]
+        val c = GeometryUtils.getFourthParallelogramVertex(o, a, b)
+        return listOf(a, o, b, c)
     }
 
     override fun getAreaSizeGivenComplete(): Double {
-        val A = vertices[0]
-        val O = vertices[1]
-        val B = vertices[2]
+        val a = vertices[0]
+        val o = vertices[1]
+        val b = vertices[2]
 
-        val distAO = A.distanceTo(O)
-        val distOB = O.distanceTo(B)
-        val diag = A.distanceTo(B)
+        val distAO = a.distanceTo(o)
+        val distOB = o.distanceTo(b)
+        val diag = a.distanceTo(b)
 
         val s = (distAO + distOB + diag) / 2.0
-        return 2 * Math.sqrt(s * (s - distAO) * (s - distOB) * (s - diag))
+        return 2 * sqrt(s * (s - distAO) * (s - distOB) * (s - diag))
     }
 }

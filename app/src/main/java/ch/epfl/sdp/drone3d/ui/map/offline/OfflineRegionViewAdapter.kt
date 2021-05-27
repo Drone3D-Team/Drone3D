@@ -13,12 +13,9 @@ import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl.Companion.getMetadata
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.offline.OfflineRegion
-import com.mapbox.mapboxsdk.plugins.annotation.Line
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
-import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import timber.log.Timber
 
 /**
@@ -31,7 +28,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, pri
 
     /**
      * ViewHolder for the RecyclerView holding OfflineRegions. Contains a textView with the name of
-     * the region and a button to delete it as [view].
+     * the region and a button to delete it as view.
      */
     class OfflineRegionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 

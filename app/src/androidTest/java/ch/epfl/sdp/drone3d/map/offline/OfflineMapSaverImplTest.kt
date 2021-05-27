@@ -9,13 +9,13 @@ import android.content.Context
 import android.os.SystemClock
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
-import com.mapbox.mapboxsdk.offline.OfflineRegion
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
 import org.junit.Assert.assertEquals
@@ -65,9 +65,9 @@ class OfflineMapSaverImplTest {
         SystemClock.sleep(1000L)
 
         val regions:Array<OfflineRegion> = liveRegions.value!!
-        val counterRegionsDelete = CountDownLatch(regions!!.size)
+        val counterRegionsDelete = CountDownLatch(regions.size)
 
-        regions!!.forEach {region->
+        regions.forEach { region->
             offlineSaver.deleteRegion(region.id,object:OfflineRegion.OfflineRegionDeleteCallback{
                 override fun onDelete() {
                     counterRegionsDelete.countDown()

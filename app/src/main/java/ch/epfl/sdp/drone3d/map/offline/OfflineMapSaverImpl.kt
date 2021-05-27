@@ -47,10 +47,10 @@ class OfflineMapSaverImpl(val context:Context, private val styleUri:String):Offl
         /**
          * Serialize the metadata of the provided [region]
          */
-        fun serializeMetadata(metadata: OfflineRegionMetadata):ByteArray{
-            val internalMetadata = SerializableRegionMetadata(metadata.name,metadata.bounds.latSouth,
-                metadata.bounds.lonWest,metadata.bounds.latNorth,metadata.bounds.lonEast,metadata.tileCount,
-                metadata.zoom,metadata.isDownloading)
+        fun serializeMetadata(region: OfflineRegionMetadata):ByteArray{
+            val internalMetadata = SerializableRegionMetadata(region.name,region.bounds.latSouth,
+                region.bounds.lonWest,region.bounds.latNorth,region.bounds.lonEast,region.tileCount,
+                region.zoom,region.isDownloading)
 
             return Json.encodeToString(internalMetadata).toByteArray(charset(JSON_CHARSET))
         }
@@ -202,9 +202,9 @@ class OfflineMapSaverImpl(val context:Context, private val styleUri:String):Offl
     }
 
     /**
-     * Apply [callback] on the region [regionName]
+     * Apply [callback] on the region connected to [id]
      */
-    private fun actOnRegion(id:Long,callback:((OfflineRegion?) -> Unit)){
+    private fun actOnRegion(id:Long, callback:((OfflineRegion?) -> Unit)) {
         actOnRegions{ offlineRegions->
             val region = offlineRegions.firstOrNull{offlineRegion -> offlineRegion.id == id}
             callback(region)

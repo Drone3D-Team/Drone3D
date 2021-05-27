@@ -28,9 +28,9 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
-import dagger.hilt.android.AndroidEntryPoint
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
 import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.lang.System.currentTimeMillis
 import javax.inject.Inject
@@ -128,10 +128,15 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager, mapboxMap)
         savedRegionsRecycler.adapter = adapter
 
-        offlineRegions.observe(this, androidx.lifecycle.Observer {
+        offlineRegions.observe(this, {
             it.let {
-                adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
-                    OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name)}))
+                adapter.submitList(it.sortedWith { r0, r1 ->
+                    OfflineMapSaverImpl.getMetadata(r0).name.compareTo(
+                        OfflineMapSaverImpl.getMetadata(
+                            r1
+                        ).name
+                    )
+                })
             }
         })
 

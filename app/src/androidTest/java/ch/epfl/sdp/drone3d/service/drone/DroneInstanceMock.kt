@@ -20,7 +20,6 @@ import io.mavsdk.telemetry.Telemetry
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import io.reactivex.subjects.PublishSubject
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 

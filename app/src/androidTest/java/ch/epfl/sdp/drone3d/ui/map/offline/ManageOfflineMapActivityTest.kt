@@ -74,13 +74,12 @@ class ManageOfflineMapActivityTest {
 
         Thread.sleep(2000)
         //Used to wait for the map to be downloaded before clickling the button
-        var counter = CountDownLatch(1)
+        val counter = CountDownLatch(1)
 
         activityRule.scenario.onActivity { activity ->
             activity.mapView.getMapAsync { mapboxMap ->
-                mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
+                mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                     counter.countDown()
-
                 }
             }
         }

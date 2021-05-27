@@ -9,7 +9,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.telecom.TelecomManager.DURATION_SHORT
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -83,8 +82,8 @@ class MissionPicturesActivity : AppCompatActivity() {
                             ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
                         },
                         {
-                            it.printStackTrace()
-                            ToastHandler.showToastAsync(this, R.string.error, DURATION_SHORT, it.message)
+                            Timber.e(it)
+                            ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
                         }
                 )
         )

@@ -7,7 +7,6 @@ package ch.epfl.sdp.drone3d.map.offline
 
 import androidx.lifecycle.LiveData
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.offline.OfflineManager
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 
 /**
@@ -28,7 +27,7 @@ interface OfflineMapSaver {
     fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback)
 
     /**
-     * Returns a live data for the offline region [id]
+     * Returns a live data for all offline regions
      */
     fun getOfflineRegions(): LiveData<Array<OfflineRegion>>
 

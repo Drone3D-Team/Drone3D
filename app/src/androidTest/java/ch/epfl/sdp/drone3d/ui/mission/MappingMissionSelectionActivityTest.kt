@@ -256,7 +256,7 @@ class MappingMissionSelectionActivityTest {
         // Shared
         var curShared = SHARED_LIVE_DATA.value
 
-        liveDataShowsToUser(true, false, curShared)
+        liveDataShowsToUser(shared = true, filter = false, currentData = curShared)
 
         curShared = listOf(SHARED_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
@@ -265,7 +265,7 @@ class MappingMissionSelectionActivityTest {
         SHARED_LIVE_DATA.postValue(curShared)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
-        liveDataShowsToUser(true, false, curShared)
+        liveDataShowsToUser(shared = true, filter = false, currentData = curShared)
 
         //switch state
         onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
@@ -273,7 +273,7 @@ class MappingMissionSelectionActivityTest {
         // private
         var curPrivate = PRIVATE_LIVE_DATA.value
 
-        liveDataShowsToUser(false, false, curPrivate)
+        liveDataShowsToUser(shared = false, filter = false, currentData = curPrivate)
 
         curPrivate?.forEach { m ->
             onView(withText(buttonName(false, m)))
@@ -288,7 +288,7 @@ class MappingMissionSelectionActivityTest {
         PRIVATE_LIVE_DATA.postValue(curPrivate)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
-        liveDataShowsToUser(false, false, curPrivate)
+        liveDataShowsToUser(shared = false, filter = false, currentData = curPrivate)
 
         // Reset LIVE DATA
         SHARED_LIVE_DATA.postValue(listOf(SHARED_MAPPING_MISSION))
@@ -323,7 +323,7 @@ class MappingMissionSelectionActivityTest {
 
         var currentData = SHARED_FILTERED_LIVE_DATA.value
 
-        liveDataShowsToUser(true, true, currentData)
+        liveDataShowsToUser(shared = true, filter = true, currentData = currentData)
 
         currentData =
             listOf(MappingMission("shared filtered 1"), MappingMission("shared filtered 2"))
@@ -334,7 +334,7 @@ class MappingMissionSelectionActivityTest {
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
 
-        liveDataShowsToUser(true, true, currentData)
+        liveDataShowsToUser(shared = true, filter = true, currentData = currentData)
 
         //switch state
         onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
@@ -343,7 +343,7 @@ class MappingMissionSelectionActivityTest {
         currentData = PRIVATE_FILTERED_LIVE_DATA.value
 
 
-        liveDataShowsToUser(false, true, currentData)
+        liveDataShowsToUser(shared = false, filter = true, currentData = currentData)
 
         currentData =
             listOf(MappingMission("private filtered 1"), MappingMission("private filtered 2"))
@@ -354,7 +354,7 @@ class MappingMissionSelectionActivityTest {
         PRIVATE_FILTERED_LIVE_DATA.postValue(currentData)
         mutex.tryAcquire(100, TimeUnit.MILLISECONDS)
 
-        liveDataShowsToUser(false, true, currentData)
+        liveDataShowsToUser(shared = false, filter = true, currentData = currentData)
 
         // Reset LIVE DATA
         SHARED_FILTERED_LIVE_DATA.postValue(emptyList())
@@ -432,7 +432,7 @@ class MappingMissionSelectionActivityTest {
         var currentData = SHARED_FILTERED_LIVE_DATA.value
 
 
-        liveDataShowsToUser(true, true, currentData)
+        liveDataShowsToUser(shared = true, filter = true, currentData = currentData)
 
         //clear search
         onView(
@@ -448,7 +448,7 @@ class MappingMissionSelectionActivityTest {
         currentData = SHARED_LIVE_DATA.value
 
 
-        liveDataShowsToUser(true, false, currentData)
+        liveDataShowsToUser(shared = true, filter = false, currentData = currentData)
 
         //switch state to private
         onView(withId(R.id.mapping_mission_state_toggle)).perform(click())
@@ -463,7 +463,7 @@ class MappingMissionSelectionActivityTest {
         currentData = PRIVATE_FILTERED_LIVE_DATA.value
 
 
-        liveDataShowsToUser(false, true, currentData)
+        liveDataShowsToUser(shared = false, filter = true, currentData = currentData)
 
         //clear search
         onView(
@@ -478,7 +478,7 @@ class MappingMissionSelectionActivityTest {
         //now all shared missions are visible
         currentData = PRIVATE_LIVE_DATA.value
 
-        liveDataShowsToUser(false, false, currentData)
+        liveDataShowsToUser(shared = false, filter = false, currentData = currentData)
 
         // Reset LIVE DATA
         SHARED_FILTERED_LIVE_DATA.postValue(emptyList())
@@ -527,7 +527,7 @@ class MappingMissionSelectionActivityTest {
             else if (!shared && filter) R.id.private_filtered_mission_list_view
             else R.id.private_mission_list_view
 
-        onView(withId(id)).check(Companion.matchCount(currentData?.size ?: 0))
+        onView(withId(id)).check(matchCount(currentData?.size ?: 0))
         onView(withId(id)).check(
             matches(
                 withEffectiveVisibility(

@@ -78,7 +78,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
             ToastHandler.showToast(this, R.string.mission_saved)
         } else {
             ToastHandler.showToast(this, R.string.error_mission_saved)
-            saveButton.isEnabled = true;
+            saveButton.isEnabled = true
         }
     }
 
@@ -152,7 +152,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
             }
             builder.create()?.show()
         } else {
-            saveButton.isEnabled = false;
+            saveButton.isEnabled = false
 
             val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
             val newMappingMission = MappingMission(name.toString(), flightHeight, strategy, area)

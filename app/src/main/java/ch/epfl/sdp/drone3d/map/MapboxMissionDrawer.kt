@@ -36,10 +36,10 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
         }
         else {
             if(withIndex){
-                mapSymbols = flightPath.mapIndexed() { index: Int, latlng: LatLng ->
+                mapSymbols = flightPath.mapIndexed { index: Int, latLng: LatLng ->
 
                     val symbolOption = SymbolOptions()
-                        .withLatLng(LatLng(latlng))
+                        .withLatLng(LatLng(latLng))
                         .withTextField(index.toString())
 
                     symbolManager.create(symbolOption)

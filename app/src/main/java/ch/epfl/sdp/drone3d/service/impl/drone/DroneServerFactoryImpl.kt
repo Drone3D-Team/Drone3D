@@ -8,9 +8,8 @@ package ch.epfl.sdp.drone3d.service.impl.drone
 import ch.epfl.sdp.drone3d.service.api.drone.DroneServerFactory
 import io.mavsdk.System
 import io.mavsdk.mavsdkserver.MavsdkServer
-import kotlinx.coroutines.*
-import org.jetbrains.annotations.Async
-import kotlin.concurrent.thread
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class DroneServerFactoryImpl: DroneServerFactory {
 

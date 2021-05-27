@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
-import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Adapter for the Recycler view creating holders for the missions
