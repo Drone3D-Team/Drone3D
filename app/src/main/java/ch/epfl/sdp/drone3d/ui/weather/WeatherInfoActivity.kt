@@ -25,6 +25,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class WeatherInfoActivity : AppCompatActivity() {
 
+    companion object {
+        private const val KILOMETER = 1000
+    }
+
     @Inject
     lateinit var weatherService: WeatherService
 
@@ -96,8 +100,8 @@ class WeatherInfoActivity : AppCompatActivity() {
 
         visibilityInfo.apply {
             val visibility = weatherReport.visibility
-            text = if (visibility >= 1000) {
-                getString(R.string.info_visibility_km, (visibility / 1000).toString())
+            text = if (visibility >= KILOMETER) {
+                getString(R.string.info_visibility_km, (visibility / KILOMETER).toString())
             } else {
                 getString(R.string.info_visibility, visibility.toString())
             }
