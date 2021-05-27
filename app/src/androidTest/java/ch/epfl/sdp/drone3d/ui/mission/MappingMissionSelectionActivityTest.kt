@@ -266,11 +266,6 @@ class MappingMissionSelectionActivityTest {
 
         liveDataShowsToUser(false, false, curPrivate)
 
-        curPrivate?.forEach { m ->
-            onView(withText(m.name))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-        }
-
         curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
         // Post new value to live data and wait for it to be dispatched
@@ -528,7 +523,7 @@ class MappingMissionSelectionActivityTest {
         )
 
         currentData?.forEach { m ->
-            onView(withText(m.name))
+            onView(allOf(isDescendantOfA(withId(id)), withText(m.name)))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
