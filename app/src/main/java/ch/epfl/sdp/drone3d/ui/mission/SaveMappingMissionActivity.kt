@@ -74,7 +74,6 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
     private fun onCompleteSaving(isSuccess: Boolean) {
         if (isSuccess) {
-            goToItineraryShow()
             ToastHandler.showToast(this, R.string.mission_saved)
         } else {
             ToastHandler.showToast(this, R.string.error_mission_saved)
@@ -177,6 +176,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
                         }
                 }
             }
+            goToItineraryShow()
         }
 
 
