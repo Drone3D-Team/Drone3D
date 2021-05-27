@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.api.auth.Database
 import com.google.firebase.database.*
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import timber.log.Timber
 import javax.inject.Inject

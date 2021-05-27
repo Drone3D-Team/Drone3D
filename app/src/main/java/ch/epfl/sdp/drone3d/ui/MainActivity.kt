@@ -41,14 +41,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var droneService: DroneService
 
-    @Inject
-    lateinit var database:FirebaseDatabase
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
-//        if(database)
-        //database.setPersistenceEnabled(true)
     }
 
     private fun refresh() {

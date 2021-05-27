@@ -178,8 +178,5 @@ class SaveMappingMissionActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
-
 }
