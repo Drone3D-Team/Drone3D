@@ -174,7 +174,7 @@ class OfflineMapSaverImpl(val context:Context, private val styleUri:String):Offl
         val definition = OfflineTilePyramidRegionDefinition(
             styleUri,
             regionBounds,
-            zoom,//The minimum zoom resolutiom
+            zoom,//The minimum zoom resolution
             maxZoom,//The maximum resolution
             context.resources.displayMetrics.density
         )

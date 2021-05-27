@@ -364,7 +364,7 @@ class ItineraryCreateActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
     }
@@ -396,7 +396,7 @@ class ItineraryCreateActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
     }
@@ -415,7 +415,7 @@ class ItineraryCreateActivityTest {
         val flightHeight = 10.0
         val strategy = MappingMissionService.Strategy.DOUBLE_PASS
 
-        intent.putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
         intent.putExtra(ItineraryShowActivity.AREA_INTENT_PATH, ArrayList(AREA))
         intent.putExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH, strategy)
 
@@ -436,13 +436,13 @@ class ItineraryCreateActivityTest {
             hasComponent(hasClassName(SaveMappingMissionActivity::class.java.name))
         )
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryCreateActivity.AREA_INTENT_PATH) })
 
         val bundle = intents[1].extras!!
         assertThat(
-            bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH),
+            bundle.getDouble(ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH),
             equalTo(flightHeight)
         )
         assertThat(

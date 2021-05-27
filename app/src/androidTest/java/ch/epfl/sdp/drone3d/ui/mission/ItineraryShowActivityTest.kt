@@ -88,7 +88,7 @@ class ItineraryShowActivityTest {
         ).apply {
             putExtras(Bundle().apply {
                 putSerializable(MissionViewAdapter.AREA_INTENT_PATH, BAYLAND_AREA)
-                putSerializable(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+                putSerializable(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
                 putSerializable(
                     MissionViewAdapter.STRATEGY_INTENT_PATH,
                     MappingMissionService.Strategy.SINGLE_PASS
@@ -268,7 +268,7 @@ class ItineraryShowActivityTest {
 
         val intents = Intents.getIntents()
         assert(intents.any { it.hasExtra(ItineraryShowActivity.AREA_INTENT_PATH) })
-        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH) })
     }
 
@@ -330,7 +330,7 @@ class ItineraryShowActivityTest {
         )
         intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH, USER_UID)
         intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, BAYLAND_AREA)
-        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+        intent.putExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
         intent.putExtra(
             MissionViewAdapter.STRATEGY_INTENT_PATH,
             MappingMissionService.Strategy.SINGLE_PASS

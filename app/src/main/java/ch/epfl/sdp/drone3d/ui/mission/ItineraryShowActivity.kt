@@ -47,7 +47,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         const val LOCATION_INTENT_PATH = "ISA_location"
         const val STRATEGY_INTENT_PATH = "ISA_strategy"
         const val AREA_INTENT_PATH = "ISA_area"
-        const val FLIGHTHEIGHT_INTENT_PATH = "ISA_flightHeight"
+        const val FLIGHT_HEIGHT_INTENT_PATH = "ISA_flightHeight"
         const val CAMERA_PITCH_INTENT_PATH = "ISA_cameraPitch"
     }
 
@@ -150,7 +150,7 @@ class ItineraryShowActivity : BaseMapActivity() {
             ownerUid = intent.getStringExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH).toString()
             privateId = intent.getStringExtra(MissionViewAdapter.PRIVATE_ID_INTENT_PATH)
             sharedId = intent.getStringExtra(MissionViewAdapter.SHARED_ID_INTENT_PATH)
-            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH)
+            flightHeight = bundle.getDouble(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH)
             strategy =
                 (bundle.get(MissionViewAdapter.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy?)!!
             area = bundle.getParcelableArrayList(MissionViewAdapter.AREA_INTENT_PATH)!!
@@ -193,7 +193,7 @@ class ItineraryShowActivity : BaseMapActivity() {
      */
     fun goToMissionCreation(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(this, ItineraryCreateActivity::class.java)
-        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
         intent.putExtra(AREA_INTENT_PATH, ArrayList(area))
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
         startActivity(intent)
@@ -203,7 +203,7 @@ class ItineraryShowActivity : BaseMapActivity() {
     private fun goToMissionStartActivity() {
         val intent = Intent(this, MissionStartActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
-        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH,flightHeight)
+        intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH,flightHeight)
         intent.putExtra(CAMERA_PITCH_INTENT_PATH,cameraPitch)
         startActivity(intent)
     }

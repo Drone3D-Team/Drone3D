@@ -65,7 +65,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
     // Mission
     private var flightPath = arrayListOf<LatLng>()
-    private var flightHeight = DEFAULT_FLIGHTHEIGHT
+    private var flightHeight = DEFAULT_FLIGHT_HEIGHT
     private var strategy = DEFAULT_STRATEGY
     private lateinit var missionBuilder: ParallelogramMappingMissionService
     private lateinit var missionDrawer: MapboxMissionDrawer
@@ -93,9 +93,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     companion object {
         const val STRATEGY_INTENT_PATH = "ICA_strategy"
         const val AREA_INTENT_PATH = "ICA_area"
-        const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
-        const val DEFAULT_FLIGHTHEIGHT = 47.0
-        const val MINIMUM_FLIGHTHEIGHT = 3.0
+        const val FLIGHT_HEIGHT_INTENT_PATH = "ICA_flightHeight"
+        const val DEFAULT_FLIGHT_HEIGHT = 47.0
+        const val MINIMUM_FLIGHT_HEIGHT = 3.0
         val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
 
         // Maximum area size in m2
@@ -115,7 +115,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         val bundle = intent.extras
         if (bundle != null && !bundle.isEmpty) {
-            flightHeight = bundle.getDouble(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH)
+            flightHeight = bundle.getDouble(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH)
             strategy = (bundle.get(ItineraryShowActivity.STRATEGY_INTENT_PATH) as Strategy)
             initialArea = bundle.getParcelableArrayList(ItineraryShowActivity.AREA_INTENT_PATH)!!
         }
@@ -202,7 +202,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
             areaBuilderDrawer = MapboxAreaBuilderDrawer(mapView, mapboxMap, style)
 
-            // Area - Need to be the last Drawer instanciated to allow draggable vertex
+            // Area - Need to be the last Drawer instantiated to allow draggable vertex
             areaBuilder = ParallelogramBuilder()
             areaBuilder.onAreaChanged.add { onMissionSettingModified() }
             areaBuilder.onVerticesChanged.add { areaBuilderDrawer.draw(areaBuilder) }
@@ -217,9 +217,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
-            altitudeText.text = getString(R.string.altitude_text, flightHeight + MINIMUM_FLIGHTHEIGHT)
+            altitudeText.text = getString(R.string.altitude_text, flightHeight + MINIMUM_FLIGHT_HEIGHT)
             altitudeButton.setOnProgressChangeListener { progressValue ->
-                flightHeight = progressValue.toDouble() + MINIMUM_FLIGHTHEIGHT
+                flightHeight = progressValue.toDouble() + MINIMUM_FLIGHT_HEIGHT
                 altitudeText.text = getString(R.string.altitude_text, flightHeight)
                 onMissionSettingModified()
             }
@@ -359,7 +359,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             }
         } else {
             val intent = Intent(this, ItineraryShowActivity::class.java)
-            intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+            intent.putExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
             intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
             intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
 
@@ -381,7 +381,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     private fun goToSaveActivity() {
         val intent = Intent(this, SaveMappingMissionActivity::class.java)
-        intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
         intent.putExtra(AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
 

@@ -71,7 +71,7 @@ class MissionStartActivityTest {
                 )
             })
             putExtra(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH, CAMERA_PITCH)
-            putExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+            putExtra(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
         })
 
     @get:Rule

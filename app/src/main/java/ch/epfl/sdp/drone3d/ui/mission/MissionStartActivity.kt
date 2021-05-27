@@ -63,7 +63,7 @@ class MissionStartActivity : AppCompatActivity() {
         }
 
         val missionPath = intent.getParcelableArrayListExtra<LatLng>(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
-        val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) as Double
+        val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH) as Double
         val cameraPitch = intent.extras?.get(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH) as Float
         setupMission(missionPath, missionHeight,cameraPitch)
     }

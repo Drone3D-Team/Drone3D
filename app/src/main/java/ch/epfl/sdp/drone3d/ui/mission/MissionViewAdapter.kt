@@ -29,7 +29,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
         const val SHARED_ID_INTENT_PATH = "MVA_shared"
         const val STRATEGY_INTENT_PATH = "MVA_strategy"
         const val AREA_INTENT_PATH = "MVA_area"
-        const val FLIGHTHEIGHT_INTENT_PATH = "MVA_flightHeight"
+        const val FLIGHT_HEIGHT_INTENT_PATH = "MVA_flightHeight"
     }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
@@ -42,7 +42,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
                 curMission?.let { mission ->
                     val intent = Intent(view.context, ItineraryShowActivity::class.java)
 
-                    intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, mission.flightHeight)
+                    intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH, mission.flightHeight)
                     intent.putExtra(AREA_INTENT_PATH, ArrayList(mission.area))
                     intent.putExtra(STRATEGY_INTENT_PATH, mission.strategy)
                     intent.putExtra(OWNER_ID_INTENT_PATH, mission.ownerUid)

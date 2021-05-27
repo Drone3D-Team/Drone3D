@@ -85,7 +85,7 @@ class SaveMappingMissionActivityTest {
         ).apply {
             putExtras(Bundle().apply {
                 putSerializable(
-                    ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH,
+                    ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH,
                     UNNAMED_MISSION.flightHeight
                 )
                 putSerializable(
@@ -190,7 +190,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -211,7 +211,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -233,7 +233,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -261,7 +261,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -284,7 +284,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
     }

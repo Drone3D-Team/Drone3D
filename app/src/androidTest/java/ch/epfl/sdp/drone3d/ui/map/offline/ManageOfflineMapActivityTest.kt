@@ -73,7 +73,7 @@ class ManageOfflineMapActivityTest {
     fun cannotEnterEmptyStringForRegionName() {
 
         Thread.sleep(2000)
-        //Used to wait for the map to be downloaded before clickling the button
+        //Used to wait for the map to be downloaded before clicking the button
         val counter = CountDownLatch(1)
 
         activityRule.scenario.onActivity { activity ->

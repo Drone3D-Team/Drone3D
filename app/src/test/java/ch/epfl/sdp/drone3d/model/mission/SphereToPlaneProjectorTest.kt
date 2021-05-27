@@ -101,7 +101,7 @@ class SphereToPlaneProjectorTest {
     }
 
     @Test
-    fun smallerLatlngThanOriginGiveNegativPoints(){
+    fun smallerLatlngThanOriginGiveNegativePoints(){
 
         val origin = LatLng(70.0,30.0)
         val projector = SphereToPlaneProjector(origin)
