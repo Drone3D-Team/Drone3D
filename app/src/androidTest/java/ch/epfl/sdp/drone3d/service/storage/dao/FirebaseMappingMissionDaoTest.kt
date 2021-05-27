@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.service.storage.dao
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
@@ -13,9 +12,9 @@ import ch.epfl.sdp.drone3d.service.impl.storage.dao.FirebaseMappingMissionDao
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ktx.database
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.testing.HiltAndroidRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.nullValue
@@ -24,19 +23,9 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class FirebaseMappingMissionDaoTest {
-
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
-    private val database =
-        Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
-                .apply { setPersistenceEnabled(true) }
-
-    private val db = FirebaseMappingMissionDao(database)
-
-    private val timeout = 5L
 
     companion object {
         private const val OWNERID: String = "Jean-Jean"
@@ -44,10 +33,22 @@ class FirebaseMappingMissionDaoTest {
         private val MAPPING_MISSION_2: MappingMission = MappingMission()
     }
 
+    @get:Rule
+    val rule = HiltAndroidRule(this)
+
+    @Inject lateinit var database: FirebaseDatabase
+
+    private lateinit var db: FirebaseMappingMissionDao
+    private val timeout = 5L
+
     @Before
     fun beforeTests() {
+        rule.inject()
+
         database.goOffline()
         database.reference.removeValue()
+
+        db = FirebaseMappingMissionDao(database)
     }
 
     @Test
