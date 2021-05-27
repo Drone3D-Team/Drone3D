@@ -17,15 +17,14 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
-import com.mapbox.mapboxsdk.geometry.LatLng
 
 /**
  * Adapter for the Recycler view creating holders for the missions
  */
 class MissionViewAdapter(private val privateList: Boolean) :
-        ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
+    ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
 
-    companion object{
+    companion object {
         const val OWNER_ID_INTENT_PATH = "MVA_owner"
         const val PRIVATE_ID_INTENT_PATH = "MVA_private"
         const val SHARED_ID_INTENT_PATH = "MVA_shared"
@@ -34,7 +33,8 @@ class MissionViewAdapter(private val privateList: Boolean) :
         const val FLIGHTHEIGHT_INTENT_PATH = "MVA_flightHeight"
     }
 
-    class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
+    class MissionViewHolder(view: View, private val privateList: Boolean) :
+        RecyclerView.ViewHolder(view) {
 
         private val textView: TextView = view.findViewById(R.id.mapping_selection_item_text)
         private val cardView: CardView = view.findViewById(R.id.mapping_selection_item_button)
@@ -60,22 +60,20 @@ class MissionViewAdapter(private val privateList: Boolean) :
         // Bind holder with a mission -> set the name
         fun bind(mission: MappingMission) {
             curMission = mission
-            textView.text =
-                if (mission.state == State.PRIVATE_AND_SHARED)
-                    if (privateList)
-                        itemView.context.getString(R.string.mapping_mission_list_format_private, mission.name)
-                    else
-                        itemView.context.getString(R.string.mapping_mission_list_format_shared, mission.name)
-                else
-                    itemView.context.getString(R.string.mapping_mission_list_format, mission.name)
+            textView.text = mission.name
 
+            if (mission.state == State.PRIVATE_AND_SHARED)
+                if (privateList)
+                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
+                else
+                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MissionViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.mission_selection_item, parent, false)
+            .inflate(R.layout.mission_selection_item, parent, false)
 
         return MissionViewHolder(view, privateList)
     }
