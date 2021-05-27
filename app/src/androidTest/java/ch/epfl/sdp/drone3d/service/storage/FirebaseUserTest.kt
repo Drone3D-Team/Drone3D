@@ -28,7 +28,9 @@ class FirebaseUserTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     companion object{
-        private val database = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+        private val database =
+                Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+                        .apply { setPersistenceEnabled(true) }
         private const val timeout = 5L
         val db = FirebaseUser(database)
     }

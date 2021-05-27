@@ -18,7 +18,7 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.nullValue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,6 +32,7 @@ class FirebaseMappingMissionDaoTest {
 
     private val database =
         Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+                .apply { setPersistenceEnabled(true) }
 
     private val db = FirebaseMappingMissionDao(database)
 
