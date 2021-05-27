@@ -24,6 +24,10 @@ import javax.inject.Inject
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * This class is an implementation of [DronePhotos].
+ * It allows you to retrieve photos taken by the drone.
+ */
 class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhotos {
 
     companion object {
