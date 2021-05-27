@@ -144,7 +144,6 @@ class FirebaseUserTest {
         val uid = "123456"
         val counter = CountDownLatch(2)
 
-
         val pseudoListener = object : ChildEventListener {
             override fun onCancelled(error: DatabaseError) {}
 
@@ -174,6 +173,5 @@ class FirebaseUserTest {
 
         database.getReference("users/$uid").removeEventListener(pseudoListener)
     }
-
 }
 

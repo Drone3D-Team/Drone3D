@@ -29,6 +29,4 @@ object FirebaseModule {
         firebase.setPersistenceEnabled(true)
         return firebase
     }
-
-
 }
