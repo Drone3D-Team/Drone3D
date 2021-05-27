@@ -26,6 +26,7 @@ object FirebaseModule {
 
     @Singleton
     @Provides
+    @Synchronized
     fun provideFirebaseDatabase(): FirebaseDatabase =
             Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/").apply{
                 setPersistenceEnabled(true)
