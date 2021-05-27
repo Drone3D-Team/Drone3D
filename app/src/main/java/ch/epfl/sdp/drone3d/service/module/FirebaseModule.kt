@@ -19,7 +19,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
-    private var persistenceEnabled = false
+    private var hasBeenInit = false
+    private lateinit var firebase : FirebaseDatabase
 
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth =
@@ -27,11 +28,10 @@ object FirebaseModule {
 
     @Provides
     fun provideFirebaseDatabase(): FirebaseDatabase {
-        val firebase =
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
-        if (!persistenceEnabled) {
+        if(!hasBeenInit){
+            firebase = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
             firebase.setPersistenceEnabled(true)
-            persistenceEnabled = true
+            hasBeenInit = true
         }
         return firebase
     }
