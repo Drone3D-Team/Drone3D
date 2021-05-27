@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.service.storage
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import ch.epfl.sdp.drone3d.service.impl.storage.FirebaseUser
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
@@ -31,6 +32,9 @@ class FirebaseUserTest {
 
     @get:Rule
     val rule = HiltAndroidRule(this)
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Inject
     lateinit var database: FirebaseDatabase

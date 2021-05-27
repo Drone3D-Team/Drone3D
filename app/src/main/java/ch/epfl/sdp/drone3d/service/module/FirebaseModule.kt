@@ -20,6 +20,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
+    var database: FirebaseDatabase? = null
+
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth =
         Firebase.auth
@@ -27,8 +29,12 @@ object FirebaseModule {
     @Singleton
     @Provides
     @Synchronized
-    fun provideFirebaseDatabase(): FirebaseDatabase =
-            Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/").apply{
-                setPersistenceEnabled(true)
-            }
+    fun provideFirebaseDatabase(): FirebaseDatabase {
+        if (database == null) {
+            database =
+                FirebaseDatabase.getInstance("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+            database?.setPersistenceEnabled(true)
+        }
+        return database!!
+    }
 }

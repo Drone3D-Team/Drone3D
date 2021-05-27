@@ -5,6 +5,7 @@
 
 package ch.epfl.sdp.drone3d.service.storage.dao
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
@@ -37,6 +38,9 @@ class FirebaseMappingMissionDaoTest {
 
     @get:Rule
     val rule = HiltAndroidRule(this)
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Inject lateinit var database: FirebaseDatabase
 
