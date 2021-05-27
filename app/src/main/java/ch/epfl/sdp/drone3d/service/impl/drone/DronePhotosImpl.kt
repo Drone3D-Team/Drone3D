@@ -5,7 +5,6 @@
 
 package ch.epfl.sdp.drone3d.service.impl.drone
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
@@ -13,125 +12,72 @@ import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.api.drone.DronePhotos
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import io.mavsdk.camera.Camera
-import io.mavsdk.camera.CameraProto
 import io.reactivex.Single
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.max
+import kotlin.math.min
 
 class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhotos {
 
-    private val photosCache = mutableMapOf<String, Bitmap>()
+    companion object {
+        private const val URL_QUERY_RETRIES = 10L
+        private const val URL_QUERY_DELAY_ON_ERROR = 300L // millis
+    }
 
-    @SuppressLint("CheckResult")
+    private val photosCache = mutableMapOf<String, Bitmap>()
+    private val disposables = CompositeDisposable()
+
     override fun getNewPhotos(): LiveData<Bitmap> {
         val drone =
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
         val data = MutableLiveData<Bitmap>()
 
-        drone.camera.captureInfo.subscribe { captureInfo ->
-            GlobalScope.async {
-                val image = retrievePhoto(captureInfo.fileUrl)
-                if (image != null) {
-                    data.postValue(image)
-                }
-            }
-        }
+        disposables.add(
+                drone.camera.captureInfo
+                        .subscribeOn(Schedulers.io())
+                        .subscribe {
+                            captureInfo -> retrievePhoto(captureInfo.fileUrl)?.let { data.postValue(it) }
+                        }
+        )
 
         return data
     }
 
     override fun getPhotos(): Single<List<Bitmap>> {
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
-        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            var result: List<Bitmap> = emptyList()
-            runBlocking {
-                val coroutine = GlobalScope.async {
-                    retrievePhotos(photoList)
-                }
-                coroutine.await()
-                result = coroutine.getCompleted()
-            }
-            result
-        }
+        return getPhotosUrl()
+                .map { retrievePhotos(it) }
     }
 
     override fun getLastPhotos(n: Int): Single<List<Bitmap>> {
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
         if (n <= 0) return Single.just(emptyList())
 
-        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            var result: List<Bitmap> = emptyList()
-            val size = photoList.size
-            val list = if (size <= n) photoList else photoList.subList(size - n, size)
-            runBlocking {
-                val coroutine = GlobalScope.async {
-                    retrievePhotos(list)
-                }
-                coroutine.await()
-                result = coroutine.getCompleted()
-            }
-            result
-        }
+        return getPhotosUrl()
+                .map { it.subList(max(it.size - n, 0), it.size) }
+                .map { retrievePhotos(it) }
     }
 
     override fun getFirstPhotos(n: Int): Single<List<Bitmap>> {
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
         if (n <= 0) return Single.just(emptyList())
 
-        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            var result: List<Bitmap> = emptyList()
-            val size = photoList.size
-            val list = if (size <= n) photoList else photoList.subList(0, n)
-            runBlocking {
-                val coroutine = GlobalScope.async {
-                    retrievePhotos(list)
-                }
-                coroutine.await()
-                result = coroutine.getCompleted()
-            }
-            result
-        }
+        return getPhotosUrl()
+                .map { it.subList(0, min(it.size, n)) }
+                .map { retrievePhotos(it) }
     }
 
     override fun getRandomPhotos(n: Int): Single<List<Bitmap>> {
-        val drone =
-            service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
-
         if (n <= 0) return Single.just(emptyList())
 
-        return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION).map { photoList ->
-            var result: List<Bitmap> = emptyList()
-            val size = photoList.size
-            if (size > n) {
-                photoList.shuffle()
-            }
-            val list = if (size <= n) {
-                photoList
-            } else {
-                photoList.shuffle()
-                photoList.subList(0, n)
-            }
-            runBlocking {
-                val coroutine = GlobalScope.async {
-                    retrievePhotos(list)
-                }
-                coroutine.await()
-                result = coroutine.getCompleted()
-            }
-            result
-        }
+        return getPhotosUrl()
+                .map { it.shuffled() }
+                .map { it.subList(0, min(it.size, n)) }
+                .map { retrievePhotos(it) }
     }
 
     override fun getPhotosUrl(): Single<List<String>> {
@@ -139,7 +85,9 @@ class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhot
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION)
-            .map { list -> list.map { captureInfo -> captureInfo.fileUrl } }
+                .subscribeOn(Schedulers.io())
+                .retryWhen { it.take(URL_QUERY_RETRIES).delay(URL_QUERY_DELAY_ON_ERROR, TimeUnit.MILLISECONDS) }
+                .map { it.map { captureInfo -> captureInfo.fileUrl } }
     }
 
     private fun retrievePhoto(fileUrl: String): Bitmap? {
@@ -157,22 +105,24 @@ class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhot
         return bitmap
     }
 
-    private suspend fun retrievePhotos(list: List<CameraProto.CaptureInfo>): List<Bitmap> {
-        return list.map { captureInfo ->
-            GlobalScope.async {
-                // First check if image is cached
-                var image = photosCache[captureInfo.fileUrl]
+    private fun retrievePhotos(list: List<String>): List<Bitmap> {
+        return list.mapNotNull { url ->
+            // First check if image is cached
+            var image = photosCache[url]
+            if (image == null) {
                 // If not download it
-                if (image == null) {
-                    image = retrievePhoto(captureInfo.fileUrl)
-                    // If the download didn't fail, cache the image
-                    if (image != null) {
-                        photosCache[captureInfo.fileUrl] = image
-                    }
-                }
-                image
+                image = retrievePhoto(url)
+                // If the download didn't fail, cache the image
+                if (image != null)
+                    photosCache[url] = image
             }
-        }.mapNotNull { it.await() }
+
+            image
+        }
     }
 
+
+    protected fun finalize() {
+        disposables.dispose()
+    }
 }
