@@ -94,7 +94,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         const val STRATEGY_INTENT_PATH = "ICA_strategy"
         const val AREA_INTENT_PATH = "ICA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
-        const val DEFAULT_FLIGHTHEIGHT = 50.0
+        const val DEFAULT_FLIGHTHEIGHT = 47.0
+        const val MINIMUM_FLIGHTHEIGHT = 3.0
         val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
 
         // Maximum area size in m2
@@ -216,19 +217,18 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
-            altitudeText.text = getString(R.string.altitude_text, flightHeight)
+            altitudeText.text = getString(R.string.altitude_text, flightHeight + MINIMUM_FLIGHTHEIGHT)
             altitudeButton.setOnProgressChangeListener { progressValue ->
-                flightHeight = progressValue.toDouble()
+                flightHeight = progressValue.toDouble() + MINIMUM_FLIGHTHEIGHT
                 altitudeText.text = getString(R.string.altitude_text, flightHeight)
                 onMissionSettingModified()
             }
+            // Used to detect when the map is ready in tests
+            mapView.contentDescription = getString(R.string.map_ready)
+
+            this.mapboxMap = mapboxMap
+            isMapReady = true
         }
-
-        // Used to detect when the map is ready in tests
-        mapView.contentDescription = getString(R.string.map_ready)
-
-        this.mapboxMap = mapboxMap
-        isMapReady = true
     }
 
     private fun onMissionSettingModified() {

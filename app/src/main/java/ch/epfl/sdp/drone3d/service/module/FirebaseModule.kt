@@ -14,16 +14,27 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
+    var database: FirebaseDatabase? = null
+
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth =
         Firebase.auth
 
+    @Singleton
     @Provides
-    fun provideFirebaseDatabase(): FirebaseDatabase =
-        Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+    @Synchronized
+    fun provideFirebaseDatabase(): FirebaseDatabase {
+        if (database == null) {
+            database =
+                FirebaseDatabase.getInstance("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+            database?.setPersistenceEnabled(true)
+        }
+        return database!!
+    }
 }

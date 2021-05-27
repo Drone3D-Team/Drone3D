@@ -37,6 +37,7 @@ class FirebaseMappingMissionDao @Inject constructor(
     private var sharedFilteredMappingMissionsQuery: Query? = null
     private var sharedFilteredMappingMissionsListener: ValueEventListener? = null
 
+
     companion object {
         private const val TAG = "FirebaseMappingMissionDao"
         private const val PRIVATE_ID_PATH = "privateId"
