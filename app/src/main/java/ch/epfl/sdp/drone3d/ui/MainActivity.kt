@@ -21,6 +21,7 @@ import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import ch.epfl.sdp.drone3d.ui.map.offline.ManageOfflineMapActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass
@@ -40,9 +41,13 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var droneService: DroneService
 
+    @Inject
+    lateinit var database:FirebaseDatabase
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
+        database.setPersistenceEnabled(true)
     }
 
     private fun refresh() {

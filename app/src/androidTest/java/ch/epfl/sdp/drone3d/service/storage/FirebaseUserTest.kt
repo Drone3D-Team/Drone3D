@@ -6,7 +6,7 @@
 package ch.epfl.sdp.drone3d.service.storage
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import ch.epfl.sdp.drone3d.service.impl.storage.FirebaseDatabase
+import ch.epfl.sdp.drone3d.service.impl.storage.FirebaseUser
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,14 +22,16 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 
-class FirebaseDatabaseTest {
+class FirebaseUserTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val database = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
-    private val timeout = 5L
-
+    companion object{
+        private val database = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+        private const val timeout = 5L
+        val db = FirebaseUser(database)
+    }
     @Before
     fun beforeTests() {
         database.goOffline()
@@ -38,7 +40,6 @@ class FirebaseDatabaseTest {
 
     @Test
     fun loadUserPseudoReturnsExpectedValues() {
-        val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
         val uid = "123456"
         val counter = CountDownLatch(1)
@@ -59,7 +60,7 @@ class FirebaseDatabaseTest {
 
     @Test
     fun storeUserPseudoCreateExpectedValueWhenNoPreviousPseudo() {
-        val db = FirebaseDatabase()
+
         val expectedPseudo = "Masachouette"
         val uid = "123456"
         lateinit var pseudo: String
@@ -98,7 +99,6 @@ class FirebaseDatabaseTest {
 
     @Test
     fun storeUserPseudoWriteExpectedValueWhenPreviousPseudo() {
-        val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
         val uid = "123456"
         lateinit var pseudo: String
@@ -140,7 +140,6 @@ class FirebaseDatabaseTest {
 
     @Test
     fun removeUserPseudoDoesRemoveThePseudo() {
-        val db = FirebaseDatabase()
         val expectedPseudo = "Masachouette"
         val uid = "123456"
         val counter = CountDownLatch(2)
