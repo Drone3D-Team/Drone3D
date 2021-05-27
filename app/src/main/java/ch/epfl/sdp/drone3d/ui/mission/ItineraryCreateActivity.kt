@@ -222,13 +222,12 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
                 altitudeText.text = getString(R.string.altitude_text, flightHeight)
                 onMissionSettingModified()
             }
+            // Used to detect when the map is ready in tests
+            mapView.contentDescription = getString(R.string.map_ready)
+
+            this.mapboxMap = mapboxMap
+            isMapReady = true
         }
-
-        // Used to detect when the map is ready in tests
-        mapView.contentDescription = getString(R.string.map_ready)
-
-        this.mapboxMap = mapboxMap
-        isMapReady = true
     }
 
     private fun onMissionSettingModified() {
