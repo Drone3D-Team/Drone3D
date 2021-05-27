@@ -70,7 +70,6 @@
     <string name="confirm_save_without_updating">Save anyway</string>
     <string name="cancel_save_without_updating">Cancel</string>
     <string name="save_without_updating_confirmation">You have updated the mission settings since the last flight path preview. Do you want to save the mission without having seen the updated preview ?</string>
-    <string name="drone_should_be_connected">"A drone or a simulation should be connected"</string>
     <string name="altitude_text">"Altitude: %1$.0f m"</string>
     <string name="area_size_to_big">"The selected area is too large. Please create a smaller one."</string>
     <string name="warning_not_login">"Your are not login, you won't be able to save or share your mission."</string>
@@ -82,7 +81,6 @@
     <string name="content_descriptor_delete_icon">delete icon</string>
     <string name="delete_successful">Delete successful</string>
     <string name="delete_fail">Failed to delete</string>
-    <string name="download_failed">An error occurred during the download</string>
     <string name="download_succeeded">The download of: %1$s has succeeded</string>
     <string name="download_progress">The download is at: %1$s completion</string>
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
@@ -118,7 +116,6 @@
     <string name="mission_already_in_progress">A mission is already in progress. Wait for it to end or cancel it before starting a new one.</string>
     <string name="drone_mission_return_launch">Mission done, returning to launch point</string>
     <string name="drone_mission_to_user">The drone is coming back to your current location.</string>
-    <string name="drone_armed">Drone armed</string>
     <string name="drone_already_armed">Drone already armed</string>
     <string name="drone_disarmed_during_setup">Drone disarmed by an external source. Please retry…</string>
     <!-- Live values during the flight -->
@@ -161,8 +158,6 @@
 
     <!-- Utilities -->
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
-    <string name="user_location_permission_request">In order to show your current location, you have to enable location sharing.</string>
-    <string name="user_location_permission_not_granted">Your current location cannot be found.</string>
     <!-- Format to follow for the mission name in the list-->
     <string name="mapping_mission_list_format">%s</string>
     <!-- Format to follow for the mission name in the list if they are also shared while in the private list-->
@@ -176,14 +171,13 @@
     <string name="drone_mission_error">An error occurred during the mission : %s</string>
     <string name="drone_pause_success">Mission paused</string>
     <string name="drone_return_error">Could not launch mission to let the drone come back</string>
-    <string name="drone_mission_retry">There was an error while %s.\nTry %d / %d Retrying…</string>
 
     <!-- Permission dialog -->
     <string name="permission_accept_button">Accept</string>
     <string name="permission_deny_button">Deny</string>
     <string name="permission_location_enable">Enable location</string>
     <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
-    <string name="error">An error occured : $1%s</string>
+    <string name="error">An error occurred : $1%s</string>
     <string name="copy_pictures_links">Copy pictures links</string>
     <string name="pictures_copied">Photos links copied</string>
 </resources>
