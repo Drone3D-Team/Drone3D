@@ -18,13 +18,18 @@ interface OfflineMapSaver {
      * Asynchronously downloads the region delimited by [regionBounds], it will be saved with the
      * name [regionName]. The [callback] can be used to monitor the download's progress.
      */
-    fun downloadRegion(regionName:String, regionBounds: LatLngBounds,zoom:Double, callback: OfflineRegion.OfflineRegionObserver)
+    fun downloadRegion(
+        regionName: String,
+        regionBounds: LatLngBounds,
+        zoom: Double,
+        callback: OfflineRegion.OfflineRegionObserver
+    )
 
     /**
      * Asynchronously deletes the region identified by [id] and calls [callback]
      * when it is finished. If the region does not exist, this method does nothing.
      */
-    fun deleteRegion(id:Long,callback: OfflineRegion.OfflineRegionDeleteCallback)
+    fun deleteRegion(id: Long, callback: OfflineRegion.OfflineRegionDeleteCallback)
 
     /**
      * Returns a live data for all offline regions
@@ -34,11 +39,11 @@ interface OfflineMapSaver {
     /**
      * Returns a mutable live data that will be updated with the current tile count
      */
-    fun getTotalTileCount():LiveData<Long>
+    fun getTotalTileCount(): LiveData<Long>
 
     /**
      * Returns the maximum number of tiles a user can store
      * A tile can be seen as a unit of storage for a region on the map
      */
-    fun getMaxTileCount():Long
+    fun getMaxTileCount(): Long
 }

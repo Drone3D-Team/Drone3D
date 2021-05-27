@@ -77,7 +77,7 @@ class ParallelAreaBuilderTest {
         val diag = a.distanceTo(c)
 
         val s = (distab + distbc + diag) / 2.0
-        
+
         assertThat(area.getAreaSize(), equalTo(2 * sqrt(s * (s - distab) * (s - distbc) * (s - diag))))
     }
 }

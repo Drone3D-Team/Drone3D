@@ -21,9 +21,9 @@ import ch.epfl.sdp.drone3d.model.mission.State
  * Adapter for the Recycler view creating holders for the missions
  */
 class MissionViewAdapter(private val privateList: Boolean) :
-        ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
+    ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
 
-    companion object{
+    companion object {
         const val OWNER_ID_INTENT_PATH = "MVA_owner"
         const val PRIVATE_ID_INTENT_PATH = "MVA_private"
         const val SHARED_ID_INTENT_PATH = "MVA_shared"
@@ -72,7 +72,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MissionViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.mission_selection_item, parent, false)
+            .inflate(R.layout.mission_selection_item, parent, false)
 
         return MissionViewHolder(view, privateList)
     }

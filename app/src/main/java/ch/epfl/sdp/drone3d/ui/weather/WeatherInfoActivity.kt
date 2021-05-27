@@ -97,7 +97,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         visibilityInfo.apply {
             val visibility = weatherReport.visibility
             text = if (visibility >= 1000) {
-                getString(R.string.info_visibility_km, (visibility/1000).toString())
+                getString(R.string.info_visibility_km, (visibility / 1000).toString())
             } else {
                 getString(R.string.info_visibility, visibility.toString())
             }

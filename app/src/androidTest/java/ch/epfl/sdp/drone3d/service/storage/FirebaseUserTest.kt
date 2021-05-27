@@ -26,7 +26,7 @@ import javax.inject.Inject
 @HiltAndroidTest
 class FirebaseUserTest {
 
-    companion object{
+    companion object {
         private const val timeout = 5L
     }
 

@@ -203,8 +203,8 @@ class ItineraryShowActivity : BaseMapActivity() {
     private fun goToMissionStartActivity() {
         val intent = Intent(this, MissionStartActivity::class.java)
         intent.putExtra(FLIGHTPATH_INTENT_PATH, ArrayList(flightPath))
-        intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH,flightHeight)
-        intent.putExtra(CAMERA_PITCH_INTENT_PATH,cameraPitch)
+        intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(CAMERA_PITCH_INTENT_PATH, cameraPitch)
         startActivity(intent)
     }
 

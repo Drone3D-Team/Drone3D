@@ -29,12 +29,17 @@ class DroneServiceImpl(
     private val droneData = DroneDataImpl(this)
     private val droneExecutor = DroneExecutorImpl(this, droneData, locationService)
 
-    @Volatile private var server: MavsdkServer? = null
-    @Volatile private var droneInstance: System? = null
+    @Volatile
+    private var server: MavsdkServer? = null
+    @Volatile
+    private var droneInstance: System? = null
 
-    @Volatile private var isSimulation = true
-    @Volatile private var simIP = DEFAULT_IP
-    @Volatile private var simPort = DEFAULT_PORT
+    @Volatile
+    private var isSimulation = true
+    @Volatile
+    private var simIP = DEFAULT_IP
+    @Volatile
+    private var simPort = DEFAULT_PORT
 
     override fun provideDrone(): System? = droneInstance
 
@@ -45,7 +50,7 @@ class DroneServiceImpl(
 
         val instanceContainer = droneFactory.createSimulation(IP, port)
 
-        if(instanceContainer!=null) {
+        if (instanceContainer != null) {
             droneInstance = instanceContainer.instance
             server = instanceContainer.server
             isSimulation = true

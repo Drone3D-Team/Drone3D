@@ -57,30 +57,30 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
 
         val selectedStorageTypeToggleButton =
-                findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
+            findViewById<ToggleButton>(R.id.mapping_mission_state_toggle)
 
 
         setupListViews()
 
-        if(!authService.hasActiveSession()){
+        if (!authService.hasActiveSession()) {
 
             currentListState.value =
-                    Pair(
-                            StorageType.SHARED,
-                            currentListState.value!!.second
-                    )
+                Pair(
+                    StorageType.SHARED,
+                    currentListState.value!!.second
+                )
 
             selectedStorageTypeToggleButton.isEnabled = false
 
-        } else{
+        } else {
 
             selectedStorageTypeToggleButton.isChecked = currentListState.value!!.first.checked
             selectedStorageTypeToggleButton.setOnCheckedChangeListener { _, isChecked ->
                 currentListState.value =
-                        Pair(
-                                if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
-                                currentListState.value!!.second
-                        )
+                    Pair(
+                        if (isChecked) StorageType.PRIVATE else StorageType.SHARED,
+                        currentListState.value!!.second
+                    )
             }
         }
 
@@ -136,7 +136,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
 
     private fun indexOfDifference(s1: String, s2: String): Int {
         if (s1.isNotEmpty() && s2.isNotEmpty()) {
-            val smaller = min(s1.length,s2.length)
+            val smaller = min(s1.length, s2.length)
             for (i in 0 until smaller) {
                 if (s1[i] != s2[i]) return i
             }
@@ -156,7 +156,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         val privateList = findViewById<RecyclerView>(R.id.private_mission_list_view)
         val sharedFilteredList = findViewById<RecyclerView>(R.id.shared_filtered_mission_list_view)
         val privateFilteredList =
-                findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
+            findViewById<RecyclerView>(R.id.private_filtered_mission_list_view)
 
         setupListAdapter(sharedList, private = false, filter = false)
         setupListAdapter(sharedFilteredList, private = false, filter = true)
@@ -174,7 +174,7 @@ class MappingMissionSelectionActivity : AppCompatActivity() {
         }
 
 
-        if(authService.getCurrentSession() != null) {
+        if (authService.getCurrentSession() != null) {
             val ownerId = authService.getCurrentSession()!!.user.uid
 
             setupListAdapter(privateList, private = true, filter = false)

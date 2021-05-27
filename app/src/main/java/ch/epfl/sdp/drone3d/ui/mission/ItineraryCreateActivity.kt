@@ -169,7 +169,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         goToSaveButton.setImageDrawable(
             ResourcesCompat.getDrawable(
                 resources,
-                if(authService.hasActiveSession()) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_send,
+                if (authService.hasActiveSession()) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_send,
                 null
             )
         )

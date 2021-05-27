@@ -65,17 +65,25 @@ class DroneExecutorTest {
         DroneInstanceMock.setupDefaultMocks()
 
         `when`(DroneInstanceMock.droneTelemetry.armed)
-                .thenReturn(armedPublisher.toFlowable(BackpressureStrategy.BUFFER)
-                        .cacheWithInitialCapacity(1))
+            .thenReturn(
+                armedPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                    .cacheWithInitialCapacity(1)
+            )
         `when`(DroneInstanceMock.droneTelemetry.flightMode)
-                .thenReturn(flightModePublisher.toFlowable(BackpressureStrategy.BUFFER)
-                        .cacheWithInitialCapacity(1))
+            .thenReturn(
+                flightModePublisher.toFlowable(BackpressureStrategy.BUFFER)
+                    .cacheWithInitialCapacity(1)
+            )
         `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(missionProgressPublisher.toFlowable(BackpressureStrategy.BUFFER)
-                        .cacheWithInitialCapacity(1))
+            .thenReturn(
+                missionProgressPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                    .cacheWithInitialCapacity(1)
+            )
         `when`(DroneInstanceMock.droneTelemetry.inAir)
-                .thenReturn(inAirPublisher.toFlowable(BackpressureStrategy.BUFFER)
-                        .cacheWithInitialCapacity(1))
+            .thenReturn(
+                inAirPublisher.toFlowable(BackpressureStrategy.BUFFER)
+                    .cacheWithInitialCapacity(1)
+            )
     }
 
     @Test
@@ -101,7 +109,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -150,7 +158,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -199,7 +207,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -248,7 +256,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -297,7 +305,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -323,7 +331,6 @@ class DroneExecutorTest {
     }
 
 
-
     @Test
     fun startMissionFailsOnInvalidState() {
         setupOwnMocks()
@@ -346,7 +353,7 @@ class DroneExecutorTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context)).subscribe({
             assertThat(true, `is`(false))
         }, {
@@ -362,7 +369,7 @@ class DroneExecutorTest {
 
         DroneInstanceMock.setupDefaultMocks()
         `when`(DroneInstanceMock.droneMission.missionProgress)
-                .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
+            .thenReturn(Flowable.fromFuture(future).subscribeOn(Schedulers.io()))
 
         val locationService = mock(LocationService::class.java)
         val droneService = mock(DroneService::class.java)
@@ -387,7 +394,7 @@ class DroneExecutorTest {
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).subscribe({}, { it.printStackTrace() })
 
         `when`(DroneInstanceMock.droneMission.uploadMission(ArgumentMatchers.any(Mission.MissionPlan::class.java)))
@@ -434,7 +441,7 @@ class DroneExecutorTest {
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({
                 assertThat(droneData.getMission().value, nullValue())
@@ -467,8 +474,10 @@ class DroneExecutorTest {
         DroneInstanceMock.setupDefaultMocks()
 
         `when`(DroneInstanceMock.droneMission.missionProgress)
-            .thenReturn(Flowable.fromArray(Mission.MissionProgress(0, 4))
-                .delay(10, TimeUnit.SECONDS))
+            .thenReturn(
+                Flowable.fromArray(Mission.MissionProgress(0, 4))
+                    .delay(10, TimeUnit.SECONDS)
+            )
 
         val droneService = mock(DroneService::class.java)
         `when`(droneService.provideDrone()).thenReturn(DroneInstanceMock.droneSystem)
@@ -481,19 +490,22 @@ class DroneExecutorTest {
         `when`(droneData.getPosition()).thenReturn(positionLiveData)
         `when`(droneData.getSpeed()).thenReturn(speedLiveData)
         `when`(droneData.getMutableMissionPaused()).thenReturn(MutableLiveData())
-        `when`(droneData.getHomeLocation()).thenReturn(MutableLiveData(
-            Telemetry.Position(47.397428, 8.545369, 400f, 50f)))
+        `when`(droneData.getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(47.397428, 8.545369, 400f, 50f)
+            )
+        )
         `when`(droneData.getMutableMission()).thenReturn(missionLiveData)
         `when`(droneData.getDroneStatus())
             .thenReturn(MutableLiveData(IDLE))
         `when`(droneData.getMutableDroneStatus())
-                .thenReturn(MutableLiveData(IDLE))
+            .thenReturn(MutableLiveData(IDLE))
 
         val executor: DroneExecutor = DroneExecutorImpl(droneService, droneData, locationService)
 
         executor.setupMission(
             context,
-            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            DroneUtils.makeDroneMission(someLocationsList, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
         ).andThen(executor.executeMission(context))
             .subscribe({}, { it.printStackTrace() })
 

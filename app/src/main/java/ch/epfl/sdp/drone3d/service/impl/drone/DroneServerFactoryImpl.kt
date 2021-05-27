@@ -11,7 +11,7 @@ import io.mavsdk.mavsdkserver.MavsdkServer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class DroneServerFactoryImpl: DroneServerFactory {
+class DroneServerFactoryImpl : DroneServerFactory {
 
     override fun createSimulation(simIP: String, simPort: String): DroneServerFactory.InstanceContainer? {
         val mavsdkServer = MavsdkServer()
@@ -26,9 +26,9 @@ class DroneServerFactoryImpl: DroneServerFactory {
         }
         Thread.sleep(3000)
 
-        return if(mavsdkServerPort!=0){
+        return if (mavsdkServerPort != 0) {
             DroneServerFactory.InstanceContainer(mavsdkServer, System("localhost", mavsdkServerPort))
-        }else{
+        } else {
             null
         }
     }

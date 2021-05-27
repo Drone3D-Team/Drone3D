@@ -22,12 +22,13 @@ import javax.inject.Inject
  * Authentication UI, abstract [LoginActivity] and [RegisterActivity] common behavior
  */
 @AndroidEntryPoint
-abstract class AuthActivity : AppCompatActivity()  {
+abstract class AuthActivity : AppCompatActivity() {
 
     protected lateinit var infoText: TextView
     private lateinit var progressBar: ProgressBar
 
-    @Inject lateinit var authService: AuthenticationService
+    @Inject
+    lateinit var authService: AuthenticationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,18 +53,17 @@ abstract class AuthActivity : AppCompatActivity()  {
         progressBar.visibility = View.VISIBLE
         infoText.visibility = View.GONE
         //Process input
-        authTask.addOnCompleteListener(this) {
-            task ->
-                progressBar.visibility = View.GONE
-                if (task.isSuccessful) {
-                    success()
-                } else {
-                    // If sign in fails, display a message to the user.
-                    ToastHandler.showToast(baseContext, failMessage)
-                    if (task.exception?.message != null) {
-                        writeErrorMessage(task.exception?.message!!)
-                    }
+        authTask.addOnCompleteListener(this) { task ->
+            progressBar.visibility = View.GONE
+            if (task.isSuccessful) {
+                success()
+            } else {
+                // If sign in fails, display a message to the user.
+                ToastHandler.showToast(baseContext, failMessage)
+                if (task.exception?.message != null) {
+                    writeErrorMessage(task.exception?.message!!)
                 }
+            }
         }
     }
 

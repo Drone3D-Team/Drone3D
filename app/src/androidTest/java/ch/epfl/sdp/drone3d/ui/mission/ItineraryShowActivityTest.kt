@@ -336,7 +336,7 @@ class ItineraryShowActivityTest {
             MappingMissionService.Strategy.SINGLE_PASS
         )
         intent.putExtra(
-            MissionViewAdapter.SHARED_ID_INTENT_PATH,"This_is_a_very_nice_id"
+            MissionViewAdapter.SHARED_ID_INTENT_PATH, "This_is_a_very_nice_id"
         )
 
         ActivityScenario.launch<ItineraryShowActivity>(intent).use {

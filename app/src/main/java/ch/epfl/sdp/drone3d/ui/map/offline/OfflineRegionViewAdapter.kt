@@ -23,7 +23,11 @@ import timber.log.Timber
  * the missions when we click on the delete button, a [lineManager] to draw on the [mapboxMap] on
  * which we can zoom when we click on the name of a region.
  */
-class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, private val lineManager: LineManager, private val mapboxMap: MapboxMap) :
+class OfflineRegionViewAdapter(
+    private val offlineMapSaver: OfflineMapSaver,
+    private val lineManager: LineManager,
+    private val mapboxMap: MapboxMap
+) :
     ListAdapter<OfflineRegion, OfflineRegionViewAdapter.OfflineRegionViewHolder>(RegionDiff) {
 
     /**
@@ -45,7 +49,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, pri
             val metadata = getMetadata(offRegion)
             textView.text = metadata.name
 
-            textView.setOnClickListener{
+            textView.setOnClickListener {
                 MapboxUtility.zoomOnCoordinate(metadata.bounds.center, mapboxMap, metadata.zoom)
             }
 

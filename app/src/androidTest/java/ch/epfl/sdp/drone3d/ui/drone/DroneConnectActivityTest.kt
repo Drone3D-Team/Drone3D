@@ -16,10 +16,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
-import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
-import ch.epfl.sdp.drone3d.service.module.DroneModule
 import ch.epfl.sdp.drone3d.matcher.ToastMatcher
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
+import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
+import ch.epfl.sdp.drone3d.service.module.DroneModule
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -41,7 +41,7 @@ class DroneConnectActivityTest {
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(activityRule)
+        .around(activityRule)
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
@@ -72,10 +72,10 @@ class DroneConnectActivityTest {
         val port = "1111"
 
         `when`(droneService.setSimulation(anyString(), anyString()))
-                .then { an ->
-                    assertEquals(ip, an.getArgument(0))
-                    assertEquals(port, an.getArgument(1))
-                }
+            .then { an ->
+                assertEquals(ip, an.getArgument(0))
+                assertEquals(port, an.getArgument(1))
+            }
         `when`(droneService.isConnected()).thenReturn(true)
 
         onView(withId(R.id.text_IP_address))

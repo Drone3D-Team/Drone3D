@@ -27,7 +27,7 @@ class FirebaseUser @Inject constructor(
     /**
      * Returns the reference in database of the user identified by the given [UID].
      */
-    private fun userRef(UID: String): DatabaseReference{
+    private fun userRef(UID: String): DatabaseReference {
         return database.getReference("users/$UID")
     }
 

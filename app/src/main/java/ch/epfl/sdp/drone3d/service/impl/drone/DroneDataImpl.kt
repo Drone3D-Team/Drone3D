@@ -174,6 +174,7 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
             )
         }
     }
+
     private fun addVideoStreamSubscriptions(droneInstance: System) {
         addSubscription(droneInstance.camera.videoStreamInfo.map { it.settings.uri }, "videoStreamUri") { uri ->
             videoStreamUri.postValue(uri)
@@ -230,10 +231,10 @@ class DroneDataImpl constructor(val provider: DroneService) : DroneDataEditable 
 
     private fun <T> addSubscription(flow: Flowable<T>, name: String, onNext: Consumer<in T>) {
         disposables.add(
-                flow.distinctUntilChanged().subscribe(
-                    onNext,
-                    { error -> Timber.e(error,"Error $name : $error") }
-                )
+            flow.distinctUntilChanged().subscribe(
+                onNext,
+                { error -> Timber.e(error, "Error $name : $error") }
+            )
         )
     }
 

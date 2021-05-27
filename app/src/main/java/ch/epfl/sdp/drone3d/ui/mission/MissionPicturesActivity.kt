@@ -36,8 +36,9 @@ class MissionPicturesActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
 
-    @Inject lateinit var photos: DronePhotos
-    
+    @Inject
+    lateinit var photos: DronePhotos
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mission_pictures)
@@ -50,18 +51,18 @@ class MissionPicturesActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         disposables.add(photos.getRandomPhotos(SAMPLE_SIZE)
-                .subscribeOn(Schedulers.io())
-                .retry(10 )
-                .subscribe(
-                        {
-                            runOnUiThread { adapter.submitList(it) }
-                        },
-                        {
-                            ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
-                            Timber.e(it, "Failed to download pictures")
-                            finish()
-                        }
-                )
+            .subscribeOn(Schedulers.io())
+            .retry(10)
+            .subscribe(
+                {
+                    runOnUiThread { adapter.submitList(it) }
+                },
+                {
+                    ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
+                    Timber.e(it, "Failed to download pictures")
+                    finish()
+                }
+            )
         )
     }
 
@@ -73,19 +74,19 @@ class MissionPicturesActivity : AppCompatActivity() {
 
     fun copyUrls(@Suppress("UNUSED_PARAMETER") view: View) {
         disposables.add(photos.getPhotosUrl()
-                .subscribe(
-                        {
-                            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clipData = ClipData.newPlainText(CLIPBOARD_NAME, it.joinToString("\n"))
-                            clipboardManager.setPrimaryClip(clipData)
+            .subscribe(
+                {
+                    val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clipData = ClipData.newPlainText(CLIPBOARD_NAME, it.joinToString("\n"))
+                    clipboardManager.setPrimaryClip(clipData)
 
-                            ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
-                        },
-                        {
-                            Timber.e(it)
-                            ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
-                        }
-                )
+                    ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
+                },
+                {
+                    Timber.e(it)
+                    ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
+                }
+            )
         )
     }
 }

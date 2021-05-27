@@ -76,8 +76,10 @@ class MissionInProgressActivityTest {
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
+
     @BindValue
     val locationService: LocationService = mock(LocationService::class.java)
+
     @BindValue
     val weatherService: WeatherService = mock(WeatherService::class.java)
 
@@ -86,9 +88,9 @@ class MissionInProgressActivityTest {
 
         `when`(droneService.getExecutor()).thenReturn(executor)
         `when`(executor.executeMission(anyObj(Context::class.java)))
-            .thenAnswer{ Completable.fromFuture(missionEndFuture).subscribeOn(Schedulers.io()) }
+            .thenAnswer { Completable.fromFuture(missionEndFuture).subscribeOn(Schedulers.io()) }
         `when`(executor.returnToHomeLocationAndLand(anyObj(Context::class.java)))
-                .thenReturn(Completable.complete())
+            .thenReturn(Completable.complete())
         `when`(executor.returnToUserLocationAndLand(anyObj(Context::class.java)))
             .thenReturn(Completable.complete())
 
@@ -156,7 +158,7 @@ class MissionInProgressActivityTest {
 
         val activity = CompletableFuture<MissionInProgressActivity>()
         activityRule.scenario.onActivity {
-             activity.complete(it)
+            activity.complete(it)
         }
 
         missionEndFuture.completeExceptionally(Error("test"))
@@ -176,12 +178,16 @@ class MissionInProgressActivityTest {
         val homePosition = MutableLiveData(LatLng(0.0, 0.0))
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
-        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
-            Telemetry.Position(
-            homePosition.value?.latitude,
-            homePosition.value?.longitude,
-            10f,
-            10f)))
+        `when`(droneService.getData().getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(
+                    homePosition.value?.latitude,
+                    homePosition.value?.longitude,
+                    10f,
+                    10f
+                )
+            )
+        )
         statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
@@ -205,12 +211,16 @@ class MissionInProgressActivityTest {
         val userPosition = MutableLiveData(LatLng(0.0, 0.0))
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
-        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
-            Telemetry.Position(
-                userPosition.value?.latitude,
-                userPosition.value?.longitude,
-                10f,
-                10f)))
+        `when`(droneService.getData().getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(
+                    userPosition.value?.latitude,
+                    userPosition.value?.longitude,
+                    10f,
+                    10f
+                )
+            )
+        )
         statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
 
@@ -239,9 +249,9 @@ class MissionInProgressActivityTest {
         mutex.acquire()
 
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
-                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
         Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
-                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.GONE)))
 
         activityRule.scenario.onActivity {
             statusLiveData.value = DroneData.DroneStatus.EXECUTING_MISSION
@@ -251,9 +261,9 @@ class MissionInProgressActivityTest {
         mutex.acquire()
 
         Espresso.onView(ViewMatchers.withId(R.id.backToHomeButton))
-                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
         Espresso.onView(ViewMatchers.withId(R.id.backToUserButton))
-                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
 
         activityRule.scenario.onActivity {
             statusLiveData.value = DroneData.DroneStatus.IDLE
@@ -267,12 +277,16 @@ class MissionInProgressActivityTest {
         val homePosition = MutableLiveData(LatLng(0.0, 0.0))
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
-        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
-            Telemetry.Position(
-                homePosition.value?.latitude,
-                homePosition.value?.longitude,
-                10f,
-                10f)))
+        `when`(droneService.getData().getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(
+                    homePosition.value?.latitude,
+                    homePosition.value?.longitude,
+                    10f,
+                    10f
+                )
+            )
+        )
         statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(false))
@@ -293,12 +307,16 @@ class MissionInProgressActivityTest {
         val homePosition = MutableLiveData(LatLng(0.0, 0.0))
 
         `when`(droneService.getData().getPosition()).thenReturn(dronePosition)
-        `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData(
-            Telemetry.Position(
-                homePosition.value?.latitude,
-                homePosition.value?.longitude,
-                10f,
-                10f)))
+        `when`(droneService.getData().getHomeLocation()).thenReturn(
+            MutableLiveData(
+                Telemetry.Position(
+                    homePosition.value?.latitude,
+                    homePosition.value?.longitude,
+                    10f,
+                    10f
+                )
+            )
+        )
         statusLiveData.postValue(DroneData.DroneStatus.EXECUTING_MISSION)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData(true))
         `when`(droneService.getData().isMissionPaused()).thenReturn(MutableLiveData(true))

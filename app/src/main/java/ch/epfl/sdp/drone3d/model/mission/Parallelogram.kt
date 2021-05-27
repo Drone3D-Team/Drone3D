@@ -10,20 +10,25 @@ import ch.epfl.sdp.drone3d.model.mission.Point.Companion.distance
 /**
  * Utility class to represent a parallelogram in meters
  */
-data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: Vector){
-    companion object{
-        fun getFourthPoint(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point):Point{
-            val parallelogram = Parallelogram(origin,adjacentPoint1,adjacentPoint2)
-            return parallelogram.origin+parallelogram.dir1Span+parallelogram.dir2Span
+data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: Vector) {
+    companion object {
+        fun getFourthPoint(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point): Point {
+            val parallelogram = Parallelogram(origin, adjacentPoint1, adjacentPoint2)
+            return parallelogram.origin + parallelogram.dir1Span + parallelogram.dir2Span
         }
     }
-    constructor(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point): this(origin, Vector(origin,adjacentPoint1), Vector(origin,adjacentPoint2))
+
+    constructor(origin: Point, adjacentPoint1: Point, adjacentPoint2: Point) : this(
+        origin,
+        Vector(origin, adjacentPoint1),
+        Vector(origin, adjacentPoint2)
+    )
 
     /**
      * Translate the parallelogram by [translationVector]
      */
     fun translate(translationVector: Vector): Parallelogram {
-        return Parallelogram(origin+translationVector,dir1Span,dir2Span)
+        return Parallelogram(origin + translationVector, dir1Span, dir2Span)
     }
 
     /**
@@ -31,19 +36,19 @@ data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: 
      * and flipped direction vectors
      */
     fun diagonalEquivalent(): Parallelogram {
-        return Parallelogram(origin+dir1Span+dir2Span, dir2Span.reverse(),dir1Span.reverse())
+        return Parallelogram(origin + dir1Span + dir2Span, dir2Span.reverse(), dir1Span.reverse())
     }
 
     /**
      * Returns the 4 vertices of the parallelogram
      */
-    fun getVertices():List<Point>{
+    fun getVertices(): List<Point> {
         val vertices = mutableListOf<Point>()
 
         vertices.add(origin)
-        vertices.add(origin+dir1Span)
-        vertices.add(origin+dir1Span+dir2Span)
-        vertices.add(origin+dir2Span)
+        vertices.add(origin + dir1Span)
+        vertices.add(origin + dir1Span + dir2Span)
+        vertices.add(origin + dir2Span)
         return vertices
     }
 
@@ -53,9 +58,13 @@ data class Parallelogram(val origin: Point, val dir1Span: Vector, val dir2Span: 
     fun getClosestEquivalentParallelogram(point: Point): Parallelogram {
 
         val vertices = getVertices()
-        val closestOriginIndex = vertices.withIndex().minByOrNull{ (_, vertex) -> distance(point, vertex) }?.index ?: 0
+        val closestOriginIndex = vertices.withIndex().minByOrNull { (_, vertex) -> distance(point, vertex) }?.index ?: 0
 
-        return Parallelogram(vertices[closestOriginIndex],vertices[(closestOriginIndex-1+vertices.size)%vertices.size], vertices[(closestOriginIndex+1)%vertices.size])
+        return Parallelogram(
+            vertices[closestOriginIndex],
+            vertices[(closestOriginIndex - 1 + vertices.size) % vertices.size],
+            vertices[(closestOriginIndex + 1) % vertices.size]
+        )
     }
 
 }

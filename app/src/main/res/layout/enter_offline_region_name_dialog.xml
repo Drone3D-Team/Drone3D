@@ -15,8 +15,7 @@
             android:imeOptions="actionDone"
             android:hint="@string/name_hint"
             android:inputType="text"
-            android:importantForAutofill="no"
-            />
+            android:importantForAutofill="no" />
 
     </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

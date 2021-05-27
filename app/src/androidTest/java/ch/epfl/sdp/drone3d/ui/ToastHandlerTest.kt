@@ -71,7 +71,7 @@ class ToastHandlerTest {
         testToast(
             { activity ->
                 Thread {
-                    ToastHandler.showToastAsync(activity,R.string.app_name)
+                    ToastHandler.showToastAsync(activity, R.string.app_name)
                 }.start()
             },
             { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
@@ -109,8 +109,8 @@ class ToastHandlerTest {
         val args = arrayOf("formatting")
 
         testToast(
-                { activity -> ToastHandler.showToast(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args) },
-                { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
+            { activity -> ToastHandler.showToast(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args) },
+            { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
         )
     }
 
@@ -119,12 +119,12 @@ class ToastHandlerTest {
         val args = arrayOf("formatting")
 
         testToast(
-                { activity ->
-                    Thread {
-                        ToastHandler.showToastAsync(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
+            { activity ->
+                Thread {
+                    ToastHandler.showToastAsync(activity, R.string.drone_simulated_ip, Toast.LENGTH_LONG, *args)
+                }.start()
+            },
+            { activity -> ToastMatcher.onToast(activity, activity.getString(R.string.drone_simulated_ip, *args)) }
         )
     }
 
@@ -132,16 +132,16 @@ class ToastHandlerTest {
     fun simpleToastCustomDurationWorks() {
         val text = "Toast text"
         testToast(
-                { activity -> ToastHandler.showToast(activity, text, 5) },
-                { activity -> ToastMatcher.onToast(activity, text) }
+            { activity -> ToastHandler.showToast(activity, text, 5) },
+            { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
     @Test
     fun simpleToastWithCustomDurationResWorks() {
         testToast(
-                { activity -> ToastHandler.showToast(activity, R.string.app_name, Toast.LENGTH_LONG) },
-                { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
+            { activity -> ToastHandler.showToast(activity, R.string.app_name, Toast.LENGTH_LONG) },
+            { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
 
@@ -150,26 +150,27 @@ class ToastHandlerTest {
         val text = "Toast text"
 
         testToast(
-                { activity ->
-                    Thread {
-                        ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, text) }
+            { activity ->
+                Thread {
+                    ToastHandler.showToastAsync(activity, text, Toast.LENGTH_LONG)
+                }.start()
+            },
+            { activity -> ToastMatcher.onToast(activity, text) }
         )
     }
 
     @Test
     fun asyncToastWithResCustomDurationCustomDurationWorks() {
         testToast(
-                { activity ->
-                    Thread {
-                        ToastHandler.showToastAsync(activity,R.string.app_name, Toast.LENGTH_LONG)
-                    }.start()
-                },
-                { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
+            { activity ->
+                Thread {
+                    ToastHandler.showToastAsync(activity, R.string.app_name, Toast.LENGTH_LONG)
+                }.start()
+            },
+            { activity -> ToastMatcher.onToast(activity, R.string.app_name) }
         )
     }
+
     private fun testToast(generator: (Activity) -> Unit, matcher: (Activity) -> ViewInteraction) {
         val activity = CompletableFuture<Activity>()
         intentsTestRule.scenario.onActivity {

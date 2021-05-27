@@ -51,7 +51,7 @@ class DroneConnectActivity : AppCompatActivity() {
     private lateinit var ipText: EditText
     private lateinit var portText: EditText
     private lateinit var waitingText: TextView
-    private lateinit var divider:View
+    private lateinit var divider: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,9 +178,9 @@ class DroneConnectActivity : AppCompatActivity() {
     private suspend fun checkIfDroneConnected(waitingTime: Long) {
         var remainingTime = waitingTime
         val delay = 100L
-        while (!droneService.isConnected() && remainingTime>0) {
+        while (!droneService.isConnected() && remainingTime > 0) {
             delay(delay)
-            remainingTime-=delay
+            remainingTime -= delay
         }
     }
 

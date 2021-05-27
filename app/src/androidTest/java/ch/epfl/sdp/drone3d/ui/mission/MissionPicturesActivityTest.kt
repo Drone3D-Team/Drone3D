@@ -34,7 +34,7 @@ class MissionPicturesActivityTest {
 
     @get:Rule
     val testRule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(activityRule)
+        .around(activityRule)
 
     @BindValue
     val photosService: DronePhotos = mock(DronePhotos::class.java)
@@ -50,9 +50,9 @@ class MissionPicturesActivityTest {
     @Test
     fun downloadedPicturesAreShown() {
         val bitmaps = listOf(
-                "https://user-images.githubusercontent.com/44306955/119693549-adf15b80-be4c-11eb-905f-4e1642bf4e68.jpeg",
-                "https://user-images.githubusercontent.com/44306955/119693554-af228880-be4c-11eb-9907-4822ba645127.jpeg",
-                "https://user-images.githubusercontent.com/44306955/119693556-b053b580-be4c-11eb-926f-3efa9fb9174e.jpeg"
+            "https://user-images.githubusercontent.com/44306955/119693549-adf15b80-be4c-11eb-905f-4e1642bf4e68.jpeg",
+            "https://user-images.githubusercontent.com/44306955/119693554-af228880-be4c-11eb-9907-4822ba645127.jpeg",
+            "https://user-images.githubusercontent.com/44306955/119693556-b053b580-be4c-11eb-926f-3efa9fb9174e.jpeg"
         ).map {
             val imageStream = URL(it).openStream()
             val image = BitmapFactory.decodeStream(imageStream)
@@ -65,7 +65,7 @@ class MissionPicturesActivityTest {
         Thread.sleep(100)
 
         onView(withId(R.id.mission_pictures_view))
-                .check(MappingMissionSelectionActivityTest.matchCount(bitmaps.size))
+            .check(MappingMissionSelectionActivityTest.matchCount(bitmaps.size))
     }
 
     @Test
@@ -76,7 +76,7 @@ class MissionPicturesActivityTest {
         Thread.sleep(100)
 
         val clipboardService = InstrumentationRegistry.getInstrumentation()
-                .targetContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            .targetContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         assertThat(clipboardService.primaryClip?.getItemAt(0)?.text, `is`("AAAA\nBBBB"))
     }
 }

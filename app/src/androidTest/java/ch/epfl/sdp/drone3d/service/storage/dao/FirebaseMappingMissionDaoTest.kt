@@ -43,7 +43,8 @@ class FirebaseMappingMissionDaoTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Inject lateinit var database: FirebaseDatabase
+    @Inject
+    lateinit var database: FirebaseDatabase
 
     private lateinit var db: FirebaseMappingMissionDao
     private val timeout = 5L

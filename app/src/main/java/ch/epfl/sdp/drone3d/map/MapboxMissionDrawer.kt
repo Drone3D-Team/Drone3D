@@ -14,7 +14,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.*
 /**
  * This class draws the mission of the drone on the map
  */
-class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style): MapboxDrawer {
+class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
 
     private var lineManager: LineManager = LineManager(mapView, mapboxMap, style)
     private var symbolManager = SymbolManager(mapView, mapboxMap, style)
@@ -27,15 +27,14 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
     /**
      * Show a [flightPath] on the map by linking all points with lines.
      */
-    fun showMission(flightPath: List<LatLng>, withIndex : Boolean) {
+    fun showMission(flightPath: List<LatLng>, withIndex: Boolean) {
         symbolManager.deleteAll()
 
-        if(flightPath.isEmpty()){
+        if (flightPath.isEmpty()) {
             lineManager.deleteAll()
             reset = true
-        }
-        else {
-            if(withIndex){
+        } else {
+            if (withIndex) {
                 mapSymbols = flightPath.mapIndexed { index: Int, latLng: LatLng ->
 
                     val symbolOption = SymbolOptions()
@@ -44,7 +43,7 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
 
                     symbolManager.create(symbolOption)
                 }
-            }else{
+            } else {
                 displayStartAndEnd(flightPath)
             }
 
@@ -67,8 +66,8 @@ class MapboxMissionDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style):
     /**
      * Display a "Start" and a "End" tag for the first and the last point of the given [flightPath]
      */
-    private fun displayStartAndEnd(flightPath: List<LatLng>){
-        if(flightPath.isNotEmpty()) {
+    private fun displayStartAndEnd(flightPath: List<LatLng>) {
+        if (flightPath.isNotEmpty()) {
             val symbolOptionFirst = SymbolOptions()
                 .withLatLng(LatLng(flightPath[0]))
                 .withTextField("Start")

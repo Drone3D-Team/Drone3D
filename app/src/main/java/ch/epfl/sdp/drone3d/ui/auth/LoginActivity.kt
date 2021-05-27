@@ -44,8 +44,10 @@ class LoginActivity : AuthActivity() {
 
     override fun success() {
         startActivity(Intent(this, MainActivity::class.java))
-        Toast.makeText(baseContext, R.string.login_success,
-                Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            baseContext, R.string.login_success,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     /**
