@@ -13,11 +13,9 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        style="@style/floatingActionButtonStyle"
         android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:clickable="true"
         android:contentDescription="@string/content_descriptor_edit_icon"
         android:onClick="goToMissionCreation"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -36,7 +34,7 @@
         android:text="@string/delete_mission"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.138"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.95" />
@@ -49,20 +47,18 @@
         android:text="@string/weather_info"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.932"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.121" />
+        app:layout_constraintVertical_bias="0.05" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        style="@style/floatingActionButtonStyle"
         android:id="@+id/buttonToMissionInProgressActivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
         android:layout_margin="30sp"
-        android:clickable="true"
         android:contentDescription="@string/content_descriptor_drone_icon"
         android:enabled="true"
         android:onClick="launchMission"
