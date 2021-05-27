@@ -191,7 +191,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText( PRIVATE_MAPPING_MISSION.name),
+                withText(buttonName(false, PRIVATE_MAPPING_MISSION)),
                 isDisplayed()
             )
         ).perform(click())
@@ -218,7 +218,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText( SHARED_MAPPING_MISSION.name),
+                withText(buttonName(true, SHARED_MAPPING_MISSION)),
                 isDisplayed()
             )
         ).perform(click())
@@ -267,7 +267,7 @@ class MappingMissionSelectionActivityTest {
         liveDataShowsToUser(false, false, curPrivate)
 
         curPrivate?.forEach { m ->
-            onView(withText(m.name))
+            onView(withText(buttonName(false, m)))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
 
@@ -374,7 +374,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText(SHARED_MAPPING_MISSION.name),
+                withText(buttonName(true, SHARED_MAPPING_MISSION)),
                 isDisplayed()
             )
         ).perform(click())
@@ -528,7 +528,7 @@ class MappingMissionSelectionActivityTest {
         )
 
         currentData?.forEach { m ->
-            onView(withText( m.name))
+            onView(withText(buttonName(shared, m)))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
@@ -540,6 +540,14 @@ class MappingMissionSelectionActivityTest {
             )
         )
     }
+
+    private fun buttonName(shared: Boolean, m: MappingMission): String =
+        if (m.state == State.PRIVATE_AND_SHARED)
+            if (shared)
+                m.name + " - P"
+            else
+                m.name + " - S"
+        else m.name
 
     private fun matchCount(expectedCount: Int): ViewAssertion =
         ViewAssertion { view, noViewFoundException ->
