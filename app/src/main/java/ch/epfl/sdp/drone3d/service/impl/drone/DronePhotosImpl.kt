@@ -24,6 +24,10 @@ import java.net.MalformedURLException
 import java.net.URL
 import javax.inject.Inject
 
+/**
+ * This class is an implementation of [DronePhotos].
+ * It allows you to retrieve photos taken by the drone.
+ */
 class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhotos {
 
     private val photosCache = mutableMapOf<String, Bitmap>()
