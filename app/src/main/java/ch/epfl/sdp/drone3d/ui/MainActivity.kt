@@ -21,7 +21,6 @@ import ch.epfl.sdp.drone3d.ui.drone.DroneConnectActivity
 import ch.epfl.sdp.drone3d.ui.map.offline.ManageOfflineMapActivity
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryCreateActivity
 import ch.epfl.sdp.drone3d.ui.mission.MappingMissionSelectionActivity
-import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.reflect.KClass
