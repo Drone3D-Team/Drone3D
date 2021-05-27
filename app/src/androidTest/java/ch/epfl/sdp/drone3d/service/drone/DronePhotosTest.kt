@@ -44,12 +44,12 @@ class DronePhotosTest {
         private val DEFAULT_QUATERNION = Camera.Quaternion(0f, 0f, 0f, 0f)
         private val DEFAULT_EULER_ANGLE = Camera.EulerAngle(0f, 0f, 0f)
         private val CORRECT_URLS = listOf(
-            "https://user-images.githubusercontent.com/44306955/119693549-adf15b80-be4c-11eb-905f-4e1642bf4e68.jpeg",
-            "https://user-images.githubusercontent.com/44306955/119693554-af228880-be4c-11eb-9907-4822ba645127.jpeg",
-            "https://user-images.githubusercontent.com/44306955/119693556-b053b580-be4c-11eb-926f-3efa9fb9174e.jpeg",
-            "https://user-images.githubusercontent.com/44306955/119693559-b0ec4c00-be4c-11eb-9a3b-1a0244578eeb.jpeg",
-            "https://user-images.githubusercontent.com/44306955/119693560-b0ec4c00-be4c-11eb-8c1c-2d51ba7e6e64.jpeg",
-            "https://user-images.githubusercontent.com/44306955/119693562-b0ec4c00-be4c-11eb-9c0e-48c2896ca43f.jpeg"
+                "https://user-images.githubusercontent.com/44306955/119693549-adf15b80-be4c-11eb-905f-4e1642bf4e68.jpeg",
+                "https://user-images.githubusercontent.com/44306955/119693554-af228880-be4c-11eb-9907-4822ba645127.jpeg",
+                "https://user-images.githubusercontent.com/44306955/119693556-b053b580-be4c-11eb-926f-3efa9fb9174e.jpeg",
+                "https://user-images.githubusercontent.com/44306955/119693559-b0ec4c00-be4c-11eb-9a3b-1a0244578eeb.jpeg",
+                "https://user-images.githubusercontent.com/44306955/119693560-b0ec4c00-be4c-11eb-8c1c-2d51ba7e6e64.jpeg",
+                "https://user-images.githubusercontent.com/44306955/119693562-b0ec4c00-be4c-11eb-9c0e-48c2896ca43f.jpeg"
         )
         private const val WRONG_URL = "a wrong url"
     }
