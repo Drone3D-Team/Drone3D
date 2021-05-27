@@ -29,6 +29,8 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.mission.MappingMissionService.Strategy
 import ch.epfl.sdp.drone3d.service.impl.mission.ParallelogramMappingMissionService
+import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.auth.LoginActivity
 import ch.epfl.sdp.drone3d.ui.map.BaseMapActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lukelorusso.verticalseekbar.VerticalSeekBar
@@ -94,6 +96,9 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
         const val DEFAULT_FLIGHTHEIGHT = 50.0
         val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
+
+        // Maximum area size in m2
+        const val MAXIMUM_AREA_SIZE = 10000.0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,6 +131,11 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         deleteButton.isEnabled = false
         goToSaveButton = findViewById(R.id.buttonToSaveActivity)
         goToSaveButton.isEnabled = false
+        setButtonIconToSaveOrLaunchMission()
+
+        if (!authService.hasActiveSession()) {
+            setDialogNotLogin()
+        }
 
 
         // TextView
@@ -133,29 +143,51 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
     }
 
     /**
+     * Warn the user that he is not login and he won't be able to save his mission
+     */
+    private fun setDialogNotLogin() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(getString(R.string.warning_not_login))
+        builder.setCancelable(false)
+
+        builder.setPositiveButton(getString(R.string.go_to_login)) { dialog, _ ->
+            dialog.cancel()
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        builder.setNegativeButton(R.string.no_saving_possible) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.create()?.show()
+    }
+
+    /**
+     * If the user as an active session display save icon, otherwise send icon is displayed on the bottom button
+     */
+    private fun setButtonIconToSaveOrLaunchMission() {
+        goToSaveButton.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                if(authService.hasActiveSession()) android.R.drawable.ic_menu_save else android.R.drawable.ic_menu_send,
+                null
+            )
+        )
+    }
+
+    /**
      * Update the strategy button icon based on the current strategy
      */
     private fun setStrategyButtonIcon() {
-        when (strategy) {
-            Strategy.SINGLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_single_path_strategy,
-                        null
-                    )
-                )
-            }
-            Strategy.DOUBLE_PASS -> {
-                changeStrategyButton.setImageDrawable(
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_double_path_strategy,
-                        null
-                    )
-                )
-            }
-        }
+        changeStrategyButton.setImageDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                when (strategy) {
+                    Strategy.SINGLE_PASS -> R.drawable.ic_single_path_strategy
+                    Strategy.DOUBLE_PASS -> R.drawable.ic_double_path_strategy
+                },
+                null
+            )
+        )
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -203,7 +235,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         if (areaBuilder.isComplete()) {
             isPreviewUpToDate = false
             buildMissionButton.isEnabled = true
-            goToSaveButton.isEnabled = authService.hasActiveSession()
+            goToSaveButton.isEnabled = true
         }
         if (areaBuilder.vertices.isNotEmpty() || flightPath.isNotEmpty()) {
             deleteButton.isEnabled = true
@@ -260,9 +292,15 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      */
     fun buildFlightPath(@Suppress("UNUSED_PARAMETER") view: View) {
         buildMissionButton.isEnabled = false
-        if (!isPreviewUpToDate) {
-            isPreviewUpToDate = true
-            if (areaBuilder.isComplete()) {
+
+        if (areaBuilder.isComplete()) {
+            if (!isSizeWithinLimit()) {
+                ToastHandler.showToast(this, R.string.area_size_to_big)
+                return
+            }
+            if (!isPreviewUpToDate) {
+                isPreviewUpToDate = true
+
                 val path = when (strategy) {
                     Strategy.SINGLE_PASS -> missionBuilder.buildSinglePassMappingMission(
                         areaBuilder.vertices,
@@ -299,24 +337,44 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
      * Go to SaveMappingMissionActivity but first check if the flight path is up to date and if not warn the user
      */
     fun onSaved(@Suppress("UNUSED_PARAMETER") view: View) {
-        if (!isPreviewUpToDate) {
-            val builder = AlertDialog.Builder(this)
-            builder.setMessage(getString(R.string.save_without_updating_confirmation))
-            builder.setCancelable(true)
+        if (!isSizeWithinLimit()) {
+            ToastHandler.showToast(this, R.string.area_size_to_big)
+        } else if (authService.hasActiveSession()) {
+            if (!isPreviewUpToDate) {
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage(getString(R.string.save_without_updating_confirmation))
+                builder.setCancelable(true)
 
-            builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, _ ->
-                dialog.cancel()
+                builder.setPositiveButton(getString(R.string.confirm_save_without_updating)) { dialog, _ ->
+                    dialog.cancel()
+                    goToSaveActivity()
+                }
+
+                builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, _ ->
+                    dialog.cancel()
+                }
+                builder.create()?.show()
+            } else {
                 goToSaveActivity()
             }
-
-            builder.setNegativeButton(R.string.cancel_save_without_updating) { dialog, _ ->
-                dialog.cancel()
-            }
-            builder.create()?.show()
         } else {
-            goToSaveActivity()
+            val intent = Intent(this, ItineraryShowActivity::class.java)
+            intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+            intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(areaBuilder.vertices))
+            intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
+
+            startActivity(intent)
+            finish()
         }
     }
+
+    /**
+     * Test if the size of the area is with the accepted size
+     */
+    private fun isSizeWithinLimit(): Boolean {
+        return areaBuilder.isComplete() && areaBuilder.getAreaSize() < MAXIMUM_AREA_SIZE
+    }
+
 
     /**
      * Launch SaveMappingMissionActivity and transfer flightpath
@@ -328,6 +386,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
 
         startActivity(intent)
+        finish()
     }
 
     override fun onDestroy() {

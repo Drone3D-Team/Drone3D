@@ -92,6 +92,7 @@
         android:importantForAutofill="no"
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:imeOptions="actionDone"
         app:layout_constraintBottom_toBottomOf="@id/passwordText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

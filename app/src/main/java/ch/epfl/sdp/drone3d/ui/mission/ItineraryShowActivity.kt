@@ -104,11 +104,13 @@ class ItineraryShowActivity : BaseMapActivity() {
         }
 
         if (locationService.isLocationEnabled()) {
-            subscriptionTracker = locationService.subscribeToLocationUpdates( {
-                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
-                ,
+            subscriptionTracker = locationService.subscribeToLocationUpdates(
+                { newLatLng: LatLng ->
+                    if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng)
+                },
                 MissionInProgressActivity.MIN_TIME_DELTA,
-                MissionInProgressActivity.MIN_DISTANCE_DELTA)
+                MissionInProgressActivity.MIN_DISTANCE_DELTA
+            )
         }
     }
 
@@ -195,6 +197,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         intent.putExtra(AREA_INTENT_PATH, ArrayList(area))
         intent.putExtra(STRATEGY_INTENT_PATH, strategy)
         startActivity(intent)
+        finish()
     }
 
     private fun goToMissionStartActivity() {

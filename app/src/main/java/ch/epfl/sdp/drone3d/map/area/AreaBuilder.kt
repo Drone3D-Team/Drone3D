@@ -40,7 +40,7 @@ abstract class AreaBuilder : DrawableArea {
         }
 
         onVerticesChanged.forEach { it(vertices) }
-        if(area != null){
+        if (area != null) {
             onAreaChanged.forEach { it() }
         }
     }
@@ -103,4 +103,13 @@ abstract class AreaBuilder : DrawableArea {
     }
 
     protected abstract fun getShapeVerticesGivenComplete(): List<LatLng>
+
+    fun getAreaSize(): Double {
+        if (!isComplete()) {
+            throw AreaNotCompleteException("$shapeName not complete")
+        }
+        return getAreaSizeGivenComplete()
+    }
+
+    protected abstract fun getAreaSizeGivenComplete(): Double
 }
