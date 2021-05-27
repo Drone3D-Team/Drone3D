@@ -8,10 +8,12 @@ package ch.epfl.sdp.drone3d.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.Utils
 
 /**
  * The activity that allows the user to register
@@ -37,6 +39,9 @@ class RegisterActivity : AuthActivity() {
         passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
 
         infoText.text = getString(R.string.register_info_default)
+
+        val registerButton: Button = findViewById(R.id.registerButton)
+        Utils.pressButtonWhenTextIsDone(passwordEditText, registerButton)
     }
 
     override fun success() {
@@ -49,7 +54,8 @@ class RegisterActivity : AuthActivity() {
     /**
      * Register an user by taking the contents of [emailEditText], of [passwordEditText] and of [pseudoEditText]
      */
-    fun register(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun register(view: View) {
+        Utils.closeKeyboard(view, this)
         val emailText = emailEditText.text.toString()
         val passwordText = passwordEditText.text.toString()
         if (emailText == "" || passwordText == "") {
@@ -59,8 +65,10 @@ class RegisterActivity : AuthActivity() {
             startProcess(
                 authService.register(
                     emailEditText.text.toString(),
-                    passwordEditText.text.toString()),
-                R.string.register_fail)
+                    passwordEditText.text.toString()
+                ),
+                R.string.register_fail
+            )
         }
     }
 

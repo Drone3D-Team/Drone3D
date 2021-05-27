@@ -8,11 +8,13 @@ package ch.epfl.sdp.drone3d.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.ui.MainActivity
 import ch.epfl.sdp.drone3d.ui.ToastHandler
+import ch.epfl.sdp.drone3d.ui.Utils
 
 /**
  * The activity that allows the user to log in
@@ -35,6 +37,9 @@ class LoginActivity : AuthActivity() {
         passwordEditText.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
 
         infoText.text = getString(R.string.login_info_default)
+
+        val loginButton: Button = findViewById(R.id.loginButton)
+        Utils.pressButtonWhenTextIsDone(passwordEditText, loginButton)
     }
 
     override fun success() {
@@ -46,7 +51,9 @@ class LoginActivity : AuthActivity() {
     /**
      * Login an user by taking the contents of [emailEditText] and of [passwordEditText]
      */
-    fun login(@Suppress("UNUSED_PARAMETER") view: View) {
+    fun login(view: View) {
+
+        Utils.closeKeyboard(view, this)
         val emailText = emailEditText.text.toString()
         val passwordText = passwordEditText.text.toString()
         if (emailText == "" || passwordText == "") {
@@ -55,7 +62,8 @@ class LoginActivity : AuthActivity() {
         } else {
             startProcess(
                 authService.login(emailEditText.text.toString(), passwordEditText.text.toString()),
-                R.string.login_fail)
+                R.string.login_fail
+            )
         }
     }
 
