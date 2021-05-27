@@ -24,6 +24,11 @@ object FirebaseModule {
         Firebase.auth
 
     @Provides
-    fun provideFirebaseDatabase(): FirebaseDatabase =
-        Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+    fun provideFirebaseDatabase(): FirebaseDatabase {
+        val firebase = Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
+        firebase.setPersistenceEnabled(true)
+        return firebase
+    }
+
+
 }
