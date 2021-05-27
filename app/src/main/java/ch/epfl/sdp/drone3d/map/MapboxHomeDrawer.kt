@@ -5,15 +5,15 @@
 
 package ch.epfl.sdp.drone3d.map
 
-import android.graphics.Color
+import ch.epfl.sdp.drone3d.R
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.Circle
-import com.mapbox.mapboxsdk.plugins.annotation.CircleManager
-import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions
-import com.mapbox.mapboxsdk.utils.ColorUtils
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+
 
 /**
  * This class draw the location of the home of the drone on the map
@@ -22,8 +22,8 @@ import com.mapbox.mapboxsdk.utils.ColorUtils
  * - the SymbolManager was replaced by a CircleManager, and the modifications implied by this change
  */
 class MapboxHomeDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : MapboxDrawer {
-    private var circleManager = CircleManager(mapView, mapboxMap, style)
-    private lateinit var marker: Circle
+    private var symbolManager = SymbolManager(mapView, mapboxMap, style)
+    private lateinit var marker: Symbol
     private var reset: Boolean = true
 
     /**
@@ -32,25 +32,25 @@ class MapboxHomeDrawer(mapView: MapView, mapboxMap: MapboxMap, style: Style) : M
     fun showHome(location: LatLng?) {
         when {
             location == null -> {
-                circleManager.deleteAll()
+                symbolManager.deleteAll()
                 reset = true
             }
             reset -> {
-                val circleOptions = CircleOptions()
+                val symbolOptions = SymbolOptions()
                     .withLatLng(location)
-                    .withCircleColor(ColorUtils.colorToRgbaString(Color.RED))
-                marker = circleManager.create(circleOptions)
+                    .withIconImage(R.drawable.ic_home_black_24dp.toString())
+                marker = symbolManager.create(symbolOptions)
                 reset = false
             }
             else -> {
                 marker.latLng = location
-                circleManager.update(marker)
+                symbolManager.update(marker)
             }
         }
     }
 
     override fun onDestroy() {
-        circleManager.deleteAll()
-        circleManager.onDestroy()
+        symbolManager.deleteAll()
+        symbolManager.onDestroy()
     }
 }
