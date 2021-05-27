@@ -20,6 +20,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.nullValue
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +53,13 @@ class FirebaseMappingMissionDaoTest {
         rule.inject()
 
         database.goOffline()
+        database.reference.removeValue()
+
+        db = FirebaseMappingMissionDao(database)
+    }
+
+    @After
+    fun afterTests() {
         database.reference.removeValue()
 
         db = FirebaseMappingMissionDao(database)
