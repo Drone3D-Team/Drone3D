@@ -335,6 +335,9 @@ class ItineraryShowActivityTest {
             MissionViewAdapter.STRATEGY_INTENT_PATH,
             MappingMissionService.Strategy.SINGLE_PASS
         )
+        intent.putExtra(
+            MissionViewAdapter.SHARED_ID_INTENT_PATH,"This_is_a_very_nice_id"
+        )
 
         ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
             onView(withId(R.id.mission_delete))
