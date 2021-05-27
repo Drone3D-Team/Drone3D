@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -35,11 +36,12 @@ class MissionViewAdapter(private val privateList: Boolean) :
 
     class MissionViewHolder(view: View, private val privateList: Boolean) : RecyclerView.ViewHolder(view) {
 
-        private val textView: TextView = view.findViewById(R.id.mapping_selection_item_button)
+        private val textView: TextView = view.findViewById(R.id.mapping_selection_item_text)
+        private val cardView: CardView = view.findViewById(R.id.mapping_selection_item_button)
         private var curMission: MappingMission? = null
 
         init {
-            textView.setOnClickListener {
+            cardView.setOnClickListener {
                 curMission?.let { mission ->
                     val intent = Intent(view.context, ItineraryShowActivity::class.java)
 
