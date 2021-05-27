@@ -96,7 +96,7 @@ class ItineraryShowActivity : BaseMapActivity() {
         setupMap()
 
         findViewById<View>(R.id.mission_delete).visibility =
-            if (authService.getCurrentSession()?.user?.uid == ownerUid) View.VISIBLE else View.GONE
+            if (authService.getCurrentSession()?.user?.uid == ownerUid && (privateId != null || sharedId != null)) View.VISIBLE else View.GONE
 
         weatherReport = weatherService.getWeatherReport(area[0])
         weatherReport.observe(this) {
