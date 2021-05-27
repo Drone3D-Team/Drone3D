@@ -13,7 +13,9 @@ import com.google.firebase.database.ktx.getValue
 import timber.log.Timber
 import javax.inject.Inject
 
-
+/**
+ * A user in the firebase database
+ */
 class FirebaseUser @Inject constructor(
     private val database: FirebaseDatabase
 ) : Database {

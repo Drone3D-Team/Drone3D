@@ -7,6 +7,9 @@ package ch.epfl.sdp.drone3d.service.api.drone
 
 import io.mavsdk.System
 
+/**
+ * A service handling the drone and everything around it
+ */
 interface DroneService {
 
     /**

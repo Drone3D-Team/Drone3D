@@ -11,6 +11,9 @@ import io.mavsdk.mavsdkserver.MavsdkServer
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+/**
+ * This factory provide the create and launch the server that connects to the drone whether it is a simulation or not
+ */
 class DroneServerFactoryImpl : DroneServerFactory {
 
     override fun createSimulation(simIP: String, simPort: String): DroneServerFactory.InstanceContainer? {
