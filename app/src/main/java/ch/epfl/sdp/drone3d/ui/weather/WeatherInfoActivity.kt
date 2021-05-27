@@ -49,6 +49,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         visibilityInfo = findViewById(R.id.infoVisibility)
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
+        nonExistentMission.visibility = View.GONE
 
         val location = intent.extras?.get(ItineraryShowActivity.LOCATION_INTENT_PATH) as LatLng?
 
