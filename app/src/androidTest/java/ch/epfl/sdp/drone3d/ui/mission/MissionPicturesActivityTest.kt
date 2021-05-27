@@ -30,6 +30,9 @@ import org.junit.rules.RuleChain
 import org.mockito.Mockito.*
 import java.net.URL
 
+/**
+ * The the activity MissionPicturesActivity functionality
+ */
 @HiltAndroidTest
 @UninstallModules(PhotosModule::class)
 class MissionPicturesActivityTest {
