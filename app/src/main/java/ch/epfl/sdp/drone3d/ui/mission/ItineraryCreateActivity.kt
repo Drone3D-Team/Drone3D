@@ -122,7 +122,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // Button
         altitudeButton = findViewById(R.id.verticalBar)
-        altitudeButton.progress = flightHeight.toInt() 
+        altitudeButton.progress = flightHeight.toInt()
         changeStrategyButton = findViewById(R.id.changeStrategy)
         setStrategyButtonIcon()
         buildMissionButton = findViewById(R.id.buildFlightPath)
