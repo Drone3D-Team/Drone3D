@@ -200,7 +200,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText(buttonName(false, PRIVATE_MAPPING_MISSION)),
+                withText(PRIVATE_MAPPING_MISSION.name),
                 isDisplayed()
             )
         ).perform(click())
@@ -227,7 +227,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText(buttonName(true, SHARED_MAPPING_MISSION)),
+                withText(SHARED_MAPPING_MISSION.name),
                 isDisplayed()
             )
         ).perform(click())
@@ -274,11 +274,6 @@ class MappingMissionSelectionActivityTest {
         var curPrivate = PRIVATE_LIVE_DATA.value
 
         liveDataShowsToUser(false, false, curPrivate)
-
-        curPrivate?.forEach { m ->
-            onView(withText(buttonName(false, m)))
-                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-        }
 
         curPrivate = listOf(PRIVATE_MAPPING_MISSION, PRIVATE_AND_SHARED_MAPPING_MISSION)
 
@@ -383,7 +378,7 @@ class MappingMissionSelectionActivityTest {
 
         onView(
             allOf(
-                withText(buttonName(true, SHARED_MAPPING_MISSION)),
+                withText(SHARED_MAPPING_MISSION.name),
                 isDisplayed()
             )
         ).perform(click())
@@ -537,7 +532,7 @@ class MappingMissionSelectionActivityTest {
         )
 
         currentData?.forEach { m ->
-            onView(withText(buttonName(shared, m)))
+            onView(allOf(isDescendantOfA(withId(id)), withText(m.name)))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
         }
     }
@@ -549,12 +544,14 @@ class MappingMissionSelectionActivityTest {
             )
         )
     }
-
-    private fun buttonName(shared: Boolean, m: MappingMission): String =
-        if (m.state == State.PRIVATE_AND_SHARED)
-            if (shared)
-                m.name + " - P"
-            else
-                m.name + " - S"
-        else m.name
+    
+    private fun matchCount(expectedCount: Int): ViewAssertion =
+        ViewAssertion { view, noViewFoundException ->
+            if (noViewFoundException != null) {
+                throw noViewFoundException
+            }
+            val recyclerView = view as RecyclerView
+            val adapter = recyclerView.adapter
+            assertThat(adapter!!.itemCount, `is`(expectedCount))
+        }
 }

@@ -6,104 +6,286 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_activity"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/activityStyle"
+    android:id="@+id/main_activity">
 
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/horizontalTopGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.12" />
+        app:layout_constraintGuide_percent="0.3" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalGuidelineLogInBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
 
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
+        android:id="@+id/verticalRightGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.68" />
+        app:layout_constraintGuide_percent="0.7" />
+
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        android:weightSum="4"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:weightSum="1"
+        android:gravity="center"
+        android:background="@color/darkMainColor"
+        app:layout_constraintBottom_toBottomOf="@id/horizontalTopGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/browse_itinerary_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToMappingMissionSelection"
-            android:text="@string/browse_itineraries" />
-
-        <Button
-            android:id="@+id/create_itinerary_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToItineraryCreate"
-            android:text="@string/create_a_new_itinerary" />
-
-        <Button
-            android:id="@+id/go_disconnect_drone_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToDroneConnect"
-            android:text="@string/disconnect_drone" />
-
-        <Button
-            android:id="@+id/go_connect_drone_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToDroneConnect"
-            android:text="@string/connect_a_drone" />
-
-        <Button
-            android:id="@+id/manage_offline_map_button"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="7dp"
-            android:layout_weight="1"
-            android:onClick="goToDroneManageOfflineMap"
-            android:text="@string/manage_offline_map" />
+        <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/logo_image_descriptor"
+        android:src="@drawable/drone3d_logo"
+        android:layout_weight="1"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
     <Button
+        style="@style/simpleButtonStyle"
         android:id="@+id/log_out_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:onClick="logout"
         android:text="@string/log_out"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:backgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        style="@style/simpleButtonStyle"
         android:id="@+id/log_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:onClick="goToLogin"
         android:text="@string/log_in"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:backgroundTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalGuidelineLogInBottom"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/guideline2"
+        app:layout_constraintStart_toEndOf="@+id/verticalRightGuideline"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="?attr/colorPrimaryVariant"
+        android:id="@+id/cardsLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/horizontalTopGuideline"
+        >
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalUpperCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalMiddleCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/horizontalLowerCardGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.9" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/verticalMiddle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+
+        <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
+            android:id="@+id/browse_itinerary_button"
+            android:onClick="goToMappingMissionSelection"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalUpperCardGuideline"
+            >
+
+            <LinearLayout
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    style="@style/mainImageViewStyle"
+                    android:contentDescription="@string/browse_itineraries_image_descriptor"
+                    android:src="@drawable/browse_itineraries_image"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    style="@style/simpleTextViewStyle"
+                    android:text="@string/browse_itineraries" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
+            android:id="@+id/create_itinerary_button"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:onClick="goToItineraryCreate"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalMiddleCardGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/verticalMiddle"
+            app:layout_constraintTop_toTopOf="@id/horizontalUpperCardGuideline"
+            >
+
+            <LinearLayout
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    style="@style/mainImageViewStyle"
+                    android:contentDescription="@string/create_itinerary_image_descriptor"
+                    android:src="@drawable/create_itinerary_image"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    style="@style/simpleTextViewStyle"
+                    android:text="@string/create_a_new_itinerary" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
+            android:id="@+id/go_disconnect_drone_button"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:onClick="goToDroneConnect"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
+            >
+
+            <LinearLayout
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    style="@style/mainImageViewStyle"
+                    android:contentDescription="@string/disconnect_drone_image_descriptor"
+                    android:src="@drawable/drone"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+                <TextView
+                    style="@style/simpleTextViewStyle"
+                    android:text="@string/disconnect_drone" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
+            android:id="@+id/go_connect_drone_button"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:onClick="goToDroneConnect"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="@id/verticalMiddle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
+            >
+
+            <LinearLayout
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    style="@style/mainImageViewStyle"
+                    android:contentDescription="@string/connect_drone_image_descriptor"
+                    android:src="@drawable/drone"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    style="@style/simpleTextViewStyle"
+                    android:text="@string/connect_a_drone" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            style="@style/mainCardViewStyle"
+            android:id="@+id/manage_offline_map_button"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="12dp"
+            android:onClick="goToDroneManageOfflineMap"
+            app:layout_constraintBottom_toBottomOf="@id/horizontalLowerCardGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/verticalMiddle"
+            app:layout_constraintTop_toTopOf="@id/horizontalMiddleCardGuideline"
+            >
+
+            <LinearLayout
+                style="@style/mainLinearInsideCards"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    style="@style/mainImageViewStyle"
+
+                    android:contentDescription="@string/manage_offline_map_image_descriptor"
+                    android:src="@drawable/offline_image"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    style="@style/simpleTextViewStyle"
+                    android:text="@string/manage_offline_map" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
