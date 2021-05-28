@@ -94,9 +94,10 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
         const val STRATEGY_INTENT_PATH = "ICA_strategy"
         const val AREA_INTENT_PATH = "ICA_area"
         const val FLIGHTHEIGHT_INTENT_PATH = "ICA_flightHeight"
-        const val DEFAULT_FLIGHTHEIGHT = 47.0
-        const val MINIMUM_FLIGHTHEIGHT = 3.0
-        val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
+        private const val MINIMUM_FLIGHTHEIGHT = 3.0
+        private const val DEFAULT_PROGRESS = 47.0
+        private const val DEFAULT_FLIGHTHEIGHT = DEFAULT_PROGRESS + MINIMUM_FLIGHTHEIGHT
+        private val DEFAULT_STRATEGY = Strategy.SINGLE_PASS
 
         // Maximum area size in m2
         const val MAXIMUM_AREA_SIZE = 10000.0
@@ -122,7 +123,7 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // Button
         altitudeButton = findViewById(R.id.verticalBar)
-        altitudeButton.progress = flightHeight.toInt()
+        altitudeButton.progress = DEFAULT_PROGRESS.toInt()
         changeStrategyButton = findViewById(R.id.changeStrategy)
         setStrategyButtonIcon()
         buildMissionButton = findViewById(R.id.buildFlightPath)
@@ -141,6 +142,8 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
 
         // TextView
         altitudeText = findViewById(R.id.altitude)
+        altitudeText.text = getString(R.string.altitude_text, flightHeight)
+
     }
 
     /**
@@ -217,7 +220,6 @@ class ItineraryCreateActivity : BaseMapActivity(), OnMapReadyCallback,
             mapboxMap.addOnMapClickListener(this)
 
             // Buttons
-            altitudeText.text = getString(R.string.altitude_text, flightHeight + MINIMUM_FLIGHTHEIGHT)
             altitudeButton.setOnProgressChangeListener { progressValue ->
                 flightHeight = progressValue.toDouble() + MINIMUM_FLIGHTHEIGHT
                 altitudeText.text = getString(R.string.altitude_text, flightHeight)
