@@ -9,18 +9,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/mapping_selection_item_button"
-        android:layout_width="match_parent"
+        android:layout_width="220dp"
+        android:minHeight="70dp"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@color/teal_200"
-        android:fontFamily="sans-serif"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textSize="24sp"
+        android:layout_margin="10sp"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardElevation="10dp"
+        app:cardCornerRadius="14dp"
+        android:onClick="goToItineraryCreate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <TextView
+            style="@style/simpleTextViewStyle"
+            android:id="@+id/mapping_selection_item_text"
+            android:layout_margin="5dp"
+            android:fontFamily="sans-serif"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
