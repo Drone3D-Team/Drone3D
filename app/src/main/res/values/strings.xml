@@ -14,7 +14,15 @@
     <string name="disconnect_drone">Disconnect drone</string>
     <string name="create_a_new_itinerary">Create a new itinerary</string>
     <string name="browse_itineraries">Browse itineraries</string>
+    <string name="browse_itineraries_image_descriptor">location</string>
+    <string name="create_itinerary_image_descriptor">parallelogram with 3 points</string>
+    <string name="disconnect_drone_image_descriptor">drone</string>
+    <string name="connect_drone_image_descriptor">drone</string>
+    <string name="manage_offline_map_image_descriptor">no connection</string>
+    <string name="logo_image_descriptor">logo</string>
 
+    manage_offline_map
+    go_disconnect_drone_button
     <!-- Login/Register Activities -->
     <string name="email_text">Email</string>
     <string name="password_text">Password</string>
