@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.auth.AuthenticationService
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
@@ -47,10 +48,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun refresh() {
         val loginButton: Button = findViewById(R.id.log_in_button)
-        val logoutButton: Button = findViewById(R.id.log_out_button)
+        val logoutButton:Button = findViewById(R.id.log_out_button)
 
-        val connectDroneButton: Button = findViewById(R.id.go_connect_drone_button)
-        val disconnectDroneButton: Button = findViewById(R.id.go_disconnect_drone_button)
+        val connectDroneButton:CardView = findViewById(R.id.go_connect_drone_button)
+        val disconnectDroneButton:CardView = findViewById(R.id.go_disconnect_drone_button)
 
         if (authService.hasActiveSession()) {
             logoutButton.visibility = View.VISIBLE
