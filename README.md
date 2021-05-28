@@ -13,19 +13,19 @@
 * [License](#license)
 
 ## Description
-Drone3D is the mobile application that let you plan and execute drone mission to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
+Drone3D is a mobile application that lets you plan and execute drone missions to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 ## Usage and features
 <img src="https://user-images.githubusercontent.com/44334351/119946864-5f040d00-bf97-11eb-85a1-d1c36986755c.jpg" width="200">
 
 ### Register and login
 <img src="https://user-images.githubusercontent.com/44334351/119946849-5ca1b300-bf97-11eb-80de-89d0bc0fb3e8.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946858-5dd2e000-bf97-11eb-85aa-a70e5e9e0976.jpg" width="200">
 
-You can create a account or login in a previously created account with a email and a password. Once you are logged-in you'll be able to store and share missions.
+You can create an account or login in a previously created account with an email and a password. Once you are logged-in you'll be able to store and share missions.
 
 ### Connect a drone or a simulation
 <img src="https://user-images.githubusercontent.com/44334351/119946860-5e6b7680-bf97-11eb-83ed-b5b17f5c5d7a.jpg" width="200"> 
 
-To connect a drone you'll have power up your drone set it up to communicate through the udp://:14540 port, then click on the "connect a drone" button, it will open the port and search for the drone for three seconds before timing out. Repeat the operation as many time as needed.
+To connect a drone you'll have to power up your drone, set it up to communicate through the udp://:14540 port, click on the "connect a drone" button, it will open the port and search for the drone for three seconds before timing out. Repeat the operation as many time as needed.
 To connect a simulation, you'll have first to create to launch a simulation with a tool such as [auterion](https://suite.auterion.com/login?returnUrl=%2Fsimulations) and then enter the corresponding the IP and port, click on the "connect a simulation" button, it can take a few seconds.
 
 ### Manage offline map
@@ -41,7 +41,7 @@ This page contains all the tools needed to create a mission:
 * Choose your flight altitude with the vertical bar on the left. (Be sure to be above any obstacle !)
 * Select your strategy on the right with the top button. Either single or double path strategy are implemented.
 * Preview the path your drone will take. (To have exact path be sure the be already connected to your drone, default settings will be use otherwise.)
-* Hide / show the path once you have generated it with the previous button.
+* Hide/show the path once you have generated it with the previous button.
 * Delete the area and start again in case you changed your mind.
 * Save and/or share the mapping mission (only if you are logged-in).
 
@@ -108,13 +108,13 @@ Drone3D lets users plan and execute mission to create 3D model of a area.
 Our app uses firebase to let the users store and share their mission.
 
 ### Sensor usage
-Every map in the app is zoomed on the user, based on his gps. Users can follow the live progression of the drone on the map when a mission is launched. At any time they can send an instruction so that the drone comes back to their location.
+Every map in the app is zoomed on the user, based on his GPS location. Users can follow the live progression of the drone on the map when a mission is launched. At any time they can send an instruction so that the drone comes back to their location.
 
 ### User support
-We use an email/password registration and login system. Logged-in users have the possibility to store and share their mission. The app is still useable without being logged-in.
+We use an email/password registration and login system. Logged-in users have the possibility to store and share their mission. The app is still usable without being logged-in.
 
 ### Local cache & offline mode 
-Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping missions locally. It'll be synchronized with the online database as soon as they regain connection.
+Users have the possibility to download parts on the map before entering the mission site in case there is little or no connection there. They can also store and share mapping missions locally. It will be synchronized with the online database as soon as they regain connection.
 
 ### Testing
 Our code is carefully tested. It has the following stats:
