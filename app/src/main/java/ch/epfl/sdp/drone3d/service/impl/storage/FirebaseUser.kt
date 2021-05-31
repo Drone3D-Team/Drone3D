@@ -8,28 +8,21 @@ package ch.epfl.sdp.drone3d.service.impl.storage
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.epfl.sdp.drone3d.service.api.auth.Database
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import timber.log.Timber
+import javax.inject.Inject
 
 
-class FirebaseDatabase: Database {
-
-    private val database =
-        Firebase.database("https://drone3d-6819a-default-rtdb.europe-west1.firebasedatabase.app/")
-
+class FirebaseUser @Inject constructor(
+    private val database: FirebaseDatabase
+) : Database {
     companion object {
         private const val TAG = "FirebaseDatabase"
         private const val PSEUDO_PATH = "pseudo"
     }
 
     private val pseudo: MutableLiveData<String> = MutableLiveData()
-
 
     /**
      * Returns the reference in database of the user identified by the given [UID].
