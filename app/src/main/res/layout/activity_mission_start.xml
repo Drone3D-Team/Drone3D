@@ -50,10 +50,9 @@
         app:layout_constraintGuide_percent="0.17" />
 
     <TextView
+        style="@style/simpleTextViewStyle"
         android:id="@+id/mission_start_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="36sp"
+        android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@id/mission_start_progress"
         app:layout_constraintEnd_toEndOf="@+id/mission_start_progress"
         app:layout_constraintStart_toStartOf="@+id/mission_start_progress"
