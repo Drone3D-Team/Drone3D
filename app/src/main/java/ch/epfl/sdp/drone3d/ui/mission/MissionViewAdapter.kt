@@ -19,7 +19,8 @@ import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
 
 /**
- * Adapter for the Recycler view creating holders for the missions
+ * Adapter for the Recycler view creating holders for the missions. [privateList] indicates whether
+ * the adapter is used to show the private or the public missions.
  */
 class MissionViewAdapter(private val privateList: Boolean) :
     ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
@@ -62,11 +63,9 @@ class MissionViewAdapter(private val privateList: Boolean) :
             curMission = mission
             textView.text = mission.name
 
-            if (mission.state == State.PRIVATE_AND_SHARED)
-                if (privateList)
-                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
-                else
-                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
+            if (mission.state == State.PRIVATE_AND_SHARED) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_shared_private, 0, 0, 0)
+            }
         }
     }
 

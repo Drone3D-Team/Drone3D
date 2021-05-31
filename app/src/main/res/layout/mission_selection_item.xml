@@ -25,9 +25,10 @@
         <TextView
             style="@style/simpleTextViewStyle"
             android:id="@+id/mapping_selection_item_text"
-            android:layout_margin="5dp"
+            android:layout_margin="3dp"
             android:fontFamily="sans-serif"
             android:textSize="18sp"
+            android:drawablePadding="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
