@@ -164,6 +164,9 @@
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
 
+    <!-- Mission Pictures Activity -->
+    <string name="drone_mission_picture_desc">Drone mission picture</string>
+
     <!-- Utilities -->
     <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
     <string name="user_location_permission_request">In order to show your current location, you have to enable location sharing.</string>
@@ -188,4 +191,7 @@
     <string name="permission_deny_button">Deny</string>
     <string name="permission_location_enable">Enable location</string>
     <string name="permission_location_rationale">In order to offer you the best possible experience, this app requires your location. Disabling it will result in some features not being available.</string>
+    <string name="error">An error occurred : $1%s</string>
+    <string name="copy_pictures_links">Copy pictures links</string>
+    <string name="pictures_copied">Photos links copied</string>
 </resources>
