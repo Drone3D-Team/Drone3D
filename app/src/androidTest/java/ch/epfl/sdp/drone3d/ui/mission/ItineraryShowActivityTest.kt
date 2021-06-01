@@ -62,12 +62,12 @@ class ItineraryShowActivityTest {
     companion object {
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
-            20.0, 20, 5.0, 500, Date(12903)
+            "01d", 20.0, 20, 5.0, 500, Date(12903)
         )
 
         private val BAD_WEATHER_REPORT = WeatherReport(
             "RAIN", "description",
-            -1.0, 20, 10.0, 500, Date(12903)
+            "10d", -1.0, 20, 10.0, 500, Date(12903)
         )
 
         private val USER_UID = "asdfg"

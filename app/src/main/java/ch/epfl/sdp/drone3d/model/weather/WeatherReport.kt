@@ -11,6 +11,7 @@ import java.util.*
  * Represent a weather report with attributes:
  * - [keywordDescription]: a short description of the weather in word
  * - [description]: a description of the weather in word
+ * - [iconId]: the id used to fetch the image of the icon with an URL
  * - [temperature]: temperature in Celsius
  * - [humidity]: humidity in %
  * - [windSpeed]: speed of the wind in meter per second
@@ -19,6 +20,7 @@ import java.util.*
 data class WeatherReport(
     val keywordDescription: String,
     val description: String,
+    val iconId: String?,
     val temperature: Double,
     val humidity: Int,
     val windSpeed: Double,
