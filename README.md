@@ -3,7 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/maintainability)](https://codeclimate.com/github/Drone3D-Team/Drone3D/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/test_coverage)](https://codeclimate.com/github/Drone3D-Team/Drone3D/test_coverage)
 
-<img src="https://user-images.githubusercontent.com/44334351/119946869-5f040d00-bf97-11eb-87c7-3761072ddced.jpg" width="50"> 
+<img src="./images/logo.jpg" width="50"> 
 
 ## Table of contents
 * [Description](#description)
@@ -15,26 +15,26 @@
 ## Description
 Drone3D is a mobile application that lets you plan and execute drone missions to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 ## Usage and features
-<img src="https://user-images.githubusercontent.com/44334351/119946864-5f040d00-bf97-11eb-85a1-d1c36986755c.jpg" width="200">
+<img src="./images/mainMenu.png" width="200">
 
 ### Register and login
-<img src="https://user-images.githubusercontent.com/44334351/119946849-5ca1b300-bf97-11eb-80de-89d0bc0fb3e8.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946858-5dd2e000-bf97-11eb-85aa-a70e5e9e0976.jpg" width="200">
+<img src="./images/register.jpg" width="200"> <img src="./images/login.jpg" width="200">
 
 You can create an account or login in a previously created account with an email and a password. Once you are logged-in you'll be able to store and share missions.
 
 ### Connect a drone or a simulation
-<img src="https://user-images.githubusercontent.com/44334351/119946860-5e6b7680-bf97-11eb-83ed-b5b17f5c5d7a.jpg" width="200"> 
+<img src="./images/connectSimulation.jpg" width="200"> 
 
 To connect a drone you'll have to power up your drone, set it up to communicate through the udp://:14540 port, click on the "connect a drone" button, it will open the port and search for the drone for three seconds before timing out. Repeat the operation as many time as needed.
 To connect a simulation, you'll have first to create to launch a simulation with a tool such as [auterion](https://suite.auterion.com/login?returnUrl=%2Fsimulations) and then enter the corresponding the IP and port, click on the "connect a simulation" button, it can take a few seconds.
 
 ### Manage offline map
-<img src="https://user-images.githubusercontent.com/44334351/119946845-5c091c80-bf97-11eb-8c88-6747e2ccbe50.jpg" width="200"> 
+<img src="./images/offlineMap.jpg" width="200"> 
 
 This page lets you download a part of the map. Select the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precision of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
 
 ### Create and save an itinerary 
-<img src="https://user-images.githubusercontent.com/44334351/119946850-5d3a4980-bf97-11eb-8551-95728ae82c28.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946863-5e6b7680-bf97-11eb-8fd1-09d40b955df1.jpg" width="200"> 
+<img src="./images/createItinerary.jpg" width="200"> <img src="./images/createMission.jpg" width="200"> 
 
 This page contains all the tools needed to create a mission:  
 * You can select the area for which you want to create a 3D model by adding three points on the map (click on the map to add a point).
@@ -47,12 +47,12 @@ This page contains all the tools needed to create a mission:
 
 If you're not logged-in, you won't be able to save the mission but you can still launch it.
 
-<img src="https://user-images.githubusercontent.com/44334351/119948061-bd7dbb00-bf98-11eb-972b-9d5c51c94c75.jpg" width="200"> 
+<img src="./images/saveMission.png" width="200"> 
 
 To save a mission, you'll need to give it a name and select if you want to store it, share it or both.
 
 ### Browse itineraries
-<img src="https://user-images.githubusercontent.com/44334351/119946852-5d3a4980-bf97-11eb-989f-028c00f3a48e.jpg" width="200"> 
+<img src="./images/browseItinerary.png" width="200"> 
 
 If you are logged-in, you can find all your previously saved mission as well as access the missions others have shared. If you want to delete any of your mission that is either private or shared, click on it and press on the delete button.
 
@@ -61,11 +61,11 @@ In case you are not logged-in, you can still access shared missions.
 You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that lets you launch the mission.
 
 ### Launch a mission
-<img src="https://user-images.githubusercontent.com/44334351/119948667-56acd180-bf99-11eb-8a04-cb624ff5f519.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946855-5dd2e000-bf97-11eb-8cb1-7878594f007c.jpg" width="200"> 
+<img src="./images/itineraryShow.jpg" width="200"> <img src="./images/weatherInfo.png" width="200"> 
 
 To be able to launch a mission you'll need to be connected to a drone or a simulation and to have a mission ready. You can either create a new mission or select one in the saved ones. You have the possibility to check the weather at the location of the mission. You'll get an alert if the weather is considered not good enough to fly your drone. You simply have to click on the drone icon button to launch your mission. You'll have a loading screen during which the drone will receive and start the mission.
 
-TODO add screen loading and missionInProgress
+<img src="./images/startMission.png" width="200"> <img src="./images/missionInProgress.png" width="200"> 
 
 Once the mission is dispatched to the drone, you'll be able to follow it live on the map. You'll also have the speed, height, live camera feed, state and battery of the drone. At any time you call the drone back to you or to the take off location.
 
