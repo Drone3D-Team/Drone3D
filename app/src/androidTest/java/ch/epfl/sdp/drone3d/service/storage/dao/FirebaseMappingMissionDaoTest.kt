@@ -35,6 +35,7 @@ class FirebaseMappingMissionDaoTest {
         private const val OWNER_ID: String = "Jean-Jean"
         private val MAPPING_MISSION_1: MappingMission = MappingMission()
         private val MAPPING_MISSION_2: MappingMission = MappingMission()
+        private const val timeout = 5L
     }
 
     @get:Rule
@@ -47,7 +48,7 @@ class FirebaseMappingMissionDaoTest {
     lateinit var database: FirebaseDatabase
 
     private lateinit var db: FirebaseMappingMissionDao
-    private val timeout = 5L
+
 
     @Before
     fun beforeTests() {
