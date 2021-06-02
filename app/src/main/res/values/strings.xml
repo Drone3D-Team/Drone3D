@@ -96,6 +96,7 @@
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
     <string name="name_hint">Name</string>
     <string name="download">download</string>
+    <string name="cancel_lower">cancel</string>
     <string name="empty">Name should not be empty</string>
 
 
