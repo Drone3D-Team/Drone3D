@@ -20,7 +20,7 @@ Drone3D is a mobile application that lets you plan and execute drone missions to
 ### Register and login
 <img src="images/register.jpg" width="200"> <img src="images/login.jpg" width="200">
 
-You can create an account or log into an existing account with an email and a password. Once you are logged-in you'll be able to store and share missions.
+You can create an account or log into an existing one with an email and a password. Once you are logged-in you'll be able to store and share missions.
 
 ### Connect a drone or a simulation
 <img src="images/connectSimulation.jpg" width="200"> 
