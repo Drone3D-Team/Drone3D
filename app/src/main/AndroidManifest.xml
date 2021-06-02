@@ -17,7 +17,8 @@
         android:theme="@style/Theme.Drone3D"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".ui.mission.MissionStartActivity"
+        <activity
+            android:name=".ui.mission.MissionStartActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity" />
         <activity
             android:name=".ui.map.offline.ManageOfflineMapActivity"
@@ -26,7 +27,7 @@
             android:name=".ui.weather.WeatherInfoActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity" />
         <activity android:name=".ui.map.MissionInProgressActivity" />
-        <activity android:name=".ui.mission.MissionPicturesActivity"/>
+        <activity android:name=".ui.mission.MissionPicturesActivity" />
         <activity
             android:name=".ui.mission.ItineraryShowActivity"
             android:launchMode="singleTop"

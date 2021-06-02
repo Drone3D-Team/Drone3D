@@ -14,9 +14,9 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import ch.epfl.sdp.drone3d.R
+import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.drone.DroneInstanceMock
 import ch.epfl.sdp.drone3d.service.module.DroneModule
-import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -38,7 +38,7 @@ class ConnectedDroneActivityTest {
 
     @get:Rule
     val rule: RuleChain = RuleChain.outerRule(HiltAndroidRule(this))
-            .around(activityRule)
+        .around(activityRule)
 
     @BindValue
     val droneService: DroneService = DroneInstanceMock.mockService()
@@ -86,12 +86,12 @@ class ConnectedDroneActivityTest {
         activityRule.scenario.recreate()
 
         onView(ViewMatchers.withId(R.id.disconnect_drone))
-                .perform(ViewActions.click())
+            .perform(ViewActions.click())
 
         verify(droneService).disconnect()
 
         Intents.intended(
-                hasComponent(hasClassName(DroneConnectActivity::class.java.name))
+            hasComponent(hasClassName(DroneConnectActivity::class.java.name))
         )
     }
 }

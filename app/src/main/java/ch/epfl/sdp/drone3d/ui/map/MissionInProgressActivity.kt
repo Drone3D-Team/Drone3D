@@ -74,14 +74,18 @@ class MissionInProgressActivity : BaseMapActivity() {
         private const val MAX_DIST_TO_USER: Double = 1000.0
     }
 
-    @Inject lateinit var droneService: DroneService
-    @Inject lateinit var locationService: LocationService
-    @Inject lateinit var weatherService: WeatherService
+    @Inject
+    lateinit var droneService: DroneService
+    @Inject
+    lateinit var locationService: LocationService
+    @Inject
+    lateinit var weatherService: WeatherService
 
     private val disposables = CompositeDisposable()
     private lateinit var mapboxMap: MapboxMap
 
     private lateinit var userDrawer: MapboxUserDrawer
+
     // used to keep track of the subscription tu the user location
     private var subscriptionTracker: Int? = null
     private lateinit var missionDrawer: MapboxMissionDrawer
@@ -102,9 +106,11 @@ class MissionInProgressActivity : BaseMapActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        initMapView(savedInstanceState,
+        initMapView(
+            savedInstanceState,
             R.layout.activity_mission_in_progress,
-            R.id.map_in_mission_view)
+            R.id.map_in_mission_view
+        )
 
         mapView.getMapAsync { mapboxMap ->
             this.mapboxMap = mapboxMap
@@ -150,7 +156,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                 }
             }
         }.observe(this, { path ->
-            if(path != null) missionDrawer.showMission(path, false)
+            if (path != null) missionDrawer.showMission(path, false)
         })
     }
 
@@ -164,7 +170,8 @@ class MissionInProgressActivity : BaseMapActivity() {
                 CameraUpdateFactory.newLatLngZoom(
                     it,
                     if (abs(currentZoom - DEFAULT_ZOOM) < ZOOM_TOLERANCE) currentZoom else DEFAULT_ZOOM
-                ))
+                )
+            )
         }
     }
 
@@ -197,9 +204,9 @@ class MissionInProgressActivity : BaseMapActivity() {
         val droneData = droneService.getData()
 
         if (locationService.isLocationEnabled()) {
-            subscriptionTracker = locationService.subscribeToLocationUpdates( {
-                    newLatLng: LatLng -> if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng) }
-                , MIN_TIME_DELTA, MIN_DISTANCE_DELTA)
+            subscriptionTracker = locationService.subscribeToLocationUpdates({ newLatLng: LatLng ->
+                if (::userDrawer.isInitialized) userDrawer.showUser(newLatLng)
+            }, MIN_TIME_DELTA, MIN_DISTANCE_DELTA)
         }
 
         createObserver(droneData.getPosition()) {
@@ -211,17 +218,19 @@ class MissionInProgressActivity : BaseMapActivity() {
         }
 
         createObserver(weatherReport) { report ->
-                warningBadWeather.visibility =
-                    if (report == null || WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
+            warningBadWeather.visibility =
+                if (report == null || WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
         }
 
         createDroneStatusObserver(droneData)
         createTextObserver(droneData.getSpeed(), R.id.speedLive, R.string.live_speed) { it }
         createTextObserver(droneData.getRelativeAltitude(), R.id.altitudeLive, R.string.live_altitude) { it }
-        createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it*100 }
+        createTextObserver(droneData.getBatteryLevel(), R.id.batteryLive, R.string.live_battery) { it * 100 }
         createPositionObserver(droneData)
         createConnectionObserver(droneData)
-        if (!droneService.isSimulation()) { createDroneKeeperObserver(droneData) }
+        if (!droneService.isSimulation()) {
+            createDroneKeeperObserver(droneData)
+        }
         createObserver(droneData.getVideoStreamUri()) {
             it?.let { streamUri ->
                 val mediaSource = RtspMediaSource.Factory(rtspFactory)
@@ -266,10 +275,11 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private fun showError(ex: Throwable) {
         ToastHandler.showToastAsync(
-                this,
-                R.string.drone_mission_error,
-                Toast.LENGTH_LONG,
-                ex.message)
+            this,
+            R.string.drone_mission_error,
+            Toast.LENGTH_LONG,
+            ex.message
+        )
         Timber.e(ex)
     }
 
@@ -316,11 +326,12 @@ class MissionInProgressActivity : BaseMapActivity() {
             it?.let {
                 if (locationService.isLocationEnabled() && locationService.getCurrentLocation() != null) {
                     val distanceUser: Double = it.distanceTo(locationService.getCurrentLocation()!!)
-                    val maxDistance: Double = if (weatherReport.value != null && MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
-                        weatherReport.value!!.visibility.toDouble()
-                    } else {
-                        MAX_DIST_TO_USER
-                    }
+                    val maxDistance: Double =
+                        if (weatherReport.value != null && MAX_DIST_TO_USER > weatherReport.value!!.visibility) {
+                            weatherReport.value!!.visibility.toDouble()
+                        } else {
+                            MAX_DIST_TO_USER
+                        }
 
                     if (!droneService.isSimulation() && distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
                         droneService.getExecutor().pauseMission(this)

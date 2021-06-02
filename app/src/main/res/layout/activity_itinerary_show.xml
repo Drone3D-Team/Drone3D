@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2021  Drone3D-Team
   ~ The license can be found in LICENSE at root of the repository
   -->
@@ -73,7 +72,6 @@
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </com.mapbox.mapboxsdk.maps.MapView>
+        android:layout_height="match_parent"></com.mapbox.mapboxsdk.maps.MapView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

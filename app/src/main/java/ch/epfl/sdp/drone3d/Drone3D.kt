@@ -37,6 +37,6 @@ class Drone3D : Application() {
          * [Source](https://stackoverflow.com/questions/23503642)
          */
         fun Context.getText(@StringRes id: Int, vararg args: Any?): CharSequence =
-                HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
+            HtmlCompat.fromHtml(getString(id, *args), HtmlCompat.FROM_HTML_MODE_COMPACT)
     }
 }

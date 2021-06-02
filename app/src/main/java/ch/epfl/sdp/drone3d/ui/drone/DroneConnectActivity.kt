@@ -19,8 +19,9 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.Utils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
-import java.lang.Runnable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -50,7 +51,7 @@ class DroneConnectActivity : AppCompatActivity() {
     private lateinit var ipText: EditText
     private lateinit var portText: EditText
     private lateinit var waitingText: TextView
-    private lateinit var divider:View
+    private lateinit var divider: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,14 +173,14 @@ class DroneConnectActivity : AppCompatActivity() {
     }
 
     /**
-     * Check if a drone was connected on the application after [counterMax]/10 seconds
+     * Check if a drone was connected on the application after [waitingTime] in millis
      */
     private suspend fun checkIfDroneConnected(waitingTime: Long) {
         var remainingTime = waitingTime
         val delay = 100L
-        while (!droneService.isConnected() && remainingTime>0) {
+        while (!droneService.isConnected() && remainingTime > 0) {
             delay(delay)
-            remainingTime-=delay
+            remainingTime -= delay
         }
     }
 

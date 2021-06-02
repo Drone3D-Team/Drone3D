@@ -22,14 +22,16 @@ import com.mapbox.mapboxsdk.geometry.LatLng
  */
 data class SphereToPlaneProjector(val origin: LatLng) {
 
-    companion object{
+    companion object {
         private const val CONVERSION_FACTOR_DEGREE = 0.0001 //~100m near the Equator
         private const val MAX_LONGITUDE = 180
-        private const  val MAX_LATITUDE = 90
+        private const val MAX_LATITUDE = 90
     }
 
-    private val meterToLong = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude, origin.longitude + CONVERSION_FACTOR_DEGREE).distanceTo(origin)
-    private val meterToLat = CONVERSION_FACTOR_DEGREE/LatLng(origin.latitude + CONVERSION_FACTOR_DEGREE, origin.longitude).distanceTo(origin)
+    private val meterToLong =
+        CONVERSION_FACTOR_DEGREE / LatLng(origin.latitude, origin.longitude + CONVERSION_FACTOR_DEGREE).distanceTo(origin)
+    private val meterToLat =
+        CONVERSION_FACTOR_DEGREE / LatLng(origin.latitude + CONVERSION_FACTOR_DEGREE, origin.longitude).distanceTo(origin)
 
 
     /**
@@ -40,11 +42,12 @@ data class SphereToPlaneProjector(val origin: LatLng) {
         val xDistance = LatLng(origin.latitude, latlng.longitude).distanceTo(origin)
         val yDistance = LatLng(latlng.latitude, origin.longitude).distanceTo(origin)
 
-        val x = if ((latlng.longitude >= origin.longitude && latlng.longitude - origin.longitude<=MAX_LONGITUDE)
-            || (latlng.longitude < origin.longitude && origin.longitude - latlng.longitude > MAX_LONGITUDE)) xDistance else -xDistance
+        val x = if ((latlng.longitude >= origin.longitude && latlng.longitude - origin.longitude <= MAX_LONGITUDE)
+            || (latlng.longitude < origin.longitude && origin.longitude - latlng.longitude > MAX_LONGITUDE)
+        ) xDistance else -xDistance
         val y = if (latlng.latitude >= origin.latitude) yDistance else -yDistance
 
-        return Point(x,y)
+        return Point(x, y)
     }
 
     /**
@@ -56,19 +59,17 @@ data class SphereToPlaneProjector(val origin: LatLng) {
         var longitude = point.x * meterToLong + origin.longitude
         var latitude = point.y * meterToLat + origin.latitude
 
-        if(latitude > MAX_LATITUDE){
+        if (latitude > MAX_LATITUDE) {
             latitude = 2 * MAX_LATITUDE - latitude
             longitude += MAX_LONGITUDE //We come on the other side of the earth in longitude
-        }
-        else if(latitude < -MAX_LATITUDE){
+        } else if (latitude < -MAX_LATITUDE) {
             latitude = -2 * MAX_LATITUDE - latitude
             longitude += MAX_LONGITUDE //We come on the other side of the earth in longitude
         }
 
-        if(longitude > MAX_LONGITUDE){
+        if (longitude > MAX_LONGITUDE) {
             longitude -= 2 * MAX_LONGITUDE
-        }
-        else if(longitude < -MAX_LONGITUDE){
+        } else if (longitude < -MAX_LONGITUDE) {
             longitude += 2 * MAX_LONGITUDE
         }
 
@@ -78,14 +79,14 @@ data class SphereToPlaneProjector(val origin: LatLng) {
     /**
      * Transform the list [latlngs] to a list of points in this local area.
      */
-    fun toPoints(latlngs: List<LatLng>): List<Point>{
-        return latlngs.map{latlng -> toPoint(latlng)}
+    fun toPoints(latlngs: List<LatLng>): List<Point> {
+        return latlngs.map { latlng -> toPoint(latlng) }
     }
 
     /**
      * Transform the list [points] to a list of latlngs in this local area.
      */
-    fun toLatLngs(points: List<Point>): List<LatLng>{
-        return points.map{point -> toLatLng(point)}
+    fun toLatLngs(points: List<Point>): List<LatLng> {
+        return points.map { point -> toLatLng(point) }
     }
 }

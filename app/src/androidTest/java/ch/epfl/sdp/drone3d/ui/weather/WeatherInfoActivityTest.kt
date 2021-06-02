@@ -40,6 +40,7 @@ import java.util.*
 @UninstallModules(WeatherModule::class)
 class WeatherInfoActivityTest {
     companion object {
+
         private val GOOD_VISIBILITY_REPORT = WeatherReport("Clear", "description",
             "01d",20.0, 20, 5.0, 10000, Date(12903))
 

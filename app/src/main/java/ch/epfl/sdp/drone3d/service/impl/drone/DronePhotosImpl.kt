@@ -44,11 +44,11 @@ class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhot
         val data = MutableLiveData<Bitmap>()
 
         disposables.add(
-                drone.camera.captureInfo
-                        .subscribeOn(Schedulers.io())
-                        .subscribe {
-                            captureInfo -> retrievePhoto(captureInfo.fileUrl)?.let { data.postValue(it) }
-                        }
+            drone.camera.captureInfo
+                .subscribeOn(Schedulers.io())
+                .subscribe { captureInfo ->
+                    retrievePhoto(captureInfo.fileUrl)?.let { data.postValue(it) }
+                }
         )
 
         return data
@@ -56,32 +56,32 @@ class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhot
 
     override fun getPhotos(): Single<List<Bitmap>> {
         return getPhotosUrl()
-                .map { retrievePhotos(it) }
+            .map { retrievePhotos(it) }
     }
 
     override fun getLastPhotos(n: Int): Single<List<Bitmap>> {
         if (n <= 0) return Single.just(emptyList())
 
         return getPhotosUrl()
-                .map { it.subList(max(it.size - n, 0), it.size) }
-                .map { retrievePhotos(it) }
+            .map { it.subList(max(it.size - n, 0), it.size) }
+            .map { retrievePhotos(it) }
     }
 
     override fun getFirstPhotos(n: Int): Single<List<Bitmap>> {
         if (n <= 0) return Single.just(emptyList())
 
         return getPhotosUrl()
-                .map { it.subList(0, min(it.size, n)) }
-                .map { retrievePhotos(it) }
+            .map { it.subList(0, min(it.size, n)) }
+            .map { retrievePhotos(it) }
     }
 
     override fun getRandomPhotos(n: Int): Single<List<Bitmap>> {
         if (n <= 0) return Single.just(emptyList())
 
         return getPhotosUrl()
-                .map { it.shuffled() }
-                .map { it.subList(0, min(it.size, n)) }
-                .map { retrievePhotos(it) }
+            .map { it.shuffled() }
+            .map { it.subList(0, min(it.size, n)) }
+            .map { retrievePhotos(it) }
     }
 
     override fun getPhotosUrl(): Single<List<String>> {
@@ -89,9 +89,9 @@ class DronePhotosImpl @Inject constructor(val service: DroneService) : DronePhot
             service.provideDrone() ?: throw IllegalStateException("Could not query drone instance")
 
         return drone.camera.listPhotos(Camera.PhotosRange.SINCE_CONNECTION)
-                .subscribeOn(Schedulers.io())
-                .retryWhen { it.take(URL_QUERY_RETRIES).delay(URL_QUERY_DELAY_ON_ERROR, TimeUnit.MILLISECONDS) }
-                .map { it.map { captureInfo -> captureInfo.fileUrl } }
+            .subscribeOn(Schedulers.io())
+            .retryWhen { it.take(URL_QUERY_RETRIES).delay(URL_QUERY_DELAY_ON_ERROR, TimeUnit.MILLISECONDS) }
+            .map { it.map { captureInfo -> captureInfo.fileUrl } }
     }
 
     private fun retrievePhoto(fileUrl: String): Bitmap? {

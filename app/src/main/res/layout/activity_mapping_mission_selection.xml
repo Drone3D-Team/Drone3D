@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2021  Drone3D-Team
   ~ The license can be found in LICENSE at root of the repository
   -->
@@ -51,8 +50,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline"></androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shared_mission_list_view"
@@ -62,8 +60,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline"></androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/private_filtered_mission_list_view"
@@ -73,8 +70,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline"></androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/shared_filtered_mission_list_view"
@@ -84,8 +80,7 @@
         app:layout_constraintBottom_toTopOf="@id/bottom_start_guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_left_guideline">
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@id/top_left_guideline"></androidx.recyclerview.widget.RecyclerView>
 
     <Button
         android:id="@+id/createMappingMissionButton"
