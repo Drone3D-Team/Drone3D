@@ -13,70 +13,79 @@ import kotlin.math.PI
 
 class ParallelogramMissionBuilderTest {
 
-    companion object{
-        private const val cameraPitch = (PI/2).toFloat()
+    companion object {
+        private const val cameraPitch = (PI / 2).toFloat()
     }
 
     @Test
-    fun verifyUnitSquareSingleMappingMissionBuilderUpperCorner(){
-        val startingPoint = Point(6.0,6.0)
-        val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val groundImageDimension = GroundImageDim(6.0,6.0)
+    fun verifyUnitSquareSingleMappingMissionBuilderUpperCorner() {
+        val startingPoint = Point(6.0, 6.0)
+        val area = Parallelogram(Point(0.0, 0.0), Vector(1.0, 0.0), Vector(0.0, 1.0))
+        val groundImageDimension = GroundImageDim(6.0, 6.0)
 
         val droneHeight = 1.0
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
-        val expectedMappingMission = listOf(Point(1.0,6.0),
-                                            Point(1.0,5.0),
-                                            Point(1.0,-5.0),
-                                            Point(0.0,-5.0),
-                                            Point(0.0,-4.0))
-        for(i in actualMappingMission.indices){
-            assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
-            assertEquals(actualMappingMission[i].y,expectedMappingMission[i].y,0.0001)
+        val actualMappingMission =
+            buildSinglePassMappingMission(startingPoint, area, cameraPitch, droneHeight, groundImageDimension)
+        val expectedMappingMission = listOf(
+            Point(1.0, 6.0),
+            Point(1.0, 5.0),
+            Point(1.0, -5.0),
+            Point(0.0, -5.0),
+            Point(0.0, -4.0)
+        )
+        for (i in actualMappingMission.indices) {
+            assertEquals(actualMappingMission[i].x, expectedMappingMission[i].x, 0.0001)
+            assertEquals(actualMappingMission[i].y, expectedMappingMission[i].y, 0.0001)
         }
     }
-    @Test
-    fun verifyUnitSquareSingleMappingMissionBuilderLowerCorner(){
-        val startingPoint = Point(-4.0,-4.0)
-        val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val droneHeight = 1.0
-        val groundImageDimension = GroundImageDim(6.0,6.0)
 
-        val actualMappingMission = buildSinglePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
+    @Test
+    fun verifyUnitSquareSingleMappingMissionBuilderLowerCorner() {
+        val startingPoint = Point(-4.0, -4.0)
+        val area = Parallelogram(Point(0.0, 0.0), Vector(1.0, 0.0), Vector(0.0, 1.0))
+        val droneHeight = 1.0
+        val groundImageDimension = GroundImageDim(6.0, 6.0)
+
+        val actualMappingMission =
+            buildSinglePassMappingMission(startingPoint, area, cameraPitch, droneHeight, groundImageDimension)
         val expectedMappingMission = listOf(
             Point(0.0, -5.0),
             Point(0.0, -4.0),
             Point(0.0, 6.0),
             Point(1.0, 6.0),
-            Point(1.0, 5.0))
-        for(i in actualMappingMission.indices){
-            assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
-            assertEquals(actualMappingMission[i].y,expectedMappingMission[i].y,0.0001)
+            Point(1.0, 5.0)
+        )
+        for (i in actualMappingMission.indices) {
+            assertEquals(actualMappingMission[i].x, expectedMappingMission[i].x, 0.0001)
+            assertEquals(actualMappingMission[i].y, expectedMappingMission[i].y, 0.0001)
         }
     }
-    @Test
-    fun verifyDoubleMappingMissionBuilderUnitSquare(){
-        val startingPoint = Point(0.0,0.0)
-        val area = Parallelogram(Point(0.0,0.0),Vector(1.0,0.0),Vector(0.0,1.0))
-        val droneHeight = 1.0
-        val groundImageDimension = GroundImageDim(10.0,10.0)
 
-        val actualMappingMission = buildDoublePassMappingMission(startingPoint,area,cameraPitch,droneHeight,groundImageDimension)
+    @Test
+    fun verifyDoubleMappingMissionBuilderUnitSquare() {
+        val startingPoint = Point(0.0, 0.0)
+        val area = Parallelogram(Point(0.0, 0.0), Vector(1.0, 0.0), Vector(0.0, 1.0))
+        val droneHeight = 1.0
+        val groundImageDimension = GroundImageDim(10.0, 10.0)
+
+        val actualMappingMission =
+            buildDoublePassMappingMission(startingPoint, area, cameraPitch, droneHeight, groundImageDimension)
         val expectedMappingMission =
             listOf(
-                Point(0.0,-5.0),
-                Point(0.0,-4.0),
-                Point(0.0,6.0),
+                Point(0.0, -5.0),
+                Point(0.0, -4.0),
+                Point(0.0, 6.0),
                 Point(1.0, 6.0),
                 Point(1.0, 5.0),
-                Point(6.0,1.0),
-                Point(5.0,1.0),
-                Point(-5.0,1.0),
+                Point(6.0, 1.0),
+                Point(5.0, 1.0),
+                Point(-5.0, 1.0),
                 Point(-5.0, 0.0),
-                Point(-4.0, 0.0))
-        for(i in actualMappingMission.indices){
-            assertEquals(actualMappingMission[i].x,expectedMappingMission[i].x,0.0001)
-            assertEquals(actualMappingMission[i].y,expectedMappingMission[i].y,0.0001)
+                Point(-4.0, 0.0)
+            )
+        for (i in actualMappingMission.indices) {
+            assertEquals(actualMappingMission[i].x, expectedMappingMission[i].x, 0.0001)
+            assertEquals(actualMappingMission[i].y, expectedMappingMission[i].y, 0.0001)
         }
     }
 }

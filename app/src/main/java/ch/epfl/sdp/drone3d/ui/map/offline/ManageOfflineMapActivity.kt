@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.app.AlertDialog
@@ -28,9 +33,9 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.offline.OfflineRegionError
 import com.mapbox.mapboxsdk.offline.OfflineRegionStatus
-import dagger.hilt.android.AndroidEntryPoint
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
 import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.lang.System.currentTimeMillis
 import javax.inject.Inject
@@ -44,7 +49,7 @@ import kotlin.math.min
 @AndroidEntryPoint
 class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
-    companion object{
+    companion object {
         private const val DOWNLOAD_STATUS_TIME_DELAY = 1000
         private const val BACKGROUND_COLOR_MULTIPLIER = -0x1000000
     }
@@ -92,20 +97,23 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     /**
      * Download the offlineRegion delimited with the current view of the map and call it [regionName]
      */
-    private fun downloadOfflineMap(regionName: String){
+    private fun downloadOfflineMap(regionName: String) {
         val bounds = mapboxMap.projection.visibleRegion.latLngBounds
         val zoom = mapboxMap.cameraPosition.zoom
 
-        offlineMapSaver.downloadRegion(regionName,bounds,zoom,object:OfflineRegion.OfflineRegionObserver{
+        offlineMapSaver.downloadRegion(regionName, bounds, zoom, object : OfflineRegion.OfflineRegionObserver {
             override fun onStatusChanged(status: OfflineRegionStatus) {
 
-                if(status.isComplete){
-                    ToastHandler.showToast(applicationContext, getString(R.string.download_succeeded,regionName))
-                }
-                else if(currentTimeMillis()-timeOfLastDownloadToast>DOWNLOAD_STATUS_TIME_DELAY){
+                if (status.isComplete) {
+                    ToastHandler.showToast(applicationContext, getString(R.string.download_succeeded, regionName))
+                } else if (currentTimeMillis() - timeOfLastDownloadToast > DOWNLOAD_STATUS_TIME_DELAY) {
                     timeOfLastDownloadToast = currentTimeMillis()
-                    val percentage = if (status.requiredResourceCount >= 0) 100.0 * status.completedResourceCount/status.requiredResourceCount else 0.0
-                    ToastHandler.showToast(applicationContext, getString(R.string.download_progress,"%.2f".format(percentage)+"%"))
+                    val percentage =
+                        if (status.requiredResourceCount >= 0) 100.0 * status.completedResourceCount / status.requiredResourceCount else 0.0
+                    ToastHandler.showToast(
+                        applicationContext,
+                        getString(R.string.download_progress, "%.2f".format(percentage) + "%")
+                    )
                 }
             }
 
@@ -119,6 +127,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             }
         })
     }
+
     /**
      * Get the recyclerView, create an adapter and bind it to the offlineRegions by displaying them.
      */
@@ -128,22 +137,27 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         val adapter = OfflineRegionViewAdapter(offlineMapSaver, lineManager, mapboxMap)
         savedRegionsRecycler.adapter = adapter
 
-        offlineRegions.observe(this, androidx.lifecycle.Observer {
+        offlineRegions.observe(this, {
             it.let {
-                adapter.submitList(it.sortedWith(Comparator<OfflineRegion> { r0, r1 ->
-                    OfflineMapSaverImpl.getMetadata(r0).name.compareTo(OfflineMapSaverImpl.getMetadata(r1).name)}))
+                adapter.submitList(it.sortedWith { r0, r1 ->
+                    OfflineMapSaverImpl.getMetadata(r0).name.compareTo(
+                        OfflineMapSaverImpl.getMetadata(
+                            r1
+                        ).name
+                    )
+                })
             }
         })
 
         offlineRegions.observe(this, {
-            it.forEach {offlineRegion -> (display(offlineRegion))}
+            it.forEach { offlineRegion -> (display(offlineRegion)) }
         })
     }
 
     /**
-    * Add observer to the tileCount so that the progress bar and the text are updated on change.
-    */
-    private fun bindTileCount(){
+     * Add observer to the tileCount so that the progress bar and the text are updated on change.
+     */
+    private fun bindTileCount() {
         val tilesUsedTextView = findViewById<TextView>(R.id.tiles_used)
         val tilesBar = findViewById<ProgressBar>(R.id.tile_count_bar)
 
@@ -153,7 +167,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         tilesBar.max = maxTileCount.toInt()
 
         actualTileCount.observe(this, {
-            it.let{
+            it.let {
                 val builder = StringBuilder()
                 builder.append(min(it, maxTileCount)).append("/").append(maxTileCount)
                 tilesUsedTextView.text = builder.toString()
@@ -166,7 +180,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     /**
      * Show a dialog which let the user enter the name of the region he wants to download.
      */
-    fun showDialog(@Suppress("UNUSED_PARAMETER") view:View){
+    fun showDialog(@Suppress("UNUSED_PARAMETER") view: View) {
 
         val viewInflated: View = LayoutInflater.from(this)
             .inflate(R.layout.enter_offline_region_name_dialog, parent as ViewGroup?, false)
@@ -174,10 +188,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
 
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
 
-        val dialog: AlertDialog= builder.setView(viewInflated)
+        val dialog: AlertDialog = builder.setView(viewInflated)
             .setTitle("New offline region")
             .setPositiveButton(R.string.download, null) //Set to null, will be overridden to add check that not empty
-            .setNegativeButton(android.R.string.cancel
+            .setNegativeButton(
+                android.R.string.cancel
             ) { dialog, _ -> dialog.cancel() }
             .create()
 
@@ -185,11 +200,11 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
             val button: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.contentDescription = "Positive button" //Used for testing
 
-            button.setOnClickListener{
+            button.setOnClickListener {
 
                 val regionName = inputText.text.toString()
 
-                if(regionName == ""){
+                if (regionName == "") {
 
                     //Close the keyboard if it's open so that we can see the toast
                     val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -198,9 +213,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
                     }
 
                     ToastHandler.showToast(applicationContext, R.string.empty)
-                }
-
-                else{
+                } else {
                     downloadOfflineMap(regionName)
                     dialog.dismiss()
                 }
@@ -217,11 +230,13 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
     /**
      * Display the [offlineRegion] on the map by putting a square surrounding the region on the map
      */
-    private fun display(offlineRegion: OfflineRegion){
+    private fun display(offlineRegion: OfflineRegion) {
         val bounds = OfflineMapSaverImpl.getMetadata(offlineRegion).bounds
-        lineManager.create(LineOptions().withLatLngs(
-            listOf(bounds.northEast, bounds.northWest, bounds.southWest, bounds.southEast, bounds.northEast)
-        ))
+        lineManager.create(
+            LineOptions().withLatLngs(
+                listOf(bounds.northEast, bounds.northWest, bounds.southWest, bounds.southEast, bounds.northEast)
+            )
+        )
     }
 
 }

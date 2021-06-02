@@ -8,10 +8,9 @@ package ch.epfl.sdp.drone3d.service.drone
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import ch.epfl.sdp.drone3d.service.impl.drone.DroneServerFactoryImpl
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNull
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.notNullValue
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

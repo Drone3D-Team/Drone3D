@@ -40,11 +40,15 @@ import java.util.*
 @UninstallModules(WeatherModule::class)
 class WeatherInfoActivityTest {
     companion object {
-        private val GOOD_VISIBILITY_REPORT = WeatherReport("Clear", "description",
-            20.0, 20, 5.0, 10000, Date(12903))
+        private val GOOD_VISIBILITY_REPORT = WeatherReport(
+            "Clear", "description",
+            20.0, 20, 5.0, 10000, Date(12903)
+        )
 
-        private val BAD_VISIBILITY_REPORT = WeatherReport("RAIN", "description",
-            -1.0, 20, 10.0, 100, Date(12903))
+        private val BAD_VISIBILITY_REPORT = WeatherReport(
+            "RAIN", "description",
+            -1.0, 20, 10.0, 100, Date(12903)
+        )
 
         private val location = LatLng(47.398979, 8.543434)
 

@@ -33,7 +33,7 @@ class PictureViewAdapter : ListAdapter<Bitmap, PictureViewAdapter.PictureViewHol
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PictureViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.mission_picture_item, parent, false)
+            .inflate(R.layout.mission_picture_item, parent, false)
 
         return PictureViewHolder(view)
     }

@@ -19,10 +19,11 @@ import kotlin.random.Random.Default.nextDouble
 class DroneUtilsTest {
 
 
-    companion object{
+    companion object {
         private const val DEFAULT_ALTITUDE = 10f
         private const val DEFAULT_CAMERA_PITCH = 90f
     }
+
     @Before
     fun before() {
         DroneInstanceMock.setupDefaultMocks()
@@ -41,8 +42,10 @@ class DroneUtilsTest {
                 DroneUtils.DRONE_SPEED,
                 DroneUtils.IS_FLY_THROUGH, DEFAULT_CAMERA_PITCH, Float.NaN,
                 Mission.MissionItem.CameraAction.TAKE_PHOTO, Float.NaN,
-                DroneUtils.CAMERA_PHOTO_INTERVAL)
-            val expectedMission = DroneUtils.generateMissionItem(randomLatitude, randomLongitude, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+                DroneUtils.CAMERA_PHOTO_INTERVAL
+            )
+            val expectedMission =
+                DroneUtils.generateMissionItem(randomLatitude, randomLongitude, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
             Assert.assertTrue(missionEquality(expectedMission, mission))
         }
     }
@@ -61,7 +64,7 @@ class DroneUtilsTest {
         }
 
         val missionPlan = DroneUtils
-            .makeDroneMission(positions, DEFAULT_ALTITUDE,DEFAULT_CAMERA_PITCH)
+            .makeDroneMission(positions, DEFAULT_ALTITUDE, DEFAULT_CAMERA_PITCH)
 
         expectedMissionItems.zip(missionPlan.missionItems).forEach { (expected, observed) ->
             Assert.assertTrue(missionEquality(expected, observed))

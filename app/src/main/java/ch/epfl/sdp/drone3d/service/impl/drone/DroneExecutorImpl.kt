@@ -47,17 +47,19 @@ class DroneExecutorImpl(
             DroneUtils.generateMissionItem(
                 home.latitudeDeg,
                 home.longitudeDeg,
-                missionPlan.missionItems[0].relativeAltitudeM))
+                missionPlan.missionItems[0].relativeAltitudeM
+            )
+        )
 
         val disarmed = changeFromTo(instance.telemetry.armed)
-                .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
+            .doOnComplete { throw Error(ctx.getString(R.string.drone_disarmed_during_setup)) }
 
         data.getMutableDroneStatus().postValue(IDLE)
 
         val mission = connected(instance)
-                .andThen(uploadMission(instance, missionPlan))
-                .andThen(arm(ctx, instance))
-                .andThen(start(ctx, instance, missionPlan))
+            .andThen(uploadMission(instance, missionPlan))
+            .andThen(arm(ctx, instance))
+            .andThen(start(ctx, instance, missionPlan))
 
         return Completable.ambArray(mission, disarmed)
     }
@@ -66,13 +68,13 @@ class DroneExecutorImpl(
         val instance = getInstance()
 
         return connected(instance)
-                .doOnComplete { data.getMutableDroneStatus().postValue(EXECUTING_MISSION) }
-                .andThen(waitForMissionEnd(ctx, instance))
+            .doOnComplete { data.getMutableDroneStatus().postValue(EXECUTING_MISSION) }
+            .andThen(waitForMissionEnd(ctx, instance))
     }
 
     override fun returnToHomeLocationAndLand(ctx: Context): Completable {
         val returnLocation = data.getHomeLocation().value
-                ?: throw IllegalStateException(ctx.getString(R.string.drone_return_error))
+            ?: throw IllegalStateException(ctx.getString(R.string.drone_return_error))
 
         val location = LatLng(returnLocation.latitudeDeg, returnLocation.longitudeDeg)
         val altitude = returnLocation.relativeAltitudeM
@@ -114,66 +116,66 @@ class DroneExecutorImpl(
 
     private fun uploadMission(instance: System, missionPlan: Mission.MissionPlan): Completable {
         return instance.mission.setReturnToLaunchAfterMission(false)
-                .andThen(instance.mission.uploadMission(missionPlan)
-                        .doOnSubscribe { data.getMutableDroneStatus().postValue(SENDING_ORDER) })
+            .andThen(instance.mission.uploadMission(missionPlan)
+                .doOnSubscribe { data.getMutableDroneStatus().postValue(SENDING_ORDER) })
     }
 
     private fun connected(instance: System): Completable =
-            instance.core.connectionState.filter{ it.isConnected }.firstOrError().toCompletable()
+        instance.core.connectionState.filter { it.isConnected }.firstOrError().toCompletable()
 
     private fun arm(ctx: Context, instance: System): Completable =
-            instance.telemetry.armed.firstOrError()
-                    .flatMapCompletable {
-                        if (it)
-                            Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_armed) }
-                        else
-                            instance.action.arm()
-                    }
-                    .doOnSubscribe { data.getMutableDroneStatus().postValue(ARMING) }
+        instance.telemetry.armed.firstOrError()
+            .flatMapCompletable {
+                if (it)
+                    Completable.fromCallable { ToastHandler.showToastAsync(ctx, R.string.drone_already_armed) }
+                else
+                    instance.action.arm()
+            }
+            .doOnSubscribe { data.getMutableDroneStatus().postValue(ARMING) }
 
     private fun start(ctx: Context, instance: System, missionPlan: Mission.MissionPlan): Completable {
         return instance.telemetry.flightMode.firstOrError()
-                .flatMapCompletable { flightMode ->
-                    when(flightMode) {
-                        // Ready to start the mission
-                        READY, HOLD, LAND, TAKEOFF ->
-                            instance.mission.startMission()
-                                    .doOnSubscribe { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
-                                    .doOnComplete {
-                                        data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                                        data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
-                                        data.getMutableMissionPaused().postValue(false)
-                                        ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
-                                    }
-                        // A mission is already in progress, we don't want to override it
-                        MISSION -> {
-                            ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
-                            data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
-                            Completable.complete()
-                        }
-                        else -> throw IllegalStateException("Unknown state : $flightMode")
+            .flatMapCompletable { flightMode ->
+                when (flightMode) {
+                    // Ready to start the mission
+                    READY, HOLD, LAND, TAKEOFF ->
+                        instance.mission.startMission()
+                            .doOnSubscribe { data.getMutableDroneStatus().postValue(STARTING_MISSION) }
+                            .doOnComplete {
+                                data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                                data.getMutableMission().postValue(missionPlan.missionItems.dropLast(1))
+                                data.getMutableMissionPaused().postValue(false)
+                                ToastHandler.showToastAsync(ctx, R.string.drone_mission_success)
+                            }
+                    // A mission is already in progress, we don't want to override it
+                    MISSION -> {
+                        ToastHandler.showToastAsync(ctx, R.string.mission_already_in_progress)
+                        data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
+                        Completable.complete()
                     }
+                    else -> throw IllegalStateException("Unknown state : $flightMode")
                 }
+            }
     }
 
     private fun waitForMissionEnd(ctx: Context, instance: System): Completable =
-            instance.mission.missionProgress
-                            .filter{ it.current >= it.total - 1 }.firstOrError().toCompletable()
-                            .doOnComplete{
-                                ToastHandler.showToastAsync(ctx, R.string.drone_mission_return_launch)
-                                data.getMutableDroneStatus().postValue(GOING_BACK)
-                            }
-                    .andThen(instance.mission.missionProgress)
-                            .filter{ it.current == it.total }.firstOrError().toCompletable()
-                            .doOnComplete{ data.getMutableDroneStatus().postValue(LANDING) }
-                    .andThen(instance.action.land())
-                    .andThen(instance.telemetry.inAir).filter { !it }.firstOrError().toCompletable()
-                    .doOnComplete{
-                        // Completion
-                        data.getMutableDroneStatus().postValue(IDLE)
-                        data.getMutableMission().postValue(null)
-                        data.getMutableMissionPaused().postValue(true)
-                    }
+        instance.mission.missionProgress
+            .filter { it.current >= it.total - 1 }.firstOrError().toCompletable()
+            .doOnComplete {
+                ToastHandler.showToastAsync(ctx, R.string.drone_mission_return_launch)
+                data.getMutableDroneStatus().postValue(GOING_BACK)
+            }
+            .andThen(instance.mission.missionProgress)
+            .filter { it.current == it.total }.firstOrError().toCompletable()
+            .doOnComplete { data.getMutableDroneStatus().postValue(LANDING) }
+            .andThen(instance.action.land())
+            .andThen(instance.telemetry.inAir).filter { !it }.firstOrError().toCompletable()
+            .doOnComplete {
+                // Completion
+                data.getMutableDroneStatus().postValue(IDLE)
+                data.getMutableMission().postValue(null)
+                data.getMutableMissionPaused().postValue(true)
+            }
 
     private fun returnTo(ctx: Context, returnLocation: LatLng, altitude: Float, @StringRes msg: Int): Completable {
 
@@ -181,11 +183,11 @@ class DroneExecutorImpl(
         val missionPlan = DroneUtils.makeDroneMission(listOf(returnLocation), altitude, null)
 
         return droneInstance.mission.pauseMission()
-                .doOnComplete {
-                    data.getMutableMissionPaused().postValue(true)
-                    data.getMutableDroneStatus().postValue(SENDING_ORDER)
-                }
-                .andThen(droneInstance.mission.uploadMission(missionPlan)
+            .doOnComplete {
+                data.getMutableMissionPaused().postValue(true)
+                data.getMutableDroneStatus().postValue(SENDING_ORDER)
+            }
+            .andThen(droneInstance.mission.uploadMission(missionPlan)
                 .andThen(droneInstance.mission.startMission())
                 .doOnComplete {
                     data.getMutableDroneStatus().postValue(EXECUTING_MISSION)
@@ -198,7 +200,7 @@ class DroneExecutorImpl(
     private fun changeFromTo(flow: Flowable<Boolean>): Completable {
         var last = false
         return flow.distinctUntilChanged().filter { current ->
-            if(!current && last)
+            if (!current && last)
                 true
             else {
                 last = current
@@ -208,5 +210,5 @@ class DroneExecutorImpl(
     }
 
     private fun getInstance(): System = service.provideDrone()
-            ?: throw IllegalStateException("Could not query drone instance")
+        ?: throw IllegalStateException("Could not query drone instance")
 }

@@ -16,13 +16,13 @@ object GeometryUtils {
      * used for small enough parallelogram on the surface of the Earth, see "SphereToPlaneProjector"
      * for more details
      */
-    fun getFourthParallelogramVertex(origin:LatLng,adjacentLatLng1:LatLng,adjacentLatLng2:LatLng):LatLng{
+    fun getFourthParallelogramVertex(origin: LatLng, adjacentLatLng1: LatLng, adjacentLatLng2: LatLng): LatLng {
 
         val projector = SphereToPlaneProjector(origin)
         val originPoint = projector.toPoint(origin)
         val adjacentPoint1 = projector.toPoint(adjacentLatLng1)
         val adjacentPoint2 = projector.toPoint(adjacentLatLng2)
-        val fourthPoint = Parallelogram.getFourthPoint(originPoint,adjacentPoint1,adjacentPoint2)
+        val fourthPoint = Parallelogram.getFourthPoint(originPoint, adjacentPoint1, adjacentPoint2)
 
         return projector.toLatLng(fourthPoint)
     }

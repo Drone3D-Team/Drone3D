@@ -53,7 +53,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
 
         val bundle = intent.extras
         if (bundle != null) {
-            flightHeight = bundle.getDouble(ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH)
+            flightHeight = bundle.getDouble(ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH)
             strategy =
                 (bundle.get(ItineraryCreateActivity.STRATEGY_INTENT_PATH) as MappingMissionService.Strategy)
             area = bundle.getParcelableArrayList(ItineraryCreateActivity.AREA_INTENT_PATH)!!
@@ -77,7 +77,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
             ToastHandler.showToast(this, R.string.mission_saved)
         } else {
             ToastHandler.showToast(this, R.string.error_mission_saved)
-            saveButton.isEnabled = true;
+            saveButton.isEnabled = true
         }
     }
 
@@ -124,7 +124,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
             MissionViewAdapter.OWNER_ID_INTENT_PATH,
             authService.getCurrentSession()!!.user.uid
         )
-        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, flightHeight)
+        intent.putExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, flightHeight)
         intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, ArrayList(area))
         intent.putExtra(MissionViewAdapter.STRATEGY_INTENT_PATH, strategy)
         startActivity(intent)
@@ -151,7 +151,7 @@ class SaveMappingMissionActivity : AppCompatActivity() {
             }
             builder.create()?.show()
         } else {
-            saveButton.isEnabled = false;
+            saveButton.isEnabled = false
 
             val name = if (nameEditText.text.isEmpty()) "Unnamed mission" else nameEditText.text
             val newMappingMission = MappingMission(name.toString(), flightHeight, strategy, area)
