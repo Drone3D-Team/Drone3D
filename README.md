@@ -61,7 +61,7 @@ In case you are not logged-in, you can still access shared missions.
 You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that lets you launch the mission.
 
 ### Launch a mission
-<img src="./images/itineraryShow.jpg" width="200"> <img src="./images/weatherInfo.png" width="200"> 
+<img src="./images/itineraryShow.png" width="200"> <img src="./images/weatherInfo.png" width="200"> 
 
 To be able to launch a mission you'll need to be connected to a drone or a simulation and to have a mission ready. You can either create a new mission or select one in the saved ones. You have the possibility to check the weather at the location of the mission. You'll get an alert if the weather is considered not good enough to fly your drone. You simply have to click on the drone icon button to launch your mission. You'll have a loading screen during which the drone will receive and start the mission.
 
