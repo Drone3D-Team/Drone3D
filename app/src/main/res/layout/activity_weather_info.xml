@@ -94,7 +94,7 @@
                 />
 
             <ImageView
-                android:id="@+id/icon"
+                android:id="@+id/weather_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
@@ -115,11 +115,10 @@
                 />
 
             <ImageView
+                style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/thermometer"
+                android:padding="0dp"
                 android:src="@drawable/ic_thermometer"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowTemperature"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
                 app:layout_constraintStart_toStartOf="parent"
@@ -137,12 +136,9 @@
                 />
 
             <ImageView
+                style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/rainDrops"
                 android:src="@drawable/ic_humidity"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowHumidity"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
                 app:layout_constraintStart_toStartOf="parent"
@@ -160,12 +156,9 @@
                 />
 
             <ImageView
+                style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/wind"
                 android:src="@drawable/ic_wind"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowWind"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
                 app:layout_constraintStart_toStartOf="parent"
@@ -183,12 +176,9 @@
                 />
 
             <ImageView
+                style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/visibility"
                 android:src="@drawable/ic_visibility"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:adjustViewBounds="true"
-                android:padding="4dp"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowVisibility"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
                 app:layout_constraintStart_toStartOf="parent"

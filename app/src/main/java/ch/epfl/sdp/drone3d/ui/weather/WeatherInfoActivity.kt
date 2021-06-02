@@ -58,7 +58,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         humidityInfo = findViewById(R.id.infoHumidity)
         windSpeedInfo = findViewById(R.id.infoWindSpeed)
         visibilityInfo = findViewById(R.id.infoVisibility)
-        iconView = findViewById(R.id.icon)
+        iconView = findViewById(R.id.weather_icon)
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
         nonExistentMission.visibility = View.GONE
