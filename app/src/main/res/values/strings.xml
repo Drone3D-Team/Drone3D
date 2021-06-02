@@ -152,8 +152,6 @@
     <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
 
     <!-- Weather Info Activity -->
-    <string name="updated_on">Weather on %1$s</string>
-    <string name="info_weather_description">Weather : %1$s</string>
     <string name="info_temperature">Temperature : %1$s\u2103</string>
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>

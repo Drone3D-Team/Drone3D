@@ -80,10 +80,7 @@ class WeatherInfoActivity : AppCompatActivity() {
     private fun setupWeatherInfo(weatherReport: WeatherReport) {
         nonExistentMission.visibility = View.GONE
 
-        val updatedAt = weatherReport.updatedAt
-        //Will show it in English. If we made the app available in all language, should use Locale.getDefault()
-        val formatter = SimpleDateFormat("E dd MMM HH:mm:ss", Locale.US)
-        dateInfo.text = formatter.format(updatedAt)
+        setupTimeInfo(weatherReport)
 
         if(weatherReport.iconId != null) {
             val iconUrl = "http://openweathermap.org/img/w/" + weatherReport.iconId + ".png"
@@ -126,6 +123,16 @@ class WeatherInfoActivity : AppCompatActivity() {
                 setTextColor(Color.RED)
             }
         }
+    }
+
+    /**
+     * Setup the time of the [weatherReport] with right format
+     */
+    private fun setupTimeInfo(weatherReport: WeatherReport){
+        val updatedAt = weatherReport.updatedAt
+        //Will show it in English. If we made the app available in all language, should use Locale.getDefault()
+        val formatter = SimpleDateFormat("E dd MMM HH:mm:ss", Locale.US)
+        dateInfo.text = formatter.format(updatedAt)
     }
 
     /**
