@@ -19,6 +19,8 @@ import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 
@@ -74,7 +76,10 @@ class WeatherInfoActivity : AppCompatActivity() {
     private fun setupWeatherInfo(weatherReport: WeatherReport) {
         nonExistentMission.visibility = View.GONE
 
-        dateInfo.text = getString(R.string.updated_on, weatherReport.updatedAt.toString())
+        val updatedAt = weatherReport.updatedAt
+        //Will show it in English. If we made the app available in all language, should use Locale.getDefault()
+        val formatter = SimpleDateFormat("E dd MMM HH:mm:ss", Locale.US)
+        dateInfo.text = formatter.format(updatedAt)
 
         if(weatherReport.iconId != null) {
             val iconUrl = "http://openweathermap.org/img/w/" + weatherReport.iconId + ".png"
@@ -82,7 +87,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         }
 
         weatherDescription.apply {
-            text = getString(R.string.info_weather_description, weatherReport.description)
+            text = weatherReport.description.capitalize()
             if (!WeatherUtils.SAFE_CONDITIONS.contains(weatherReport.keywordDescription)) {
                 setTextColor(Color.RED)
             }
