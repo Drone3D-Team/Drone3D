@@ -64,7 +64,14 @@ class MissionViewAdapter(private val privateList: Boolean) :
             textView.text = mission.name
 
             if (mission.state == State.PRIVATE_AND_SHARED) {
-                textView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_shared_private, 0, 0, 0)
+                if(privateList) {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.ic_shared_private,
+                        0,
+                        0,
+                        0
+                    )
+                }
             }
         }
     }
