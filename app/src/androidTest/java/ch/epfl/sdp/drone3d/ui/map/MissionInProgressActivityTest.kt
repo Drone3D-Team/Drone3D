@@ -144,16 +144,6 @@ class MissionInProgressActivityTest {
     }
 
     @Test
-    fun warningMessageVisibleInBadWeather() {
-        `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
-            .thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
-        activityRule.scenario.recreate()
-
-        Espresso.onView(ViewMatchers.withId(R.id.warningBadWeather))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-    }
-
-    @Test
     fun goBackOnError() {
 
         val activity = CompletableFuture<MissionInProgressActivity>()

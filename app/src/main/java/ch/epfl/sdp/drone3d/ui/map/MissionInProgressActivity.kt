@@ -100,7 +100,6 @@ class MissionInProgressActivity : BaseMapActivity() {
     private lateinit var backToHomeButton: MaterialButton
     private lateinit var backToUserButton: MaterialButton
 
-    private lateinit var warningBadWeather: TextView
     private lateinit var weatherReport: LiveData<WeatherReport>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,8 +120,6 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         backToHomeButton = findViewById(R.id.backToHomeButton)
         backToUserButton = findViewById(R.id.backToUserButton)
-
-        warningBadWeather = findViewById(R.id.warningBadWeather)
 
         weatherReport = if (droneService.getData().getPosition().value != null) {
             weatherService.getWeatherReport(droneService.getData().getPosition().value!!)
@@ -215,11 +212,6 @@ class MissionInProgressActivity : BaseMapActivity() {
 
         createObserver(droneData.getHomeLocation()) {
             it?.let { home -> if (::homeDrawer.isInitialized) homeDrawer.showHome(LatLng(home.latitudeDeg, home.longitudeDeg)) }
-        }
-
-        createObserver(weatherReport) { report ->
-            warningBadWeather.visibility =
-                if (report == null || WeatherUtils.isWeatherGoodEnough(report)) View.GONE else View.VISIBLE
         }
 
         createDroneStatusObserver(droneData)
