@@ -137,6 +137,9 @@ class MissionStartActivityTest {
         blockingSetValue(droneStatus, STARTING_MISSION)
         onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_starting)))
 
+        blockingSetValue(droneStatus, EXECUTING_MISSION)
+        onView(withId(R.id.mission_start_text)).check(matches(withText(R.string.mission_state_executing)))
+
         missionExecutionEnd.onComplete()
         intended(
             hasComponent(ComponentNameMatchers.hasClassName(MissionInProgressActivity::class.java.name))
