@@ -66,6 +66,7 @@ class MissionInProgressActivityTest {
     }
 
     private val statusLiveData = MutableLiveData<DroneData.DroneStatus>()
+    private val videoStreamLiveData = MutableLiveData<String>()
     private var missionEndFuture: CompletableFuture<Any> = CompletableFuture()
 
     private val activityRule = ActivityScenarioRule(MissionInProgressActivity::class.java)
@@ -99,7 +100,7 @@ class MissionInProgressActivityTest {
         `when`(droneService.getData().getHomeLocation()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getDroneStatus()).thenReturn(statusLiveData)
         `when`(droneService.getData().isConnected()).thenReturn(MutableLiveData())
-        `when`(droneService.getData().getVideoStreamUri()).thenReturn(MutableLiveData())
+        `when`(droneService.getData().getVideoStreamUri()).thenReturn(videoStreamLiveData)
         `when`(droneService.getData().getMission()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getSpeed()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getRelativeAltitude()).thenReturn(MutableLiveData())
@@ -123,6 +124,22 @@ class MissionInProgressActivityTest {
     @After
     fun tearDown() {
         Intents.release()
+    }
+
+    @Test
+    fun videoShownWhenUirGiven() {
+        Espresso.onView(ViewMatchers.withId(R.id.camera_mission_view))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)))
+
+        videoStreamLiveData.postValue("rtsp://")
+
+        Espresso.onView(ViewMatchers.withId(R.id.camera_mission_view))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
+
+        videoStreamLiveData.postValue(null)
+
+        Espresso.onView(ViewMatchers.withId(R.id.camera_mission_view))
+                .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)))
     }
 
     @Test
