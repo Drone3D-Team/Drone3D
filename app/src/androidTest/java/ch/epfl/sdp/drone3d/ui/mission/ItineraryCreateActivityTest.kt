@@ -126,6 +126,8 @@ class ItineraryCreateActivityTest {
 
         activityRule.scenario.recreate()
 
+        sleep(500)
+
         onView(withText(R.string.go_to_login)).check(matches(isDisplayed()))
         onView(withText(R.string.go_to_login)).perform(click())
 
