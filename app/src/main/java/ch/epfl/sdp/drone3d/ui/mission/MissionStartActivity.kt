@@ -36,7 +36,8 @@ class MissionStartActivity : AppCompatActivity() {
             IDLE,
             SENDING_ORDER,
             ARMING,
-            STARTING_MISSION
+            STARTING_MISSION,
+            EXECUTING_MISSION
         )
     }
 
@@ -87,6 +88,7 @@ class MissionStartActivity : AppCompatActivity() {
                 ARMING -> R.string.mission_state_arming
                 SENDING_ORDER -> R.string.mission_state_sending
                 STARTING_MISSION -> R.string.mission_state_starting
+                EXECUTING_MISSION -> R.string.mission_state_executing
                 else -> R.string.mission_state_unknown
             }
         )

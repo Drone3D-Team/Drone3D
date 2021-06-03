@@ -26,8 +26,12 @@
         <activity
             android:name=".ui.weather.WeatherInfoActivity"
             android:parentActivityName=".ui.mission.ItineraryShowActivity" />
-        <activity android:name=".ui.map.MissionInProgressActivity" />
-        <activity android:name=".ui.mission.MissionPicturesActivity" />
+        <activity
+            android:name=".ui.map.MissionInProgressActivity"
+            android:parentActivityName=".ui.mission.ItineraryShowActivity" />
+        <activity
+            android:name=".ui.mission.MissionPicturesActivity"
+            android:parentActivityName=".ui.mission.ItineraryShowActivity" />
         <activity
             android:name=".ui.mission.ItineraryShowActivity"
             android:launchMode="singleTop"
