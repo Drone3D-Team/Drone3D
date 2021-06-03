@@ -8,6 +8,7 @@ package ch.epfl.sdp.drone3d.ui.weather
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import ch.epfl.sdp.drone3d.R
@@ -16,8 +17,12 @@ import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
 import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.mission.ItineraryShowActivity
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+
 
 /**
  * An activity showing information about the weather for a mapping mission
@@ -38,6 +43,8 @@ class WeatherInfoActivity : AppCompatActivity() {
     private lateinit var humidityInfo: TextView
     private lateinit var windSpeedInfo: TextView
     private lateinit var visibilityInfo: TextView
+    private lateinit var iconView: ImageView
+
 
     private lateinit var nonExistentMission: TextView
 
@@ -51,6 +58,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         humidityInfo = findViewById(R.id.infoHumidity)
         windSpeedInfo = findViewById(R.id.infoWindSpeed)
         visibilityInfo = findViewById(R.id.infoVisibility)
+        iconView = findViewById(R.id.weather_icon)
 
         nonExistentMission = findViewById(R.id.nonExistentMission)
         nonExistentMission.visibility = View.GONE
@@ -72,10 +80,15 @@ class WeatherInfoActivity : AppCompatActivity() {
     private fun setupWeatherInfo(weatherReport: WeatherReport) {
         nonExistentMission.visibility = View.GONE
 
-        dateInfo.text = getString(R.string.updated_on, weatherReport.updatedAt.toString())
+        setupTimeInfo(weatherReport)
+
+        if(weatherReport.iconId != null) {
+            val iconUrl = "http://openweathermap.org/img/w/" + weatherReport.iconId + ".png"
+            Picasso.get().load(iconUrl).into(iconView)
+        }
 
         weatherDescription.apply {
-            text = getString(R.string.info_weather_description, weatherReport.description)
+            text = weatherReport.description.capitalize(Locale.getDefault())
             if (!WeatherUtils.SAFE_CONDITIONS.contains(weatherReport.keywordDescription)) {
                 setTextColor(Color.RED)
             }
@@ -110,6 +123,16 @@ class WeatherInfoActivity : AppCompatActivity() {
                 setTextColor(Color.RED)
             }
         }
+    }
+
+    /**
+     * Setup the time of the [weatherReport] with right format
+     */
+    private fun setupTimeInfo(weatherReport: WeatherReport){
+        val updatedAt = weatherReport.updatedAt
+        //Will show it in English. If we made the app available in all language, should use Locale.getDefault()
+        val formatter = SimpleDateFormat("E dd MMM HH:mm:ss", Locale.US)
+        dateInfo.text = formatter.format(updatedAt)
     }
 
     /**

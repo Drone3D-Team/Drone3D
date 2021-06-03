@@ -9,6 +9,20 @@
     style="@style/activityStyle"
     tools:context=".ui.map.MissionInProgressActivity">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/verticalVideoButtonGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontalTopButtonVideoGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.77" />
+
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/map_in_mission_view"
         android:layout_width="match_parent"
@@ -80,56 +94,36 @@
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/camera_mission_view"
-        android:layout_width="204dp"
-        android:layout_height="112dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.077"
+        app:layout_constraintEnd_toEndOf="@id/verticalVideoButtonGuideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.974" />
+        app:layout_constraintTop_toTopOf="@id/horizontalTopButtonVideoGuideline"/>
 
-    <TextView
-        android:id="@+id/warningBadWeather"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/backToUserButton"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:lineSpacingExtra="14sp"
-        android:text="@string/warning_bad_weather"
-        android:textAlignment="center"
-        android:textColor="@color/red"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:onClick="backToUser"
+        android:text="@string/back_to_user_button"
+        app:layout_constraintBottom_toTopOf="@id/backToHomeButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.645" />
+        app:layout_constraintStart_toStartOf="@id/verticalVideoButtonGuideline"
+        app:layout_constraintTop_toTopOf="@id/horizontalTopButtonVideoGuideline"
+        />
 
     <Button
         android:id="@+id/backToHomeButton"
-        android:layout_width="112dp"
-        android:layout_height="58dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
         android:onClick="backToHome"
         android:text="@string/back_to_home_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.859"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
-
-    <Button
-        android:id="@+id/backToUserButton"
-        android:layout_width="112dp"
-        android:layout_height="58dp"
-        android:onClick="backToUser"
-        android:text="@string/back_to_user_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.859"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.891" />
+        app:layout_constraintStart_toStartOf="@id/verticalVideoButtonGuideline"
+        app:layout_constraintTop_toBottomOf="@id/backToUserButton"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

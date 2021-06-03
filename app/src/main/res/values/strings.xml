@@ -3,7 +3,7 @@
   ~ The license can be found in LICENSE at root of the repository
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Drone3D</string>
 
     <!-- Main Menu Activity -->
@@ -93,7 +93,7 @@
     <string name="download_progress">The download is at: %1$s completion</string>
     <string name="tile_limit_exceeded">Download paused, the tile limit has been exceeded</string>
     <string name="name_hint">Name</string>
-    <string name="download">download</string>
+    <string name="download">Download</string>
     <string name="empty">Name should not be empty</string>
 
 
@@ -136,8 +136,6 @@
     <string name="live_status">Mission status : %1$s</string>
     <!-- Message showed in case of a loss of connection with the drone during a mission -->
     <string name="lost_connection_message">Lost Connection With the Drone</string>
-    <!-- Warning showed if the weather is dangerous for the drone -->
-    <string name="warning_bad_weather">Warning ! The weather is dangerous for the drone !</string>
     <!--  Message showed when the drone is too far from the user -->
     <string name="drone_too_far">The drone is too far from you. Mission paused until you go closer from it.</string>
     <!-- Message showed when the drone is again close enough from the user -->
@@ -151,8 +149,6 @@
     <string name="mission_state_unknown">The drone is in an unknown state. Are you the only one controlling it ?</string>
 
     <!-- Weather Info Activity -->
-    <string name="updated_on">Weather on %1$s</string>
-    <string name="info_weather_description">Weather : %1$s</string>
     <string name="info_temperature">Temperature : %1$s\u2103</string>
     <string name="info_humidity">Humidity : %1$s%%</string>
     <string name="info_wind_speed">Wind speed : %1$s m/s</string>
@@ -160,18 +156,19 @@
     <string name="info_visibility_km">Visibility limit : %1$s km</string>
     <!-- Shown when checking the weather for a non-existent mission -->
     <string name="non_existent_mission">The mission is null, can\'t show weather</string>
+    <!-- Content descriptors -->
+    <string name="weather_image_descriptor">weather</string>
+    <string name="thermometer_image_descriptor">thermometer</string>
+    <string name="humidity_image_descriptor">water drops</string>
+    <string name="wind_image_descriptor">wind</string>
+    <string name="visibility_image_descriptor">eye</string>
+
 
     <!-- Mission Pictures Activity -->
     <string name="drone_mission_picture_desc">Drone mission picture</string>
 
     <!-- Utilities -->
-    <string name="mapbox_access_token">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
-    <!-- Format to follow for the mission name in the list-->
-    <string name="mapping_mission_list_format">%s</string>
-    <!-- Format to follow for the mission name in the list if they are also shared while in the private list-->
-    <string name="mapping_mission_list_format_private">%s - S</string>
-    <!-- Format to follow for the mission name in the list if they are also private while in the shared list-->
-    <string name="mapping_mission_list_format_shared">%s - P</string>
+    <string name="mapbox_access_token" tools:ignore="Typos">pk.eyJ1IjoiZDNkIiwiYSI6ImNrbTRrc244djA1bGkydXRwbGphajZkbHAifQ.T_Ygz9WvhOHjPiOpZEJ8Zw</string>
 
     <!-- Drone -->
     <string name="drone_mission_success">The mission was successfully dispatched to the drone</string>

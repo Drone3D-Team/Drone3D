@@ -3,7 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/maintainability)](https://codeclimate.com/github/Drone3D-Team/Drone3D/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/test_coverage)](https://codeclimate.com/github/Drone3D-Team/Drone3D/test_coverage)
 
-<img src="https://user-images.githubusercontent.com/44334351/119946869-5f040d00-bf97-11eb-87c7-3761072ddced.jpg" width="50"> 
+<img src="images/logo.jpg" width="50"> 
 
 ## Table of contents
 * [Description](#description)
@@ -13,71 +13,71 @@
 * [License](#license)
 
 ## Description
-Drone3D is a mobile application that lets you plan and execute drone missions to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with other or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
+Drone3D is a mobile application that lets you plan and execute drone missions to take pictures of a location. These photos can then be used to reconstruct a 3D model of the area. You have the possibility to share the missions you've planned with others or see their missions. This app can be used with any drone or simulation supported by [MAVSDK](https://mavsdk.mavlink.io/main/en/index.html).
 ## Usage and features
-<img src="https://user-images.githubusercontent.com/44334351/119946864-5f040d00-bf97-11eb-85a1-d1c36986755c.jpg" width="200">
+<img src="images/mainMenu.png" width="200">
 
 ### Register and login
-<img src="https://user-images.githubusercontent.com/44334351/119946849-5ca1b300-bf97-11eb-80de-89d0bc0fb3e8.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946858-5dd2e000-bf97-11eb-85aa-a70e5e9e0976.jpg" width="200">
+<img src="images/register.jpg" width="200"> <img src="images/login.jpg" width="200">
 
-You can create an account or login in a previously created account with an email and a password. Once you are logged-in you'll be able to store and share missions.
+You can create an account or log into an existing one with an email and a password. Once you are logged-in you'll be able to store and share missions.
 
 ### Connect a drone or a simulation
-<img src="https://user-images.githubusercontent.com/44334351/119946860-5e6b7680-bf97-11eb-83ed-b5b17f5c5d7a.jpg" width="200"> 
+<img src="images/connectSimulation.jpg" width="200"> 
 
 To connect a drone you'll have to power up your drone, set it up to communicate through the udp://:14540 port, click on the "connect a drone" button, it will open the port and search for the drone for three seconds before timing out. Repeat the operation as many time as needed.
-To connect a simulation, you'll have first to create to launch a simulation with a tool such as [auterion](https://suite.auterion.com/login?returnUrl=%2Fsimulations) and then enter the corresponding the IP and port, click on the "connect a simulation" button, it can take a few seconds.
+To connect a simulation, you'll first have to create a simulation with a tool such as [auterion](https://suite.auterion.com/login?returnUrl=%2Fsimulations) and then enter the corresponding IP and port, click on the "connect a simulation" button. It can take a few seconds.
 
 ### Manage offline map
-<img src="https://user-images.githubusercontent.com/44334351/119946845-5c091c80-bf97-11eb-8c88-6747e2ccbe50.jpg" width="200"> 
+<img src="images/offlineMap.jpg" width="200"> 
 
 This page lets you download a part of the map. Select the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precision of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
 
 ### Create and save an itinerary 
-<img src="https://user-images.githubusercontent.com/44334351/119946850-5d3a4980-bf97-11eb-8551-95728ae82c28.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946863-5e6b7680-bf97-11eb-8fd1-09d40b955df1.jpg" width="200"> 
+<img src="images/createItinerary.jpg" width="200"> <img src="images/createMission.jpg" width="200"> 
 
-This page contains all the tools needed to create a mission:  
+This page contains all the tools needed to create a mission:
 * You can select the area for which you want to create a 3D model by adding three points on the map (click on the map to add a point).
-* Choose your flight altitude with the vertical bar on the left. (Be sure to be above any obstacle !)
+* Choose your flight altitude with the vertical bar on the left. (Be sure to be above any obstacle!)
 * Select your strategy on the right with the top button. Either single or double path strategy are implemented.
-* Preview the path your drone will take. (To have exact path be sure the be already connected to your drone, default settings will be use otherwise.)
+* Preview the path your drone will take. (To have exact path, be sure to be already connected to your drone, default settings will be used otherwise.)
 * Hide/show the path once you have generated it with the previous button.
 * Delete the area and start again in case you changed your mind.
 * Save and/or share the mapping mission (only if you are logged-in).
 
 If you're not logged-in, you won't be able to save the mission but you can still launch it.
 
-<img src="https://user-images.githubusercontent.com/44334351/119948061-bd7dbb00-bf98-11eb-972b-9d5c51c94c75.jpg" width="200"> 
+<img src="images/saveMission.png" width="200"> 
 
-To save a mission, you'll need to give it a name and select if you want to store it, share it or both.
+To save a mission, you'll need to give it a name and select if you want to store it privately, share it or both.
 
 ### Browse itineraries
-<img src="https://user-images.githubusercontent.com/44334351/119946852-5d3a4980-bf97-11eb-989f-028c00f3a48e.jpg" width="200"> 
+<img src="images/browseItinerary.png" width="200"> 
 
 If you are logged-in, you can find all your previously saved mission as well as access the missions others have shared. If you want to delete any of your mission that is either private or shared, click on it and press on the delete button.
 
 In case you are not logged-in, you can still access shared missions.
 
-You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that lets you launch the mission.
+You can do term related search with the top search bar to find the mission you are looking for. Pressing any of the mission will open the page that lets you launch it.
 
 ### Launch a mission
-<img src="https://user-images.githubusercontent.com/44334351/119948667-56acd180-bf99-11eb-8a04-cb624ff5f519.jpg" width="200"> <img src="https://user-images.githubusercontent.com/44334351/119946855-5dd2e000-bf97-11eb-8cb1-7878594f007c.jpg" width="200"> 
+<img src="images/itineraryShow.png" width="200"> <img src="images/weatherInfo.png" width="200"> 
 
 To be able to launch a mission you'll need to be connected to a drone or a simulation and to have a mission ready. You can either create a new mission or select one in the saved ones. You have the possibility to check the weather at the location of the mission. You'll get an alert if the weather is considered not good enough to fly your drone. You simply have to click on the drone icon button to launch your mission. You'll have a loading screen during which the drone will receive and start the mission.
 
-TODO add screen loading and missionInProgress
+<img src="images/startMission.png" width="200"> <img src="images/missionInProgress.png" width="200"> 
 
-Once the mission is dispatched to the drone, you'll be able to follow it live on the map. You'll also have the speed, height, live camera feed, state and battery of the drone. At any time you call the drone back to you or to the take off location.
+Once the mission is dispatched to the drone, you'll be able to follow it live on the map. You'll also have the speed, height, live camera feed, state and battery of the drone. At any time you can call the drone back to you or to the take off location.
 
 ## Set-up
-This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share your private keys, be carefull !
+This app uses [Mapbox](https://www.mapbox.com) and [OpenWeather](https://openweathermap.org/api) APIs. To be able to have a working build of Drone3D, you will have to set up your own keys. We explain in this section how to do that. Keep in mind that you don't want to share your private keys, be careful!
 
 ### Mapbox
 You'll first have to login or create an account [here](https://account.mapbox.com/auth/signin/). Update "mapbox_access_token" with your default public token in [strings.xml](app/src/main/res/values/strings.xml).
 ```
     <string name="mapbox_access_token">PASTE YOUR PUBLIC TOKEN HERE</string>
 ```
- Finally generate a private token and set it up in [build.gradle](./build.gradle) under password:
+Then, you can create a private token following the official documentation. The only secret scope you will need is "DOWNLOAD:READ". Once your token has been created, you can set it up in [build.gradle](./build.gradle) under password:
 ```
    credentials {
                 // This should always be `mapbox` (not the real username).
@@ -126,7 +126,7 @@ Our code is carefully tested. It has the following stats:
 
 [GNU Affero General Public License version 3](/LICENSE.txt)
 
-Drone3D a mobile application that helps you plan drone flights to build 3D model of a scene.  
+Drone3D a mobile application that helps you plan drone flights to build 3D model of a scene.
 Copyright (C) 2021  Drone3D-Team
 
 This program is free software: you can redistribute it and/or modify

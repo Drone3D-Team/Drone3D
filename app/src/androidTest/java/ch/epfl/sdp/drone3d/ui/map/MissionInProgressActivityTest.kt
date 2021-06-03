@@ -56,12 +56,12 @@ class MissionInProgressActivityTest {
     companion object {
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
-            20.0, 20, 5.0, 500, Date(12903)
+            "01d", 20.0, 20, 5.0, 500, Date(12903)
         )
 
         private val BAD_WEATHER_REPORT = WeatherReport(
             "RAIN", "description",
-            -1.0, 20, 10.0, 500, Date(12903)
+            "10d", -1.0, 20, 10.0, 500, Date(12903)
         )
     }
 
@@ -141,16 +141,6 @@ class MissionInProgressActivityTest {
         }
 
         ToastMatcher.onToast(activity.get(), R.string.lost_connection_message)
-    }
-
-    @Test
-    fun warningMessageVisibleInBadWeather() {
-        `when`(weatherService.getWeatherReport(droneService.getData().getPosition().value!!))
-            .thenReturn(MutableLiveData(BAD_WEATHER_REPORT))
-        activityRule.scenario.recreate()
-
-        Espresso.onView(ViewMatchers.withId(R.id.warningBadWeather))
-            .check(ViewAssertions.matches(ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
     }
 
     @Test

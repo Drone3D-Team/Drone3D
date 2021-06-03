@@ -57,7 +57,7 @@ class SaveMappingMissionActivityTest {
         private const val USER_UID = "user_id"
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
-            20.0, 20, 5.0, 500, Date(12903)
+            "01d",20.0, 20, 5.0, 500, Date(12903)
         )
         private val AREA = arrayListOf(
             LatLng(46.52109254025395, 6.643008669745938),
