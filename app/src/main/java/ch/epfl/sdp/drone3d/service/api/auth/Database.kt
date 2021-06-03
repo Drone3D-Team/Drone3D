@@ -16,6 +16,6 @@ interface Database {
     /** Listen to the pseudo of the user identified by [UID] and update a LiveData accordingly */
     fun loadUserPseudo(UID: String): LiveData<String>
 
-    /** Erase the [pseudo] of the user identified by [UID] */
+    /** Erase the pseudo of the user identified by [UID] */
     fun removeUserPseudo(UID: String)
 }

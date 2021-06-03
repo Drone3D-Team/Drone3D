@@ -19,7 +19,8 @@ import ch.epfl.sdp.drone3d.model.mission.MappingMission
 import ch.epfl.sdp.drone3d.model.mission.State
 
 /**
- * Adapter for the Recycler view creating holders for the missions
+ * Adapter for the Recycler view creating holders for the missions. [privateList] indicates whether
+ * the adapter is used to show the private or the public missions.
  */
 class MissionViewAdapter(private val privateList: Boolean) :
     ListAdapter<MappingMission, MissionViewAdapter.MissionViewHolder>(MissionDiff) {
@@ -30,7 +31,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
         const val SHARED_ID_INTENT_PATH = "MVA_shared"
         const val STRATEGY_INTENT_PATH = "MVA_strategy"
         const val AREA_INTENT_PATH = "MVA_area"
-        const val FLIGHTHEIGHT_INTENT_PATH = "MVA_flightHeight"
+        const val FLIGHT_HEIGHT_INTENT_PATH = "MVA_flightHeight"
     }
 
     class MissionViewHolder(view: View, private val privateList: Boolean) :
@@ -45,7 +46,7 @@ class MissionViewAdapter(private val privateList: Boolean) :
                 curMission?.let { mission ->
                     val intent = Intent(view.context, ItineraryShowActivity::class.java)
 
-                    intent.putExtra(FLIGHTHEIGHT_INTENT_PATH, mission.flightHeight)
+                    intent.putExtra(FLIGHT_HEIGHT_INTENT_PATH, mission.flightHeight)
                     intent.putExtra(AREA_INTENT_PATH, ArrayList(mission.area))
                     intent.putExtra(STRATEGY_INTENT_PATH, mission.strategy)
                     intent.putExtra(OWNER_ID_INTENT_PATH, mission.ownerUid)
@@ -62,11 +63,16 @@ class MissionViewAdapter(private val privateList: Boolean) :
             curMission = mission
             textView.text = mission.name
 
-            if (mission.state == State.PRIVATE_AND_SHARED)
-                if (privateList)
-                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
-                else
-                    textView.setTextColor(itemView.context.getColor(R.color.darkMainColor))
+            if (mission.state == State.PRIVATE_AND_SHARED) {
+                if(privateList) {
+                    textView.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.ic_shared_private,
+                        0,
+                        0,
+                        0
+                    )
+                }
+            }
         }
     }
 

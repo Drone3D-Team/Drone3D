@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.widget.EditText
@@ -73,14 +78,13 @@ class ManageOfflineMapActivityTest {
     fun cannotEnterEmptyStringForRegionName() {
 
         Thread.sleep(2000)
-        //Used to wait for the map to be downloaded before clickling the button
-        var counter = CountDownLatch(1)
+        //Used to wait for the map to be downloaded before clicking the button
+        val counter = CountDownLatch(1)
 
         activityRule.scenario.onActivity { activity ->
             activity.mapView.getMapAsync { mapboxMap ->
-                mapboxMap.setStyle(Style.MAPBOX_STREETS) { _ ->
+                mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                     counter.countDown()
-
                 }
             }
         }

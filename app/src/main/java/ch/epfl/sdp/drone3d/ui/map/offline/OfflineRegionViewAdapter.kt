@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.ui.map.offline
 
 import android.view.LayoutInflater
@@ -13,12 +18,9 @@ import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaver
 import ch.epfl.sdp.drone3d.map.offline.OfflineMapSaverImpl.Companion.getMetadata
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.offline.OfflineRegion
-import com.mapbox.mapboxsdk.plugins.annotation.Line
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
-import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import timber.log.Timber
 
 /**
@@ -26,12 +28,16 @@ import timber.log.Timber
  * the missions when we click on the delete button, a [lineManager] to draw on the [mapboxMap] on
  * which we can zoom when we click on the name of a region.
  */
-class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, private val lineManager: LineManager, private val mapboxMap: MapboxMap) :
+class OfflineRegionViewAdapter(
+    private val offlineMapSaver: OfflineMapSaver,
+    private val lineManager: LineManager,
+    private val mapboxMap: MapboxMap
+) :
     ListAdapter<OfflineRegion, OfflineRegionViewAdapter.OfflineRegionViewHolder>(RegionDiff) {
 
     /**
      * ViewHolder for the RecyclerView holding OfflineRegions. Contains a textView with the name of
-     * the region and a button to delete it as [view].
+     * the region and a button to delete it as view.
      */
     class OfflineRegionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -48,7 +54,7 @@ class OfflineRegionViewAdapter(private val offlineMapSaver: OfflineMapSaver, pri
             val metadata = getMetadata(offRegion)
             textView.text = metadata.name
 
-            textView.setOnClickListener{
+            textView.setOnClickListener {
                 MapboxUtility.zoomOnCoordinate(metadata.bounds.center, mapboxMap, metadata.zoom)
             }
 

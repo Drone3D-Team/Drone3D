@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2021  Drone3D-Team
+ * The license can be found in LICENSE at root of the repository
+ */
+
 package ch.epfl.sdp.drone3d.service.impl.weather
 
 import android.content.Context
@@ -24,7 +29,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
     companion object {
         private const val API_ENDPOINT = "https://api.openweathermap.org/data/2.5/weather?"
         private const val TEMP_UNIT = "metric"
-        private val NO_DATA = WeatherReport("N/A", "N/A", 0.0, 0, 0.0, 0, Date())
+        private val NO_DATA = WeatherReport("N/A", "N/A", null, 0.0, 0, 0.0, 0, Date())
     }
 
     override fun getWeatherReport(location: LatLng): LiveData<WeatherReport> {
@@ -53,6 +58,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
             val wind = jsonObj.getJSONObject("wind")
             val weather = jsonObj.getJSONArray("weather").getJSONObject(0)
 
+            val iconId = weather.getString("icon")
             val updatedAt = Date(jsonObj.getLong("dt") * 1000)
             val temperature = main.getDouble("temp")
             val humidity = main.getInt("humidity")
@@ -65,6 +71,7 @@ class OpenWeatherWeatherService @Inject constructor(@ApplicationContext val cont
             report = WeatherReport(
                 keywordDescription,
                 description,
+                iconId,
                 temperature,
                 humidity,
                 windSpeed,

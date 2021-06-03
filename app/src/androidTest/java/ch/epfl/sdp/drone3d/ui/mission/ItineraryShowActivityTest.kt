@@ -62,19 +62,19 @@ class ItineraryShowActivityTest {
     companion object {
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
-            20.0, 20, 5.0, 500, Date(12903)
+            "01d", 20.0, 20, 5.0, 500, Date(12903)
         )
 
         private val BAD_WEATHER_REPORT = WeatherReport(
             "RAIN", "description",
-            -1.0, 20, 10.0, 500, Date(12903)
+            "10d", -1.0, 20, 10.0, 500, Date(12903)
         )
 
-        private val USER_UID = "asdfg"
+        private const val USER_UID = "asdfg"
 
-        private val FLIGHT_HEIGHT = 50.0
+        private const val FLIGHT_HEIGHT = 50.0
 
-        private val bayland_area = arrayListOf(
+        private val BAYLAND_AREA = arrayListOf(
             LatLng(37.41253570576311, -121.99694775011824),
             LatLng(37.412496825414046, -121.99683107403213),
             LatLng(37.41243024942702, -121.99686795440418)
@@ -87,8 +87,8 @@ class ItineraryShowActivityTest {
             ItineraryShowActivity::class.java
         ).apply {
             putExtras(Bundle().apply {
-                putSerializable(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
-                putSerializable(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+                putSerializable(MissionViewAdapter.AREA_INTENT_PATH, BAYLAND_AREA)
+                putSerializable(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
                 putSerializable(
                     MissionViewAdapter.STRATEGY_INTENT_PATH,
                     MappingMissionService.Strategy.SINGLE_PASS
@@ -128,7 +128,7 @@ class ItineraryShowActivityTest {
         `when`(droneService.getData().getFocalLength()).thenReturn(MutableLiveData())
         `when`(droneService.getData().getCameraResolution()).thenReturn(MutableLiveData())
 
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 GOOD_WEATHER_REPORT
             )
@@ -172,8 +172,8 @@ class ItineraryShowActivityTest {
         `when`(
             droneService.getData()
                 .getPosition()
-        ).thenReturn(MutableLiveData(bayland_area[0]))
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        ).thenReturn(MutableLiveData(BAYLAND_AREA[0]))
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 GOOD_WEATHER_REPORT
             )
@@ -192,7 +192,7 @@ class ItineraryShowActivityTest {
     fun goToMissionProgressActivityShowToastWhenDroneTooFar() {
         `when`(droneService.isConnected()).thenReturn(true)
         `when`(droneService.getData().getPosition()).thenReturn(MutableLiveData(LatLng(70.1, 40.3)))
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 GOOD_WEATHER_REPORT
             )
@@ -212,8 +212,8 @@ class ItineraryShowActivityTest {
         `when`(
             droneService.getData()
                 .getPosition()
-        ).thenReturn(MutableLiveData(bayland_area[0]))
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        ).thenReturn(MutableLiveData(BAYLAND_AREA[0]))
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 BAD_WEATHER_REPORT
             )
@@ -233,8 +233,8 @@ class ItineraryShowActivityTest {
         `when`(
             droneService.getData()
                 .getPosition()
-        ).thenReturn(MutableLiveData(bayland_area[0]))
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        ).thenReturn(MutableLiveData(BAYLAND_AREA[0]))
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 GOOD_WEATHER_REPORT
             )
@@ -268,7 +268,7 @@ class ItineraryShowActivityTest {
 
         val intents = Intents.getIntents()
         assert(intents.any { it.hasExtra(ItineraryShowActivity.AREA_INTENT_PATH) })
-        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(ItineraryShowActivity.STRATEGY_INTENT_PATH) })
     }
 
@@ -279,8 +279,8 @@ class ItineraryShowActivityTest {
         `when`(
             droneService.getData()
                 .getPosition()
-        ).thenReturn(MutableLiveData(bayland_area[0]))
-        `when`(weatherService.getWeatherReport(bayland_area[0])).thenReturn(
+        ).thenReturn(MutableLiveData(BAYLAND_AREA[0]))
+        `when`(weatherService.getWeatherReport(BAYLAND_AREA[0])).thenReturn(
             MutableLiveData(
                 BAD_WEATHER_REPORT
             )
@@ -329,17 +329,17 @@ class ItineraryShowActivityTest {
             ItineraryShowActivity::class.java
         )
         intent.putExtra(MissionViewAdapter.OWNER_ID_INTENT_PATH, USER_UID)
-        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, bayland_area)
-        intent.putExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
+        intent.putExtra(MissionViewAdapter.AREA_INTENT_PATH, BAYLAND_AREA)
+        intent.putExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH, FLIGHT_HEIGHT)
         intent.putExtra(
             MissionViewAdapter.STRATEGY_INTENT_PATH,
             MappingMissionService.Strategy.SINGLE_PASS
         )
         intent.putExtra(
-            MissionViewAdapter.SHARED_ID_INTENT_PATH,"This_is_a_very_nice_id"
+            MissionViewAdapter.SHARED_ID_INTENT_PATH, "This_is_a_very_nice_id"
         )
 
-        ActivityScenario.launch<ItineraryShowActivity>(intent).use { _ ->
+        ActivityScenario.launch<ItineraryShowActivity>(intent).use {
             onView(withId(R.id.mission_delete))
                 .perform(click())
             onView(withText(R.string.delete_confirmation))

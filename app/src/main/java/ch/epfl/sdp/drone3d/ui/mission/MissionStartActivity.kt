@@ -40,7 +40,8 @@ class MissionStartActivity : AppCompatActivity() {
         )
     }
 
-    @Inject lateinit var droneService : DroneService
+    @Inject
+    lateinit var droneService: DroneService
 
     private var disposable: Disposable? = null
 
@@ -63,9 +64,9 @@ class MissionStartActivity : AppCompatActivity() {
         }
 
         val missionPath = intent.getParcelableArrayListExtra<LatLng>(ItineraryShowActivity.FLIGHTPATH_INTENT_PATH)
-        val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHTHEIGHT_INTENT_PATH) as Double
+        val missionHeight = intent.extras?.get(ItineraryShowActivity.FLIGHT_HEIGHT_INTENT_PATH) as Double
         val cameraPitch = intent.extras?.get(ItineraryShowActivity.CAMERA_PITCH_INTENT_PATH) as Float
-        setupMission(missionPath, missionHeight,cameraPitch)
+        setupMission(missionPath, missionHeight, cameraPitch)
     }
 
     override fun onDestroy() {
@@ -74,14 +75,14 @@ class MissionStartActivity : AppCompatActivity() {
         disposable?.dispose()
     }
 
-    private fun getProgress(status: DroneStatus?) : Int? =
+    private fun getProgress(status: DroneStatus?): Int? =
         MISSION_START_STATUS.indexOf(status).takeIf { it != -1 }
 
     private fun totalProgress(): Int = MISSION_START_STATUS.size
 
     private fun getText(status: DroneStatus?): CharSequence =
         getText(
-            when(status) {
+            when (status) {
                 IDLE -> R.string.mission_state_idle
                 ARMING -> R.string.mission_state_arming
                 SENDING_ORDER -> R.string.mission_state_sending
@@ -90,8 +91,8 @@ class MissionStartActivity : AppCompatActivity() {
             }
         )
 
-    private fun setupMission(missionPath: List<LatLng>?,missionHeight:Double?,cameraPitch:Float?) {
-        if(missionPath == null || missionHeight==null || cameraPitch==null) {
+    private fun setupMission(missionPath: List<LatLng>?, missionHeight: Double?, cameraPitch: Float?) {
+        if (missionPath == null || missionHeight == null || cameraPitch == null) {
             ToastHandler.showToastAsync(this, R.string.mission_invalid)
             finish()
         } else {
@@ -120,7 +121,8 @@ class MissionStartActivity : AppCompatActivity() {
             this,
             R.string.drone_setup_mission_error,
             Toast.LENGTH_LONG,
-            ex.message)
+            ex.message
+        )
         Timber.e(ex)
     }
 }

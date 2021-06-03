@@ -63,7 +63,7 @@ class FirebaseMappingMissionDao @Inject constructor(
     /**
      * Update the given [missionList] liveData from the dataSnapshot taken from the database
      */
-    private fun createValueEventListenerForMissionList(missionList: MutableLiveData<List<MappingMission>>): ValueEventListener{
+    private fun createValueEventListenerForMissionList(missionList: MutableLiveData<List<MappingMission>>): ValueEventListener {
         return object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val missionsSnapshot = dataSnapshot.children.map { c ->

@@ -106,7 +106,9 @@ dependencies {
 
     // Vertical seekbar
     implementation 'com.github.lukelorusso:VerticalSeekBar:1.2.5'
-}
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'}
 
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true

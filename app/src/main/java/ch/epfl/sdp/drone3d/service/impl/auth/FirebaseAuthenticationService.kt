@@ -16,8 +16,8 @@ import javax.inject.Inject
  * Implementation of the authentication service based on firebase
  */
 class FirebaseAuthenticationService @Inject constructor(
-        private val auth: FirebaseAuth
-    ) : AuthenticationService {
+    private val auth: FirebaseAuth
+) : AuthenticationService {
 
     override fun hasActiveSession(): Boolean {
         return auth.currentUser != null

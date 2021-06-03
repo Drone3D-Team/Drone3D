@@ -21,7 +21,8 @@ import timber.log.Timber
 object ToastHandler {
 
     private val handler: Handler = Handler(Looper.getMainLooper())
-    @Volatile private var lastToast: Toast? = null
+    @Volatile
+    private var lastToast: Toast? = null
 
     private fun update(toast: Toast): Toast {
         // cancel last toast and update it
@@ -41,10 +42,12 @@ object ToastHandler {
      *
      * This function can only be called from the UI thread
      */
-    fun showToast(context: Context,
-                  text: String,
-                  duration: Int = Toast.LENGTH_SHORT,
-                  vararg args: Any?) {
+    fun showToast(
+        context: Context,
+        text: String,
+        duration: Int = Toast.LENGTH_SHORT,
+        vararg args: Any?
+    ) {
 
         // Make sure to not format texts that should not be formatted
         val textF = if (args.isEmpty()) text else text.format(*args)
@@ -60,10 +63,12 @@ object ToastHandler {
      *
      * This function can only be called from the UI thread
      */
-    fun showToast(context: Context,
-                  @StringRes resId: Int,
-                  duration: Int = Toast.LENGTH_SHORT,
-                  vararg args: Any?) {
+    fun showToast(
+        context: Context,
+        @StringRes resId: Int,
+        duration: Int = Toast.LENGTH_SHORT,
+        vararg args: Any?
+    ) {
 
         // Make sure to not format texts that should not be formatted
         val textF = if (args.isEmpty()) context.getText(resId) else context.getText(resId, *args)
@@ -80,11 +85,13 @@ object ToastHandler {
      *
      * This function can be called from any thread
      */
-    fun showToastAsync(context: Context,
-                       text: String,
-                       duration: Int = Toast.LENGTH_SHORT,
-                       vararg args: Any?) {
-        handler.post{ showToast(context, text, duration, *args) }
+    fun showToastAsync(
+        context: Context,
+        text: String,
+        duration: Int = Toast.LENGTH_SHORT,
+        vararg args: Any?
+    ) {
+        handler.post { showToast(context, text, duration, *args) }
     }
 
     /**
@@ -95,10 +102,12 @@ object ToastHandler {
      *
      * This function can be called from any thread
      */
-    fun showToastAsync(context: Context,
-                       @StringRes resId: Int,
-                       duration: Int = Toast.LENGTH_SHORT,
-                       vararg args: Any?) {
-        handler.post{ showToast(context, resId, duration, *args) }
+    fun showToastAsync(
+        context: Context,
+        @StringRes resId: Int,
+        duration: Int = Toast.LENGTH_SHORT,
+        vararg args: Any?
+    ) {
+        handler.post { showToast(context, resId, duration, *args) }
     }
 }

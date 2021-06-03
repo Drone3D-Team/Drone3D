@@ -11,7 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.ComponentNameMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -57,7 +57,7 @@ class SaveMappingMissionActivityTest {
         private const val USER_UID = "user_id"
         private val GOOD_WEATHER_REPORT = WeatherReport(
             "Clear", "description",
-            20.0, 20, 5.0, 500, Date(12903)
+            "01d",20.0, 20, 5.0, 500, Date(12903)
         )
         private val AREA = arrayListOf(
             LatLng(46.52109254025395, 6.643008669745938),
@@ -85,7 +85,7 @@ class SaveMappingMissionActivityTest {
         ).apply {
             putExtras(Bundle().apply {
                 putSerializable(
-                    ItineraryCreateActivity.FLIGHTHEIGHT_INTENT_PATH,
+                    ItineraryCreateActivity.FLIGHT_HEIGHT_INTENT_PATH,
                     UNNAMED_MISSION.flightHeight
                 )
                 putSerializable(
@@ -114,7 +114,7 @@ class SaveMappingMissionActivityTest {
     @BindValue
     val mappingMissionDao: MappingMissionDao = mockMappingMissionDao()
 
-    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+    private fun <T> any(type: Class<T>): T = Mockito.any(type)
 
     private fun mockMappingMissionDao(): MappingMissionDao {
         val mappingMissionDao = mock(MappingMissionDao::class.java)
@@ -190,7 +190,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -211,7 +211,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -233,7 +233,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -261,7 +261,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
 
@@ -284,7 +284,7 @@ class SaveMappingMissionActivityTest {
         )
 
         val intents = Intents.getIntents()
-        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHTHEIGHT_INTENT_PATH) })
+        assert(intents.any { it.hasExtra(MissionViewAdapter.FLIGHT_HEIGHT_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.STRATEGY_INTENT_PATH) })
         assert(intents.any { it.hasExtra(MissionViewAdapter.AREA_INTENT_PATH) })
     }

@@ -15,10 +15,13 @@ object WeatherUtils {
     // limit values for the weather
     // temperature min 0 degree Celsius
     const val MIN_TEMPERATURE = 0
+
     // wind speed max = 8.8 m/s
     const val MAX_WIND_SPEED = 8.8
+
     // visibility min = 300 m
     const val MIN_VISIBILITY = 300.0
+
     // set containing the keyword where it is safe for the drone to be launched
     val SAFE_CONDITIONS = setOf("Clear", "Clouds")
 

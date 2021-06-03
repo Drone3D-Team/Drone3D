@@ -13,7 +13,9 @@ import com.google.firebase.database.ktx.getValue
 import timber.log.Timber
 import javax.inject.Inject
 
-
+/**
+ * A user in the firebase database
+ */
 class FirebaseUser @Inject constructor(
     private val database: FirebaseDatabase
 ) : Database {
@@ -27,7 +29,7 @@ class FirebaseUser @Inject constructor(
     /**
      * Returns the reference in database of the user identified by the given [UID].
      */
-    private fun userRef(UID: String): DatabaseReference{
+    private fun userRef(UID: String): DatabaseReference {
         return database.getReference("users/$UID")
     }
 
