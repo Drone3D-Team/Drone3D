@@ -371,14 +371,19 @@ class ItineraryCreateActivityTest {
 
     @Test
     fun goToItineraryShowWorkWhenNotLogin() {
+
         `when`(authService.hasActiveSession()).thenReturn(false)
 
         activityRule.scenario.recreate()
+
+        SystemClock.sleep(500L)
 
         onView(withText(R.string.no_saving_possible)).check(matches(isDisplayed()))
         onView(withText(R.string.no_saving_possible)).perform(click())
 
         createMission()
+
+        SystemClock.sleep(500L)
 
         onView(withId(R.id.buildFlightPath))
             .check(matches(isEnabled()))
