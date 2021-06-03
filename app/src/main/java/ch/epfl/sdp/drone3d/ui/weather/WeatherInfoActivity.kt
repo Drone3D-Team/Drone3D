@@ -88,7 +88,7 @@ class WeatherInfoActivity : AppCompatActivity() {
         }
 
         weatherDescription.apply {
-            text = weatherReport.description.capitalize()
+            text = weatherReport.description.capitalize(Locale.getDefault())
             if (!WeatherUtils.SAFE_CONDITIONS.contains(weatherReport.keywordDescription)) {
                 setTextColor(Color.RED)
             }

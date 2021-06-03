@@ -191,7 +191,7 @@ class ManageOfflineMapActivity : BaseMapActivity(), OnMapReadyCallback {
         val dialog: AlertDialog = builder.setView(viewInflated)
             .setTitle("New offline region")
             .setPositiveButton(R.string.download, null) //Set to null, will be overridden to add check that not empty
-            .setNegativeButton(R.string.cancel_lower
+            .setNegativeButton(R.string.cancel
             ) { dialog, _ -> dialog.cancel() }
             .create()
 

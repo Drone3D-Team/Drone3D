@@ -95,6 +95,7 @@
 
             <ImageView
                 android:id="@+id/weather_icon"
+                android:contentDescription="@string/weather_image_descriptor"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
@@ -102,7 +103,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/horizontalBelowDescription"
-                />
+                 />
 
             <View
                 android:layout_width="match_parent"
@@ -117,6 +118,7 @@
             <ImageView
                 style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/thermometer"
+                android:contentDescription="@string/thermometer_image_descriptor"
                 android:padding="0dp"
                 android:src="@drawable/ic_thermometer"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowTemperature"
@@ -138,6 +140,7 @@
             <ImageView
                 style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/rainDrops"
+                android:contentDescription="@string/humidity_image_descriptor"
                 android:src="@drawable/ic_humidity"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowHumidity"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
@@ -158,6 +161,7 @@
             <ImageView
                 style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/wind"
+                android:contentDescription="@string/wind_image_descriptor"
                 android:src="@drawable/ic_wind"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowWind"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"
@@ -178,6 +182,7 @@
             <ImageView
                 style="@style/imageViewWeatherIconsStyle"
                 android:id="@+id/visibility"
+                android:contentDescription="@string/visibility_image_descriptor"
                 android:src="@drawable/ic_visibility"
                 app:layout_constraintBottom_toBottomOf="@id/horizontalBelowVisibility"
                 app:layout_constraintEnd_toEndOf="@id/verticalEndIcons"

@@ -13,7 +13,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/mapping_selection_item_button"
-        android:layout_width="220dp"
+        android:layout_width="250dp"
         android:minHeight="50dp"
         android:layout_height="wrap_content"
         android:layout_margin="10sp"
