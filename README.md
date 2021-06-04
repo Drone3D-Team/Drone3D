@@ -34,7 +34,7 @@ To connect a simulation, you'll first have to create a simulation with a tool su
 This page lets you download a part of the map. Select the area you want to save by zooming on the map. Once you have it on your screen, press the save button, give it a name and download it, depending on the size of the area it can take a few seconds. You have space to download up to 6000 tiles, the number of tiles can vary based on the size of the area and the precision of the map. If you no longer need a previously saved area and want to free some space, you can delete it by pressing the corresponding delete button.
 
 ### Create and save an itinerary 
-<img src="images/createItinerary.jpg" width="200"> <img src="images/createMission.jpg" width="200"> 
+<img src="images/createItinerary.png" width="200"> <img src="images/createMission.png" width="200"> 
 
 This page contains all the tools needed to create a mission:
 * You can select the area for which you want to create a 3D model by adding three points on the map (click on the map to add a point).
