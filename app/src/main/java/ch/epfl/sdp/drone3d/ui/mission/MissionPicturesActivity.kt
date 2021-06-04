@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.epfl.sdp.drone3d.R
 import ch.epfl.sdp.drone3d.service.api.drone.DronePhotos
@@ -30,6 +31,7 @@ class MissionPicturesActivity : AppCompatActivity() {
 
     companion object {
         private const val SAMPLE_SIZE = 20
+        private const val COLUMNS = 2
 
         private const val CLIPBOARD_NAME = "mission_pictures"
     }
@@ -48,21 +50,22 @@ class MissionPicturesActivity : AppCompatActivity() {
 
         val recyclerView = findViewById<RecyclerView>(R.id.mission_pictures_view)
         val adapter = PictureViewAdapter()
+        recyclerView.layoutManager = GridLayoutManager(this, COLUMNS)
         recyclerView.adapter = adapter
 
         disposables.add(photos.getRandomPhotos(SAMPLE_SIZE)
-            .subscribeOn(Schedulers.io())
-            .retry(10)
-            .subscribe(
-                {
-                    runOnUiThread { adapter.submitList(it) }
-                },
-                {
-                    ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
-                    Timber.e(it, "Failed to download pictures")
-                    finish()
-                }
-            )
+                .subscribeOn(Schedulers.io())
+                .retry(10)
+                .subscribe(
+                        {
+                            runOnUiThread { adapter.submitList(it) }
+                        },
+                        {
+                            ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
+                            Timber.e(it, "Failed to download pictures")
+                            finish()
+                        }
+                )
         )
     }
 
@@ -74,19 +77,19 @@ class MissionPicturesActivity : AppCompatActivity() {
 
     fun copyUrls(@Suppress("UNUSED_PARAMETER") view: View) {
         disposables.add(photos.getPhotosUrl()
-            .subscribe(
-                {
-                    val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clipData = ClipData.newPlainText(CLIPBOARD_NAME, it.joinToString("\n"))
-                    clipboardManager.setPrimaryClip(clipData)
+                .subscribe(
+                        {
+                            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clipData = ClipData.newPlainText(CLIPBOARD_NAME, it.joinToString("\n"))
+                            clipboardManager.setPrimaryClip(clipData)
 
-                    ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
-                },
-                {
-                    Timber.e(it)
-                    ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
-                }
-            )
+                            ToastHandler.showToastAsync(this, getString(R.string.pictures_copied))
+                        },
+                        {
+                            Timber.e(it)
+                            ToastHandler.showToastAsync(this, R.string.error, Toast.LENGTH_SHORT, it.message)
+                        }
+                )
         )
     }
 }
