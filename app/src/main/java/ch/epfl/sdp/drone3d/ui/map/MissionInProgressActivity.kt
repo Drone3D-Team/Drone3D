@@ -335,7 +335,7 @@ class MissionInProgressActivity : BaseMapActivity() {
                     if (!droneService.isSimulation() && distanceUser > maxDistance && !droneData.isMissionPaused().value!!) {
                         droneService.getExecutor().pauseMission(this)
                         ToastHandler.showToastAsync(this, R.string.drone_too_far, Toast.LENGTH_SHORT)
-                    } else if (distanceUser <= MAX_DIST_TO_USER && droneData.isMissionPaused().value!!) {
+                    } else if (distanceUser <= maxDistance && droneData.isMissionPaused().value!!) {
                         droneService.getExecutor().resumeMission(this)
                         ToastHandler.showToastAsync(this, R.string.drone_close_again, Toast.LENGTH_SHORT)
                     }
