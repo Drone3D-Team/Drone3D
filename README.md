@@ -65,7 +65,7 @@ You can do term related search with the top search bar to find the mission you a
 
 To be able to launch a mission you'll need to be connected to a drone or a simulation and to have a mission ready. You can either create a new mission or select one in the saved ones. You have the possibility to check the weather at the location of the mission. You'll get an alert if the weather is considered not good enough to fly your drone. You simply have to click on the drone icon button to launch your mission. You'll have a loading screen during which the drone will receive and start the mission.
 
-<img src="images/startMission.png" width="200"> <img src="images/missionInProgress.png" width="200"> 
+<img src="images/startMission.png" width="200"> <img src="images/missionInProgress.png" width="160"> 
 
 Once the mission is dispatched to the drone, you'll be able to follow it live on the map. You'll also have the speed, height, live camera feed, state and battery of the drone. At any time you can call the drone back to you or to the take off location.
 
