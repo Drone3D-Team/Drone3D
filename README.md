@@ -3,7 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/maintainability)](https://codeclimate.com/github/Drone3D-Team/Drone3D/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/7d12c4fd472569490788/test_coverage)](https://codeclimate.com/github/Drone3D-Team/Drone3D/test_coverage)
 
-<img src="images/logo.jpg" width="50"> 
+[![Drone3D trailer](./images/trailer.png)](https://youtu.be/HngOc-b1naM)
 
 ## Table of contents
 * [Description](#description)
