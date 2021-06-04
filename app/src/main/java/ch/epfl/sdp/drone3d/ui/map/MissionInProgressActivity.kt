@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.View.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -26,7 +27,6 @@ import ch.epfl.sdp.drone3d.service.api.drone.DroneData.DroneStatus
 import ch.epfl.sdp.drone3d.service.api.drone.DroneService
 import ch.epfl.sdp.drone3d.service.api.location.LocationService
 import ch.epfl.sdp.drone3d.service.api.weather.WeatherService
-import ch.epfl.sdp.drone3d.service.impl.weather.WeatherUtils
 import ch.epfl.sdp.drone3d.ui.ToastHandler
 import ch.epfl.sdp.drone3d.ui.mission.MissionPicturesActivity
 import com.google.android.exoplayer2.ExoPlayer
@@ -131,7 +131,11 @@ class MissionInProgressActivity : BaseMapActivity() {
         rtspFactory = RtspDefaultClient.factory(player)
             .setFlags(Client.FLAG_ENABLE_RTCP_SUPPORT)
             .setNatMethod(Client.RTSP_NAT_DUMMY)
-        findViewById<PlayerView>(R.id.camera_mission_view).player = player
+
+        findViewById<PlayerView>(R.id.camera_mission_view).apply {
+            this.player = player
+            this.visibility = INVISIBLE
+        }
 
         setupObservers()
 
@@ -223,14 +227,17 @@ class MissionInProgressActivity : BaseMapActivity() {
         if (!droneService.isSimulation()) {
             createDroneKeeperObserver(droneData)
         }
-        createObserver(droneData.getVideoStreamUri()) {
-            it?.let { streamUri ->
+        createObserver(droneData.getVideoStreamUri()) { streamUri ->
+            if (streamUri != null) {
                 val mediaSource = RtspMediaSource.Factory(rtspFactory)
                     .createMediaSource(Uri.parse(streamUri.replace("rtspt://", "rtsp://")))
 
                 player.setMediaSource(mediaSource)
                 player.prepare()
                 player.play()
+                findViewById<View>(R.id.camera_mission_view).visibility = VISIBLE
+            } else {
+                findViewById<View>(R.id.camera_mission_view).visibility = INVISIBLE
             }
         }
     }
@@ -339,7 +346,7 @@ class MissionInProgressActivity : BaseMapActivity() {
 
     private fun createDroneStatusObserver(droneData: DroneData) {
         createObserver(droneData.getDroneStatus()) { status ->
-            val visibility = if (status == DroneStatus.EXECUTING_MISSION) View.VISIBLE else View.GONE
+            val visibility = if (status == DroneStatus.EXECUTING_MISSION) VISIBLE else GONE
 
             backToHomeButton.visibility = visibility
             backToUserButton.visibility = visibility
